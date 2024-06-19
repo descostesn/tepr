@@ -1,14 +1,16 @@
 library(dplyr)
 library(purrr)
+library(tidyr)
+
 
 
 ##################
 # PARAMETERS
 ##################
 
-working_directory <- "/g/romebioinfo/Projects/tepr/downloads" 
+working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
 extension <- "*.bg"
-name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv"
+name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv" # nolint
 rounding <- 10
 
 
@@ -54,8 +56,165 @@ getting_var_names <- function(extension, working_directory) {
 }
 
 
+
+main_table_read <- function(name_table, extension, working_directory,
+    expression_threshold) {
+
+    df_final <- data.frame()
+    df_final_gene <- data.frame()
+    concat_df <- data.frame()
+    gene_name_list <- character()
+    expressed_gene_name_list <- character()
+
+    #Load data without header
+    res <- getting_var_names(extension, working_directory)
+    col_names <- res$col_names
+    var_names <- res$var_names
+
+    main_table <- data.frame()
+    main_table <- read.delim(paste0(working_directory,"/", name_table),
+                      header = FALSE, sep = "\t", col.names = col_names)
+
+    for (gene in unique(main_table$gene)){
+    gene_name_list <- c(gene_name_list, gene)
+    }
+    sorted_list <- sort(gene_name_list, decreasing = F)
+
+    # Get the column names with the suffix "score"
+    score_columns <- grep("score$", col_names, value = TRUE)
+
+    # Initialize an empty list to store the mean column names
+    mean_column_names <- list()
+    expressed_gene_name <- data.frame()
+    expressed_plus <- data.frame()
+
+    expressed_transcript_name <- main_table %>%
+    group_by(transcript) %>%
+    dplyr::summarize(gene=gene[1],strand=strand[1],
+                    across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+
+    expressed_plus <- expressed_transcript_name %>%
+    filter(strand=="+") %>% 
+    select(gene, transcript, strand, contains("plus"))  %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_minus <- expressed_transcript_name %>%
+    filter(strand == "-") %>% 
+    select(gene, transcript, strand, contains("minus")) %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript) # nolint
+
+    return(list(main_table=main_table,expressed_transcript_name_list=expressed_transcript_name_list)) # nolint
+}
+
+
+genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
+    extension, working_directory) {
+
+    gc()
+
+    res <- getting_var_names(extension, working_directory)
+    col_names <- res$col_names
+    var_names <- res$var_names  
+
+    total_iterations <- length(expressed_transcript_name_list)
+    #setting the progress bar
+    pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
+
+    j = 0
+    concat_df <- data.frame()
+    ## Looping through all the transcripts
+    for (variable in expressed_transcript_name_list) {
+
+        gene_table <- data.frame()
+        bigDF <- data.frame()
+
+        transcript_table <- data.frame()
+        transcript <- filter(main_table, main_table$transcript == variable)
+        transcript[transcript == "NAN"] <- NA
+        bigDF <- transcript
+        my_length <- length(bigDF[,'window'])
+
+        var_names_score <- paste0(var_names,"_score")
+
+        if (transcript$strand[1] == "-") {
+            bigDF <- bigDF %>%
+            select(!matches("plus"))
+            bigDF$coord <- seq(from = my_length, to = 1, by = -1)
+            bigDF <- arrange(bigDF, coord)
+            conditions <- var_names_score[grepl("minus", var_names_score)]
+        } else {
+            bigDF <- bigDF %>%
+            select(!matches("minus"))
+            bigDF$coord <- seq(from=1, to=my_length,by=1)
+            conditions <- var_names_score[grepl("plus",var_names_score)]
+        }
+
+        bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+        df_long <- bigDF %>% 
+            gather(key = "variable", value = "value", conditions)
+        df_long[,'value'] <- as.numeric(df_long[,'value'])
+        df_long[,'value_round']<- round(df_long$value*rounding)
+
+        j = j + 1
+        #  Update the progress bar
+        setTxtProgressBar(pb, j)
+
+        list_df <- list()
+        i <- 1
+        for (my_var in unique(df_long$variable)) {
+            df_subset <- subset(df_long, subset = variable == my_var) 
+            df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
+            ecdf_df <- ecdf(df_expanded[,"coord"])
+            df_subset$Fx <- ecdf_df(df_subset$coord) 
+            list_df[[i]] <- df_subset
+            i <- i + 1
+        }
+
+        df_final <- bind_rows(list_df)
+        transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
+
+        # getting rid of plus and minus
+        if (transcript_table$strand[1]=="-") {
+            # Drop columns containing "minus"
+            columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+            dataset_without_dropped <- transcript_table %>%
+            select(-all_of(columns_to_drop))
+
+        # Modify column names by removing "_plus"
+        modified_dataset <- dataset_without_dropped %>%
+        rename_with(~gsub(".minus", "", .), contains(".minus"))
+        } else {
+            # Drop columns containing "minus"
+            columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+            dataset_without_dropped <- transcript_table %>%
+            select(-all_of(columns_to_drop))
+
+            # Modify column names by removing "_plus"
+            modified_dataset <- dataset_without_dropped %>%
+            rename_with(~gsub(".plus", "", .), contains(".plus"))
+        }
+        concat_df <- bind_rows(concat_df, modified_dataset)
+    }
+
+    # # Close the progress bar
+    close(pb)
+    # list_gene_table <- concat_df %>% select(gene) %>% distinct()
+    gc()
+
+    return(concat_df = concat_df)
+}
+
+
+
 ##################
 # MAIN
 ##################
 
-getting_var_names(extension, working_directory)
+results_main_table <- main_table_read(name_table, extension, working_directory, 0.1) # nolint
+resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
+    expressed_transcript_name_list = results_main_table[[2]], extension,
+    working_directory)
