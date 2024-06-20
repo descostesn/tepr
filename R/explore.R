@@ -584,3 +584,8 @@ dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dt
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
 count_NA_res <- countNA_fun(main_table, extension, working_directory)
 KneeID_res <- KneeID_fun(concat_Diff_mean_res)
+
+AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
+  by = c("transcript", "gene", "strand", "window_size"))  %>% 
+  left_join(., KneeID_res, by = c("transcript"))  %>% 
+  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
