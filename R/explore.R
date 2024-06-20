@@ -304,4 +304,5 @@ concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gen
 
 
 condition_comparison(extension,working_directory) ## Does not return anything
-dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") 
+dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") # nolint
+condition_compared(extension,working_directory,) ## Does not return anything
