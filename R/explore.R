@@ -291,6 +291,52 @@ condition_compared <- function(extension, working_directory,
     }
 }
 
+Diff_mean_fun <- function(concat_df, dontcompare = NULL) {
+
+  if(is.null(dontcompare)) {dontcompare <- c() } 
+  # return(dontcompare)
+
+  res <- getting_var_names(extension, working_directory)
+  Conditions <- res$Conditions
+  replicate_numbers <- res$replicate_numbers
+
+
+  for (i in 1:length(Conditions)) {
+    for (j in (1+i):length(Conditions)) {
+      if (j>length(Conditions)){ break}
+      cond1 <- Conditions[i]
+      cond2 <- Conditions[j]
+
+      ## making sure to not do useless comparison for the user,
+      compare <- paste0(cond1," vs ", cond2)
+      if (! compare %in% dontcompare) {
+
+     # print(paste0(cond1,"_",cond2))
+     # print(paste0(cond2,"_",cond1))
+     # print(cond1,cond2)
+      mean_value_condi_name1 <- paste0("mean_value_", cond1)
+      mean_value_condi_name2 <- paste0("mean_value_", cond2)
+
+      mean_Fx_condi_name1 <- paste0("mean_Fx_", cond1)
+      mean_Fx_condi_name2 <- paste0("mean_Fx_", cond2)
+
+      Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2) 
+      Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1) 
+
+      Diff_meanFx_name1 <- paste0("Diff_meanFx_",cond1,"_",cond2)
+      Diff_meanFx_name2 <- paste0("Diff_meanFx_",cond2,"_",cond1) 
+      #comparison_result <- my_list[[element1]] - my_list[[element2]]
+
+      concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]] # nolint
+      concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]] # nolint
+
+      concat_df[[Diff_meanFx_name1]] <- concat_df[[mean_Fx_condi_name1]] - concat_df[[mean_Fx_condi_name2]] # nolint
+      concat_df[[Diff_meanFx_name2]] <- concat_df[[mean_Fx_condi_name2]] - concat_df[[mean_Fx_condi_name1]] # nolint
+      }
+    }
+  }
+  return(concat_df=concat_df)
+}
 
 ##################
 # MAIN
