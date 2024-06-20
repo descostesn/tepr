@@ -279,4 +279,6 @@ resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
     working_directory)
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
-## Does not return anything
+
+
+condition_comparison(extension,working_directory) ## Does not return anything
