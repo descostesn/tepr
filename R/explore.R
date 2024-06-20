@@ -270,6 +270,28 @@ condition_comparison <- function(extension,working_directory) {
   }
 }
 
+condition_compared <- function(extension, working_directory,
+  dontcompare = NULL) {
+
+    res <- getting_var_names(extension, working_directory)
+    Conditions <- res$Conditions
+
+    for (i in 1:length(Conditions)) {
+      cond1 <- Conditions[i]
+      #  print(cond1)
+      for (j in (1+i):length(Conditions)) {
+        if (j>length(Conditions)){ break}
+        cond2 <- Conditions[j]
+        # print(cond2)
+        compare <- paste0(cond1," vs ", cond2)
+        if (! compare %in% dontcompare ){print(compare)}
+        #  newcol <- ""
+        #  print(newcol_reverse)
+      }
+    }
+}
+
+
 ##################
 # MAIN
 ##################
@@ -282,3 +304,4 @@ concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gen
 
 
 condition_comparison(extension,working_directory) ## Does not return anything
+dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") 
