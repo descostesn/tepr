@@ -338,6 +338,11 @@ Diff_mean_fun <- function(concat_df, dontcompare = NULL) {
   return(concat_df=concat_df)
 }
 
+modify_p_values <- function(col) {
+  col <- ifelse(col == 0.000000e+00, 10^(-16), col)
+  return(col)
+}
+
 ##################
 # MAIN
 ##################
