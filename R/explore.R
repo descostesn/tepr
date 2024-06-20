@@ -563,6 +563,61 @@ KneeID_fun <- function(concat_df) {
 
 
 
+Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
+
+  res <- getting_var_names(extension, working_directory)
+  Conditions <- res$Conditions
+
+  Complete_summary <-  left_join(concat_df, AUC_KS_Knee_NA_DF,
+    by = c("gene","transcript","strand"))
+
+  for (cond in Conditions) {
+    mean_value_condi_name <- paste0("mean_value_", cond)
+    print(mean_value_condi_name)
+    knee_column_name <- paste0("knee_AUC_", cond)
+    Attenuation_cond <- paste0("Attenuation_", cond)
+    UPmean_cond <- paste0("UP_mean_", cond)
+    DOWNmean_cond <- paste0("DOWN_mean_", cond)
+    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- NA
+
+    result <- Complete_summary %>% group_by(transcript) %>% arrange(coord) %>%
+      dplyr::reframe(transcript=transcript[1],
+        !!sym(UPmean_cond) := mean((!!sym(mean_value_condi_name))[coord <= !!sym(knee_column_name)]), # nolint
+        !!sym(DOWNmean_cond) := mean((!!sym(mean_value_condi_name))[coord >= !!sym(knee_column_name) & coord <= max(coord)])) %>% # nolint
+        select(transcript,!!sym(UPmean_cond),!!sym(DOWNmean_cond), !!sym(DOWNmean_cond)) %>% distinct() # nolint
+
+    AUC_KS_Knee_NA_DF <- left_join(AUC_KS_Knee_NA_DF,result, by=c("transcript"))
+    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- 100 - AUC_KS_Knee_NA_DF[[DOWNmean_cond]]/AUC_KS_Knee_NA_DF[[UPmean_cond]]*100 # nolint
+  }
+
+  if (exists("Replaced") && !is.na(Replaced)) {
+    if (Replaced != "NOT") {
+      for (cond in Conditions) {
+        p_AUC_cond <- paste0("p_AUC_", cond)
+        print(p_AUC_cond)
+        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+          mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, # nolint
+          Replaced, .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an inout value is KS test > at threshold # nolint
+        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+          mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold # nolint
+      }
+    }
+  } else {
+    for (cond in Conditions) {
+      p_AUC_cond <- paste0("p_AUC_", cond)
+      print(p_AUC_cond)
+      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+        mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
+        .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an input value if KS test > at threshold # nolint
+      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+        mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
+        .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA if KS test > at threshold # nolint
+    }
+  }
+  return(AUC_KS_Knee_NA_DF)
+}
+
+
 
 ##################
 # MAIN
