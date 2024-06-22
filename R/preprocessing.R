@@ -34,6 +34,8 @@ sortedbedformat <- function(gencode) {
     ensnamevec <- gsub(" transcript_id ", "", sapply(infolist, "[", 2)) # nolint
     gencodebed <- cbind(gencode[, c(1, 4, 5)], ensnamevec, namevec,
         gencode[, 7])
+    colnames(gencodebed) <- c("chrom", "start", "end", "ensembl", "symbol",
+        "strand")
     return(gencodebed)
 }
 
