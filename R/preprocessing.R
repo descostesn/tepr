@@ -1,0 +1,26 @@
+####################
+# This script aims at performing pre-processing steps using R only.
+#
+# Descostes - June 2024 - R-4.4.1
+####################
+
+
+##################
+# PARAMETERS
+##################
+
+gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotation.gtf" # nolint
+
+
+##################
+# MAIN
+##################
+
+## Read gencode file
+gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+
+## Selecting Ensembl_canonical transcripts i.e. most representative transcript
+## of the gene. This will be the MANE_Select transcript if there is one, or a
+## transcript chosen by an Ensembl algorithm otherwise.
+gencode <- gencode[which(gencode$V3 == "transcript"), ]
+gencode <- gencode[grep("MANE_Select", gencode$V9), ]
