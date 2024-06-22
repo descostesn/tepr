@@ -60,6 +60,3 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
-
-
-
