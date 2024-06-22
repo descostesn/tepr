@@ -17,10 +17,10 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 ##################
 
 grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
-    invisible(sapply(valvec, function(tokeep) {
-        idx <- grep(valvec, gentab$V9, invert = invert)
+    invisible(sapply(valvec, function(val) {
+        idx <- grep(val, gentab$V9, invert = invert)
         if (verbose)
-            message(valvec, " - ", length(idx), " gentab - ", nrow(gentab))
+            message(val, " - ", length(idx), " gentab - ", nrow(gentab))
         if (!isTRUE(all.equal(length(idx), 0)))
             gentab <<- gentab[idx, ]
     }))
