@@ -16,7 +16,7 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 #FUNCTIONS
 ##################
 
-bedformat <- function(gencode) {
+sortedbedformat <- function(gencode) {
     gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start
     infolist <- strsplit(gencode$V9, ";")
     namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
@@ -40,5 +40,4 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 gencode <- gencode[grep("MANE_Select", gencode$V9), ]
 
 ## Creating sorted bed format gencode
-gencodebed <- bedformat(gencode)
-
+gencodebed <- sortedbedformat(gencode)
