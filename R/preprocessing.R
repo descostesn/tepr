@@ -11,19 +11,16 @@
 
 gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotation.gtf" # nolint
 
-## Path to files obtained with bash commands
-bedgencodepath <- "/g/romebioinfo/Projects/tepr/downloads/MANE_Select.protein_coding.bed" # nolint
-
 
 ##################
 #FUNCTIONS
 ##################
 
 bedformat <- function(gencode) {
-    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start position
+    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start
     infolist <- strsplit(gencode$V9, ";")
     namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
-    ensnamevec <- gsub("gene_id ", "", sapply(infolist, "[", 1)) # nolint
+    ensnamevec <- gsub(" transcript_id ", "", sapply(infolist, "[", 2)) # nolint
     gencodebed <- cbind(gencode[, c(1, 4, 5)], ensnamevec, namevec,
         gencode[, 7])
     return(gencodebed)
@@ -45,7 +42,3 @@ gencode <- gencode[grep("MANE_Select", gencode$V9), ]
 ## Creating sorted bed format gencode
 gencodebed <- bedformat(gencode)
 
-## Verify that the bed df is equal to the one created in bash
-bedbash <- read.delim(bedgencodepath, header = FALSE)
-if (isTRUE(all.equal(gencodebed, bedbash)))
-    message("gencodebed and bedbash are equal")
