@@ -16,9 +16,11 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 #FUNCTIONS
 ##################
 
-grepsequential <- function(tokeepvec, gentab, invert = FALSE) {
-    invisible(sapply(tokeepvec, function(tokeep) {
-        idx <- grep(tokeep, gentab$V9, invert = invert)
+grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
+    invisible(sapply(valvec, function(tokeep) {
+        idx <- grep(valvec, gentab$V9, invert = invert)
+        if (verbose)
+            message(valvec, " - ", length(idx), " gentab - ", nrow(gentab))
         if (!isTRUE(all.equal(length(idx), 0)))
             gentab <<- gentab[idx, ]
     }))
@@ -54,11 +56,8 @@ protcodbed <- sortedbedformat(gencodeprotcod)
 lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
 removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
-test <- grepsequential(removevec, lncrna, invert = TRUE)
-
-
-
-awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > Ensembl_canonical_TSL123.lncRNA.bed
+lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
+lncrnabed <- sortedbedformat(lncrna)
 
 
 
