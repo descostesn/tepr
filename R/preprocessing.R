@@ -11,6 +11,19 @@
 
 gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotation.gtf" # nolint
 
+##################
+#FUNCTIONS
+##################
+
+bedformat <- function(gencode) {
+    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start position
+    infolist <- strsplit(gencode$V9, ";")
+    namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
+    ensnamesvec <- gsub("gene_id ", "", sapply(infolist, "[", 1)) # nolint
+    gencodebed <- cbind(gencode[, c(1, 4, 5, )], ensnamesvec, namesvec,
+        gencode[, 7])
+    return(gencodebed)
+}
 
 ##################
 # MAIN
@@ -26,8 +39,4 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 gencode <- gencode[grep("MANE_Select", gencode$V9), ]
 
 ## Creating sorted bed format gencode
-gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start position
-infolist <- strsplit(gencode$V9, ";")
-namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
-ensnamesvec <- gsub("gene_id ", "", sapply(infolist, "[", 1)) # nolint
-gencodebed <- cbind(gencode[, c(1, 4, 5, )], ensnamesvec, namesvec, gencode[, 7])
+gencodebed <- bedformat(gencode)
