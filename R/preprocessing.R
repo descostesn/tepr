@@ -16,6 +16,12 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 #FUNCTIONS
 ##################
 
+grepsequential <- function(tokeepvec, gentab, invert = FALSE) {
+    invisible(sapply(tokeepvec, function(tokeep) {
+        gentab <<- gentab[grep(tokeep, gentab$V9), ]}))
+    return(gentab)
+}
+
 sortedbedformat <- function(gencode) {
     gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start
     infolist <- strsplit(gencode$V9, ";")
@@ -32,12 +38,26 @@ sortedbedformat <- function(gencode) {
 
 ## Read gencode file
 gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+gencode <- gencode[which(gencode$V3 == "transcript"), ]
 
 ## Selecting Ensembl_canonical transcripts i.e. most representative transcript
-## of the gene. This will be the MANE_Select transcript if there is one, or a
-## transcript chosen by an Ensembl algorithm otherwise.
-gencode <- gencode[which(gencode$V3 == "transcript"), ]
-gencode <- gencode[grep("MANE_Select", gencode$V9), ]
+## of the protein coding gene. This will be the MANE_Select transcript if there
+## is one, or a transcript chosen by an Ensembl algorithm otherwise.
+gencodeprotcod <- grepsequential("MANE_Select", gencode)
+protcodbed <- sortedbedformat(gencodeprotcod)
 
-## Creating sorted bed format gencode
-gencodebed <- sortedbedformat(gencode)
+## Retrieve long non-coding transcripts
+
+lncrna <- gencode[grep("lncRNA", gencode$V9), ]
+grep("Ensembl_canonical", gencode$V9))
+lncrna <- gencode[idx, ]
+idxnot <- union(grep("not_best_in_genome_evidence", lncrna, invert = TRUE),
+                grep('transcript_support_level "5"', lncrna, invert = TRUE),
+                grep('transcript_support_level "4"', lncrna, invert = TRUE))
+
+
+
+awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > Ensembl_canonical_TSL123.lncRNA.bed
+
+
+
