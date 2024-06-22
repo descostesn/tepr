@@ -18,7 +18,10 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 
 grepsequential <- function(tokeepvec, gentab, invert = FALSE) {
     invisible(sapply(tokeepvec, function(tokeep) {
-        gentab <<- gentab[grep(tokeep, gentab$V9), ]}))
+        idx <- grep(tokeep, gentab$V9)
+        if (!isTRUE(all.equal(length(idx), 0)))
+            gentab <<- gentab[idx, ]
+    }))
     return(gentab)
 }
 
@@ -31,6 +34,7 @@ sortedbedformat <- function(gencode) {
         gencode[, 7])
     return(gencodebed)
 }
+
 
 ##################
 # MAIN
@@ -47,13 +51,9 @@ gencodeprotcod <- grepsequential("MANE_Select", gencode)
 protcodbed <- sortedbedformat(gencodeprotcod)
 
 ## Retrieve long non-coding transcripts
-
-lncrna <- gencode[grep("lncRNA", gencode$V9), ]
-grep("Ensembl_canonical", gencode$V9))
-lncrna <- gencode[idx, ]
-idxnot <- union(grep("not_best_in_genome_evidence", lncrna, invert = TRUE),
-                grep('transcript_support_level "5"', lncrna, invert = TRUE),
-                grep('transcript_support_level "4"', lncrna, invert = TRUE))
+lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
+removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5", lncrna, invert = TRUE),
+                grep("transcript_support_level 4", lncrna, invert = TRUE))
 
 
 
