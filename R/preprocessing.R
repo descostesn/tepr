@@ -105,10 +105,14 @@ lncrnabed <- sortedbedformat(lncrna)
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 
-removeblacklist <- function(bedtab, blackgr) {
-    bedgr <- bedtogr(bedtab)
-    resgr <- GenomicRanges::subtract(bedgr, blackgr)
-    return(resgr)
-}
+# removeblacklist <- function(bedtab, blackgr) {
+#     bedgr <- bedtogr(bedtab)
+#     resgr <- GenomicRanges::subtract(bedgr, blackgr)
+#     return(resgr)
+# }
 
-protcodgrfiltered <- removeblacklist(protcodbed, blacklistgr)
+# protcodgrfiltered <- removeblacklist(protcodbed, blacklistgr)
+
+
+
+
