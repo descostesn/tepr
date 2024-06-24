@@ -28,6 +28,16 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 #FUNCTIONS
 ##################
 
+
+bedtogr <- function(currentbed) {
+    grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
+        ranges = IRanges::IRanges(start = currentbed[, 2],
+                                  end = currentbed[, 3],
+                                  names = currentbed[, 4]),
+        strand = currentbed[, 6])
+    return(grres)
+}
+
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
         dir.create(outfold, recursive = TRUE)
@@ -86,3 +96,4 @@ createfolder(outputfolder)
 write.table(as.data.frame(blacklistgr),
             file = file.path(outputfolder, paste0(blacklistname, ".bed")),
             sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+protcodbedfiltered <- GenomicRanges::subtract
