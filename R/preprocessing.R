@@ -21,10 +21,17 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 ## query_data <- subset(ah, preparerclass == "excluderanges") # nolint
 ## print(query_data) # nolint
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
+outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
+
 
 ##################
 #FUNCTIONS
 ##################
+
+createfolder <- function(outfold) {
+    if (!file.exists(outfold))
+        dir.create(outfold, recursive = TRUE)
+}
 
 grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
     invisible(sapply(valvec, function(val) {
@@ -73,5 +80,9 @@ lncrnabed <- sortedbedformat(lncrna)
 
 ## Exclude blacklist
 blacklistgr <- AnnotationHub::query(AnnotationHub(), blacklistname)[[1]]
-blacklistgr <- blacklistgr %>% sort() %>% 
+blacklistgr <- blacklistgr %>% sort() %>%
     GenomeInfoDb::keepStandardChromosomes(pruning.mode = "tidy")
+createfolder(outputfolder)
+write.table(as.data.frame(blacklistgr),
+            file = file.path(outputfolder, paste0(blacklistname, ".bed")),
+            sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
