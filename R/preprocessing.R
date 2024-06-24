@@ -71,3 +71,6 @@ lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
 
 ## Exclude blacklist
+ah <- AnnotationHub()
+query_data <- query(ah, blacklistname)
+# query_data <- query(ah, c("excluderanges", "Kundaje", "hg38"))
