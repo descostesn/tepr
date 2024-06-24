@@ -43,6 +43,20 @@ createfolder <- function(outfold) {
         dir.create(outfold, recursive = TRUE)
 }
 
+createblacklist <- function(blacklistname, outputfolder) { # nolint
+
+    blacklistgr <- AnnotationHub::query(AnnotationHub::AnnotationHub(),
+        blacklistname)[[1]]
+    blacklistgr <- blacklistgr %>%
+                   sort() %>%
+                   GenomeInfoDb::keepStandardChromosomes(pruning.mode = "tidy")
+    createfolder(outputfolder)
+    write.table(as.data.frame(blacklistgr),
+            file = file.path(outputfolder, paste0(blacklistname, ".bed")),
+            sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+    return(blacklistgr)
+}
+
 grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
     invisible(sapply(valvec, function(val) {
         idx <- grep(val, gentab$V9, invert = invert)
@@ -89,11 +103,8 @@ lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
 
 ## Exclude blacklist
-blacklistgr <- AnnotationHub::query(AnnotationHub(), blacklistname)[[1]]
-blacklistgr <- blacklistgr %>% sort() %>%
-    GenomeInfoDb::keepStandardChromosomes(pruning.mode = "tidy")
-createfolder(outputfolder)
-write.table(as.data.frame(blacklistgr),
-            file = file.path(outputfolder, paste0(blacklistname, ".bed")),
-            sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+blacklistgr <- createblacklist(blacklistname, outputfolder)
+
+
+protcodgr <- bedtogr(protcodbed)
 protcodbedfiltered <- GenomicRanges::subtract
