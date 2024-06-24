@@ -29,14 +29,14 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 ##################
 
 
-bedtogr <- function(currentbed) {
-    grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-        ranges = IRanges::IRanges(start = currentbed[, 2],
-                                  end = currentbed[, 3],
-                                  names = currentbed[, 4]),
-        strand = currentbed[, 6])
-    return(grres)
-}
+# bedtogr <- function(currentbed) {
+#     grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
+#         ranges = IRanges::IRanges(start = currentbed[, 2],
+#                                   end = currentbed[, 3],
+#                                   names = currentbed[, 4]),
+#         strand = currentbed[, 6])
+#     return(grres)
+# }
 
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
