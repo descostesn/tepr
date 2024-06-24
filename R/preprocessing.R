@@ -6,6 +6,7 @@
 
 library("GenomicRanges")
 library("AnnotationHub")
+library("GenomeInfoDb")
 library("excluderanges")
 
 
@@ -72,4 +73,5 @@ lncrnabed <- sortedbedformat(lncrna)
 
 ## Exclude blacklist
 blacklistgr <- AnnotationHub::query(AnnotationHub(), blacklistname)[[1]]
-
+blacklistgr <- blacklistgr %>% sort() %>% 
+    GenomeInfoDb::keepStandardChromosomes(pruning.mode = "tidy")
