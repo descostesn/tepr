@@ -29,15 +29,6 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 ##################
 
 
-# bedtogr <- function(currentbed) {
-#     grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-#         ranges = IRanges::IRanges(start = currentbed[, 2],
-#                                   end = currentbed[, 3],
-#                                   names = currentbed[, 4]),
-#         strand = currentbed[, 6])
-#     return(grres)
-# }
-
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
         dir.create(outfold, recursive = TRUE)
@@ -105,14 +96,21 @@ lncrnabed <- sortedbedformat(lncrna)
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 
-# removeblacklist <- function(bedtab, blackgr) {
-#     bedgr <- bedtogr(bedtab)
-#     resgr <- GenomicRanges::subtract(bedgr, blackgr)
-#     return(resgr)
-# }
-
-# protcodgrfiltered <- removeblacklist(protcodbed, blacklistgr)
 
 
+!!!!!!!!!!!!!!!!!!!!!!!
+ !! bedtools intersect -a stdin -b $blacklist -v
+ !! bedtools makewindows -n $window -i srcwinnum -b stdin
 
 
+ANNOTATION="/Users/victor/Documents/DATA/annotation/V43/MANE_Select.protein_coding.bed"
+WORKING="/Users/victor/Documents/DATA/annotation/V43"
+blacklist="/Users/victor/Documents/DATA/Repeatmasker/blacklist/hg38-blacklist.v2.sorted.bed"
+window=200
+
+mkdir $WORKING/makewindow
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | 
+bedtools intersect -a stdin -b $blacklist -v  | 
+bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed  
+
+echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed 
