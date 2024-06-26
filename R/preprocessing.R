@@ -4,10 +4,10 @@
 # Descostes - June 2024 - R-4.4.1
 ####################
 
-library("GenomicRanges")
+
 library("AnnotationHub")
 library("GenomeInfoDb")
-library("excluderanges")
+#library("excluderanges")
 
 
 
