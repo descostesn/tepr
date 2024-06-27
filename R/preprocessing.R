@@ -7,6 +7,7 @@
 
 library("AnnotationHub")
 library("GenomeInfoDb")
+library("GenomicRanges")
 #library("excluderanges")
 
 
@@ -27,6 +28,15 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 ##################
 #FUNCTIONS
 ##################
+
+bedtogr <- function(currentbed) {
+    grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
+        ranges = IRanges::IRanges(start = currentbed[, 2],
+                                  end = currentbed[, 3],
+                                  names = currentbed[, 4]),
+        strand = currentbed[, 6])
+    return(grres)
+}
 
 
 createfolder <- function(outfold) {
@@ -85,6 +95,7 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 ## is one, or a transcript chosen by an Ensembl algorithm otherwise.
 gencodeprotcod <- grepsequential("MANE_Select", gencode)
 protcodbed <- sortedbedformat(gencodeprotcod)
+protcodgr <- bedtogr(protcodbed)
 
 ## Retrieve long non-coding transcripts
 lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
@@ -92,10 +103,12 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
+lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 
+GenomicRanges::subsetByOverlaps(gr_a, gr_b, invert = TRUE, ignore.strand = TRUE)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!
