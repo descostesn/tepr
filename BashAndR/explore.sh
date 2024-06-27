@@ -25,11 +25,10 @@ rm Ensembl_canonical_TSL123.lncRNA.gtf
 
 ## Removing blacklist from bed files. The black list was downloaded from
 ## https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz
-WORKING="/Users/victor/Documents/DATA/annotation/V43"
-blacklist="/Users/victor/Documents/DATA/Repeatmasker/blacklist/hg38-blacklist.v2.sorted.bed"
-window=200
-
 mkdir makewindow
-awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' MANE_Select.protein_coding.bed | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed  
 
-echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed 
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' MANE_Select.protein_coding.bed | \
+bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v  | \
+bedtools makewindows -n 200 -i srcwinnum -b stdin | \
+sort -k1,1 -k2,2n > makewindow/v43.MANE_protein.window200.bed  
+
