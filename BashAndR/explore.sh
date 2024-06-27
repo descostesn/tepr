@@ -47,7 +47,7 @@ sort -k1,1 -k2,2n > makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
 cd /g/romebioinfo/Projects/tepr/downloads/
 
 ext="bg"
-umapk50="annotations/k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
+umapk50="annotations/k50.Unique.Mappability.bed" # hg38 mappability windows with mapp k50 > 80%
 blacklist="annotations/hg38-blacklist.v2.bed"
 window=200
 
