@@ -29,6 +29,14 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 #FUNCTIONS
 ##################
 
+excludeblacklist <- function(expgr, blackgr) {
+    ## command retrieved with HelloRanges:
+    # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
+    resgr <- GenomicRanges::subsetByOverlaps(protcodgr, blacklistgr,
+        invert = TRUE, ignore.strand = TRUE)
+    return(resgr)
+}
+
 bedtogr <- function(currentbed) {
     grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
         ranges = IRanges::IRanges(start = currentbed[, 2],
@@ -107,8 +115,9 @@ lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
+protcodnoblackgr <- excludeblacklist(protcodgr, blacklistgr)
 
-GenomicRanges::subsetByOverlaps(gr_a, gr_b, invert = TRUE, ignore.strand = TRUE)
+
 
 
 !!!!!!!!!!!!!!!!!!!!!!!
