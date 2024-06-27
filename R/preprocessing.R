@@ -116,7 +116,7 @@ lncrnagr <- bedtogr(lncrnabed)
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeblacklist(protcodgr, blacklistgr)
-
+lncrnanoblackgr <- excludeblacklist(lncrnagr, blacklistgr)
 
 
 
