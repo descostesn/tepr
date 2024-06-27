@@ -39,3 +39,94 @@ bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v  | \
 bedtools makewindows -n 200 -i srcwinnum -b stdin | \
 sort -k1,1 -k2,2n > makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed 
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## Associating scores to bed
+## The umap track was downloaded from https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb
+## and converted to bed with https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/bigBedToBed
+cd /g/romebioinfo/Projects/tepr/downloads/
+
+ext="bg"
+umapk50="annotations/k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
+blacklist="annotations/hg38-blacklist.v2.bed"
+window=200
+
+## Processing protein coding
+windowS="annotations/makewindow/v43.MANE_protein.window200.bed" #genes with the window
+ANNOTATION="annotations/MANE_Select.protein_coding.bed"
+
+mkdir bedgraphs/withzeros
+mkdir bedgraphs/mapHigh
+
+for file in bedgraphs/*.$ext ;
+do
+    filename=$(basename "$file" .$ext);
+    echo "starting file :"
+    echo $filename;
+    if echo $filename | egrep -q "reverse|minus" ;  then
+        strand="-"
+    elif echo $filename | egrep -q "forward|plus" ; then
+        strand='+'
+    fi
+
+    echo "removing blacklist region"
+    bedtools intersect -a bedgraphs/${filename}.$ext -b <( awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | \
+    bedtools intersect -a stdin -b $blacklist -v) | sort -k1,1 -k2,2n > bedgraphs/withzeros/${filename}.nonzeros.$ext
+
+    echo "removing low mappability region"
+    bedtools intersect -a bedgraphs/withzeros/${filename}.nonzeros.${ext} -b $umapk50 -sorted | \
+    awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > bedgraphs/mapHigh/${filename}.0.8.$ext
+
+    echo "scoring windows"
+    bedmap --echo --wmean --delim "\t" $windowS bedgraphs/mapHigh/${filename}.0.8.$ext | \
+    awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | \
+    awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > bedgraphs/${filename}.window${window}.MANE.wmean.name.score ;
+
+    echo "done"
+done
+rm bedgraphs/withzeros/*
+rm bedgraphs/mapHigh/*
+mkdir bedgraphs/protein_coding_score
+mv bedgraphs/*.score bedgraphs/protein_coding_score/
+
+
+## Processing lncRNA
+windowS="/Users/victor/Documents/DATA/annotation/V43/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+ANNOTATION="/Users/victor/Documents/DATA/annotation/V43/Ensembl_canonical_TSL123.lncRNA.bed"
+
+for file in $WORKING/*.$ext ;
+do
+    filename=$(basename "$file" .$ext) ;
+    echo "starting file :"
+    echo $filename ;
+
+    if echo $filename | egrep -q "reverse|minus" ;  then 
+    strand="-"
+    elif echo $filename | egrep -q "forward|plus" ; then
+    strand='+'
+    fi
+
+    echo "removing blacklist region"
+    bedtools intersect -a bedgraphs/${filename}.$ext -b <( awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | \
+    bedtools intersect -a stdin -b $blacklist -v) | sort -k1,1 -k2,2n > bedgraphs/withzeros/${filename}.nonzeros.$ext
+
+    echo "removing low mappability region"
+    bedtools intersect -a bedgraphs/withzeros/${filename}.nonzeros.$ext -b $umapk50 -sorted | \
+    awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > bedgraphs/mapHigh/${filename}.0.8.$ext
+
+    echo "scoring windows"
+    bedmap --echo --wmean --delim "\t" $windowS bedgraphs/mapHigh/${filename}.0.8.$ext | \
+    awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | \
+    awk -F "\t" -v OFS="\t" '{ print "lncRNA",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > bedgraphs/${filename}.window${window}.MANE.wmean.name.score ;
+
+    echo "done"
+done
+rm -r bedgraphs/withzeros
+rm -r bedgraphs/mapHigh
+mkdir bedgraphs/lncRNA_score
+mv bedgraphs/*.score bedgraphs/lncRNA_score/
+
+
+
+
+
