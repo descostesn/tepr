@@ -73,6 +73,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
     scorelist <- mcmapply(function(bwpath, expname, grintervals) {
         message("\t Retrieving values for ", expname)
         meanvec <- retrievemeanfrombw(grintervals, bwpath)
+        return(meanvec)
     }, expdf$path, expdf$name, MoreArgs = list(grintervals), SIMPLIFY = FALSE,
         mc.cores = nbcpu)
 
