@@ -55,7 +55,7 @@ makewindowsbedtools <- function(expgr, binsize) {
     return(res)
 }
 
-excludegrlist <- function(expgr, removegr, invertres = TRUE,
+excludeorkeepgrlist <- function(expgr, removegr, invertres = TRUE,
     ignorestrand = TRUE) {
     ## command retrieved with HelloRanges:
     # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
@@ -141,8 +141,8 @@ lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
-protcodnoblackgr <- excludegrlist(protcodgr, blacklistgr)
-lncrnanoblackgr <- excludegrlist(lncrnagr, blacklistgr)
+protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
+lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
@@ -154,5 +154,5 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
 ## GRanges list.
 maptrack <- read.delim(maptrackpath, header = FALSE)
 #maptrackgr <- bedtogr(maptrack)
-#protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
-#lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
+#protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr)
+#lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr)
