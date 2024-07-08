@@ -9,6 +9,7 @@ library("AnnotationHub")
 library("GenomeInfoDb")
 library("GenomicRanges")
 library("rtracklayer")
+library("parallel")
 #library("excluderanges")
 
 
@@ -33,7 +34,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.M
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-
+nbcpu <- 15
 
 
 ##################
@@ -217,7 +218,17 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
     return(meanvec)
 }
 
-buildscoreforintervals <- function(grintervals, expdf) {}
+buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
+
+    message("Retrieving values for ", grname)
+
+    scorelist <- mcmapply(function(bwpath, expname, grintervals) {
+        message("\t Retrieving values for ", expname)
+        meanvec <- retrievemeanfrombw(grintervals, bwpath)
+    }, expdf$path, expdf$name, MoreArgs = list(grintervals), mc.cores = nbcpu)
+    scoremat <- do.call("cbind", scorelist)
+    
+}
 
 
 
