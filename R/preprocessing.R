@@ -154,5 +154,3 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
 #protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
 #lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
 
-
-protcodwindowsnomap <- lapply(protcodwindows, excludegrlist, maptrackgr)
