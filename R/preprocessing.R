@@ -154,5 +154,7 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
 ## GRanges list.
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack)
-protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr)
-#lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr)
+protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
+    removefrom = FALSE)
+lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
+    removefrom = FALSE)
