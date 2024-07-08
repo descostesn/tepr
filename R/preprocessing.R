@@ -166,13 +166,56 @@ protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
 lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
 
-!!!!
+!!!!!!!!!!!!!!!!!!!!!
+
+
 ## Retrieving values from bigwig files
 exptab <- read.csv(exptabpath, header = TRUE)
 
 
-test <- rtracklayer::import.bw(exptab$path[1], which = unlist(protcodwindows))
-rtracklayer::summary(refbw, type = "mean")
+
+rangeselect <- rtracklayer::BigWigSelection(protcodwindows, character())
+bwval <- rtracklayer::import.bw(exptab$path[1], selection = rangeselect, as = "NumericList")
+if (!isTRUE(all.equal(length(bwval), length(protcodwindows))))
+    stop("The number of intervals retrieved from the bigwig is not correct")
+meanvec <- sapply(bwval, mean)
+
+
+!! to do outside the loop
+df <- as.data.frame(protcodwindows)
+df <- cbind(df, score = sapply(bwval, mean))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rangeselect <- rtracklayer::BigWigSelection(protcodwindows[1:4,], character())
+test <- rtracklayer::import.bw(exptab$path[1], selection = rangeselect)
+rtracklayer::summary(test, type = "mean")
 
 summary(ranges = as(seqinfo(object), "GenomicRanges"), size = 1L, type = c("mean", "min",
 "max", "coverage", "sd"), defaultValue = NA_real_),as = c("GRangesList", "RleList",
