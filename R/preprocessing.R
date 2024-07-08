@@ -41,6 +41,49 @@ nbcpu <- 15
 #FUNCTIONS
 ##################
 
+retrievemeanfrombw <- function(grintervals, bwpath) {
+    message("Retrieving bw values")
+    rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
+    bwval <- rtracklayer::import.bw(bwpath,
+        selection = rangeselect, as = "NumericList")
+
+    if (!isTRUE(all.equal(length(bwval), length(grintervals))))
+        stop("The number of intervals retrieved from the bigwig is not correct")
+    if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
+        message("\t Re-ordering list")
+        idx <- match(names(grintervals), names(bwval))
+        idxna <- which(is.na(idx))
+        lna <- length(idxna)
+        if (!isTRUE(all.equal(lna, 0)))
+            stop("Problem with matching names.")
+        bwval <- bwval[idx]
+    }
+
+    message("\t Computing mean values for each interval")
+    meanvec <- sapply(bwval, mean)
+    rm(bwval)
+    invisible(gc())
+    return(meanvec)
+}
+
+buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
+
+    message("Retrieving values for ", grname)
+
+    scorelist <- mcmapply(function(bwpath, expname, grintervals) {
+        message("\t Retrieving values for ", expname)
+        meanvec <- retrievemeanfrombw(grintervals, bwpath)
+    }, expdf$path, expdf$name, MoreArgs = list(grintervals), mc.cores = nbcpu)
+
+    scoremat <- do.call("cbind", scorelist)
+    colnames(scoremat) <- expdf$name
+    dfintervals <- as.data.frame(grintervals)
+    if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
+        stop("Differing number of rows for score matrix and annotations in ",
+            "function buildscoreforintervals")
+    df <- cbind(dfintervals, scoremat)
+    return(df)
+}
 
 makewindowsbedtools <- function(expgr, binsize) {
 
@@ -167,121 +210,8 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
 protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
 lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
-
-!!!!!!!!!!!!!!!!!!!!!
-
-
 ## Retrieving values from bigwig files
 exptab <- read.csv(exptabpath, header = TRUE)
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CORE CODE
-rangeselect <- rtracklayer::BigWigSelection(protcodwindows, character())
-bwval <- rtracklayer::import.bw(exptab$path[1], selection = rangeselect, as = "NumericList")
-if (!isTRUE(all.equal(length(bwval), length(protcodwindows))))
-    stop("The number of intervals retrieved from the bigwig is not correct")
-meanvec <- sapply(bwval, mean)
-
-
-!! to do outside the loop
-df <- as.data.frame(protcodwindows)
-df <- cbind(df, score = sapply(bwval, mean))
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BUILDING FUNCTIONS
-
-
-retrievemeanfrombw <- function(grintervals, bwpath) {
-    message("Retrieving bw values")
-    rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
-    bwval <- rtracklayer::import.bw(bwpath,
-        selection = rangeselect, as = "NumericList")
-
-    if (!isTRUE(all.equal(length(bwval), length(grintervals))))
-        stop("The number of intervals retrieved from the bigwig is not correct")
-    if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
-        message("\t Re-ordering list")
-        idx <- match(names(grintervals), names(bwval))
-        idxna <- which(is.na(idx))
-        lna <- length(idxna)
-        if (!isTRUE(all.equal(lna, 0)))
-            stop("Problem with matching names.")
-        bwval <- bwval[idx]
-    }
-
-    message("\t Computing mean values for each interval")
-    meanvec <- sapply(bwval, mean)
-    rm(bwval)
-    invisible(gc())
-    return(meanvec)
-}
-
-buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
-
-    message("Retrieving values for ", grname)
-
-    scorelist <- mcmapply(function(bwpath, expname, grintervals) {
-        message("\t Retrieving values for ", expname)
-        meanvec <- retrievemeanfrombw(grintervals, bwpath)
-    }, expdf$path, expdf$name, MoreArgs = list(grintervals), mc.cores = nbcpu)
-
-    scoremat <- do.call("cbind", scorelist)
-    colnames(scoremat) <- expdf$name
-    dfintervals <- as.data.frame(grintervals)
-    if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
-        stop("Differing number of rows for score matrix and annotations in ",
-            "function buildscoreforintervals")
-    df <- cbind(dfintervals, scoremat)
-    return(df)
-}
-
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu)
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-rangeselect <- rtracklayer::BigWigSelection(protcodwindows[1:4,], character())
-test <- rtracklayer::import.bw(exptab$path[1], selection = rangeselect)
-rtracklayer::summary(test, type = "mean")
-
-summary(ranges = as(seqinfo(object), "GenomicRanges"), size = 1L, type = c("mean", "min",
-"max", "coverage", "sd"), defaultValue = NA_real_),as = c("GRangesList", "RleList",
-"matrix"), ...: Aggregates the intervals in the file that fall into ranges, which should be
-something coercible to GRanges. The aggregation essentially compresses each sequence to a
-length of size. The algorithm is specified by type; available algorithms include the mean,
-min, max, coverage (percent sequence covered by at least one feature), and standard deviation.
-When a window contains no features, defaultValue is assumed. The result type depends on
-as, and can be a GRangesList, RleList or matrix, where the number elements (or rows) is equal
-to the length of ranges. For as="matrix", there must be one unique value of size, which
-is equal to the number of columns in the result. The as="matrix" case is the only one that
-supports a size greater than the width of the corresponding element in ranges, where values
-are interpolated to yield the matrix result. The driving use case for this is visualization of
-coverage when the screen space is small compared to the viewed portion of the sequence. The
-operation is very fast, as it leverages cached multi-level summaries present in every BigWig
-file.
-If a summary statistic is not available / cannot be computed for a given range a warning is
-thrown and the defaultValue NA_real_ is returned.
