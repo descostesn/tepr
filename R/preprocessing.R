@@ -217,7 +217,7 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
     return(meanvec)
 }
 
-
+buildscoreforintervals <- function(grintervals, expdf) {}
 
 
 
