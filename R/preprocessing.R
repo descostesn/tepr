@@ -23,6 +23,13 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotat
 ## print(query_data) # nolint
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
 outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
+## Mappability tracks in bed format can be downloaded from https://bismap.hoffmanlab.org/ # nolint
+## Scroll down to the table containing pre-computed tracks for hg38, hg19, mm10,
+## and mm9 in bins of 24, 36, 50, and 100 bp in single- or multireads.
+## The bed file below is for hg38 unique reads of 50 bp.
+maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
+
+
 
 
 ##################
@@ -118,21 +125,7 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeblacklist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeblacklist(lncrnagr, blacklistgr)
 
+## Exclude low mappability regions
+maptrack <- read.delim(maptrackpath, header = FALSE)
+maptrackgr <- bedtogr(maptrack)
 
-
-!!!!!!!!!!!!!!!!!!!!!!!
- !! bedtools intersect -a stdin -b $blacklist -v
- !! bedtools makewindows -n $window -i srcwinnum -b stdin
-
-
-ANNOTATION="/Users/victor/Documents/DATA/annotation/V43/MANE_Select.protein_coding.bed"
-WORKING="/Users/victor/Documents/DATA/annotation/V43"
-blacklist="/Users/victor/Documents/DATA/Repeatmasker/blacklist/hg38-blacklist.v2.sorted.bed"
-window=200
-
-mkdir $WORKING/makewindow
-awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | 
-bedtools intersect -a stdin -b $blacklist -v  | 
-bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed  
-
-echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed 
