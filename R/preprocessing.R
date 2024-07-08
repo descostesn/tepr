@@ -8,6 +8,7 @@
 library("AnnotationHub")
 library("GenomeInfoDb")
 library("GenomicRanges")
+library("parallel")
 #library("excluderanges")
 
 
@@ -32,7 +33,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.M
 windsize <- 200
 ## Table of experiments - contains the columns "condition,replicate,strand,path"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-
+nbcpu <- 15
 
 
 
@@ -41,7 +42,7 @@ exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 ##################
 
 
-makewindowsbedtools <- function(expgr, binsize) {
+makewindowsbedtools <- function(expgr, binsize, nbcpu = 1) {
 
     ## Filtering out intervals smaller than binsize
     idxsmall <- which(GenomicRanges::width(expgr) < binsize)
@@ -57,9 +58,9 @@ makewindowsbedtools <- function(expgr, binsize) {
     res <- GenomicRanges::tile(expgr, n = binsize)
 
     ## Making names of each element of the list unique
-    res <- lapply(res, function(currentgr) {
+    res <- mclapply(res, function(currentgr) {
         names(currentgr) <- make.unique(names(currentgr), sep = "_frame")
-    })
+    }, mc.cores = nbcpu)
 
     return(unlist(res))
 }
@@ -165,7 +166,7 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
-protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
+protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize, nbcpu)
 lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
 
