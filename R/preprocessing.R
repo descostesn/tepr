@@ -37,6 +37,24 @@ windsize <- 200
 #FUNCTIONS
 ##################
 
+
+makewindowsbedtools <- function(expgr, binsize) {
+
+    ## Filtering out intervals smaller than binsize
+    idxsmall <- which(GenomicRanges::width(expgr) < binsize)
+    lsmall <- length(idxsmall)
+    if (!isTRUE(all.equal(lsmall, 0))) {
+        message("Excluding ", lsmall, "/", length(expgr), " annotations that ",
+        "are too short.")
+        expgr <- expgr[-idxsmall]
+    }
+    ## command retrieved with HelloRanges:
+    ## bedtools_makewindows("-n 200 -b stdin.bed")
+    ## Note: In R, bedtools does not have the "-i srcwinnum" option
+    res <- GenomicRanges::tile(expgr, width = binsize)
+    return(res)
+}
+
 excludegrlist <- function(expgr, removegr) {
     ## command retrieved with HelloRanges:
     # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
@@ -125,15 +143,13 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludegrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludegrlist(lncrnagr, blacklistgr)
 
-## Exclude low mappability regions
-maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack)
-protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
-lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
-
 ## Make windows of windsize for each annotation
-## command retrieved with HelloRanges:
-## bedtools_makewindows("-n 200 -b stdin.bed")
-## Note: In R, bedtools does not have the "-i srcwinnum" option
-protcodwindows <- GenomicRanges::tile(protcodnoblacknomapgr, windsize)
-lncrnawindows <- GenomicRanges::tile(lncrnanoblacknomapgr, windsize)
+## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
+protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
+lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
+
+## Exclude low mappability regions
+#maptrack <- read.delim(maptrackpath, header = FALSE)
+#maptrackgr <- bedtogr(maptrack)
+#protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
+#lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
