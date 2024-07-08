@@ -36,10 +36,10 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.M
 #FUNCTIONS
 ##################
 
-excludeblacklist <- function(expgr, blackgr) {
+excludegrlist <- function(expgr, removegr) {
     ## command retrieved with HelloRanges:
     # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
-    resgr <- GenomicRanges::subsetByOverlaps(protcodgr, blacklistgr,
+    resgr <- GenomicRanges::subsetByOverlaps(protcodgr, removegr,
         invert = TRUE, ignore.strand = TRUE)
     return(resgr)
 }
@@ -122,10 +122,13 @@ lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
-protcodnoblackgr <- excludeblacklist(protcodgr, blacklistgr)
-lncrnanoblackgr <- excludeblacklist(lncrnagr, blacklistgr)
+protcodnoblackgr <- excludegrlist(protcodgr, blacklistgr)
+lncrnanoblackgr <- excludegrlist(lncrnagr, blacklistgr)
 
 ## Exclude low mappability regions
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack)
+protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
+lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
+
 
