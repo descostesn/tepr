@@ -53,16 +53,14 @@ makewindowsbedtools <- function(expgr, binsize, nbcpu = 1) {
         expgr <- expgr[-idxsmall]
     }
     ## command retrieved with HelloRanges:
-    ## bedtools_makewindows("-n 200 -b stdin.bed")
+    ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
     ## Note: In R, bedtools does not have the "-i srcwinnum" option
     res <- GenomicRanges::tile(expgr, n = binsize)
+    res <- unlist(res, use.names = FALSE)
 
     ## Making names of each element of the list unique
-    res <- mclapply(res, function(currentgr) {
-        names(currentgr) <- make.unique(names(currentgr), sep = "_frame")
-    }, mc.cores = nbcpu)
-
-    return(unlist(res))
+    names(res) <- make.unique(names(res), sep = "_frame")
+    return(res)
 }
 
 excludeorkeepgrlist <- function(expgr, removegr, removefrom = TRUE,
