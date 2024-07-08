@@ -226,11 +226,19 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
         message("\t Retrieving values for ", expname)
         meanvec <- retrievemeanfrombw(grintervals, bwpath)
     }, expdf$path, expdf$name, MoreArgs = list(grintervals), mc.cores = nbcpu)
+
     scoremat <- do.call("cbind", scorelist)
-    
+    colnames(scoremat) <- expdf$name
+    dfintervals <- as.data.frame(grintervals)
+    if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
+        stop("Differing number of rows for score matrix and annotations in ",
+            "function buildscoreforintervals")
+    df <- cbind(dfintervals, scoremat)
+    return(df)
 }
 
-
+scoreprotcod <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
+    nbcpu)
 
 
 
