@@ -8,6 +8,7 @@
 library("AnnotationHub")
 library("GenomeInfoDb")
 library("GenomicRanges")
+library("rtracklayer")
 #library("excluderanges")
 
 
@@ -30,7 +31,7 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
 ## Size of the window to extract values
 windsize <- 200
-## Table of experiments - contains the columns "condition,replicate,strand,path"
+## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 
 
@@ -173,7 +174,7 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 exptab <- read.csv(exptabpath, header = TRUE)
 
 
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CORE CODE
 rangeselect <- rtracklayer::BigWigSelection(protcodwindows, character())
 bwval <- rtracklayer::import.bw(exptab$path[1], selection = rangeselect, as = "NumericList")
 if (!isTRUE(all.equal(length(bwval), length(protcodwindows))))
@@ -184,7 +185,37 @@ meanvec <- sapply(bwval, mean)
 !! to do outside the loop
 df <- as.data.frame(protcodwindows)
 df <- cbind(df, score = sapply(bwval, mean))
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BUILDING FUNCTIONS
+
+
+retrievemeanfrombw <- function(grintervals, bwpath) {
+    message("Retrieving bw values")
+    rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
+    bwval <- rtracklayer::import.bw(bwpath,
+        selection = rangeselect, as = "NumericList")
+
+    if (!isTRUE(all.equal(length(bwval), length(grintervals))))
+        stop("The number of intervals retrieved from the bigwig is not correct")
+    if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
+        message("\t Re-ordering list")
+        idx <- match(names(grintervals), names(bwval))
+        idxna <- which(is.na(idx))
+        lna <- length(idxna)
+        if (!isTRUE(all.equal(lna, 0)))
+            stop("Problem with matching names.")
+        bwval <- bwval[idx]
+    }
+
+    message("\t Computing mean values for each interval")
+    meanvec <- sapply(bwval, mean)
+    rm(bwval)
+    invisible(gc())
+    return(meanvec)
+}
 
 
 
