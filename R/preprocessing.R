@@ -30,8 +30,10 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
 ## Size of the window to extract values
 windsize <- 200
-## Table of experiments
-exptabpath <- ""
+## Table of experiments - contains the columns "condition,replicate,strand,path"
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
+
+
 
 
 ##################
@@ -53,7 +55,13 @@ makewindowsbedtools <- function(expgr, binsize) {
     ## bedtools_makewindows("-n 200 -b stdin.bed")
     ## Note: In R, bedtools does not have the "-i srcwinnum" option
     res <- GenomicRanges::tile(expgr, n = binsize)
-    return(res)
+
+    ## Making names of each element of the list unique
+    res <- lapply(res, function(currentgr) {
+        names(currentgr) <- make.unique(names(currentgr), sep = "_frame")
+    })
+
+    return(unlist(res))
 }
 
 excludeorkeepgrlist <- function(expgr, removegr, removefrom = TRUE,
@@ -157,7 +165,32 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
-protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
-lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
+protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
+lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
+
+!!!!
 ## Retrieving values from bigwig files
+exptab <- read.csv(exptabpath, header = TRUE)
+
+
+test <- rtracklayer::import.bw(exptab$path[1], which = unlist(protcodwindows))
+rtracklayer::summary(refbw, type = "mean")
+
+summary(ranges = as(seqinfo(object), "GenomicRanges"), size = 1L, type = c("mean", "min",
+"max", "coverage", "sd"), defaultValue = NA_real_),as = c("GRangesList", "RleList",
+"matrix"), ...: Aggregates the intervals in the file that fall into ranges, which should be
+something coercible to GRanges. The aggregation essentially compresses each sequence to a
+length of size. The algorithm is specified by type; available algorithms include the mean,
+min, max, coverage (percent sequence covered by at least one feature), and standard deviation.
+When a window contains no features, defaultValue is assumed. The result type depends on
+as, and can be a GRangesList, RleList or matrix, where the number elements (or rows) is equal
+to the length of ranges. For as="matrix", there must be one unique value of size, which
+is equal to the number of columns in the result. The as="matrix" case is the only one that
+supports a size greater than the width of the corresponding element in ranges, where values
+are interpolated to yield the matrix result. The driving use case for this is visualization of
+coverage when the screen space is small compared to the viewed portion of the sequence. The
+operation is very fast, as it leverages cached multi-level summaries present in every BigWig
+file.
+If a summary statistic is not available / cannot be computed for a given range a warning is
+thrown and the defaultValue NA_real_ is returned.
