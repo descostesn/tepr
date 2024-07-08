@@ -51,7 +51,7 @@ makewindowsbedtools <- function(expgr, binsize) {
     ## command retrieved with HelloRanges:
     ## bedtools_makewindows("-n 200 -b stdin.bed")
     ## Note: In R, bedtools does not have the "-i srcwinnum" option
-    res <- GenomicRanges::tile(expgr, binsize)
+    res <- GenomicRanges::tile(expgr, n = binsize)
     return(res)
 }
 
@@ -153,4 +153,3 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
 #maptrackgr <- bedtogr(maptrack)
 #protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
 #lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
-
