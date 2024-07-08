@@ -30,7 +30,8 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
 ## Size of the window to extract values
 windsize <- 200
-
+## Table of experiments
+exptabpath <- ""
 
 
 ##################
@@ -158,3 +159,5 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
 protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
+
+## Retrieving values from bigwig files
