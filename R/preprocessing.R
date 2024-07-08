@@ -83,6 +83,8 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
     if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
         stop("Differing number of rows for score matrix and annotations in ",
             "function buildscoreforintervals")
+    if (!isTRUE(all.equal(rownames(scoremat), rownames(dfintervals))))
+        stop("The rows of scoremat and dfintervals are not in the same order")
     df <- cbind(dfintervals, scoremat)
     return(df)
 }
