@@ -237,8 +237,9 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
     return(df)
 }
 
-scoreprotcod <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
+protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu)
+lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
 
 
 
