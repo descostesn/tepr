@@ -40,7 +40,7 @@ windsize <- 200
 excludegrlist <- function(expgr, removegr) {
     ## command retrieved with HelloRanges:
     # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
-    resgr <- GenomicRanges::subsetByOverlaps(protcodgr, removegr,
+    resgr <- IRanges::subsetByOverlaps(expgr, removegr,
         invert = TRUE, ignore.strand = TRUE)
     return(resgr)
 }
