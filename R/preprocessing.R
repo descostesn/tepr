@@ -16,7 +16,7 @@ library("GenomicRanges")
 # PARAMETERS
 ##################
 
-gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/gencode.v43.basic.annotation.gtf" # nolint
+gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
 ## Note: For a complete list of blacklist names see
 ## ah <- AnnotationHub() # nolint
 ## query_data <- subset(ah, preparerclass == "excluderanges") # nolint
