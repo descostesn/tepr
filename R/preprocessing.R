@@ -144,17 +144,17 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
-## Make windows of windsize for each annotation
-## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
-protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
-lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
-
-## Exclude low mappability regions i.e. removing the intervals with a 
-## mappability value < 0.8 from maptrack and then subtracting to the above
-## GRanges list.
+## Exclude low mappability
+## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
+## used has only 1 as mapping scores. See parameters.
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack)
 protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
     removefrom = FALSE)
 lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
+
+## Make windows of windsize for each annotation
+## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
+protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
+lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
