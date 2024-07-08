@@ -55,11 +55,12 @@ makewindowsbedtools <- function(expgr, binsize) {
     return(res)
 }
 
-excludegrlist <- function(expgr, removegr) {
+excludegrlist <- function(expgr, removegr, invertres = TRUE,
+    ignorestrand = TRUE) {
     ## command retrieved with HelloRanges:
     # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
     resgr <- IRanges::subsetByOverlaps(expgr, removegr,
-        invert = TRUE, ignore.strand = TRUE)
+        invert = invertres, ignore.strand = ignorestrand)
     return(resgr)
 }
 
@@ -148,8 +149,10 @@ lncrnanoblackgr <- excludegrlist(lncrnagr, blacklistgr)
 protcodwindows <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindows <- makewindowsbedtools(lncrnanoblackgr, windsize)
 
-## Exclude low mappability regions
-#maptrack <- read.delim(maptrackpath, header = FALSE)
+## Exclude low mappability regions i.e. removing the intervals with a 
+## mappability value < 0.8 from maptrack and then subtracting to the above
+## GRanges list.
+maptrack <- read.delim(maptrackpath, header = FALSE)
 #maptrackgr <- bedtogr(maptrack)
 #protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
 #lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
