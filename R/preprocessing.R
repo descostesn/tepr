@@ -28,7 +28,8 @@ outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 ## and mm9 in bins of 24, 36, 50, and 100 bp in single- or multireads.
 ## The bed file below is for hg38 unique reads of 50 bp.
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
-
+## Size of the window to extract values
+windsize <- 200
 
 
 
@@ -52,7 +53,6 @@ bedtogr <- function(currentbed) {
         strand = currentbed[, 6])
     return(grres)
 }
-
 
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
@@ -131,4 +131,9 @@ maptrackgr <- bedtogr(maptrack)
 protcodnoblacknomapgr <- excludegrlist(protcodnoblackgr, maptrackgr)
 lncrnanoblacknomapgr <- excludegrlist(lncrnanoblackgr, maptrackgr)
 
-
+## Make windows of windsize for each annotation
+## command retrieved with HelloRanges:
+## bedtools_makewindows("-n 200 -b stdin.bed")
+## Note: In R, bedtools does not have the "-i srcwinnum" option
+protcodwindows <- GenomicRanges::tile(protcodnoblacknomapgr, windsize)
+lncrnawindows <- GenomicRanges::tile(lncrnanoblacknomapgr, windsize)
