@@ -207,8 +207,15 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
+
+
+
 ## ------------------------------------------------------------------
 ## REMOVE
+
+## Compare the bed files before removing black lists
+protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
+lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
 
 ## Exclude black list with the file that was used in bash
 !!
@@ -218,13 +225,14 @@ protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
 
 ## Compare with bash files
-protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
-lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
 protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
 lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
 
 ## End REMOVE
 ## ------------------------------------------------------------------
+
+
+
 
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
