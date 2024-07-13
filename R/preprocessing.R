@@ -214,8 +214,9 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## REMOVE
 
 ## Compare the bed files before removing black lists
-protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
-lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
+protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
+lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
+
 
 ## Exclude black list with the file that was used in bash
 !!
