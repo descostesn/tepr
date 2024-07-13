@@ -212,31 +212,6 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
-buildstr <- function(gencode) {
-    trsidvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",2))," "),"[",3))
-symbolvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",4))," "),"[",3))
-gencodestr <- paste(gencode$V1, gencode$V4, gencode$V5, trsidvec, symbolvec, gencode$V7,sep="-")
-return(gencodestr)
-}
-
-tofind <- "chrX-104072887-104076236-ENST00000598087.4-TMSB15B--"
-strcomp <- buildstr(gencode)
-grep(tofind, strcomp)
-gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/temp1.gtf", header=F)
-strcomp <- buildstr(gencodestrman)
-grep(tofind, strcomp)
-gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/tmp2.bed", header=F)
-strcomp <- paste(gencodestrman$V1, gencodestrman$V2, gencodestrman$V3, gsub("_","-", gencodestrman$V4), sep="-")
-grep(tofind, strcomp)
-protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
-strcomp <- paste(protcodbedsh$V1, protcodbedsh$V2, protcodbedsh$V3, protcodbedsh$V4, protcodbedsh$V5, protcodbedsh$V6, sep="-")
-grep(tofind, strcomp)
-strcomp <- buildstr(gencodeprotcod)
-grep(tofind, strcomp)
-strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
-grep(tofind, strcomp)
-
-
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
@@ -264,6 +239,35 @@ lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
 ## Compare with bash files
 protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
 lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+
+
+
+################## DECIPHERING  CODE
+# buildstr <- function(gencode) {
+#     trsidvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",2))," "),"[",3))
+# symbolvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",4))," "),"[",3))
+# gencodestr <- paste(gencode$V1, gencode$V4, gencode$V5, trsidvec, symbolvec, gencode$V7,sep="-")
+# return(gencodestr)
+# }
+# tofind <- "chrX-104072887-104076236-ENST00000598087.4-TMSB15B--"
+# strcomp <- buildstr(gencode)
+# grep(tofind, strcomp)
+# gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/temp1.gtf", header=F)
+# strcomp <- buildstr(gencodestrman)
+# grep(tofind, strcomp)
+# gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/tmp2.bed", header=F)
+# strcomp <- paste(gencodestrman$V1, gencodestrman$V2, gencodestrman$V3, gsub("_","-", gencodestrman$V4), sep="-")
+# grep(tofind, strcomp)
+# protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
+# strcomp <- paste(protcodbedsh$V1, protcodbedsh$V2, protcodbedsh$V3, protcodbedsh$V4, protcodbedsh$V5, protcodbedsh$V6, sep="-")
+# grep(tofind, strcomp)
+# strcomp <- buildstr(gencodeprotcod)
+# grep(tofind, strcomp)
+# strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
+# grep(tofind, strcomp)
+
+
+
 
 ## End REMOVE
 ## ------------------------------------------------------------------
