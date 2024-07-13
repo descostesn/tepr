@@ -44,7 +44,6 @@ lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotation
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 
 
-
 ##################
 #FUNCTIONS
 ##################
@@ -213,22 +212,47 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
+buildstr <- function(gencode) {
+    trsidvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",2))," "),"[",3))
+symbolvec <-unlist(lapply(strsplit(unlist(lapply(strsplit(gencode$V9, ";"),"[",4))," "),"[",3))
+gencodestr <- paste(gencode$V1, gencode$V4, gencode$V5, trsidvec, symbolvec, gencode$V7,sep="-")
+return(gencodestr)
+}
+
+tofind <- "chrX-104072887-104076236-ENST00000598087.4-TMSB15B--"
+strcomp <- buildstr(gencode)
+grep(tofind, strcomp)
+gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/temp1.gtf", header=F)
+strcomp <- buildstr(gencodestrman)
+grep(tofind, strcomp)
+gencodestrman <- read.delim("/g/romebioinfo/Projects/tepr/downloads/annotations/tmp2.bed", header=F)
+strcomp <- paste(gencodestrman$V1, gencodestrman$V2, gencodestrman$V3, gsub("_","-", gencodestrman$V4), sep="-")
+grep(tofind, strcomp)
+protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
+strcomp <- paste(protcodbedsh$V1, protcodbedsh$V2, protcodbedsh$V3, protcodbedsh$V4, protcodbedsh$V5, protcodbedsh$V6, sep="-")
+grep(tofind, strcomp)
+strcomp <- buildstr(gencodeprotcod)
+grep(tofind, strcomp)
+strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
+grep(tofind, strcomp)
+
+
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
 
-bedstr <- sapply(seq_len(nrow(protcodbed)), function(i) paste0(protcodbed[i,], collapse = "-")) # nolint
-bedstrsh <- sapply(seq_len(nrow(protcodbedsh)), function(i) paste0(protcodbedsh[i,], collapse = "-")) # nolint
+bedstr <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-") # nolint
+bedstrsh <- paste(protcodbedsh$V1, protcodbedsh$V2, protcodbedsh$V3, protcodbedsh$V4, protcodbedsh$V5, protcodbedsh$V6, sep="-") # nolint
 idx <- match(bedstr, bedstrsh)
 idxna <- which(is.na(idx))
 lna <- length(idxna)
 if (!isTRUE(all.equal(lna, 0)))
     stop("The gene symbols-chrom are different")
 protcodbedsh <- protcodbedsh[idx, ]
-sapply(seq_len(5), function(i) {
+invisible(sapply(seq_len(5), function(i) {
     if (!isTRUE(all.equal(protcodbed[, i], protcodbedsh[, i])))
         stop("Difference in col ", i)
-})
+}))
 
 ## Exclude black list with the file that was used in bash
 !!
