@@ -37,8 +37,8 @@ exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 nbcpu <- 15
 
 ## Files obtained with bash
-proteincodingbed <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
-
+proteincodingbedbashpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
+lncrnabedbashpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
 
 ##################
 #FUNCTIONS
