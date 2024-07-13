@@ -37,11 +37,11 @@ exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 nbcpu <- 15
 
 ## Files obtained with bash
-protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
-lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
-protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
-lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
-
+protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed" # nolint
+lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed" # nolint
+protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed" # nolint
+lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed" # nolint
+blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 
 ##################
 #FUNCTIONS
@@ -211,13 +211,14 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
 
-## REMOVE
+
 ## Compare with bash files
 protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
 lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
 protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
 lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
 
+## End REMOVE
 ## ------------------------------------------------------------------
 
 ## Exclude low mappability
