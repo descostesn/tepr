@@ -3,13 +3,13 @@
 cd /g/romebioinfo/Projects/tepr/downloads/annotations
 
 ## Create bed of protein coding genes from gencode file
-grep -w transcript gencode.v43.basic.annotation.gtf | grep -w MANE_Select > MANE_Select.protein_coding.gtf
+grep -w transcript gencode.v43.basic.annotation.gtf | grep -w MANE_Select > temp1.gtf
 
 awk 'OFS="\t" {print $0}' MANE_Select.protein_coding.gtf | tr -d '";' | \
 sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | \
 awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > MANE_Select.protein_coding.bed
 
-rm MANE_Select.protein_coding.gtf
+rm tmp1.gtf 
 
 ## Create bed of lncRNA genes from gencode file
 grep -w transcript gencode.v43.basic.annotation.gtf | grep -w lncRNA | \
@@ -28,6 +28,16 @@ rm Ensembl_canonical_TSL123.lncRNA.gtf
 ## NOTE: Getting warning messages -
 ## Interval chr**:**-** is smaller than the number of windows requested. Skipping.
 mkdir makewindow
+
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' MANE_Select.protein_coding.bed | \
+bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v > tmp2.bed
+
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' MANE_Select.protein_coding.bed | \
+bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v  | \
+bedtools makewindows -n 200 -i srcwinnum -b stdin > tmp3.bed  
+
+rm tmp2.bed tmp3.bed
+
 
 awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' MANE_Select.protein_coding.bed | \
 bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v  | \
