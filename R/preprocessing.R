@@ -217,6 +217,18 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
 
+bedstr <- sapply(seq_len(nrow(protcodbed)), function(i) paste0(protcodbed[i,], collapse = "-")) # nolint
+bedstrsh <- sapply(seq_len(nrow(protcodbedsh)), function(i) paste0(protcodbedsh[i,], collapse = "-")) # nolint
+idx <- match(bedstr, bedstrsh)
+idxna <- which(is.na(idx))
+lna <- length(idxna)
+if (!isTRUE(all.equal(lna, 0)))
+    stop("The gene symbols-chrom are different")
+protcodbedsh <- protcodbedsh[idx, ]
+sapply(seq_len(5), function(i) {
+    if (!isTRUE(all.equal(protcodbed[, i], protcodbedsh[, i])))
+        stop("Difference in col ", i)
+})
 
 ## Exclude black list with the file that was used in bash
 !!
