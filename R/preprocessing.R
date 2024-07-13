@@ -212,22 +212,24 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
+verifybed <- function(bed1, bed2) {
+    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], bed1[, 6], sep="-") # nolint
+    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], bed2[, 6], sep="-") # nolint
+    idx <- match(bedstr1, bedstr2)
+    idxna <- which(is.na(idx))
+    lna <- length(idxna)
+    if (!isTRUE(all.equal(lna, 0)))
+        stop("The gene symbols-chrom are different")
+    bed2 <- bed2[idx, ]
+    invisible(sapply(seq_len(5), function(i) {
+        if (!isTRUE(all.equal(bed1[, i], bed2[, i])))
+            stop("Difference in col ", i)
+    }))
+}
+
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
-
-bedstr <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-") # nolint
-bedstrsh <- paste(protcodbedsh$V1, protcodbedsh$V2, protcodbedsh$V3, protcodbedsh$V4, protcodbedsh$V5, protcodbedsh$V6, sep="-") # nolint
-idx <- match(bedstr, bedstrsh)
-idxna <- which(is.na(idx))
-lna <- length(idxna)
-if (!isTRUE(all.equal(lna, 0)))
-    stop("The gene symbols-chrom are different")
-protcodbedsh <- protcodbedsh[idx, ]
-invisible(sapply(seq_len(5), function(i) {
-    if (!isTRUE(all.equal(protcodbed[, i], protcodbedsh[, i])))
-        stop("Difference in col ", i)
-}))
 
 ## Exclude black list with the file that was used in bash
 !!
