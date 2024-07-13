@@ -39,8 +39,8 @@ nbcpu <- 15
 ## Files obtained with bash
 protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
 lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed"
-protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/v43.MANE_protein.window200.bed"
-lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
+lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
 
 
 ##################
