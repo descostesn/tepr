@@ -43,6 +43,8 @@ protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotatio
 lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed" # nolint
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 
+
+
 ##################
 #FUNCTIONS
 ##################
@@ -207,10 +209,13 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## ------------------------------------------------------------------
 ## REMOVE
+
+## Exclude black list with the file that was used in bash
+!!
+
 ## Temporary variables for comparison with files obtained with bash
 protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
-
 
 ## Compare with bash files
 protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
