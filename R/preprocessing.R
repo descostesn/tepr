@@ -36,6 +36,9 @@ windsize <- 200
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 nbcpu <- 15
 
+## Files obtained with bash
+proteincodingbed <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed"
+
 
 ##################
 #FUNCTIONS
