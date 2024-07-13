@@ -205,6 +205,11 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
+## REMOVE
+## Temporary variables for comparison with files obtained with bash
+protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
+lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
+
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
 ## used has only 1 as mapping scores. See parameters.
