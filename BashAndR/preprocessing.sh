@@ -45,10 +45,14 @@ bedtools makewindows -n 200 -i srcwinnum -b stdin | \
 sort -k1,1 -k2,2n > makewindow/v43.MANE_protein.window200.bed  
 
 awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' Ensembl_canonical_TSL123.lncRNA.bed | \
+bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v > tmp4.bed
+
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' Ensembl_canonical_TSL123.lncRNA.bed | \
 bedtools intersect -a stdin -b hg38-blacklist.v2.bed -v  | \
 bedtools makewindows -n 200 -i srcwinnum -b stdin | \
 sort -k1,1 -k2,2n > makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed 
 
+rm tmp4.bed
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## Associating scores to bed
