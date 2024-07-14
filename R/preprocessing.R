@@ -42,6 +42,8 @@ lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_c
 protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed" # nolint
 lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed" # nolint
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
+protcodnoblackfromshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/tmp2.bed" # nolint
+lncrnanoblackfromshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/tmp4.bed" # nolint
 
 
 ##################
@@ -234,7 +236,17 @@ verifybed(protcodbed, protcodbedsh)
 verifybed(lncrnabed, lncrnabedsh)
 
 ## Exclude black list with the file that was used in bash
+blasklistsh <- read.delim(blacklistshpath, header = FALSE)
+blasklistshgr <- bedtogr(blacklistsh)
+protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
+lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
+protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
+lncrnanoblackfromsh <- read.delim(lncrnanoblackfromshpath, header = FALSE)
+verifybed(protcodnoblackshgr, protcodnoblackfromsh)
+verifybed(lncrnanoblackshgr, lncrnanoblackfromsh)
 !!
+!!
+
 
 ## Temporary variables for comparison with files obtained with bash
 protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
