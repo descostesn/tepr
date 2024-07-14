@@ -230,6 +230,8 @@ verifybed <- function(bed1, bed2) {
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
+verifybed(protcodbed, protcodbedsh)
+verifybed(lncrnabed, lncrnabedsh)
 
 ## Exclude black list with the file that was used in bash
 !!
