@@ -215,6 +215,7 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
+
 verifybed <- function(bed1, bed2, nbcol = 6) {
 
     if (!isTRUE(all.equal(nrow(bed1), nrow(bed2))))
@@ -269,45 +270,6 @@ grtobed <- function(grobj) {
     return(res)
 }
 
-
-## Compare the bed files before removing black lists
-protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
-lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
-verifybed(protcodbed, protcodbedsh)
-verifybed(lncrnabed, lncrnabedsh)
-
-## Exclude black list with the file that was used in bash
-blacklistsh <- read.delim(blacklistshpath, header = FALSE)
-blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
-protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
-lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
-protcodnoblacksh <- grtobed(protcodnoblackshgr)
-lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
-
-## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
-## bash
-res <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
-fromsh_protcodnoblackshbed <- res[[1]]
-fromr_protcodnoblackshbed <- res[[2]]
-res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
-fromsh_lncrnanoblackshbed <- res[[1]]
-fromr_lncrnanoblackshbed <- res[[2]]
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## Temporary variables for comparison with files obtained with bash
-fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
-fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
-fomr_protcodwindbed <- grtobed(fomr_protcodwindgr)
-fromr_lncrnawindbed <- grtobed(fromr_lncrnawindgr)
-
-## Compare with bash files
-fromsh_protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
-fromsh_lncrnawindbed <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
-
-!!!!!!!!!!!!!!!
-
-
 separateframe <- function(dfbed) {
 
         reslist <- strsplit(dfbed[, 4], "_")
@@ -355,7 +317,41 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     verifybed(fromr_windbed, fromsh_windbed)
 }
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## Compare the bed files before removing black lists
+protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
+lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
+verifybed(protcodbed, protcodbedsh)
+verifybed(lncrnabed, lncrnabedsh)
+
+## Exclude black list with the file that was used in bash
+blacklistsh <- read.delim(blacklistshpath, header = FALSE)
+blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
+protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
+lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
+protcodnoblacksh <- grtobed(protcodnoblackshgr)
+lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
+
+## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
+## bash
+res <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+fromsh_protcodnoblackshbed <- res[[1]]
+fromr_protcodnoblackshbed <- res[[2]]
+res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
+fromsh_lncrnanoblackshbed <- res[[1]]
+fromr_lncrnanoblackshbed <- res[[2]]
+
+## Temporary variables for comparison with files obtained with bash
+fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
+fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
+fomr_protcodwindbed <- grtobed(fomr_protcodwindgr)
+fromr_lncrnawindbed <- grtobed(fromr_lncrnawindgr)
+
+## Compare with bash files
+fromsh_protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
+fromsh_lncrnawindbed <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
+comparewind(protcodnoblackshgr, protcodbednoblackwindshpath, windsize)
+comparewind(lncrnanoblackshgr, lncrnanednoblackwindshpath, windsize)
+
 
 ################## DECIPHERING  CODE
 # buildstr <- function(gencode) {
@@ -380,20 +376,19 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
 # grep(tofind, strcomp)
 # strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
 # grep(tofind, strcomp)
-
-!!!!!!!!!!!!!!!!!!!!!!!
-comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
-## Check if the annotations were present before making the windows in bash
-protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
-annotrsnoblackfromsh <- unique(sapply(strsplit(protcodnoblackfromsh$V4, "_"), "[", 1))
-!!!!!!!!!!!!!!!!!!!!!!!!
-## Verify transcripts annotations between r and sh
-annotrsfromsh <- unique(sapply(strsplit(protcodwindfromsh$V4, "_"), "[", 1))
-annotrsfromr <- unique(sapply(strsplit(names(protcodwindowstmp), "_"), "[", 1))
-idx <- match(annotrsfromr, annotrsfromsh)
-## The r variable carries more annotations
-idxna <- which(is.na(idx))
-head(annotrsfromr[idxna])
+# !!!!!!!!!!!!!!!!!!!!!!!
+# comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+# ## Check if the annotations were present before making the windows in bash
+# protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
+# annotrsnoblackfromsh <- unique(sapply(strsplit(protcodnoblackfromsh$V4, "_"), "[", 1))
+# !!!!!!!!!!!!!!!!!!!!!!!!
+# ## Verify transcripts annotations between r and sh
+# annotrsfromsh <- unique(sapply(strsplit(protcodwindfromsh$V4, "_"), "[", 1))
+# annotrsfromr <- unique(sapply(strsplit(names(protcodwindowstmp), "_"), "[", 1))
+# idx <- match(annotrsfromr, annotrsfromsh)
+# ## The r variable carries more annotations
+# idxna <- which(is.na(idx))
+# head(annotrsfromr[idxna])
 
 
 ## End REMOVE
