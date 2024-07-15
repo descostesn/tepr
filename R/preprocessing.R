@@ -303,15 +303,15 @@ separateframe <- function(dfbed) {
 comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## Preparing bed df
     fomr_windgr <- makewindowsbedtools(fromr_noblackshgr, windsize)
-    fomr_windbed <- grtobed(fomr_windgr)
+    fromr_windbed <- grtobed(fomr_windgr)
     fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
 
     ## Remove suffix "_PAR_Y" if present in bed
-    fomr_windbed <- removepary(fomr_windbed)
+    fromr_windbed <- removepary(fromr_windbed)
     fromsh_windbed <- removepary(fromsh_windbed)
 
     ## Separate transcript names from frame in two columns
-    fomr_windbed <- separateframe(fomr_windbed)
+    fromr_windbed <- separateframe(fromr_windbed)
     fromsh_windbed <- separateframe(fromsh_windbed)
 
     verifybed(fromr_windbed, fromsh_windbed)
