@@ -157,14 +157,14 @@ objlist <- mapply(function(obj, nameobj) {
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
-verifybed(protcodbed, protcodbedsh)
-verifybed(lncrnabed, lncrnabedsh)
+verifybed(objlist[["protcodbed"]], protcodbedsh)
+verifybed(objlist[["lncrnabed"]], lncrnabedsh)
 
 ## Exclude black list with the file that was used in bash
 blacklistsh <- read.delim(blacklistshpath, header = FALSE)
 blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
-protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
-lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
+protcodnoblackshgr <- excludeorkeepgrlist(objlist[["protcodgr"]], blacklistshgr)
+lncrnanoblackshgr <- excludeorkeepgrlist(objlist[["lncrnagr"]], blacklistshgr)
 protcodnoblacksh <- grtobed(protcodnoblackshgr)
 lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 
