@@ -215,9 +215,9 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
-verifybed <- function(bed1, bed2) {
-    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], bed1[, 6], sep="-") # nolint
-    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], bed2[, 6], sep="-") # nolint
+verifybed <- function(bed1, bed2, nbcol = 6) {
+    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
+    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
     idx <- match(bedstr1, bedstr2)
     idxna <- which(is.na(idx))
     lna <- length(idxna)
@@ -253,8 +253,18 @@ lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 
 ## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
 ## bash
-comparenoblack <- function(bashpath, robj) {
+comparenoblack <- function(bashpath, dfbed) {
+    ## Read file obtained with bash
     fromsh <- read.delim(bashpath, header = FALSE)
+
+    ## Remove last column and add transcript names and strand to match the robj
+    ## format
+    tmplist <- strsplit(fromsh$V4, "_")
+    tmpnames <- sapply(tmplist, "[", 1)
+    tmpstrand <- sapply(tmplist, "[", 3)
+    fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
+
+    verifybed(dfbed, fromsh)
 }
 protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
 lncrnanoblackfromsh <- read.delim(lncrnanoblackfromshpath, header = FALSE)
