@@ -253,6 +253,7 @@ comparenoblack <- function(bashpath, dfbed) {
     fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
 
     verifybed(dfbed, fromsh, nbcol = 5)
+    return(fromsh, dfbed)
 }
 
 grtobed <- function(grobj) {
