@@ -178,6 +178,8 @@ sortedbedformat <- function(gencode) {
 # MAIN
 ##################
 
+createfolder(robjoutputfold)
+
 ## Read gencode file
 gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
 gencode <- gencode[which(gencode$V3 == "transcript"), ]
@@ -188,6 +190,7 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 gencodeprotcod <- grepsequential("MANE_Select", gencode)
 protcodbed <- sortedbedformat(gencodeprotcod)
 protcodgr <- bedtogr(protcodbed)
+save(protcodgr, file = file.path(robjoutputfold, "protcodgr.Rdata"))
 
 ## Retrieve long non-coding transcripts
 lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
@@ -195,6 +198,7 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
+save(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.Rdata"))
 lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
@@ -209,106 +213,6 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## REMOVE
 
 
-verifybed <- function(bed1, bed2, nbcol = 6) {
-
-    if (!isTRUE(all.equal(nrow(bed1), nrow(bed2))))
-        stop("bed1 and bed2 have different nb of rows")
-
-    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
-    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
-    idx <- match(bedstr1, bedstr2)
-    idxna <- which(is.na(idx))
-    lna <- length(idxna)
-    if (!isTRUE(all.equal(lna, 0)))
-        stop("The gene symbols-chrom are different")
-    bed2 <- bed2[idx, ]
-    invisible(sapply(seq_len(5), function(i) {
-        idx <- which(bed1[, i] != bed2[, i])
-        lidx <- length(idx)
-        if (!isTRUE(all.equal(lidx, 0)))
-            stop("Difference in col ", i)
-    }))
-}
-
-removepary <- function(dfbed) {
-    idx <- grep("_PAR_Y", dfbed[, 4])
-    if (!isTRUE(all.equal(length(idx), 0))) {
-        message("\t\t Remove PARY")
-        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
-    }
-    return(dfbed)
-}
-
-comparenoblack <- function(bashpath, dfbed) {
-    ## Read file obtained with bash
-    fromsh <- read.delim(bashpath, header = FALSE)
-
-    ## Remove suffix "_PAR_Y" if present in dfbed
-    dfbed <- removepary(dfbed)
-
-    ## Remove last column and add transcript names and strand to match the robj
-    ## format
-    tmplist <- strsplit(fromsh[, 4], "_")
-    tmpnames <- sapply(tmplist, "[", 1)
-    tmpstrand <- sapply(tmplist, function(x) x[length(x)])
-    fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
-
-    verifybed(dfbed, fromsh, nbcol = 5)
-    return(list(fromsh, dfbed))
-}
-
-grtobed <- function(grobj) {
-    res <- data.frame(seqnames(grobj), start(grobj), end(grobj), names(grobj),
-    strand = strand(grobj))
-    return(res)
-}
-
-separateframe <- function(dfbed) {
-
-        reslist <- strsplit(dfbed[, 4], "_")
-        trsnamevec <- sapply(reslist,  "[", 1)
-
-        if (isTRUE(all.equal(ncol(dfbed), 5))) { # bed from r
-
-            framevec <- sapply(reslist, "[", 2)
-            strandvec <- dfbed[, 5]
-
-            ## Makes framevec 1-based and numeric
-            framevec <- as.numeric(gsub("frame", "", framevec))
-            framevec[which(is.na(framevec))] <- 0
-            framevec <- framevec + 1
-        } else {
-            framevec <- as.numeric(sapply(reslist, function(x) x[length(x)]))
-            strandvec <- sapply(reslist, function(x) x[length(x) - 1])
-        }
-
-        ## Verify there is one frame per transcript line
-        if (!isTRUE(all.equal(length(trsnamevec), length(framevec))))
-            stop("Problem of correspondance between trsnamevec and framevec")
-
-        ## Separate transcript names from frame in two columns 
-        resbed <- data.frame(chrom = dfbed[, 1], start = dfbed[, 2],
-            end = dfbed[, 3], name = trsnamevec, strand = strandvec,
-            frame = framevec)
-        return(resbed)
-}
-
-comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
-    ## Preparing bed df
-    fomr_windgr <- makewindowsbedtools(fromr_noblackshgr, windsize)
-    fromr_windbed <- grtobed(fomr_windgr)
-    fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
-
-    ## Remove suffix "_PAR_Y" if present in bed
-    fromr_windbed <- removepary(fromr_windbed)
-    fromsh_windbed <- removepary(fromsh_windbed)
-
-    ## Separate transcript names from frame in two columns
-    fromr_windbed <- separateframe(fromr_windbed)
-    fromsh_windbed <- separateframe(fromsh_windbed)
-
-    verifybed(fromr_windbed, fromsh_windbed)
-}
 
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
