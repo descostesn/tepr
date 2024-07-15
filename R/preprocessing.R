@@ -25,6 +25,7 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/gencode.v43.b
 ## print(query_data) # nolint
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
 outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
+robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
 ## Mappability tracks in bed format can be downloaded from https://bismap.hoffmanlab.org/ # nolint
 ## Scroll down to the table containing pre-computed tracks for hg38, hg19, mm10,
 ## and mm9 in bins of 24, 36, 50, and 100 bp in single- or multireads.
