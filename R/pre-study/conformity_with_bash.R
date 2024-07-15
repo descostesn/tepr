@@ -9,6 +9,8 @@
 library("GenomeInfoDb")
 library("GenomicRanges")
 
+source("commons.R")
+
 
 ##################
 # PARAMETERS
@@ -30,7 +32,8 @@ robjlist <- list(protcodbed = file.path(robjoutputfold, "protcodbed.rds"),
     lncrnabed = file.path(robjoutputfold, "lncrnabed.rds"),
     lncrnagr = file.path(robjoutputfold, "lncrnagr.rds"))
 
-
+## other params
+windsize <- 200
 
 
 ##################
