@@ -205,10 +205,10 @@ protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## Saving objects to check conformity with bash results
-save(protcodbed, file = file.path(robjoutputfold, "protcodbed.Rdata"))
-save(protcodgr, file = file.path(robjoutputfold, "protcodgr.Rdata"))
-save(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.Rdata"))
-save(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.Rdata"))
+saveRDS(protcodbed, file = file.path(robjoutputfold, "protcodbed.rds"))
+saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
+saveRDS(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.rds"))
+saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
