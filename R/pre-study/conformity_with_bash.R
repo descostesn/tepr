@@ -154,9 +154,10 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## Note: the coordinates of the bins are not exactly the same between the
     ## R function "tile" and the bedtools function "makewindow". Therefore,
     ## verifybed(fromr_windbed, fromsh_windbed) returns an error.
-    fromr_windbedlist <- split(fromr_windbed, as.factor(fromr_windbed$frame))
-    fromsh_windbedlist <- split(fromsh_windbed, as.factor(fromsh_windbed$frame))
-
+    ## However, when the start and end column are left aside when comparing the
+    ## two data.frame, it gives an equality. This means that each method gives
+    ## the same number of bins but with slightly different coordinates.
+    verifybed(fromr_windbed, fromsh_windbed, includeposition = FALSE)
 }
 
 
