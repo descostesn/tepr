@@ -315,6 +315,12 @@ lncrnawindfromsh <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 # strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
 # grep(tofind, strcomp)
 
+!!!!!!!!!!!!!!!!!!!!!!!
+comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+## Check if the annotations were present before making the windows in bash
+protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
+annotrsnoblackfromsh <- unique(sapply(strsplit(protcodnoblackfromsh$V4, "_"), "[", 1))
+!!!!!!!!!!!!!!!!!!!!!!!!
 ## Verify transcripts annotations between r and sh
 annotrsfromsh <- unique(sapply(strsplit(protcodwindfromsh$V4, "_"), "[", 1))
 annotrsfromr <- unique(sapply(strsplit(names(protcodwindowstmp), "_"), "[", 1))
@@ -322,9 +328,8 @@ idx <- match(annotrsfromr, annotrsfromsh)
 ## The r variable carries more annotations
 idxna <- which(is.na(idx))
 head(annotrsfromr[idxna])
-## Check if the annotations were present before making the windows in bash
-protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
-annotrsnoblackfromsh <- unique(sapply(strsplit(protcodnoblackfromsh$V4, "_"), "[", 1))
+
+
 ## End REMOVE
 ## ------------------------------------------------------------------
 
