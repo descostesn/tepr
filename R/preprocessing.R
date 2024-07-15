@@ -225,7 +225,9 @@ verifybed <- function(bed1, bed2, nbcol = 6) {
         stop("The gene symbols-chrom are different")
     bed2 <- bed2[idx, ]
     invisible(sapply(seq_len(5), function(i) {
-        if (!isTRUE(all.equal(bed1[, i], bed2[, i])))
+        idx <- which(bed1[, i] != bed2[, i])
+        lidx <- length(idx)
+        if (!isTRUE(all.equal(lidx, 0)))
             stop("Difference in col ", i)
     }))
 }
@@ -257,14 +259,19 @@ comparenoblack <- function(bashpath, dfbed) {
     ## Read file obtained with bash
     fromsh <- read.delim(bashpath, header = FALSE)
 
+    ## Remove suffix "_PAR_Y" if present in dfbed
+    idx <- grep("_PAR_Y", dfbed[, 4])
+    if (!isTRUE(all.equal(length(idx), 0)))
+        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
+
     ## Remove last column and add transcript names and strand to match the robj
     ## format
-    tmplist <- strsplit(fromsh$V4, "_")
+    tmplist <- strsplit(fromsh[, 4], "_")
     tmpnames <- sapply(tmplist, "[", 1)
-    tmpstrand <- sapply(tmplist, "[", 3)
+    tmpstrand <- sapply(tmplist, function(x) x[length(x)])
     fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
 
-    verifybed(dfbed, fromsh)
+    verifybed(dfbed, fromsh, nbcol = 5)
 }
 protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
 lncrnanoblackfromsh <- read.delim(lncrnanoblackfromshpath, header = FALSE)
