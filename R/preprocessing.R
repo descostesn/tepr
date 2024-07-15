@@ -128,12 +128,13 @@ excludeorkeepgrlist <- function(expgr, removegr, removefrom = TRUE,
     return(resgr)
 }
 
-bedtogr <- function(currentbed) {
+bedtogr <- function(currentbed, strand = TRUE) {
+
     grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-        ranges = IRanges::IRanges(start = currentbed[, 2],
+            ranges = IRanges::IRanges(start = currentbed[, 2],
                                   end = currentbed[, 3],
                                   names = currentbed[, 4]),
-        strand = currentbed[, 6])
+            strand = if (strand) currentbed[, 6] else "+")
     return(grres)
 }
 
@@ -229,6 +230,13 @@ verifybed <- function(bed1, bed2) {
     }))
 }
 
+grtobed <- function(grobj) {
+    res <- data.frame(seqnames(grobj), start(grobj), end(grobj), names(grobj),
+    strand = strand(grobj))
+    return(res)
+}
+
+
 ## Compare the bed files before removing black lists
 protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
 lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
@@ -236,12 +244,24 @@ verifybed(protcodbed, protcodbedsh)
 verifybed(lncrnabed, lncrnabedsh)
 
 ## Exclude black list with the file that was used in bash
-blasklistsh <- read.delim(blacklistshpath, header = FALSE)
-blasklistshgr <- bedtogr(blacklistsh)
+blacklistsh <- read.delim(blacklistshpath, header = FALSE)
+blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
 protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
 lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
+protcodnoblacksh <- grtobed(protcodnoblackshgr)
+lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
+
+## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
+## bash
+comparenoblack <- function(bashpath, robj) {
+    fromsh <- read.delim(bashpath, header = FALSE)
+}
 protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
 lncrnanoblackfromsh <- read.delim(lncrnanoblackfromshpath, header = FALSE)
+tmpprotcodlist <- strsplit(protcodnoblackfromsh$V4, "_")
+tmplncrnalist <- strsplit(lncrnanoblackfromsh, "_")
+protcodnoblackfromsh <- data.frame(protcodnoblackfromsh$V1,
+    protcodnoblackfromsh$V2)
 verifybed(protcodnoblackshgr, protcodnoblackfromsh)
 verifybed(lncrnanoblackshgr, lncrnanoblackfromsh)
 !!
