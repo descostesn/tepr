@@ -50,9 +50,11 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     if (includeposition) {
         bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
         bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+        idxcheckvec <- seq_len(5)
     } else {
         bedstr1 <- paste(bed1[, 1], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
         bedstr2 <- paste(bed2[, 1], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+        idxcheckvec <- c(1, 4, 5, 6)
     }
 
     idx <- match(bedstr1, bedstr2)
@@ -61,7 +63,7 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     if (!isTRUE(all.equal(lna, 0)))
         stop("The gene symbols-chrom are different")
     bed2 <- bed2[idx, ]
-    invisible(sapply(seq_len(5), function(i) {
+    invisible(sapply(idxcheckvec, function(i) {
         idx <- which(bed1[, i] != bed2[, i])
         lidx <- length(idx)
         if (!isTRUE(all.equal(lidx, 0)))
