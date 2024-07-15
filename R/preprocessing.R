@@ -287,11 +287,11 @@ fromsh_lncrnanoblackshbed <- res[[1]]
 fromr_lncrnanoblackshbed <- res[[2]]
 
 ## Temporary variables for comparison with files obtained with bash
-fomr_protcodwindowstmpgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
-fromr_lncrnawindowstmpgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
+fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
+fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
 
 ## Compare with bash files
-protcodwindfromsh <- read.delim(protcodbednoblackwindshpath, header = FALSE)
+protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
 lncrnawindfromsh <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 
 
