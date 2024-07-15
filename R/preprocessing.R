@@ -250,9 +250,7 @@ comparenoblack <- function(bashpath, dfbed) {
     fromsh <- read.delim(bashpath, header = FALSE)
 
     ## Remove suffix "_PAR_Y" if present in dfbed
-    idx <- grep("_PAR_Y", dfbed[, 4])
-    if (!isTRUE(all.equal(length(idx), 0)))
-        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
+    dfbed <- removepary(dfbed)
 
     ## Remove last column and add transcript names and strand to match the robj
     ## format
