@@ -206,55 +206,7 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
-
-
-
-## ------------------------------------------------------------------
-## REMOVE
-
-
-
-## Compare the bed files before removing black lists
-protcodbedsh <- read.delim(protcodbedshpath, header = FALSE)
-lncrnabedsh <- read.delim(lncrnabedshpath, header = FALSE)
-verifybed(protcodbed, protcodbedsh)
-verifybed(lncrnabed, lncrnabedsh)
-
-## Exclude black list with the file that was used in bash
-blacklistsh <- read.delim(blacklistshpath, header = FALSE)
-blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
-protcodnoblackshgr <- excludeorkeepgrlist(protcodgr, blacklistshgr)
-lncrnanoblackshgr <- excludeorkeepgrlist(lncrnagr, blacklistshgr)
-protcodnoblacksh <- grtobed(protcodnoblackshgr)
-lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
-
-## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
-## bash
-res <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
-fromsh_protcodnoblackshbed <- res[[1]]
-fromr_protcodnoblackshbed <- res[[2]]
-res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
-fromsh_lncrnanoblackshbed <- res[[1]]
-fromr_lncrnanoblackshbed <- res[[2]]
-
-## Temporary variables for comparison with files obtained with bash
-fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
-fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
-fomr_protcodwindbed <- grtobed(fomr_protcodwindgr)
-fromr_lncrnawindbed <- grtobed(fromr_lncrnawindgr)
-
-## Compare with bash files
-fromsh_protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
-fromsh_lncrnawindbed <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
-comparewind(protcodnoblackshgr, protcodbednoblackwindshpath, windsize)
-comparewind(lncrnanoblackshgr, lncrnanednoblackwindshpath, windsize)
-
-
-## End REMOVE
-## ------------------------------------------------------------------
-
-
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
