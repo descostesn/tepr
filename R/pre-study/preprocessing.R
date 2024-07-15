@@ -1,5 +1,5 @@
 ####################
-# This script aims at performing pre-processing steps using R only.
+# This script aims at performing the pre-processing steps using R only.
 #
 # Descostes - June 2024 - R-4.4.1
 ####################
