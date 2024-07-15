@@ -190,7 +190,6 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 gencodeprotcod <- grepsequential("MANE_Select", gencode)
 protcodbed <- sortedbedformat(gencodeprotcod)
 protcodgr <- bedtogr(protcodbed)
-save(protcodgr, file = file.path(robjoutputfold, "protcodgr.Rdata"))
 
 ## Retrieve long non-coding transcripts
 lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
@@ -198,13 +197,17 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
-save(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.Rdata"))
 lncrnagr <- bedtogr(lncrnabed)
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
+
+save(protcodbed, file = file.path(robjoutputfold, "protcodbed.Rdata"))
+save(protcodgr, file = file.path(robjoutputfold, "protcodgr.Rdata"))
+save(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.Rdata"))
+save(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.Rdata"))
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
