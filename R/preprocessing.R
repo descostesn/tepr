@@ -317,7 +317,32 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
 
     ## Remove suffix "_PAR_Y" if present in bed
-    
+    fomr_windbed <- removepary(fomr_windbed)
+    fromsh_windbed <- removepary(fromsh_windbed)
+
+    ## Separate transcript names from frame in two columns
+    separateframe <- function(dfbed) {
+
+        if (isTRUE(all.equal(ncol(dfbed), 5))) { # bed from r
+            reslist <- strsplit(dfbed[, 4], "_")
+            trsnamevec <- sapply(reslist,  "[", 1)
+            framevec <- sapply(reslist, "[", 2)
+
+            ## Makes framevec 1-based and numeric
+            framevec <- as.numeric(gsub("frame", "", framevec))
+            framevec[which(is.na(framevec))] <- 0
+            framevec <- framevec + 1
+
+            ## Verify there is one frame per transcript line
+            if (!isTRUE(all.equal(length(trsnamevec), length(framevec))))
+                stop("Problem of correspondance between trsnamevec and framevec")
+            
+            ## Separate transcript names from frame in two columns 
+            resbed <- data.frame(chrom = dfbed[, 1], start = dfbed[, 2],
+                end = dfbed[, 3], name = trsnamevec, strand = dfbed[, 5],
+                frame = framevec)
+        }
+    }
 
 
 }
