@@ -41,13 +41,20 @@ windsize <- 200
 ##################
 
 
-verifybed <- function(bed1, bed2, nbcol = 6) {
+verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
 
     if (!isTRUE(all.equal(nrow(bed1), nrow(bed2))))
         stop("bed1 and bed2 have different nb of rows")
 
-    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
-    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+    message("Building strings for comparison in verifybed")
+    if (includeposition) {
+        bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
+        bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+    } else {
+        bedstr1 <- paste(bed1[, 1], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
+        bedstr2 <- paste(bed2[, 1], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+    }
+
     idx <- match(bedstr1, bedstr2)
     idxna <- which(is.na(idx))
     lna <- length(idxna)
@@ -129,8 +136,8 @@ separateframe <- function(dfbed) {
 comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## Preparing bed df
     message("Creating ", windsize, " bins for r object")
-    fomr_windgr <- makewindowsbedtools(fromr_noblackshgr, windsize)
-    fromr_windbed <- grtobed(fomr_windgr)
+    fromr_windgr <- makewindowsbedtools(fromr_noblackshgr, windsize)
+    fromr_windbed <- grtobed(fromr_windgr)
     message("Reading ", windsize, " bins for sh object")
     fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
 
@@ -144,7 +151,12 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     fromr_windbed <- separateframe(fromr_windbed)
     fromsh_windbed <- separateframe(fromsh_windbed)
 
-    verifybed(fromr_windbed, fromsh_windbed)
+    ## Note: the coordinates of the bins are not exactly the same between the
+    ## R function "tile" and the bedtools function "makewindow". Therefore,
+    ## verifybed(fromr_windbed, fromsh_windbed) returns an error.
+    fromr_windbedlist <- split(fromr_windbed, as.factor(fromr_windbed$frame))
+    fromsh_windbedlist <- split(fromsh_windbed, as.factor(fromsh_windbed$frame))
+
 }
 
 
