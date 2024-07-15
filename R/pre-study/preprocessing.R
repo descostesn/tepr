@@ -91,27 +91,6 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
     return(df)
 }
 
-makewindowsbedtools <- function(expgr, binsize) {
-
-    ## Filtering out intervals smaller than binsize
-    idxsmall <- which(GenomicRanges::width(expgr) < binsize)
-    lsmall <- length(idxsmall)
-    if (!isTRUE(all.equal(lsmall, 0))) {
-        message("Excluding ", lsmall, "/", length(expgr), " annotations that ",
-        "are too short.")
-        expgr <- expgr[-idxsmall]
-    }
-    ## command retrieved with HelloRanges:
-    ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
-    ## Note: In R, bedtools does not have the "-i srcwinnum" option
-    res <- GenomicRanges::tile(expgr, n = binsize)
-    res <- unlist(res, use.names = FALSE)
-
-    ## Making names of each element of the list unique
-    names(res) <- make.unique(names(res), sep = "_frame")
-    return(res)
-}
-
 
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
