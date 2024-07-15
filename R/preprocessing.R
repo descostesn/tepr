@@ -279,8 +279,12 @@ lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 
 ## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
 ## bash
-comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
-comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
+res <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+fromsh_protcodnoblackshbed <- res[[1]]
+fromr_protcodnoblackshbed <- res[[2]]
+res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
+fromsh_lncrnanoblackshbed <- res[[1]]
+fromr_lncrnanoblackshbed <- res[[2]]
 
 ## Temporary variables for comparison with files obtained with bash
 protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
