@@ -204,6 +204,7 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
+## Saving objects to check conformity with bash results
 save(protcodbed, file = file.path(robjoutputfold, "protcodbed.Rdata"))
 save(protcodgr, file = file.path(robjoutputfold, "protcodgr.Rdata"))
 save(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.Rdata"))
