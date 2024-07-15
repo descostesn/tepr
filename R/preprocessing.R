@@ -277,14 +277,13 @@ lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
 comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
 
-
 ## Temporary variables for comparison with files obtained with bash
 protcodwindowstmp <- makewindowsbedtools(protcodnoblackgr, windsize)
 lncrnawindowstmp <- makewindowsbedtools(lncrnanoblackgr, windsize)
 
 ## Compare with bash files
-protcodbednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.MANE_protein.window200.bed"
-lncrnanednoblackwindshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+protcodwindfromsh <- read.delim(protcodbednoblackwindshpath, header = FALSE)
+lncrnawindfromsh <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 
 
 
