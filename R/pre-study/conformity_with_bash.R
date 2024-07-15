@@ -164,6 +164,8 @@ verifybed(objlist[["protcodbed"]], protcodbedsh)
 verifybed(objlist[["lncrnabed"]], lncrnabedsh)
 
 ## Exclude black list with the file that was used in bash
+## NOTE: In the current code (preprocessing) the black list is retrieved from
+## a database.
 blacklistsh <- read.delim(blacklistshpath, header = FALSE)
 blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
 protcodnoblackshgr <- excludeorkeepgrlist(objlist[["protcodgr"]], blacklistshgr)
@@ -171,22 +173,11 @@ lncrnanoblackshgr <- excludeorkeepgrlist(objlist[["lncrnagr"]], blacklistshgr)
 protcodnoblacksh <- grtobed(protcodnoblackshgr)
 lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 
-## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
-## bash
-res <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
-fromsh_protcodnoblackshbed <- res[[1]]
-fromr_protcodnoblackshbed <- res[[2]]
-res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
-fromsh_lncrnanoblackshbed <- res[[1]]
-fromr_lncrnanoblackshbed <- res[[2]]
+## Compare coord with black list removed to the files obtained with bash
+res1 <- comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+res2 <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
 
-## Temporary variables for comparison with files obtained with bash
-fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
-fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
-fomr_protcodwindbed <- grtobed(fomr_protcodwindgr)
-fromr_lncrnawindbed <- grtobed(fromr_lncrnawindgr)
-
-## Compare with bash files
+## Compare windows coordinates with bash files
 fromsh_protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
 fromsh_lncrnawindbed <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 comparewind(protcodnoblackshgr, protcodbednoblackwindshpath, windsize)
