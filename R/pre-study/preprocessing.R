@@ -11,7 +11,7 @@ library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
 
-
+source("commons.R")
 
 
 ##################
@@ -112,14 +112,6 @@ makewindowsbedtools <- function(expgr, binsize) {
     return(res)
 }
 
-excludeorkeepgrlist <- function(expgr, removegr, removefrom = TRUE,
-    ignorestrand = TRUE) {
-    ## command retrieved with HelloRanges:
-    # nolint - bedtools_intersect("-a protcod.bed -b hg38-blacklist.v2.bed -v")
-    resgr <- IRanges::subsetByOverlaps(expgr, removegr,
-        invert = removefrom, ignore.strand = ignorestrand)
-    return(resgr)
-}
 
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
