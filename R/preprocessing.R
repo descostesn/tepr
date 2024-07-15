@@ -215,6 +215,27 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
+verifybed <- function(bed1, bed2, nbcol = 6) {
+
+    if (!isTRUE(all.equal(nrow(bed1), nrow(bed2))))
+        stop("bed1 and bed2 have different nb of rows")
+
+    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
+    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
+    idx <- match(bedstr1, bedstr2)
+    idxna <- which(is.na(idx))
+    lna <- length(idxna)
+    if (!isTRUE(all.equal(lna, 0)))
+        stop("The gene symbols-chrom are different")
+    bed2 <- bed2[idx, ]
+    invisible(sapply(seq_len(5), function(i) {
+        idx <- which(bed1[, i] != bed2[, i])
+        lidx <- length(idx)
+        if (!isTRUE(all.equal(lidx, 0)))
+            stop("Difference in col ", i)
+    }))
+}
+
 comparenoblack <- function(bashpath, dfbed) {
     ## Read file obtained with bash
     fromsh <- read.delim(bashpath, header = FALSE)
@@ -232,23 +253,6 @@ comparenoblack <- function(bashpath, dfbed) {
     fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
 
     verifybed(dfbed, fromsh, nbcol = 5)
-}
-
-verifybed <- function(bed1, bed2, nbcol = 6) {
-    bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
-    bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
-    idx <- match(bedstr1, bedstr2)
-    idxna <- which(is.na(idx))
-    lna <- length(idxna)
-    if (!isTRUE(all.equal(lna, 0)))
-        stop("The gene symbols-chrom are different")
-    bed2 <- bed2[idx, ]
-    invisible(sapply(seq_len(5), function(i) {
-        idx <- which(bed1[, i] != bed2[, i])
-        lidx <- length(idx)
-        if (!isTRUE(all.equal(lidx, 0)))
-            stop("Difference in col ", i)
-    }))
 }
 
 grtobed <- function(grobj) {
@@ -311,9 +315,16 @@ lncrnawindfromsh <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 # strcomp <- paste(protcodbed$chrom, protcodbed$start, protcodbed$end, protcodbed$ensembl, protcodbed$symbol, protcodbed$strand, sep="-")
 # grep(tofind, strcomp)
 
-
-
-
+## Verify transcripts annotations between r and sh
+annotrsfromsh <- unique(sapply(strsplit(protcodwindfromsh$V4, "_"), "[", 1))
+annotrsfromr <- unique(sapply(strsplit(names(protcodwindowstmp), "_"), "[", 1))
+idx <- match(annotrsfromr, annotrsfromsh)
+## The r variable carries more annotations
+idxna <- which(is.na(idx))
+head(annotrsfromr[idxna])
+## Check if the annotations were present before making the windows in bash
+protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
+annotrsnoblackfromsh <- unique(sapply(strsplit(protcodnoblackfromsh$V4, "_"), "[", 1))
 ## End REMOVE
 ## ------------------------------------------------------------------
 
