@@ -121,16 +121,6 @@ excludeorkeepgrlist <- function(expgr, removegr, removefrom = TRUE,
     return(resgr)
 }
 
-bedtogr <- function(currentbed, strand = TRUE) {
-
-    grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-            ranges = IRanges::IRanges(start = currentbed[, 2],
-                                  end = currentbed[, 3],
-                                  names = currentbed[, 4]),
-            strand = if (strand) currentbed[, 6] else "+")
-    return(grres)
-}
-
 createfolder <- function(outfold) {
     if (!file.exists(outfold))
         dir.create(outfold, recursive = TRUE)
