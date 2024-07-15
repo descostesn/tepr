@@ -215,6 +215,25 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## ------------------------------------------------------------------
 ## REMOVE
 
+comparenoblack <- function(bashpath, dfbed) {
+    ## Read file obtained with bash
+    fromsh <- read.delim(bashpath, header = FALSE)
+
+    ## Remove suffix "_PAR_Y" if present in dfbed
+    idx <- grep("_PAR_Y", dfbed[, 4])
+    if (!isTRUE(all.equal(length(idx), 0)))
+        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
+
+    ## Remove last column and add transcript names and strand to match the robj
+    ## format
+    tmplist <- strsplit(fromsh[, 4], "_")
+    tmpnames <- sapply(tmplist, "[", 1)
+    tmpstrand <- sapply(tmplist, function(x) x[length(x)])
+    fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
+
+    verifybed(dfbed, fromsh, nbcol = 5)
+}
+
 verifybed <- function(bed1, bed2, nbcol = 6) {
     bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
     bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
@@ -255,34 +274,8 @@ lncrnanoblacksh <- grtobed(lncrnanoblackshgr)
 
 ## Compare protcodnoblacksh and lncrnanoblacksh to the files obtained with
 ## bash
-comparenoblack <- function(bashpath, dfbed) {
-    ## Read file obtained with bash
-    fromsh <- read.delim(bashpath, header = FALSE)
-
-    ## Remove suffix "_PAR_Y" if present in dfbed
-    idx <- grep("_PAR_Y", dfbed[, 4])
-    if (!isTRUE(all.equal(length(idx), 0)))
-        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
-
-    ## Remove last column and add transcript names and strand to match the robj
-    ## format
-    tmplist <- strsplit(fromsh[, 4], "_")
-    tmpnames <- sapply(tmplist, "[", 1)
-    tmpstrand <- sapply(tmplist, function(x) x[length(x)])
-    fromsh <- data.frame(fromsh$V1, fromsh$V2, fromsh$V3, tmpnames, tmpstrand)
-
-    verifybed(dfbed, fromsh, nbcol = 5)
-}
-protcodnoblackfromsh <- read.delim(protcodnoblackfromshpath, header = FALSE)
-lncrnanoblackfromsh <- read.delim(lncrnanoblackfromshpath, header = FALSE)
-tmpprotcodlist <- strsplit(protcodnoblackfromsh$V4, "_")
-tmplncrnalist <- strsplit(lncrnanoblackfromsh, "_")
-protcodnoblackfromsh <- data.frame(protcodnoblackfromsh$V1,
-    protcodnoblackfromsh$V2)
-verifybed(protcodnoblackshgr, protcodnoblackfromsh)
-verifybed(lncrnanoblackshgr, lncrnanoblackfromsh)
-!!
-!!
+comparenoblack(protcodnoblackfromshpath, protcodnoblacksh)
+comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
 
 
 ## Temporary variables for comparison with files obtained with bash
