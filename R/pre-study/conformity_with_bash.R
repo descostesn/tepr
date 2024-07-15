@@ -150,6 +150,8 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
 # MAIN
 ##################
 
+message("If no error messages appear, this means conformity.")
+
 ## Loading objects
 objlist <- mapply(function(obj, nameobj) {
     message("Loading ", nameobj)
