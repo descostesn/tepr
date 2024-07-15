@@ -236,6 +236,15 @@ verifybed <- function(bed1, bed2, nbcol = 6) {
     }))
 }
 
+removepary <- function(dfbed) {
+    idx <- grep("_PAR_Y", dfbed[, 4])
+    if (!isTRUE(all.equal(length(idx), 0))) {
+        message("\t\t Remove PARY")
+        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
+    }
+    return(dfbed)
+}
+
 comparenoblack <- function(bashpath, dfbed) {
     ## Read file obtained with bash
     fromsh <- read.delim(bashpath, header = FALSE)
@@ -286,6 +295,8 @@ res <- comparenoblack(lncrnanoblackfromshpath, lncrnanoblacksh)
 fromsh_lncrnanoblackshbed <- res[[1]]
 fromr_lncrnanoblackshbed <- res[[2]]
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## Temporary variables for comparison with files obtained with bash
 fomr_protcodwindgr <- makewindowsbedtools(protcodnoblackshgr, windsize)
 fromr_lncrnawindgr <- makewindowsbedtools(lncrnanoblackshgr, windsize)
@@ -296,7 +307,24 @@ fromr_lncrnawindbed <- grtobed(fromr_lncrnawindgr)
 fromsh_protcodwindbed <- read.delim(protcodbednoblackwindshpath, header = FALSE)
 fromsh_lncrnawindbed <- read.delim(lncrnanednoblackwindshpath, header = FALSE)
 
+!!!!!!!!!!!!!!!
 
+
+# fromr_noblackshgr <- protcodnoblackshgr
+# fromsh_noblackwindpath <- protcodbednoblackwindshpath
+comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
+    ## Preparing bed df
+    fomr_windgr <- makewindowsbedtools(fromr_noblackshgr, windsize)
+    fomr_windbed <- grtobed(fomr_windgr)
+    fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
+
+    ## Remove suffix "_PAR_Y" if present in bed
+    
+
+
+}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ################## DECIPHERING  CODE
 # buildstr <- function(gencode) {
