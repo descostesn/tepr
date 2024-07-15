@@ -323,25 +323,28 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## Separate transcript names from frame in two columns
     separateframe <- function(dfbed) {
 
+        reslist <- strsplit(dfbed[, 4], "_")
+        trsnamevec <- sapply(reslist,  "[", 1)
+
         if (isTRUE(all.equal(ncol(dfbed), 5))) { # bed from r
-            reslist <- strsplit(dfbed[, 4], "_")
-            trsnamevec <- sapply(reslist,  "[", 1)
+
             framevec <- sapply(reslist, "[", 2)
+            strandvec <- dfbed[, 5]
 
             ## Makes framevec 1-based and numeric
             framevec <- as.numeric(gsub("frame", "", framevec))
             framevec[which(is.na(framevec))] <- 0
             framevec <- framevec + 1
+        } else {}
 
-            ## Verify there is one frame per transcript line
+        ## Verify there is one frame per transcript line
             if (!isTRUE(all.equal(length(trsnamevec), length(framevec))))
                 stop("Problem of correspondance between trsnamevec and framevec")
-            
+
             ## Separate transcript names from frame in two columns 
             resbed <- data.frame(chrom = dfbed[, 1], start = dfbed[, 2],
-                end = dfbed[, 3], name = trsnamevec, strand = dfbed[, 5],
+                end = dfbed[, 3], name = trsnamevec, strand = strandvec,
                 frame = framevec)
-        }
     }
 
 
