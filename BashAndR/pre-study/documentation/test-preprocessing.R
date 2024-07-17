@@ -23,6 +23,8 @@ library(purrr)
 
 main_directory <- "/g/romebioinfo/Projects/tepr/"
 window <- 200
+robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
+
 
 ##################
 #FUNCTIONS
@@ -53,8 +55,12 @@ list_of_dfs <- lapply(bedgraph_files, read.delim, header = FALSE, sep = "\t",
     stringsAsFactors = FALSE)
 
 # joining all the files
-joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
-   dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join,
+    by = c("biotype", "chr", "coor1", "coor2", "transcript", "gene", "strand",
+    "window", "id")) %>% dplyr::filter(strand != "Y")
+saveRDS(joined_df, file = file.path(robjoutputfold, "joined_df.rds"))
+
 ## Error in `purrr::reduce()`:
 ## ! Must supply `.init` when `.x` is empty.
  write.table(joined_df, file = write_file_protein_coding, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
