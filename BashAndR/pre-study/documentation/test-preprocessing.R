@@ -68,4 +68,3 @@ write.table(joined_df,
 rm(list_of_dfs)
 rm(joined_df)
 
-## Warning in rm(joined_df): object 'joined_df' not found
