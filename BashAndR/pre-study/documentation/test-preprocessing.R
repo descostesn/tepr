@@ -60,11 +60,12 @@ joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join,
     by = c("biotype", "chr", "coor1", "coor2", "transcript", "gene", "strand",
     "window", "id")) %>% dplyr::filter(strand != "Y")
 saveRDS(joined_df, file = file.path(robjoutputfold, "joined_df.rds"))
+write.table(joined_df,
+ file = paste0(main_directory,
+    "downloads/annotations/protCoding_dTAG_Cugusi_stranded_20230810.tsv"),
+    sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
-## Error in `purrr::reduce()`:
-## ! Must supply `.init` when `.x` is empty.
- write.table(joined_df, file = write_file_protein_coding, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
-## Error in eval(expr, envir, enclos): object 'joined_df' not found
- rm(list_of_dfs)
- rm(joined_df)
+rm(list_of_dfs)
+rm(joined_df)
+
 ## Warning in rm(joined_df): object 'joined_df' not found
