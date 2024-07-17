@@ -37,7 +37,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.M
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-nbcpu <- 15
+nbcpu <- 6
 database_name <- "org.Hs.eg.db"
 
 
