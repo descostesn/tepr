@@ -195,6 +195,8 @@ protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
 
 
+!! TODO: the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+
 !!The data frame should contain the columns
 [1] "biotype"               "chr"                   "coor1"
  [4] "coor2"                 "transcript"            "gene"
