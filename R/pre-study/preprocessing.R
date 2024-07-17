@@ -193,3 +193,17 @@ exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu)
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
+
+
+!!The data frame should contain the columns
+[1] "biotype"               "chr"                   "coor1"
+ [4] "coor2"                 "transcript"            "gene"
+ [7] "strand"                "window"                "id"
+[10] "ctrl_rep1.plus"        "ctrl_rep1.plus_score"  "ctrl_rep1.minus"
+[13] "ctrl_rep1.minus_score" "ctrl_rep2.plus"        "ctrl_rep2.plus_score"
+[16] "ctrl_rep2.minus"       "ctrl_rep2.minus_score" "HS_rep1.plus"
+[19] "HS_rep1.plus_score"    "HS_rep1.minus"         "HS_rep1.minus_score"
+[22] "HS_rep2.plus"          "HS_rep2.plus_score"    "HS_rep2.minus"
+[25] "HS_rep2.minus_score"
+
+Here is an example:
