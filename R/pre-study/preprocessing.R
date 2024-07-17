@@ -76,9 +76,8 @@ database_name <- "org.Hs.eg.db"
     return(symbolvec)
 }
 
-retrievemeanfrombw <- function(grintervals, bwpath) {
+.retrievemeanfrombw <- function(grintervals, bwpath, verbose) {
 
-    message("Retrieving bw values")
     rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
     bwval <- rtracklayer::import.bw(bwpath,
         selection = rangeselect, as = "NumericList")
@@ -86,7 +85,7 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
     if (!isTRUE(all.equal(length(bwval), length(grintervals))))
         stop("The number of intervals retrieved from the bigwig is not correct")
     if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
-        message("\t Re-ordering list")
+        if (verbose) message("\t Re-ordering list")
         idx <- match(names(grintervals), names(bwval))
         idxna <- which(is.na(idx))
         lna <- length(idxna)
@@ -95,7 +94,7 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
         bwval <- bwval[idx]
     }
 
-    message("\t Computing mean values for each interval")
+    if (verbose) message("\t Computing mean values for each interval")
     meanvec <- sapply(bwval, mean)
     rm(bwval)
     invisible(gc())
@@ -103,18 +102,19 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
 }
 
 buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
-    database_name) {
+    database_name, verbose = TRUE) {
 
-    message("Retrieving values for ", grname)
+    if (verbose) message("Processing ", grname)
 
-    scorelist <- mcmapply(function(bwpath, expname, grintervals) {
-        message("\t Retrieving values for ", expname)
-        meanvec <- retrievemeanfrombw(grintervals, bwpath)
+    scorelist <- mcmapply(function(bwpath, expname, grintervals, verbose) {
+        if (verbose) message("\t Retrieving bw values for ", expname)
+        meanvec <- .retrievemeanfrombw(grintervals, bwpath, verbose)
         return(meanvec)
-    }, expdf$path, expdf$name, MoreArgs = list(grintervals), SIMPLIFY = FALSE,
-        mc.cores = nbcpu)
+    }, expdf$path, expdf$name, MoreArgs = list(grintervals, verbose),
+        SIMPLIFY = FALSE, mc.cores = nbcpu)
 
     ## Building matrix of mean scores
+    if (verbose) message("\t Building matrix")
     scoremat <- do.call("cbind", scorelist)
     colnames(scoremat) <- expdf$name
     dfintervals <- as.data.frame(grintervals)
@@ -125,6 +125,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
         stop("The rows of scoremat and dfintervals are not in the same order")
 
     ## Building vectors used for the final data.frame
+    if (verbose) message("\t Retrieving information for the final data.frame")
     dfintervalsrownames <- rownames(dfintervals)
     transvec <- gsub("_frame.+", "", dfintervalsrownames, perl = TRUE) # nolint
     symbolvec <- .returnsymbolvec(transvec, database_name, dfintervals)
@@ -132,6 +133,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     strandvec <- dfintervals$strand
 
     ## Final data.frame
+    if (verbose) message("\t Creating the final data.frame")
     df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
     start = dfintervals$start, end = dfintervals$end, transcript = transvec,
     gene = symbolvec, strand = strandvec, window = windowvec,
