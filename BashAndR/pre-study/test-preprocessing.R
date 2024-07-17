@@ -1,18 +1,18 @@
 
 
-!!!!!!!!!!!!!!!
-write_file_protein_coding <- paste0(main_directory,"/protCoding_dTAG_Cugusi_stranded_20230810.tsv")
-write_file_lncRNA <- paste0(main_directory,"/lncRNA_dTAG_Cugusi_stranded_20230810.tsv")
-Big_tsv <-paste0(main_directory,"/dTAG_Cugusi_stranded_20230810.tsv")  
-main_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Xiong2021/analysis_KD/bedgraph"
-write_file_protein_coding <- paste0(main_directory,"/protCoding_XiongsiSAFB_stranded_20240214.tsv")
-write_file_lncRNA <- paste0(main_directory,"/lncRNA_XiongsiSAFB_stranded_20240214.tsv")
-Big_tsv <-paste0(main_directory,"/XiongsiSAFB_stranded_20240214.tsv")  
-main_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/SousaLuis2021/FASTQ_FILES/folder_clean/BAM/deduplicated/MAPQ255/stranded/bedgraph255"
-write_file_protein_coding <- paste0(main_directory,"/protCoding_SousaLuis_stranded_20240322.tsv")
-write_file_lncRNA <- paste0(main_directory,"/lncRNA_SousaLuis_stranded_20240322.tsv")
-Big_tsv <-paste0(main_directory,"/SousaLuis_stranded_20240322.tsv")  
-!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!
+# write_file_protein_coding <- paste0(main_directory,"/protCoding_dTAG_Cugusi_stranded_20230810.tsv")
+# write_file_lncRNA <- paste0(main_directory,"/lncRNA_dTAG_Cugusi_stranded_20230810.tsv")
+# Big_tsv <-paste0(main_directory,"/dTAG_Cugusi_stranded_20230810.tsv")  
+# main_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Xiong2021/analysis_KD/bedgraph"
+# write_file_protein_coding <- paste0(main_directory,"/protCoding_XiongsiSAFB_stranded_20240214.tsv")
+# write_file_lncRNA <- paste0(main_directory,"/lncRNA_XiongsiSAFB_stranded_20240214.tsv")
+# Big_tsv <-paste0(main_directory,"/XiongsiSAFB_stranded_20240214.tsv")  
+# main_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/SousaLuis2021/FASTQ_FILES/folder_clean/BAM/deduplicated/MAPQ255/stranded/bedgraph255"
+# write_file_protein_coding <- paste0(main_directory,"/protCoding_SousaLuis_stranded_20240322.tsv")
+# write_file_lncRNA <- paste0(main_directory,"/lncRNA_SousaLuis_stranded_20240322.tsv")
+# Big_tsv <-paste0(main_directory,"/SousaLuis_stranded_20240322.tsv")  
+# !!!!!!!!!!!!!!!!!!!!!!
 
 library(dplyr)
 library(purrr)
@@ -94,3 +94,29 @@ write.table(joined_df_lncrna,
         sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
 rm(list_of_dfs)
 rm(joined_df_lncrna)
+
+
+### Merging the two files
+
+working_directory <- paste0(main_directory, "downloads/annotations")
+tsv_files <- list.files(working_directory, pattern = "*.tsv", full.names = TRUE)
+files <- tsv_files %>% map(~{
+    filename <- tools::file_path_sans_ext(basename(.))
+    file.path(working_directory, paste0(filename, ".tsv"))
+  })
+
+# reading all the files
+list_of_dfs <- lapply(files, read.delim, header = FALSE, sep = "\t",
+    na.strings = "NAN", dec = ".", stringsAsFactors = FALSE)
+
+# joining all the files
+bound_df <- purrr::reduce(list_of_dfs, dplyr::bind_rows)
+saveRDS(bound_df, file = file.path(robjoutputfold, "bound_df.rds"))
+
+# write joined table
+big_tsv <- paste0(working_directory, "/dTAG_Cugusi_stranded_20230810.tsv")
+write.table(bound_df, file = big_tsv, sep = "\t", row.names = FALSE,
+    col.names = FALSE, quote = FALSE)
+
+rm(list_of_dfs)
+rm(bound_df)
