@@ -88,6 +88,53 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
     if (!isTRUE(all.equal(rownames(scoremat), rownames(dfintervals))))
         stop("The rows of scoremat and dfintervals are not in the same order")
     df <- cbind(dfintervals, scoremat)
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    transvec <- gsub("_frame.+", "", rownames(dfintervals), perl = TRUE) # nolint
+    df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
+        start = dfintervals$start, end = dfintervals$end, transcript = transvec,
+        gene = 
+biotype  chr  coor1  coor2        transcript   gene strand window
+1 protein-coding chr1 923923 924026 ENST00000616016.5 SAMD11      +      1
+2 protein-coding chr1 924026 924129 ENST00000616016.5 SAMD11      +      2
+3 protein-coding chr1 924129 924232 ENST00000616016.5 SAMD11      +      3
+4 protein-coding chr1 924232 924335 ENST00000616016.5 SAMD11      +      4
+5 protein-coding chr1 924335 924438 ENST00000616016.5 SAMD11      +      5
+6 protein-coding chr1 924438 924541 ENST00000616016.5 SAMD11      +      6
+                            id         dataset.x  score.x         dataset.y
+1 ENST00000616016.5_SAMD11_+_1 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+2 ENST00000616016.5_SAMD11_+_2 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+3 ENST00000616016.5_SAMD11_+_3 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+4 ENST00000616016.5_SAMD11_+_4 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+5 ENST00000616016.5_SAMD11_+_5 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+6 ENST00000616016.5_SAMD11_+_6 ctrl_rep1.forward 0.000000 ctrl_rep1.reverse
+  score.y       dataset.x.x score.x.x       dataset.y.y score.y.y
+1    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+2    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+3    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+4    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+5    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+6    <NA> ctrl_rep2.forward  0.000000 ctrl_rep2.reverse      <NA>
+    dataset.x.x.x score.x.x.x   dataset.y.y.y score.y.y.y dataset.x.x.x.x
+1 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+2 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+3 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+4 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+5 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+6 HS_rep1.forward    0.000000 HS_rep1.reverse        <NA> HS_rep2.forward
+  score.x.x.x.x dataset.y.y.y.y score.y.y.y.y
+1      0.000000 HS_rep2.reverse          <NA>
+2      0.000000 HS_rep2.reverse          <NA>
+3      0.000000 HS_rep2.reverse          <NA>
+4      0.000000 HS_rep2.reverse          <NA>
+5      0.000000 HS_rep2.reverse          <NA>
+6      0.000000 HS_rep2.reverse          <NA>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
     return(df)
 }
 
