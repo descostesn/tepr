@@ -94,17 +94,34 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    transvec <- gsub("_frame.+", "", rownames(dfintervals), perl = TRUE)
-    transidvec <- unique(transvec)
+    transvec <- gsub("_frame.+", "", rownames(dfintervals), perl = TRUE) # nolint
+    transrootvec <- gsub("\\..+", "", transvec, perl = TRUE)
+    transidvec <- unique(transrootvec)
     convertdf <- clusterProfiler::bitr(transidvec, fromType = "ENSEMBLTRANS", 
             toType = c("ENSEMBLTRANS", "SYMBOL"), OrgDb = database_name)
+    idxdup <- which(duplicated(convertdf[,1]))
+    if (!isTRUE(all.equal(length(idxdup), 0)))
+        convertdf <- convertdf[-idxdup, ]
+    #### Corresponding values
+    idx <- match(transrootvec, convertdf[, 1])
+    symbolvec <- convertdf[idx, 2]
+    if (!isTRUE(all.equal(length(symbolvec), nrow(dfintervals))))
+        stop("Problem in retrieving symbols")
+
+    windowvec <- as.numeric(
+        gsub("frame", "",
+            sapply(
+                strsplit(rownames(dfintervals), "_"),
+            "[", 2)))
+    windowvec[which(is.na(windowvec))] <- 0
+    windowvec <- windowvec + 1
 
 
 
-    transvec <- gsub("_frame.+", "", rownames(dfintervals), perl = TRUE) # nolint
+    framenbvec <- 
     df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
         start = dfintervals$start, end = dfintervals$end, transcript = transvec,
-        gene = 
+        gene = symbolvec, strand = dfintervals$strand, 
 biotype  chr  coor1  coor2        transcript   gene strand window
 1 protein-coding chr1 923923 924026 ENST00000616016.5 SAMD11      +      1
 2 protein-coding chr1 924026 924129 ENST00000616016.5 SAMD11      +      2
