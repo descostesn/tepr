@@ -32,7 +32,8 @@ robjlist <- list(protcodbed = file.path(robjoutputfold, "protcodbed.rds"),
     lncrnabed = file.path(robjoutputfold, "lncrnabed.rds"),
     lncrnagr = file.path(robjoutputfold, "lncrnagr.rds"),
     joined_df = file.path(robjoutputfold, "joined_df.rds"),
-    joined_df_lncrna = file.path(robjoutputfold, "joined_df_lncrna.rds"))
+    joined_df_lncrna = file.path(robjoutputfold, "joined_df_lncrna.rds"),
+    bound_df = file.path(robjoutputfold, "bound_df.rds"))
 
 ## other params
 windsize <- 200
