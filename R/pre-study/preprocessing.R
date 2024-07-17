@@ -45,6 +45,17 @@ database_name <- "org.Hs.eg.db"
 #FUNCTIONS
 ##################
 
+.returnwindowvec <- function(dfintervalsrownames) {
+        windowvec <- as.numeric(
+        gsub("frame", "",
+            sapply(
+                strsplit(dfintervalsrownames, "_"),
+            "[", 2)))
+    windowvec[which(is.na(windowvec))] <- 0
+    windowvec <- windowvec + 1
+    return(windowvec)
+}
+
 .returnsymbolvec <- function(transvec, database_name, dfintervals) {
 
     transrootvec <- gsub("\\..+", "", transvec, perl = TRUE)
@@ -103,6 +114,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     }, expdf$path, expdf$name, MoreArgs = list(grintervals), SIMPLIFY = FALSE,
         mc.cores = nbcpu)
 
+    ## Building matrix of mean scores
     scoremat <- do.call("cbind", scorelist)
     colnames(scoremat) <- expdf$name
     dfintervals <- as.data.frame(grintervals)
@@ -112,32 +124,19 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     if (!isTRUE(all.equal(rownames(scoremat), rownames(dfintervals))))
         stop("The rows of scoremat and dfintervals are not in the same order")
 
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    ## Building vectors used for the final data.frame
     dfintervalsrownames <- rownames(dfintervals)
     transvec <- gsub("_frame.+", "", dfintervalsrownames, perl = TRUE) # nolint
     symbolvec <- .returnsymbolvec(transvec, database_name, dfintervals)
-
-    windowvec <- as.numeric(
-        gsub("frame", "",
-            sapply(
-                strsplit(rownames(dfintervals), "_"),
-            "[", 2)))
-    windowvec[which(is.na(windowvec))] <- 0
-    windowvec <- windowvec + 1
+    windowvec <- .returnwindowvec(dfintervalsrownames)
     strandvec <- dfintervals$strand
+
+    ## Final data.frame
     df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
-        start = dfintervals$start, end = dfintervals$end, transcript = transvec,
-        gene = symbolvec, strand = strandvec, window = windowvec,
-        id = paste(transvec, symbolvec, strandvec, windowvec, sep = "_"))
+    start = dfintervals$start, end = dfintervals$end, transcript = transvec,
+    gene = symbolvec, strand = strandvec, window = windowvec,
+    id = paste(transvec, symbolvec, strandvec, windowvec, sep = "_"))
     df <- cbind(df, scoremat)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
 
     return(df)
 }
