@@ -45,7 +45,28 @@ database_name <- "org.Hs.eg.db"
 #FUNCTIONS
 ##################
 
+.returnsymbolvec <- function(transvec, database_name, dfintervals) {
+
+    transrootvec <- gsub("\\..+", "", transvec, perl = TRUE)
+    transidvec <- unique(transrootvec)
+
+    convertdf <- clusterProfiler::bitr(transidvec, fromType = "ENSEMBLTRANS", 
+            toType = c("ENSEMBLTRANS", "SYMBOL"), OrgDb = database_name)
+    idxdup <- which(duplicated(convertdf[,1]))
+    if (!isTRUE(all.equal(length(idxdup), 0)))
+        convertdf <- convertdf[-idxdup, ]
+
+    #### Corresponding values
+    idx <- match(transrootvec, convertdf[, 1])
+    symbolvec <- convertdf[idx, 2]
+    if (!isTRUE(all.equal(length(symbolvec), nrow(dfintervals))))
+        stop("Problem in retrieving symbols")
+
+    return(symbolvec)
+}
+
 retrievemeanfrombw <- function(grintervals, bwpath) {
+
     message("Retrieving bw values")
     rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
     bwval <- rtracklayer::import.bw(bwpath,
@@ -70,7 +91,8 @@ retrievemeanfrombw <- function(grintervals, bwpath) {
     return(meanvec)
 }
 
-buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
+buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
+    database_name) {
 
     message("Retrieving values for ", grname)
 
@@ -96,18 +118,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
 
     dfintervalsrownames <- rownames(dfintervals)
     transvec <- gsub("_frame.+", "", dfintervalsrownames, perl = TRUE) # nolint
-    transrootvec <- gsub("\\..+", "", transvec, perl = TRUE)
-    transidvec <- unique(transrootvec)
-    convertdf <- clusterProfiler::bitr(transidvec, fromType = "ENSEMBLTRANS", 
-            toType = c("ENSEMBLTRANS", "SYMBOL"), OrgDb = database_name)
-    idxdup <- which(duplicated(convertdf[,1]))
-    if (!isTRUE(all.equal(length(idxdup), 0)))
-        convertdf <- convertdf[-idxdup, ]
-    #### Corresponding values
-    idx <- match(transrootvec, convertdf[, 1])
-    symbolvec <- convertdf[idx, 2]
-    if (!isTRUE(all.equal(length(symbolvec), nrow(dfintervals))))
-        stop("Problem in retrieving symbols")
+    symbolvec <- .returnsymbolvec(transvec, database_name, dfintervals)
 
     windowvec <- as.numeric(
         gsub("frame", "",
@@ -229,8 +240,9 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 ## Retrieving values from bigwig files
 exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
-    nbcpu)
-lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
+    nbcpu, database_name)
+lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
+    database_name)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 check in above variables the columns compared to what is below and then merge
