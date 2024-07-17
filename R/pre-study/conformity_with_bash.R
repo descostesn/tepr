@@ -30,7 +30,9 @@ robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
 robjlist <- list(protcodbed = file.path(robjoutputfold, "protcodbed.rds"),
     protcodgr = file.path(robjoutputfold, "protcodgr.rds"),
     lncrnabed = file.path(robjoutputfold, "lncrnabed.rds"),
-    lncrnagr = file.path(robjoutputfold, "lncrnagr.rds"))
+    lncrnagr = file.path(robjoutputfold, "lncrnagr.rds"),
+    joined_df = file.path(robjoutputfold, "joined_df.rds")
+    )
 
 ## other params
 windsize <- 200
