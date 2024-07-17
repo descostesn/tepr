@@ -30,16 +30,25 @@ robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
 #FUNCTIONS
 ##################
 
-returnprotcodscoresfiles <- function(main_directory) {
+returnprotcodscoresfiles <- function(main_directory, subdirectory) {
     working_directory <- paste0(main_directory,"downloads/bedgraphs")
     bedgraph_files <- list.files(working_directory, pattern = "*.bg",
         full.names = TRUE)
     files <- bedgraph_files %>% map(~{
         filename <- tools::file_path_sans_ext(basename(.))
-        file.path(working_directory, "protein_coding_score",
+        file.path(working_directory, subdirectory,
         paste0(filename, ".window", window, ".MANE.wmean.name.score"))
     })
     return(files)
+}
+
+retrievescores <- function(bedgraph_files) {
+    list_of_dfs <- lapply(bedgraph_files, read.delim, header = FALSE,
+        sep = "\t", na.strings = "NAN", dec = ".",
+        col.names = c("biotype", "chr", "coor1", "coor2", "transcript",
+        "gene", "strand", "window", "id", "dataset", "score"),
+        stringsAsFactors = FALSE)
+    return(list_of_dfs)
 }
 
 ##################
@@ -47,12 +56,9 @@ returnprotcodscoresfiles <- function(main_directory) {
 ##################
 
 # reading all the files
-bedgraph_files <- returnprotcodscoresfiles(main_directory)
-list_of_dfs <- lapply(bedgraph_files, read.delim, header = FALSE, sep = "\t",
-    na.strings = "NAN", dec = ".",
-    col.names = c("biotype", "chr", "coor1", "coor2", "transcript",
-    "gene", "strand", "window", "id", "dataset", "score"),
-    stringsAsFactors = FALSE)
+bedgraph_files <- returnprotcodscoresfiles(main_directory,
+    "protein_coding_score")
+list_of_dfs <- retrievescores(bedgraph_files)
 
 # joining all the files
 ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
@@ -68,3 +74,18 @@ write.table(joined_df,
 rm(list_of_dfs)
 rm(joined_df)
 
+# reading all the files
+bedgraph_files <- returnprotcodscoresfiles(main_directory,
+    "lncRNA_score")
+list_of_dfs <- retrievescores(bedgraph_files)
+
+
+# joining all the files
+joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
+   dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+## Error in `purrr::reduce()`:
+## ! Must supply `.init` when `.x` is empty.
+ write.table(joined_df, file = write_file_lncRNA, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
+## Error in eval(expr, envir, enclos): object 'joined_df' not found
+  rm(list_of_dfs)
+ rm(joined_df)
