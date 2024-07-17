@@ -171,8 +171,6 @@ saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
 saveRDS(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.rds"))
 saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
 ## used has only 1 as mapping scores. See parameters.
@@ -194,6 +192,9 @@ protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu)
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+check in above variables the columns compared to what is below and then merge
+the two df. Save the object and compare it to the df_bound object
 
 !! TODO: the last filter remove the PAR genes ie.e pseudoautosomal genes both
 !! in X and Y by doing 'strand != "Y"'
