@@ -66,7 +66,8 @@ main_table_read <- function(name_table, extension, working_directory,
     expressed_gene_name_list <- character()
 
     #Load data without header
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension,
+      file.path(working_directory, "bedgraphs"))
     col_names <- res$col_names
     var_names <- res$var_names
 
