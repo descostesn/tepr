@@ -55,13 +55,15 @@ retrievescores <- function(bedgraph_files) {
 # MAIN
 ##################
 
+#### protein coding
+
 # reading all the files
 bedgraph_files <- returnprotcodscoresfiles(main_directory,
     "protein_coding_score")
 list_of_dfs <- retrievescores(bedgraph_files)
 
 # joining all the files
-## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+# the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
 joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join,
     by = c("biotype", "chr", "coor1", "coor2", "transcript", "gene", "strand",
     "window", "id")) %>% dplyr::filter(strand != "Y")
@@ -74,18 +76,21 @@ write.table(joined_df,
 rm(list_of_dfs)
 rm(joined_df)
 
+#### lncRNA
+
 # reading all the files
 bedgraph_files <- returnprotcodscoresfiles(main_directory,
     "lncRNA_score")
 list_of_dfs <- retrievescores(bedgraph_files)
 
-
 # joining all the files
-joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
-   dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
-## Error in `purrr::reduce()`:
-## ! Must supply `.init` when `.x` is empty.
- write.table(joined_df, file = write_file_lncRNA, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
-## Error in eval(expr, envir, enclos): object 'joined_df' not found
-  rm(list_of_dfs)
- rm(joined_df)
+joined_df_lncrna <- purrr::reduce(list_of_dfs, dplyr::left_join,
+by = c("biotype","chr", "coor1", "coor2", "transcript", "gene", "strand",
+"window", "id")) %>% dplyr::filter(strand != "Y")
+saveRDS(joined_df_lncrna, file = file.path(robjoutputfold, "joined_df_lncrna.rds")) # nolint
+write.table(joined_df_lncrna,
+    file = paste0(main_directory,
+        "downloads/annotations/lncRNA_dTAG_Cugusi_stranded_20230810.tsv"),
+        sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
+rm(list_of_dfs)
+rm(joined_df_lncrna)
