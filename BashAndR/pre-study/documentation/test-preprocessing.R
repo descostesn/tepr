@@ -46,7 +46,12 @@ returnprotcodscoresfiles <- function(main_directory) {
 
 # reading all the files
 bedgraph_files <- returnprotcodscoresfiles(main_directory)
-list_of_dfs <- lapply(files, read.delim, header= F, sep= "\t",  na.strings = "NAN", dec = ".", col.names = c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id","dataset","score"), stringsAsFactors=FALSE)
+list_of_dfs <- lapply(bedgraph_files, read.delim, header = FALSE, sep = "\t",
+    na.strings = "NAN", dec = ".",
+    col.names = c("biotype", "chr", "coor1", "coor2", "transcript",
+    "gene", "strand", "window", "id", "dataset", "score"),
+    stringsAsFactors = FALSE)
+
 # joining all the files
 joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
    dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
