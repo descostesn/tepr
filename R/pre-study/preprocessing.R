@@ -207,3 +207,44 @@ lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
 [25] "HS_rep2.minus_score"
 
 Here is an example:
+
+[[8]]
+         biotype  chr  coor1  coor2        transcript   gene strand window
+1 protein-coding chr1 923923 924026 ENST00000616016.5 SAMD11      +      1
+2 protein-coding chr1 924026 924129 ENST00000616016.5 SAMD11      +      2
+3 protein-coding chr1 924129 924232 ENST00000616016.5 SAMD11      +      3
+4 protein-coding chr1 924232 924335 ENST00000616016.5 SAMD11      +      4
+5 protein-coding chr1 924335 924438 ENST00000616016.5 SAMD11      +      5
+6 protein-coding chr1 924438 924541 ENST00000616016.5 SAMD11      +      6
+                            id         dataset score
+1 ENST00000616016.5_SAMD11_+_1 HS_rep2.reverse  <NA>
+2 ENST00000616016.5_SAMD11_+_2 HS_rep2.reverse  <NA>
+3 ENST00000616016.5_SAMD11_+_3 HS_rep2.reverse  <NA>
+4 ENST00000616016.5_SAMD11_+_4 HS_rep2.reverse  <NA>
+5 ENST00000616016.5_SAMD11_+_5 HS_rep2.reverse  <NA>
+6 ENST00000616016.5_SAMD11_+_6 HS_rep2.reverse  <NA>
+
+> lapply(list_of_dfs, function(x) unique(x$biotype))
+[[1]]
+[1] "protein-coding"
+
+[[2]]
+[1] "protein-coding"
+
+[[3]]
+[1] "protein-coding"
+
+[[4]]
+[1] "protein-coding"
+
+[[5]]
+[1] "protein-coding"
+
+[[6]]
+[1] "protein-coding"
+
+[[7]]
+[1] "protein-coding"
+
+[[8]]
+[1] "protein-coding"
