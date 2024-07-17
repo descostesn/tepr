@@ -10,6 +10,7 @@ library("GenomeInfoDb")
 library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
+library("clusterProfiler")
 
 source("commons.R")
 
@@ -36,7 +37,7 @@ windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 nbcpu <- 15
-
+database_name <- "org.hg.eg.db"
 
 
 ##################
@@ -91,6 +92,13 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+IDDf <- clusterProfiler::bitr(symbolsVec, fromType="ENSEMBLTRANS", 
+		toType=c("ENSEMBLTRANS", "SYMBOL"), OrgDb= database_name)
+
+
+
     transvec <- gsub("_frame.+", "", rownames(dfintervals), perl = TRUE) # nolint
     df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
         start = dfintervals$start, end = dfintervals$end, transcript = transvec,
