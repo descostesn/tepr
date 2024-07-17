@@ -8,7 +8,7 @@ library(stringr)
 # PARAMETERS
 ##################
 
-working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
+working_directory <- "/g/romebioinfo/Projects/tepr/downloads/bedgraphs"
 extension <- "*.bg"
 name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv" # nolint
 rounding <- 10
@@ -55,8 +55,7 @@ getting_var_names <- function(extension, working_directory) {
   return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) # nolint
 }
 
-
-
+# expression_threshold=0.1
 main_table_read <- function(name_table, extension, working_directory,
     expression_threshold) {
 
