@@ -8,7 +8,7 @@ library(stringr)
 # PARAMETERS
 ##################
 
-working_directory <- "/g/romebioinfo/Projects/tepr/downloads/bedgraphs"
+working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
 extension <- "*.bg"
 name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv" # nolint
 rounding <- 10
