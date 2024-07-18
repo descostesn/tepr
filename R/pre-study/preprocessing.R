@@ -46,25 +46,6 @@ database_name <- "org.Hs.eg.db"
 ##################
 
 
-.returnsymbolvec <- function(transvec, database_name, dfintervals) {
-
-    transrootvec <- gsub("\\..+", "", transvec, perl = TRUE)
-    transidvec <- unique(transrootvec)
-
-    convertdf <- clusterProfiler::bitr(transidvec, fromType = "ENSEMBLTRANS", 
-            toType = c("ENSEMBLTRANS", "SYMBOL"), OrgDb = database_name)
-    idxdup <- which(duplicated(convertdf[,1]))
-    if (!isTRUE(all.equal(length(idxdup), 0)))
-        convertdf <- convertdf[-idxdup, ]
-
-    #### Corresponding values
-    idx <- match(transrootvec, convertdf[, 1])
-    symbolvec <- convertdf[idx, 2]
-    if (!isTRUE(all.equal(length(symbolvec), nrow(dfintervals))))
-        stop("Problem in retrieving symbols")
-
-    return(symbolvec)
-}
 
 .retrievemeanfrombw <- function(grintervals, bwpath, verbose) {
 
