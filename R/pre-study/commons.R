@@ -124,6 +124,7 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     id = paste(transvec, dfintervals$symbol, dfintervals$strand, windowvec,
         sep = "_"))
     df <- cbind(df, scoremat)
+    rownames(df) <- NULL
 
     return(df)
 }
