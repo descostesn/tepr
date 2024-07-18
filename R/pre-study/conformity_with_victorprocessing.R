@@ -201,7 +201,7 @@ verifybed(objlist[["lncrnabed"]], lncrnabedsh)
 ## NOTE: In the current code (preprocessing) the black list is retrieved from
 ## a database.
 blacklistsh <- read.delim(blacklistshpath, header = FALSE)
-blacklistshgr <- bedtogr(blacklistsh, strand = FALSE)
+blacklistshgr <- bedtogr(blacklistsh, strand = FALSE, symbol = FALSE)
 protcodnoblackshgr <- excludeorkeepgrlist(objlist[["protcodgr"]], blacklistshgr)
 lncrnanoblackshgr <- excludeorkeepgrlist(objlist[["lncrnagr"]], blacklistshgr)
 protcodnoblacksh <- grtobed(protcodnoblackshgr)

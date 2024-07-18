@@ -1,11 +1,11 @@
-bedtogr <- function(currentbed, strand = TRUE) {
+bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE) {
 
     grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
             ranges = IRanges::IRanges(start = currentbed[, 2],
                                   end = currentbed[, 3],
                                   names = currentbed[, 4]),
             strand = if (strand) currentbed[, 6] else "+",
-            symbol = currentbed[, 5])
+            symbol = if (symbol) currentbed[, 5] else NA)
     return(grres)
 }
 
