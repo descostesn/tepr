@@ -37,3 +37,14 @@ makewindowsbedtools <- function(expgr, binsize) {
     names(res) <- make.unique(names(res), sep = "_frame")
     return(res)
 }
+
+.returnwindowvec <- function(dfintervalsrownames) {
+        windowvec <- as.numeric(
+        gsub("frame", "",
+            sapply(
+                strsplit(dfintervalsrownames, "_"),
+            "[", 2)))
+    windowvec[which(is.na(windowvec))] <- 0
+    windowvec <- windowvec + 1
+    return(windowvec)
+}

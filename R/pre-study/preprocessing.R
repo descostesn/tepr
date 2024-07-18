@@ -45,16 +45,6 @@ database_name <- "org.Hs.eg.db"
 #FUNCTIONS
 ##################
 
-.returnwindowvec <- function(dfintervalsrownames) {
-        windowvec <- as.numeric(
-        gsub("frame", "",
-            sapply(
-                strsplit(dfintervalsrownames, "_"),
-            "[", 2)))
-    windowvec[which(is.na(windowvec))] <- 0
-    windowvec <- windowvec + 1
-    return(windowvec)
-}
 
 .returnsymbolvec <- function(transvec, database_name, dfintervals) {
 
