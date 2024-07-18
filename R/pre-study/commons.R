@@ -99,7 +99,8 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
 
     if (verbose) message("Processing ", grname)
 
-    scorelist <- mcmapply(function(bwpath, expname, grintervals, verbose) {
+    scorelist <- parallel::mcmapply(function(bwpath, expname, grintervals,
+        verbose) {
         if (verbose) message("\t Retrieving bw values for ", expname)
         meanvec <- .retrievemeanfrombw(grintervals, bwpath, verbose)
         return(meanvec)
