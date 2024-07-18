@@ -115,14 +115,14 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     dfintervalsrownames <- rownames(dfintervals)
     transvec <- gsub("_frame.+", "", dfintervalsrownames, perl = TRUE) # nolint
     windowvec <- .returnwindowvec(dfintervalsrownames)
-    strandvec <- dfintervals$strand
 
     ## Final data.frame
     if (verbose) message("\t Creating the final data.frame")
     df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
     start = dfintervals$start, end = dfintervals$end, transcript = transvec,
-    gene = symbolvec, strand = strandvec, window = windowvec,
-    id = paste(transvec, symbolvec, strandvec, windowvec, sep = "_"))
+    gene = dfintervals$symbol, strand = dfintervals$strand, window = windowvec,
+    id = paste(transvec, dfintervals$symbol, dfintervals$strand, windowvec,
+        sep = "_"))
     df <- cbind(df, scoremat)
 
     return(df)
