@@ -75,7 +75,7 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     idxna <- which(is.na(idx))
     lna <- length(idxna)
     if (!isTRUE(all.equal(lna, 0)))
-        stop("The gene symbols-chrom are different")
+        stop("str1 and str2 do not have the same elements")
     bed2 <- bed2[idx, ]
     invisible(sapply(seq_len(ncol(bed1)), function(i) {
         idx <- which(bed1[, i] != bed2[, i])
