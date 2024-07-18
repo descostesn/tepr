@@ -117,35 +117,35 @@ grtobed <- function(grobj) {
     return(res)
 }
 
-separateframe <- function(dfbed) {
+# separateframe <- function(dfbed) {
 
-        reslist <- strsplit(dfbed[, 4], "_")
-        trsnamevec <- sapply(reslist,  "[", 1)
+#         reslist <- strsplit(dfbed[, 4], "_")
+#         trsnamevec <- sapply(reslist,  "[", 1)
 
-        if (isTRUE(all.equal(ncol(dfbed), 5))) { # bed from r
+#         if (isTRUE(all.equal(ncol(dfbed), 5))) { # bed from r
 
-            framevec <- sapply(reslist, "[", 2)
-            strandvec <- dfbed[, 5]
+#             framevec <- sapply(reslist, "[", 2)
+#             strandvec <- dfbed[, 5]
 
-            ## Makes framevec 1-based and numeric
-            framevec <- as.numeric(gsub("frame", "", framevec))
-            framevec[which(is.na(framevec))] <- 0
-            framevec <- framevec + 1
-        } else {
-            framevec <- as.numeric(sapply(reslist, function(x) x[length(x)]))
-            strandvec <- sapply(reslist, function(x) x[length(x) - 1])
-        }
+#             ## Makes framevec 1-based and numeric
+#             framevec <- as.numeric(gsub("frame", "", framevec))
+#             framevec[which(is.na(framevec))] <- 0
+#             framevec <- framevec + 1
+#         } else {
+#             framevec <- as.numeric(sapply(reslist, function(x) x[length(x)]))
+#             strandvec <- sapply(reslist, function(x) x[length(x) - 1])
+#         }
 
-        ## Verify there is one frame per transcript line
-        if (!isTRUE(all.equal(length(trsnamevec), length(framevec))))
-            stop("Problem of correspondance between trsnamevec and framevec")
+#         ## Verify there is one frame per transcript line
+#         if (!isTRUE(all.equal(length(trsnamevec), length(framevec))))
+#             stop("Problem of correspondance between trsnamevec and framevec")
 
-        ## Separate transcript names from frame in two columns 
-        resbed <- data.frame(chrom = dfbed[, 1], start = dfbed[, 2],
-            end = dfbed[, 3], name = trsnamevec, strand = strandvec,
-            frame = framevec)
-        return(resbed)
-}
+#         ## Separate transcript names from frame in two columns 
+#         resbed <- data.frame(chrom = dfbed[, 1], start = dfbed[, 2],
+#             end = dfbed[, 3], name = trsnamevec, strand = strandvec,
+#             frame = framevec)
+#         return(resbed)
+# }
 
 comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## Preparing bed df
@@ -160,10 +160,10 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     fromr_windbed <- removepary(fromr_windbed)
     fromsh_windbed <- removepary(fromsh_windbed)
 
-    ## Separate transcript names from frame in two columns
-    message("Formatting bed columns")
-    fromr_windbed <- separateframe(fromr_windbed)
-    fromsh_windbed <- separateframe(fromsh_windbed)
+    # ## Separate transcript names from frame in two columns
+    # message("Formatting bed columns")
+    # fromr_windbed <- separateframe(fromr_windbed)
+    # fromsh_windbed <- separateframe(fromsh_windbed)
 
     ## Note: the coordinates of the bins are not exactly the same between the
     ## R function "tile" and the bedtools function "makewindow". Therefore,
