@@ -85,11 +85,11 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     }))
 }
 
-removepary <- function(dfbed) {
-    idx <- grep("_PAR_Y", dfbed[, 4])
+removepar <- function(dfbed) {
+    idx <- grep("PAR_", dfbed[, 4])
     if (!isTRUE(all.equal(length(idx), 0))) {
-        message("\t\t Remove ", length(idx), " PARY")
-        dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
+        message("\t\t Remove ", length(idx), " PAR")
+        dfbed <- dfbed[-idx, ]
     }
     return(dfbed)
 }
@@ -99,7 +99,7 @@ comparenoblack <- function(bashpath, dfbed) {
     fromsh <- read.delim(bashpath, header = FALSE)
 
     ## Remove suffix "_PAR_Y" if present in dfbed
-    dfbed <- removepary(dfbed)
+    dfbed <- removepar(dfbed)
 
     ## Remove last column and add transcript names and strand to match the robj
     ## format
@@ -141,8 +141,8 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
 
     ## Remove suffix "_PAR_Y" if present in bed
     message("Removing suffixes from bed data.frame")
-    fromr_windbed <- removepary(fromr_windbed)
-    fromsh_windbed <- removepary(fromsh_windbed)
+    fromr_windbed <- removepar(fromr_windbed)
+    fromsh_windbed <- removepar(fromsh_windbed)
 
     ## Note: the coordinates of the bins are not exactly the same between the
     ## R function "tile" and the bedtools function "makewindow". Therefore,
