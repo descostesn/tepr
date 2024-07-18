@@ -236,9 +236,16 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu, database_name)
+protcoddfconformity <- protcoddf
+saveRDS(protcoddfconformity,
+    file = file.path(robjoutputfold, "protcoddf_fromconformity.rds"))
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
     database_name)
+lncrnadfconformity <- lncrnadf
+saveRDS(lncrnadfconformity,
+    file = file.path(robjoutputfold, "lncrnadf_fromconformity.rds"))
 alldf <- rbind(protcoddf, lncrnadf)
+
 
 ## Reading the table obtained with the bash and R code
 bashalldf <- read.delim(bigtsvpath, header = FALSE)
