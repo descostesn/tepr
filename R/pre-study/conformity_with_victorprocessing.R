@@ -52,6 +52,15 @@ windsize <- 200
 #FUNCTIONS
 ##################
 
+.returnbedstr <- function(bedtab, includeposition, nbcol) {
+            bedstr <- paste(bedtab[, 1],
+            if (includeposition) bedtab[, 2],
+            if (includeposition) bedtab[, 3],
+            bedtab[, 4],
+            if (nbcol != 4) bedtab[, 5],
+            if (nbcol == 6) bedtab[, 6], sep = "-")
+            return(bedstr)
+}
 
 verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
 
@@ -59,21 +68,8 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
         stop("bed1 and bed2 have different nb of rows")
 
     message("Building strings for comparison in verifybed")
-    if (includeposition) {
-        bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
-        bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
-        idxcheckvec <- seq_len(5)
-    } else {
-        if (isTRUE(all.equal(nbcol, 4))) {
-            bedstr1 <- paste(bed1[, 1], bed1[, 4], sep="-") # nolint
-            bedstr2 <- paste(bed2[, 1], bed2[, 4], sep="-") # nolint
-            idxcheckvec <- c(1, 4)
-        } else {
-            bedstr1 <- paste(bed1[, 1], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
-            bedstr2 <- paste(bed2[, 1], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
-            idxcheckvec <- c(1, 4, 5, 6)
-        }
-    }
+    bedstr1 <- .returnbedstr(bed1, includeposition, nbcol)
+    bedstr2 <- .returnbedstr(bed2, includeposition, nbcol)
 
     idx <- match(bedstr1, bedstr2)
     idxna <- which(is.na(idx))
@@ -81,7 +77,7 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     if (!isTRUE(all.equal(lna, 0)))
         stop("The gene symbols-chrom are different")
     bed2 <- bed2[idx, ]
-    invisible(sapply(idxcheckvec, function(i) {
+    invisible(sapply(seq_len(ncol(bed1)), function(i) {
         idx <- which(bed1[, i] != bed2[, i])
         lidx <- length(idx)
         if (!isTRUE(all.equal(lidx, 0)))
@@ -154,7 +150,7 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     ## However, when the start and end column are left aside when comparing the
     ## two data.frame, it gives an equality. This means that each method gives
     ## the same number of bins but with slightly different coordinates.
-    verifybed(fromr_windbed, fromsh_windbed, includeposition = FALSE)
+    verifybed(fromr_windbed, fromsh_windbed, includeposition = FALSE, nbcol = 4)
     return(fromr_windgr)
 }
 
