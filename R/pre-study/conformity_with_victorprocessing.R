@@ -63,10 +63,16 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
         bedstr1 <- paste(bed1[, 1], bed1[, 2], bed1[, 3], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
         bedstr2 <- paste(bed2[, 1], bed2[, 2], bed2[, 3], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
         idxcheckvec <- seq_len(5)
-    } else {
+    } else if (!includeposition && isTRUE(all.equal(nbcol, 6))) {
         bedstr1 <- paste(bed1[, 1], bed1[, 4], bed1[, 5], if(nbcol == 6) bed1[, 6], sep="-") # nolint
         bedstr2 <- paste(bed2[, 1], bed2[, 4], bed2[, 5], if(nbcol == 6) bed2[, 6], sep="-") # nolint
         idxcheckvec <- c(1, 4, 5, 6)
+    } else if (!includeposition && isTRUE(all.equal(nbcol, 4))) {
+        bedstr1 <- paste(bed1[, 1], bed1[, 4], sep="-") # nolint
+        bedstr2 <- paste(bed2[, 1], bed2[, 4], sep="-") # nolint
+        idxcheckvec <- c(1, 4, 5, 6)
+    } else {
+        stop("Conditions not med in verifybed")
     }
 
     idx <- match(bedstr1, bedstr2)
