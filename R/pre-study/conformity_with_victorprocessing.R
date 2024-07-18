@@ -86,7 +86,7 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
 removepary <- function(dfbed) {
     idx <- grep("_PAR_Y", dfbed[, 4])
     if (!isTRUE(all.equal(length(idx), 0))) {
-        message("\t\t Remove PARY")
+        message("\t\t Remove ", length(idx), "PARY")
         dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx, 4])
     }
     return(dfbed)
@@ -154,6 +154,17 @@ comparewind <- function(fromr_noblackshgr, fromsh_noblackwindpath, windsize) {
     fromr_windbed <- grtobed(fromr_windgr)
     message("Reading ", windsize, " bins for sh object")
     fromsh_windbed <- read.delim(fromsh_noblackwindpath, header = FALSE)
+
+    ## Format fromr_windbed according to fromsh_windbed
+    framevec <- as.numeric(gsub("frame", "", sapply(strsplit(fromr_windbed[, 4], "_"), "[", 2))) # nolint
+    framevec[which(is.na(framevec))] <- 0
+    framevec <- framevec + 1
+    transvec <- sapply(strsplit(fromr_windbed[, 4], "_"), "[", 1)
+    symbolvec <- S4Vectors::elementMetadata(fromr_windgr)[["symbol"]]
+    strandvec <- fromr_windbed[, 5]
+    fromr_windbed <- data.frame(V1 = fromr_windbed[, 1],
+        V2 = fromr_windbed[, 2], V3 = fromr_windbed[, 3],
+        V4 = paste(transvec, symbolvec, strandvec, framevec, sep = "_"))
 
     ## Remove suffix "_PAR_Y" if present in bed
     message("Removing suffixes from bed data.frame")
