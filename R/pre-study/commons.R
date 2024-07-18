@@ -28,11 +28,22 @@ makewindowsbedtools <- function(expgr, binsize) {
         "are too short.")
         expgr <- expgr[-idxsmall]
     }
+
+    ## Change row names to keep the gene symbols
+    names(expgr) <- paste(names(expgr), expgr$symbol, sep = "_")
+
     ## command retrieved with HelloRanges:
     ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
     ## Note: In R, bedtools does not have the "-i srcwinnum" option
     res <- GenomicRanges::tile(expgr, n = binsize)
     res <- unlist(res, use.names = FALSE)
+
+    ## Adding back metadata from names
+    tmplist <- strsplit(names(res), "_")
+    transvec <- sapply(tmplist, "[", 1)
+    symbolvec <- sapply(tmplist, "[", 2)
+    names(res) <- transvec
+    S4Vectors::elementMetadata(res)[, "symbol"] <- symbolvec
 
     ## Making names of each element of the list unique
     names(res) <- make.unique(names(res), sep = "_frame")
