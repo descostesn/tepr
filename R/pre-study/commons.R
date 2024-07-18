@@ -68,3 +68,28 @@ makewindowsbedtools <- function(expgr, binsize) {
 
     return(symbolvec)
 }
+
+.retrievemeanfrombw <- function(grintervals, bwpath, verbose) {
+
+    rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
+    bwval <- rtracklayer::import.bw(bwpath,
+        selection = rangeselect, as = "NumericList")
+
+    if (!isTRUE(all.equal(length(bwval), length(grintervals))))
+        stop("The number of intervals retrieved from the bigwig is not correct")
+    if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
+        if (verbose) message("\t Re-ordering list")
+        idx <- match(names(grintervals), names(bwval))
+        idxna <- which(is.na(idx))
+        lna <- length(idxna)
+        if (!isTRUE(all.equal(lna, 0)))
+            stop("Problem with matching names.")
+        bwval <- bwval[idx]
+    }
+
+    if (verbose) message("\t Computing mean values for each interval")
+    meanvec <- sapply(bwval, mean)
+    rm(bwval)
+    invisible(gc())
+    return(meanvec)
+}
