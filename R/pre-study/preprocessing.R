@@ -242,12 +242,6 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu, database_name)
-saveRDS(protcoddf, file = file.path(robjoutputfold,
-    "protcoddffrompreprocessing.rds"))
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
     database_name)
-saveRDS(lncrnadf, file = file.path(robjoutputfold,
-    "lncrnadffrompreprocessing.rds"))
 alldf <- rbind(protcoddf, lncrnadf)
-saveRDS(alldf, file = file.path(robjoutputfold,
-    "alldffrompreprocessing.rds"))
