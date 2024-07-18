@@ -218,17 +218,23 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
 ## Retrieving values from bigwig files
 exptab <- read.csv(exptabpath, header = TRUE)
+message("Retrieve values for protcoddf")
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu, database_name)
-lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
-    database_name)
+message("Saving object for protcoddf")
 protcoddfconformity <- protcoddf
 saveRDS(protcoddfconformity,
     file = file.path(robjoutputfold, "protcoddf_fromconformity.rds"))
+message("Retrieve values for lncrna")
+lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
+    database_name)
+message("Saving object for lncrna")
 lncrnadfconformity <- lncrnadf
 saveRDS(lncrnadfconformity,
     file = file.path(robjoutputfold, "lncrnadf_fromconformity.rds"))
+message("Merging tables")
 alldf <- rbind(protcoddf, lncrnadf)
+message("Saving object for merged tables")
 alldfconformity <- alldf
 saveRDS(alldfconformity,
     file = file.path(robjoutputfold, "alldf_fromconformity.rds"))
