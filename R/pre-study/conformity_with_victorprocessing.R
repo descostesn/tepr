@@ -16,6 +16,12 @@ source("commons.R")
 # PARAMETERS
 ##################
 
+## Files used for R and bash
+maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
+nbcpu <- 6
+database_name <- "org.Hs.eg.db"
+
 ## Files obtained with BashAndR/pre-study/preprocessing.sh
 protcodbedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/MANE_Select.protein_coding.bed" # nolint
 lncrnabedshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/Ensembl_canonical_TSL123.lncRNA.bed" # nolint
@@ -211,7 +217,21 @@ lncrnawindows <- comparewind(lncrnanoblackshgr, lncrnanednoblackwindshpath,
     windsize)
 
 ## Build the data.frame with all the info starting from
-## protcodnoblacksh/lncrnanoblacksh, removing the low mappability track, then
-## calling buildscoreforintervals. It has to be compared to the bigTSV in the
-## bash script
-TO DO
+## protcodnoblackshgr/lncrnanoblackshgr, removing the low mappability track,
+## then calling buildscoreforintervals. It has to be compared to the bigTSV in
+## the bash script
+maptrack <- read.delim(maptrackpath, header = FALSE)
+maptrackgr <- bedtogr(maptrack)
+protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackshgr, maptrackgr,
+    removefrom = FALSE)
+lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackshgr, maptrackgr,
+    removefrom = FALSE)
+
+## Make windows of windsize for each annotation
+protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
+lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
+
+## Retrieving values from bigwig files
+exptab <- read.csv(exptabpath, header = TRUE)
+protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
+    nbcpu, database_name)
