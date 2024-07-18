@@ -93,3 +93,45 @@ makewindowsbedtools <- function(expgr, binsize) {
     invisible(gc())
     return(meanvec)
 }
+
+buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
+    database_name, verbose = TRUE) {
+
+    if (verbose) message("Processing ", grname)
+
+    scorelist <- mcmapply(function(bwpath, expname, grintervals, verbose) {
+        if (verbose) message("\t Retrieving bw values for ", expname)
+        meanvec <- .retrievemeanfrombw(grintervals, bwpath, verbose)
+        return(meanvec)
+    }, expdf$path, expdf$name, MoreArgs = list(grintervals, verbose),
+        SIMPLIFY = FALSE, mc.cores = nbcpu)
+
+    ## Building matrix of mean scores
+    if (verbose) message("\t Building matrix")
+    scoremat <- do.call("cbind", scorelist)
+    colnames(scoremat) <- expdf$name
+    dfintervals <- as.data.frame(grintervals)
+    if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
+        stop("Differing number of rows for score matrix and annotations in ",
+            "function buildscoreforintervals")
+    if (!isTRUE(all.equal(rownames(scoremat), rownames(dfintervals))))
+        stop("The rows of scoremat and dfintervals are not in the same order")
+
+    ## Building vectors used for the final data.frame
+    if (verbose) message("\t Retrieving information for the final data.frame")
+    dfintervalsrownames <- rownames(dfintervals)
+    transvec <- gsub("_frame.+", "", dfintervalsrownames, perl = TRUE) # nolint
+    symbolvec <- .returnsymbolvec(transvec, database_name, dfintervals)
+    windowvec <- .returnwindowvec(dfintervalsrownames)
+    strandvec <- dfintervals$strand
+
+    ## Final data.frame
+    if (verbose) message("\t Creating the final data.frame")
+    df <- data.frame(biotype = grname, chr = dfintervals$seqnames,
+    start = dfintervals$start, end = dfintervals$end, transcript = transvec,
+    gene = symbolvec, strand = strandvec, window = windowvec,
+    id = paste(transvec, symbolvec, strandvec, windowvec, sep = "_"))
+    df <- cbind(df, scoremat)
+
+    return(df)
+}
