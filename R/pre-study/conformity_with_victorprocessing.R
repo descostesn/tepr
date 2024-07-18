@@ -77,7 +77,9 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     if (!isTRUE(all.equal(lna, 0)))
         stop("str1 and str2 do not have the same elements")
     bed2 <- bed2[idx, ]
-    invisible(sapply(seq_len(ncol(bed1)), function(i) {
+    idxcheckvec <- c(1, if (includeposition) c(2, 3), 4, if (nbcol != 4) 5,
+            if (nbcol == 6) 6)
+    invisible(sapply(idxcheckvec, function(i) {
         idx <- which(bed1[, i] != bed2[, i])
         lidx <- length(idx)
         if (!isTRUE(all.equal(lidx, 0)))
