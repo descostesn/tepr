@@ -236,16 +236,24 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu, database_name)
+lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
+    database_name)
 protcoddfconformity <- protcoddf
 saveRDS(protcoddfconformity,
     file = file.path(robjoutputfold, "protcoddf_fromconformity.rds"))
-lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
-    database_name)
 lncrnadfconformity <- lncrnadf
 saveRDS(lncrnadfconformity,
     file = file.path(robjoutputfold, "lncrnadf_fromconformity.rds"))
 alldf <- rbind(protcoddf, lncrnadf)
+alldfconformity <- alldf
+saveRDS(alldfconformity,
+    file = file.path(robjoutputfold, "alldf_fromconformity.rds"))
 
 
 ## Reading the table obtained with the bash and R code
 bashalldf <- read.delim(bigtsvpath, header = FALSE)
+
+
+!!!!!!!!! problem with the genes, try retrieving names from a gtf?
+!!!!!!!!! or keep the gene names from the initial encode gtf -> make more sens
+!!!!!!!!! REMOVE THE CLUSTER PROFILER CONVERTION
