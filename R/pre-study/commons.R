@@ -4,7 +4,8 @@ bedtogr <- function(currentbed, strand = TRUE) {
             ranges = IRanges::IRanges(start = currentbed[, 2],
                                   end = currentbed[, 3],
                                   names = currentbed[, 4]),
-            strand = if (strand) currentbed[, 6] else "+")
+            strand = if (strand) currentbed[, 6] else "+",
+            symbol = currentbed[, 5])
     return(grres)
 }
 
