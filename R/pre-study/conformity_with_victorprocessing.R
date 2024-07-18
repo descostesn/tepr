@@ -87,11 +87,14 @@ verifybed <- function(bed1, bed2, nbcol = 6, includeposition = TRUE) {
     }))
 }
 
-removepar <- function(dfbed) {
+removepar <- function(dfbed, substractpary = FALSE) {
     idx <- grep("PAR_", dfbed[, 4])
     if (!isTRUE(all.equal(length(idx), 0))) {
         message("\t\t Remove ", length(idx), " PAR")
-        dfbed <- dfbed[-idx, ]
+        if (!substractpary)
+            dfbed <- dfbed[-idx, ]
+        else
+            dfbed[idx, 4] <- gsub("_PAR_Y", "", dfbed[idx,4])
     }
     return(dfbed)
 }
@@ -101,7 +104,7 @@ comparenoblack <- function(bashpath, dfbed) {
     fromsh <- read.delim(bashpath, header = FALSE)
 
     ## Remove suffix "_PAR_Y" if present in dfbed
-    dfbed <- removepar(dfbed)
+    dfbed <- removepar(dfbed, substractpary = TRUE)
 
     ## Remove last column and add transcript names and strand to match the robj
     ## format
