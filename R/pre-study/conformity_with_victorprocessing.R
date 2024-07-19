@@ -261,3 +261,22 @@ idx <- match(rdf$id, shdf$id)
 idxna <- which(is.na(idx))
 if (!isTRUE(all.equal(length(idxna), 0)))
     stop("id column does not correspond between df")
+shdf <- shdf[idx, ]
+
+## Modifying shdf biotype for uppercase difference
+shdf$biotype <- gsub("lncRNA", "lncrna", shdf$biotype)
+shdf$biotype <- gsub("protein-coding", "protein_coding", shdf$biotype)
+
+testrdf <- rdf[, c("biotype", "chr", "transcript", "gene",
+    "strand", "window", "id")]
+testshdf <- shdf[, c("biotype", "chr", "transcript", "gene",
+    "strand", "window", "id")]
+
+## Correct column types
+testrdf$chr <- as.character(testrdf$chr)
+testrdf$strand <- as.character(testrdf$strand)
+testrdf$window <- as.integer(testrdf$window)
+rownames(testrdf) <- rownames(testshdf) <- NULL
+
+if (!isTRUE(all.equal(testrdf, testshdf)))
+    stop("The final df are different")
