@@ -195,6 +195,7 @@ comparedf <- function(rdf, shdf) {
 }
 
 
+
 ##################
 # MAIN
 ##################
@@ -282,5 +283,3 @@ colnames(bashalldf) <- c("biotype", "chr", "start", "end", "transcript", "gene",
     "score7", "name8", "score8")
 
 comparedf(rdf, shdf)
-
-
