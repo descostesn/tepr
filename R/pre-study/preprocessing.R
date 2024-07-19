@@ -10,6 +10,8 @@ library("GenomeInfoDb")
 library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
+#library("clusterProfiler")
+#library("org.Hs.eg.db")
 
 source("commons.R")
 
@@ -35,61 +37,13 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.M
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-nbcpu <- 15
-
+nbcpu <- 6
+database_name <- "org.Hs.eg.db"
 
 
 ##################
 #FUNCTIONS
 ##################
-
-retrievemeanfrombw <- function(grintervals, bwpath) {
-    message("Retrieving bw values")
-    rangeselect <- rtracklayer::BigWigSelection(grintervals, character())
-    bwval <- rtracklayer::import.bw(bwpath,
-        selection = rangeselect, as = "NumericList")
-
-    if (!isTRUE(all.equal(length(bwval), length(grintervals))))
-        stop("The number of intervals retrieved from the bigwig is not correct")
-    if (!isTRUE(all.equal(names(bwval), names(grintervals)))) {
-        message("\t Re-ordering list")
-        idx <- match(names(grintervals), names(bwval))
-        idxna <- which(is.na(idx))
-        lna <- length(idxna)
-        if (!isTRUE(all.equal(lna, 0)))
-            stop("Problem with matching names.")
-        bwval <- bwval[idx]
-    }
-
-    message("\t Computing mean values for each interval")
-    meanvec <- sapply(bwval, mean)
-    rm(bwval)
-    invisible(gc())
-    return(meanvec)
-}
-
-buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu) {
-
-    message("Retrieving values for ", grname)
-
-    scorelist <- mcmapply(function(bwpath, expname, grintervals) {
-        message("\t Retrieving values for ", expname)
-        meanvec <- retrievemeanfrombw(grintervals, bwpath)
-        return(meanvec)
-    }, expdf$path, expdf$name, MoreArgs = list(grintervals), SIMPLIFY = FALSE,
-        mc.cores = nbcpu)
-
-    scoremat <- do.call("cbind", scorelist)
-    colnames(scoremat) <- expdf$name
-    dfintervals <- as.data.frame(grintervals)
-    if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
-        stop("Differing number of rows for score matrix and annotations in ",
-            "function buildscoreforintervals")
-    if (!isTRUE(all.equal(rownames(scoremat), rownames(dfintervals))))
-        stop("The rows of scoremat and dfintervals are not in the same order")
-    df <- cbind(dfintervals, scoremat)
-    return(df)
-}
 
 
 createfolder <- function(outfold) {
@@ -171,8 +125,6 @@ saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
 saveRDS(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.rds"))
 saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
 ## used has only 1 as mapping scores. See parameters.
@@ -191,5 +143,8 @@ lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 ## Retrieving values from bigwig files
 exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
-    nbcpu)
-lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu)
+    nbcpu, database_name)
+lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
+    database_name)
+alldf <- rbind(protcoddf, lncrnadf)
+#alldf <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds") # nolint

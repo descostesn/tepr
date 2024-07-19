@@ -54,7 +54,7 @@ sort -k1,1 -k2,2n > makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
 
 rm tmp4.bed
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 ## Associating scores to bed
 ## The umap track was downloaded from https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb
 ## and converted to bed with https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v369/bigBedToBed
@@ -105,10 +105,11 @@ mv bedgraphs/*.score bedgraphs/protein_coding_score/
 
 
 ## Processing lncRNA
-windowS="/Users/victor/Documents/DATA/annotation/V43/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
-ANNOTATION="/Users/victor/Documents/DATA/annotation/V43/Ensembl_canonical_TSL123.lncRNA.bed"
+windowS="annotations/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+ANNOTATION="annotations/Ensembl_canonical_TSL123.lncRNA.bed"
 
-for file in $WORKING/*.$ext ;
+
+for file in bedgraphs/*.$ext ;
 do
     filename=$(basename "$file" .$ext) ;
     echo "starting file :"
