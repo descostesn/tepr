@@ -242,8 +242,19 @@ saveRDS(alldfconformity,
 
 ## Reading the table obtained with the bash and R code
 bashalldf <- read.delim(bigtsvpath, header = FALSE)
+colnamevec <- colnames(alldf)
 
 
-!!!!!!!!! problem with the genes, try retrieving names from a gtf?
-!!!!!!!!! or keep the gene names from the initial encode gtf -> make more sens
-!!!!!!!!! REMOVE THE CLUSTER PROFILER CONVERTION
+
+
+
+
+
+
+
+
+
+
+## Build strings to compare entries
+str1 <- paste(alldf$chr, alldf$)
+
