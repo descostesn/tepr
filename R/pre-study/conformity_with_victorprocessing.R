@@ -241,20 +241,23 @@ saveRDS(alldfconformity,
 
 
 ## Reading the table obtained with the bash and R code
-bashalldf <- read.delim(bigtsvpath, header = FALSE)
-colnamevec <- colnames(alldf)
+rdf <- alldf
+shdf <- read.delim(bigtsvpath, header = FALSE)
+colnames(bashalldf) <- c("biotype", "chr", "start", "end", "transcript", "gene",
+    "strand", "window", "id", "name1", "score1", "name2", "score2", "name3",
+    "score3", "name4", "score4", "name5", "score5", "name6", "score6", "name7",
+    "score7", "name8", "score8")
 
+!!
 
+## Removing PAR genes
+rdf <- rdf[-which(rdf$gene == "PAR"), ]
+message("rdf has ", nrow(rdf), " and shdf has ", nrow(shdf))
+if (!isTRUE(all.equal(nrow(rdf), nrow(shdf))))
+    stop("rdf and shdf have different number of rows")
 
-
-
-
-
-
-
-
-
-
-## Build strings to compare entries
-str1 <- paste(alldf$chr, alldf$)
-
+## Checking id matching
+idx <- match(rdf$id, shdf$id)
+idxna <- which(is.na(idx))
+if (!isTRUE(all.equal(length(idxna), 0)))
+    stop("id column does not correspond between df")
