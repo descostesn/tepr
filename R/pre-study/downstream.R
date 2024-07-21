@@ -31,18 +31,23 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 
-idxscores <- sapply(exptab$name, grep, colnames(alldf))
-score_columns <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
 !!!!!!!!!!!!!!!!!!!!!
+scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
+idxscores <- sapply(scorecolvec, grep, colnames(alldf))
+
 dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
     dplyr::summarize(gene = gene[1], strand = strand[1],
         dplyr::across(
-            tidyselect::all_of(score_columns),
+            tidyselect::all_of(scorecolvec),
             ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
 
-dfstrandlist <- mapply(function(strandname, directname, dfbytrans){
-    !!!!!!!!!!!!!
+dfstrandlist <- mapply(function(strandname, directname, dfbytrans) {
+
+    if (!(isTRUE(all.equal(strandname, "+")) && isTRUE(all.equal(directname, "fwd"))) || 
+        !(isTRUE(all.equal(strandname, "-")) && isTRUE(all.equal(directname, "rev"))))
+        stop("Strand and direction do not match, contact the developper")
+    
 }, unique(exptab$strand), unique(exptab$direction), MoreArgs = list(dfbytranscript))
 
 dfplus <- dfbytranscript %>%
