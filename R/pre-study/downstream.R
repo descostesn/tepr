@@ -5,7 +5,9 @@
 # Descostes - R-4.4.1 - July 2024
 ####################################
 
-
+library("tidyr")
+library("dplyr")
+library("tidyselect")
 
 ##################
 # PARAMETERS
@@ -27,10 +29,43 @@ exptab <- read.csv(exptabpath, header = TRUE)
 
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
-## 2) For each column, remove a line if it contains value < expthres
+## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
+
 idxscores <- sapply(exptab$name, grep, colnames(alldf))
+score_columns <- colnames(alldf)[idxscores]
+
+!!!!!!!!!!!!!!!!!!!!!
+dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
+    dplyr::summarize(gene = gene[1], strand = strand[1],
+        dplyr::across(
+            tidyselect::all_of(score_columns),
+            ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
+
+strandvec <- (alldf$strand)
+
+dfplus <- dfbytranscript %>%
+    filter(strand == "+") %>% 
+    select(gene, transcript, strand, contains("plus"))  %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_minus <- dfbytranscript %>%
+    filter(strand == "-") %>% 
+    select(gene, transcript, strand, contains("minus")) %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript) # nolint
+!!!!!!!!!!!!!!!
+
+
 if (isTRUE(all.equal(length(idxscores), 0)))
     stop("The scores were not retrieved in the data.frame") # nolint
+expressed_transcript_name <- main_table %>%
+    group_by(transcript) %>%
+    dplyr::summarize(gene=gene[1],strand=strand[1],
+                    across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+
 
 # idxremove <- unique(unlist(apply(alldf[, idxscores], 2,
 #     function(currentcol, thres) { return(which(currentcol < thres)) },
