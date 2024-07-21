@@ -59,7 +59,7 @@ dfstrandlist <- mapply(function(strandname, directname, dfbytrans, expthres) {
 
 exptranslist <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>% dplyr::arrange(transcript) %>% dplyr::pull(transcript) # nolint
 
-
+return(list(main_table=alldf,exptranlist=exptranlist))
 !!!!!!!!!!!!!!!
 
 
