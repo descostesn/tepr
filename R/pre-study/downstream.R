@@ -32,7 +32,7 @@ exptab <- read.csv(exptabpath, header = TRUE)
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 
 idxscores <- sapply(exptab$name, grep, colnames(alldf))
-score_columns <- colnames(alldf)[idxscores]
+score_columns <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
 !!!!!!!!!!!!!!!!!!!!!
 dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
@@ -41,7 +41,9 @@ dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
             tidyselect::all_of(score_columns),
             ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
 
-strandvec <- (alldf$strand)
+dfstrandlist <- mapply(function(strandname, directname, dfbytrans){
+    !!!!!!!!!!!!!
+}, unique(exptab$strand), unique(exptab$direction), MoreArgs = list(dfbytranscript))
 
 dfplus <- dfbytranscript %>%
     filter(strand == "+") %>% 
