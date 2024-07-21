@@ -68,19 +68,13 @@ main_table_read <- function(name_table, extension, workingdirectory,
     expressed_gene_name_list <- character()
 
     #Load data without header
-    res <- getting_var_names(extension,
-      file.path(workingdirectory, "bedgraphs"))
+    res <- getting_var_names(extension, workingdirectory)
     col_names <- res$col_names
     var_names <- res$var_names
 
     main_table <- data.frame()
     main_table <- read.delim(name_table, header = FALSE, sep = "\t",
       col.names = col_names)
-[1] "biotype"    "chr"        "coor1"      "coor2"      "transcript"
-[6] "gene"       "strand"     "window"     "id"
-lncRNA  chr1    817371  817383  ENST00000326734.2       FAM87B  +       1       ENST00000326734.2_FAM87B_+_1    ctrl_rep1.forward       0.000000        ctrl
-_rep1.reverse   NA      ctrl_rep2.forward       0.000000        ctrl_rep2.reverse       NA      HS_rep1.forward 0.000000        HS_rep1.reverse NA      HS_r
-ep2.forward     0.000000        HS_rep2.reverse NA
 
     for (gene in unique(main_table$gene)){
     gene_name_list <- c(gene_name_list, gene)
