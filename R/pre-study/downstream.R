@@ -43,28 +43,23 @@ dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
             ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
 
 dfstrandlist <- mapply(function(strandname, directname, dfbytrans, expthres) {
-
     if ((isTRUE(all.equal(strandname, "+")) && isTRUE(all.equal(directname, "rev"))) || 
         (isTRUE(all.equal(strandname, "-")) && isTRUE(all.equal(directname, "fwd"))))
         stop("Strand and direction do not match, contact the developper")
 
     dfstrand <- dfbytranscript %>%
-    filter(strand == strandname) %>%
-    select(gene, transcript, strand, contains(directname))  %>%
-    filter(if_all(all_of(contains("mean")), ~ !is.na(.))) %>%
-    filter(if_all(all_of(contains("mean")), ~ . > expthres))
+    dplyr::filter(strand == strandname) %>%
+    select(gene, transcript, strand, tidyselect::contains(directname))  %>%
+    dplyr::filter(dplyr::if_all(tidyselect::all_of(tidyselect::contains("mean")), ~ !is.na(.))) %>%
+    dplyr::filter(dplyr::if_all(tidyselect::all_of(tidyselect::contains("mean")), ~ . > expthres))
+
+    return(dfstrand)
+}, unique(exptab$strand), unique(exptab$direction), MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
 
 
-}, unique(exptab$strand), unique(exptab$direction), MoreArgs = list(dfbytranscript, expthres))
+exptranslist <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>% dplyr::arrange(transcript) %>% dplyr::pull(transcript) # nolint
 
 
-    expressed_minus <- dfbytranscript %>%
-    filter(strand == "-") %>% 
-    select(gene, transcript, strand, contains("minus")) %>%
-    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
-    filter(across(all_of(contains("score")), ~ . > expression_threshold))
-
-    expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript) # nolint
 !!!!!!!!!!!!!!!
 
 
