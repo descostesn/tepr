@@ -27,11 +27,13 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
 
     scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
+    ## Calculate the average expression per transcript (over each frame)
     dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
         dplyr::summarize(gene = gene[1], strand = strand[1], # nolint
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
                 ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+    ## Remove a line if it contains only values < expthres (separating strands)
     dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
         expthres) {
             if ((isTRUE(all.equal(strandname, "+")) &&
