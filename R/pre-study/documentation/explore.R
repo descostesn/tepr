@@ -18,60 +18,6 @@ rounding <- 10
 #FUNCTIONS
 ##################
 
-main_table_read <- function(name_table, extension, working_directory,
-    expression_threshold) {
-
-    df_final <- data.frame()
-    df_final_gene <- data.frame()
-    concat_df <- data.frame()
-    gene_name_list <- character()
-    expressed_gene_name_list <- character()
-
-    #Load data without header
-    res <- getting_var_names(extension,
-      file.path(working_directory, "bedgraphs"))
-    col_names <- res$col_names
-    var_names <- res$var_names
-
-    main_table <- data.frame()
-    main_table <- read.delim(paste0(working_directory,"/", name_table),
-                      header = FALSE, sep = "\t", col.names = col_names)
-
-    for (gene in unique(main_table$gene)){
-    gene_name_list <- c(gene_name_list, gene)
-    }
-    sorted_list <- sort(gene_name_list, decreasing = F)
-
-    # Get the column names with the suffix "score"
-    score_columns <- grep("score$", col_names, value = TRUE)
-
-    # Initialize an empty list to store the mean column names
-    mean_column_names <- list()
-    expressed_gene_name <- data.frame()
-    expressed_plus <- data.frame()
-
-    expressed_transcript_name <- main_table %>%
-    group_by(transcript) %>%
-    dplyr::summarize(gene=gene[1],strand=strand[1],
-                    across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
-
-    expressed_plus <- expressed_transcript_name %>%
-    filter(strand=="+") %>% 
-    select(gene, transcript, strand, contains("plus"))  %>%
-    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
-    filter(across(all_of(contains("score")), ~ . > expression_threshold))
-
-    expressed_minus <- expressed_transcript_name %>%
-    filter(strand == "-") %>% 
-    select(gene, transcript, strand, contains("minus")) %>%
-    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
-    filter(across(all_of(contains("score")), ~ . > expression_threshold))
-
-    expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript) # nolint
-
-    return(list(main_table=main_table,expressed_transcript_name_list=expressed_transcript_name_list)) # nolint
-}
-
 
 getting_var_names <- function(extension, working_directory) {
 
@@ -111,6 +57,60 @@ getting_var_names <- function(extension, working_directory) {
 
 
 
+
+main_table_read <- function(name_table, extension, workingdirectory,
+    expression_threshold) {
+
+    df_final <- data.frame()
+    df_final_gene <- data.frame()
+    concat_df <- data.frame()
+    gene_name_list <- character()
+    expressed_gene_name_list <- character()
+
+    #Load data without header
+    res <- getting_var_names(extension,
+      file.path(workingdirectory, "bedgraphs"))
+    col_names <- res$col_names
+    var_names <- res$var_names
+
+    main_table <- data.frame()
+    main_table <- read.delim(paste0(workingdirectory,"/", name_table),
+                      header = FALSE, sep = "\t", col.names = col_names)
+
+    for (gene in unique(main_table$gene)){
+    gene_name_list <- c(gene_name_list, gene)
+    }
+    sorted_list <- sort(gene_name_list, decreasing = F)
+
+    # Get the column names with the suffix "score"
+    score_columns <- grep("score$", col_names, value = TRUE)
+
+    # Initialize an empty list to store the mean column names
+    mean_column_names <- list()
+    expressed_gene_name <- data.frame()
+    expressed_plus <- data.frame()
+
+    expressed_transcript_name <- main_table %>%
+    group_by(transcript) %>%
+    dplyr::summarize(gene=gene[1],strand=strand[1],
+                    across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+
+    expressed_plus <- expressed_transcript_name %>%
+    filter(strand=="+") %>% 
+    select(gene, transcript, strand, contains("plus"))  %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_minus <- expressed_transcript_name %>%
+    filter(strand == "-") %>% 
+    select(gene, transcript, strand, contains("minus")) %>%
+    filter(across(all_of(contains("score")), ~ !is.na(.))) %>%
+    filter(across(all_of(contains("score")), ~ . > expression_threshold))
+
+    expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript) # nolint
+
+    return(list(main_table=main_table,expressed_transcript_name_list=expressed_transcript_name_list)) # nolint
+}
 
 
 genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
