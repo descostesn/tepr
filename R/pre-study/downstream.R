@@ -39,7 +39,7 @@ dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
     dplyr::summarize(gene = gene[1], strand = strand[1],
         dplyr::across(
             tidyselect::all_of(score_columns),
-            ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
+            ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
 
 dfstrandlist <- mapply(function(strandname, directname, dfbytrans){
     !!!!!!!!!!!!!
