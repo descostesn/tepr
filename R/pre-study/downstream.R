@@ -52,10 +52,10 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
         }, unique(expdf$strand), unique(expdf$direction),
             MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
 
-    exptranslist <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
+    exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
         dplyr::arrange(transcript) %>% dplyr::pull(transcript) # nolint
 
-    return(list(main_table = alldf, exptranlist = exptranslist))
+    return(list(main_table = alldf, exptranlist = exptranstab))
 }
 
 
