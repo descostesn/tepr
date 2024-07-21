@@ -25,7 +25,7 @@ nbcpu <- 6
 
 ## Reading alldf and info tab
 alldf <- readRDS(alldfpath)
-exptab <- read.csv(exptabpath, header = TRUE)
+expdf <- read.csv(exptabpath, header = TRUE)
 
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
