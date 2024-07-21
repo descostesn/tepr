@@ -47,12 +47,13 @@ dfstrandlist <- mapply(function(strandname, directname, dfbytrans, expthres) {
     if ((isTRUE(all.equal(strandname, "+")) && isTRUE(all.equal(directname, "rev"))) || 
         (isTRUE(all.equal(strandname, "-")) && isTRUE(all.equal(directname, "fwd"))))
         stop("Strand and direction do not match, contact the developper")
-!!    
+
     dfstrand <- dfbytranscript %>%
     filter(strand == strandname) %>%
     select(gene, transcript, strand, contains(directname))  %>%
-    filter(across(all_of(contains("mean")), ~ !is.na(.))) %>%
-    filter(across(all_of(contains("mean")), ~ . > expression_threshold))
+    filter(if_all(all_of(contains("mean")), ~ !is.na(.))) %>%
+    filter(if_all(all_of(contains("mean")), ~ . > expthres))
+
 
 }, unique(exptab$strand), unique(exptab$direction), MoreArgs = list(dfbytranscript, expthres))
 
