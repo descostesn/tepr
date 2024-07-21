@@ -10,7 +10,7 @@ library(stringr)
 
 working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
 extension <- "*.bg"
-name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv" # nolint
+name_table <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
 rounding <- 10
 
 
@@ -19,9 +19,9 @@ rounding <- 10
 ##################
 
 
-getting_var_names <- function(extension, working_directory) {
+getting_var_names <- function(extension, workdir) {
 
-  bedgraph_files <- list.files(working_directory, pattern = extension,
+  bedgraph_files <- list.files(workdir, pattern = extension,
     full.names = TRUE)
   files <- bedgraph_files %>% map(~{filename <- tools::file_path_sans_ext(basename(.))}) # nolint
   string <- files
@@ -74,8 +74,13 @@ main_table_read <- function(name_table, extension, workingdirectory,
     var_names <- res$var_names
 
     main_table <- data.frame()
-    main_table <- read.delim(paste0(workingdirectory,"/", name_table),
-                      header = FALSE, sep = "\t", col.names = col_names)
+    main_table <- read.delim(name_table, header = FALSE, sep = "\t",
+      col.names = col_names)
+[1] "biotype"    "chr"        "coor1"      "coor2"      "transcript"
+[6] "gene"       "strand"     "window"     "id"
+lncRNA  chr1    817371  817383  ENST00000326734.2       FAM87B  +       1       ENST00000326734.2_FAM87B_+_1    ctrl_rep1.forward       0.000000        ctrl
+_rep1.reverse   NA      ctrl_rep2.forward       0.000000        ctrl_rep2.reverse       NA      HS_rep1.forward 0.000000        HS_rep1.reverse NA      HS_r
+ep2.forward     0.000000        HS_rep2.reverse NA
 
     for (gene in unique(main_table$gene)){
     gene_name_list <- c(gene_name_list, gene)
@@ -625,7 +630,7 @@ Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 ##################
 
 results_main_table <- main_table_read(name_table, extension,
-  file.path(working_directory, bedgraph), 0.1) # nolint
+  file.path(working_directory, "bedgraphs"), 0.1) # nolint
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
     working_directory)
