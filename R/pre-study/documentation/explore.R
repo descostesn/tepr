@@ -248,7 +248,7 @@ modified_dataset <- transcript_table
 # ----------------------------------------------------
         concat_df <- bind_rows(concat_df, modified_dataset)
     }
-
+saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
     # # Close the progress bar
     close(pb)
     # list_gene_table <- concat_df %>% select(gene) %>% distinct()
