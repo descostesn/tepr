@@ -171,4 +171,5 @@ protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
     database_name)
 alldf <- rbind(protcoddf, lncrnadf)
+saveRDS(alldf, file = file.path(robjoutputfold, "alldffrompreprocessing.rds"))
 #alldf <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds") # nolint
