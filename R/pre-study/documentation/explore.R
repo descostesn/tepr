@@ -198,8 +198,10 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
 
         list_df <- list()
         i <- 1
+        ## This for loop is equivalent to computing on each column, bigDF might
+        ## not be useful.
         for (my_var in unique(df_long$variable)) {
-            df_subset <- subset(df_long, subset = variable == my_var) 
+            df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
             df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
             ecdf_df <- ecdf(df_expanded[,"coord"])
             df_subset$Fx <- ecdf_df(df_subset$coord) 
@@ -207,6 +209,11 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             i <- i + 1
         }
 
+        ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
+        ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
+        ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
+        ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
+        ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
         df_final <- bind_rows(list_df)
         transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
 
