@@ -113,11 +113,11 @@ main_table_read <- function(name_table, extension, workingdirectory,
 
 
 genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
-    extension, working_directory) {
+    extension, workdir) {
 
     gc()
 
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension, workdir)
     col_names <- res$col_names
     var_names <- res$var_names  
 
@@ -627,7 +627,7 @@ results_main_table <- main_table_read(name_table, extension,
   file.path(working_directory, "bedgraphs"), 0.1) # nolint
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
-    working_directory)
+    workdir = file.path(working_directory, "bedgraphs"))
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
 
