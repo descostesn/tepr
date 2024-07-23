@@ -220,7 +220,7 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
         # getting rid of plus and minus
         if (transcript_table$strand[1]=="-") {
             # Drop columns containing "minus"
-            columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+            columns_to_drop <- grep("plus", col_names, value = TRUE)
             dataset_without_dropped <- transcript_table %>%
             select(-all_of(columns_to_drop))
 
@@ -229,7 +229,7 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
         rename_with(~gsub(".minus", "", .), contains(".minus"))
         } else {
             # Drop columns containing "minus"
-            columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+            columns_to_drop <- grep("minus", col_names, value = TRUE)
             dataset_without_dropped <- transcript_table %>%
             select(-all_of(columns_to_drop))
 
