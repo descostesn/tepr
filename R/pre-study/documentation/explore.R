@@ -127,21 +127,42 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
 
     j = 0
     concat_df <- data.frame()
-    ## Looping through all the transcripts
+
+    ## Looping through all the transcripts i.e performs the loop for each
+    ## transcript that has been kept by the function main_table_read because
+    ## it was expressed
     for (variable in expressed_transcript_name_list) {
 
         gene_table <- data.frame()
         bigDF <- data.frame()
 
+        ## Isolating the rows corresponding to the transcript
+        ## Question: Could we do it at once for all expressed transcripts with
+        ## a match (transcriptmaintable in selectedtrans, remove na, use the
+        ## transcript column as factor to split the main table)
         transcript_table <- data.frame()
         transcript <- filter(main_table, main_table$transcript == variable)
+        ## This replacement is not necessary in my hands
         transcript[transcript == "NAN"] <- NA
+        ## Changing the name of transcript can be useful to conserve it. So far,
+        ## it seems to be done to keep looking for the strand. It could be
+        ## stored in a variable. Add verification that the strand is unique
+        ## in transcript.
         bigDF <- transcript
+        ## This is equivalent to nrow(transcript). Check if every transcript has
+        ## the same number of windows, if it is the case, it is not necessary
+        ## to take this into account.
         my_length <- length(bigDF[,'window'])
 
+# ---------------------------------------------------------------------------------------------------
+## SUMMARY
+##
+## This section filters the score columns according to the strand of the transcript considered
+
+        ## This only builds the names of the columns containing the scores
         var_names_score <- paste0(var_names,"_score")
 
-        if (transcript$strand[1] == "-") {
+        if (transcript$strand[1] == "-") { # see above, the strand can be stored in a variable instead of calculating it. # nolint
             bigDF <- bigDF %>%
             select(!matches("plus"))
             bigDF$coord <- seq(from = my_length, to = 1, by = -1)
@@ -153,15 +174,26 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             bigDF$coord <- seq(from=1, to=my_length,by=1)
             conditions <- var_names_score[grepl("plus",var_names_score)]
         }
+# ---------------------------------------------------------------------------------------------------
 
+        ## To my understanding this Fills missing values in selected columns
+        ## using first down and then up previous entry.
         bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+
+        ## The code below creates a data.frame of two columns with the name of
+        ## the experiment as key and the expression as value. This is the kind
+        ## of transformation we do before using ggplot2. However I do not see
+        ## why keeping the previous columns is necessary. They will be repeated
+        ## several times.
         df_long <- bigDF %>% 
             gather(key = "variable", value = "value", conditions)
+        ## Makes the values as integer by multiplying by 10. Why not using the
+        ## ceil or floor function. Is it important to increase the scores?
         df_long[,'value'] <- as.numeric(df_long[,'value'])
         df_long[,'value_round']<- round(df_long$value*rounding)
 
-        j = j + 1
         #  Update the progress bar
+        j = j + 1
         setTxtProgressBar(pb, j)
 
         list_df <- list()
