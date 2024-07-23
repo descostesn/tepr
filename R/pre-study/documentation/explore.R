@@ -217,6 +217,14 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
         df_final <- bind_rows(list_df)
         transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
 
+#---------------
+## ADDED BY ME
+modified_dataset <- transcript_table
+#---------------
+
+
+# ------------------------------------------------
+## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST
         # getting rid of plus and minus
         if (transcript_table$strand[1]=="-") {
             # Drop columns containing "minus"
@@ -237,6 +245,7 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             modified_dataset <- dataset_without_dropped %>%
             rename_with(~gsub(".plus", "", .), contains(".plus"))
         }
+# ----------------------------------------------------
         concat_df <- bind_rows(concat_df, modified_dataset)
     }
 
