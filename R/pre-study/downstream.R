@@ -57,20 +57,20 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
     exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
         dplyr::arrange(transcript) %>% dplyr::pull(transcript) # nolint
 
-    return(list(main_table = alldf, exptranlist = exptranstab))
+    return(list(maintable = alldf, exptranlist = exptranstab))
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
-    extension, workdir) {
+genesECDF <- function(allexprsdfs, expdf, rounding = 10) {
 
-    gc()
+    maintable <- allexprsdfs[[1]]
+    exprstransnames <- allexprsdfs[[2]]
 
     res <- getting_var_names(extension, workdir)
     col_names <- res$col_names
     var_names <- res$var_names  
 
-    total_iterations <- length(expressed_transcript_name_list)
+    total_iterations <- length(exprstransnames)
     #setting the progress bar
     pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
 
@@ -78,9 +78,9 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
     concat_df <- data.frame()
 
     ## Looping through all the transcripts i.e performs the loop for each
-    ## transcript that has been kept by the function main_table_read because
+    ## transcript that has been kept by the function maintable_read because
     ## it was expressed
-    for (variable in expressed_transcript_name_list) {
+    for (variable in exprstransnames) {
 
         gene_table <- data.frame()
         bigDF <- data.frame()
@@ -90,7 +90,7 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
         ## a match (transcriptmaintable in selectedtrans, remove na, use the
         ## transcript column as factor to split the main table)
         transcript_table <- data.frame()
-        transcript <- filter(main_table, main_table$transcript == variable)
+        transcript <- filter(maintable, maintable$transcript == variable)
         ## This replacement is not necessary in my hands
         transcript[transcript == "NAN"] <- NA
         ## Changing the name of transcript can be useful to conserve it. So far,
@@ -224,6 +224,4 @@ allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 
 
 
-resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
-    expressed_transcript_name_list = results_main_table[[2]], extension,
-    workdir = file.path(working_directory, "bedgraphs"))
+resultsECDF <- genesECDF(allexprsdfs, expdf)
