@@ -84,10 +84,11 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
+    framevec <- seq_len(nbrows)
     colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        nbrows, colnamevec) {
+        framevec, colnamevec) {
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
         .checkunique(str, "str")
@@ -95,38 +96,15 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
         scoremat <- transtable[, colnamestr]
 
         ## For each column of the scoremat, compute ecdf
-        ecdfmat <- apply(scoremat, 2, function(x, rounding, nbrows) {
-            coordvec <- rep(seq_len(nbrows), ceiling(x*rounding))
-            x <- x[coordvec]
-            ecdfdf <- ecdf
-        }, rounding, nbrows, simplify = TRUE)
-
-
-
-
-
-
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        ## This for loop is equivalent to computing on each column, bigDF might
-        ## not be useful.
-        for (my_var in unique(df_long$variable)) {
-            df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
-            df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
-            ecdf_df <- ecdf(df_expanded[,"coord"])
-            df_subset$Fx <- ecdf_df(df_subset$coord) 
-            list_df[[i]] <- df_subset
-            i <- i + 1
-        }
-
-        ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
-        ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
-        ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
-        ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
-        ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
-        df_final <- bind_rows(list_df)
-        transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    }, expdf, nbrows, colnamevec, mc.cores = nbcpu)
+        ecdfmat <- apply(scoremat, 2, function(x, rounding, framevec) {
+            extendedframevec <- rep(framevec, ceiling(x * rounding))
+            fx <- ecdf(extendedframevec)(framevec)
+            return(fx)
+        }, rounding, framevec, simplify = TRUE)
+        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_")
+        res <- cbind(transtable, ecdfmat)
+        return(res)
+    }, expdf, framevec, colnamevec, mc.cores = nbcpu)
 
 
     # res <- getting_var_names(extension, workdir)
