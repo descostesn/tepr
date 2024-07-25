@@ -125,8 +125,4 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-start_time <- Sys.time()
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
-end_time <- Sys.time()
-end_time - start_time
-
