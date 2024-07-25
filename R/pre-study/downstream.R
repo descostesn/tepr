@@ -71,6 +71,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10) {
     idxnoexpr <- which(is.na(idx))
     maintable <- maintable[-idxnoexpr, ]
 
+    ## Splitting the table by each transcript to perform transcript specific
+    ## operations
+    transdflist <- split(maintable, factor(maintable$transcript))
+
     res <- getting_var_names(extension, workdir)
     col_names <- res$col_names
     var_names <- res$var_names  
