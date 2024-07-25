@@ -261,7 +261,7 @@ saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/conca
 
 calculates_meanFx <- function(concat_df, window_number) {
 
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension, file.path(working_directory, "bedgraphs/")) # nolint
     Conditions <- res$Conditions
     replicate_numbers <- res$replicate_numbers
     column_vector_value <- character()
@@ -283,21 +283,22 @@ calculates_meanFx <- function(concat_df, window_number) {
         # Calculate row means for the specified columns
         # Check if there is more than one replicate
         if (length(replicate_numbers) > 1) {
+            ## !! I do not get how this can work since the column are not defined!!
           concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F) # nolint
           concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE) # nolint
-        } else {
+        } else { ## ! this case is not necessary, 
           # Handle case when column_vector_value is empty
           new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item # nolint
           new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item # nolint
-
+## !! I do not get how this can work since the column are not defined!!
         concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
         concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
         }
-
+## !! I do not get how this can work since the column are not defined!!
         concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC # nolint
         column_vector_value <- character() ## obligatory to reset the columns values to empty # nolint
         column_vector_Fx <- character() # nolint
-      }
+    }
 
       return(concat_dfFx=concat_df)
 }
@@ -676,6 +677,7 @@ results_main_table <- main_table_read(name_table, extension,
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
     workdir = file.path(working_directory, "bedgraphs"))
+resultsECDF <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds") # nolint
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
 
