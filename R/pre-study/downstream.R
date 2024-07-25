@@ -41,7 +41,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
                 (isTRUE(all.equal(strandname, "-")) &&
                 isTRUE(all.equal(directname, "fwd"))))
                     stop("Strand and direction do not match, contact the ",
-                        "developper")
+                        "developer")
             dfstrand <- dfbytranscript %>%
                 dplyr::filter(strand == strandname) %>% # nolint
                 dplyr::select(gene, transcript, strand, # nolint
@@ -65,7 +65,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
 .checkunique <- function(x, xname) {
         if (!isTRUE(all.equal(length(x), 1)))
             stop("The element ", xname,
-                " should be unique, contact the developper.")
+                " should be unique, contact the developer.")
 }
 
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
@@ -84,11 +84,23 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
+    colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        nbrows) {
+        nbrows, colnamevec) {
         ## Filters the score columns according to the strand of the transcript
-        str <- 
+        str <- as.character(unique(transtable$strand))
+        .checkunique(str, "str")
+        colnamestr <- colnamevec[which(expdf$strand == str)]
+        scoremat <- transtable[, colnamestr]
+
+        ## For each column of the scoremat, compute ecdf
+        ecdfmat <- apply(scoremat, 2, function(x, rounding, nbrows) {
+            coordvec <- rep(seq_len(nbrows), ceiling(x*rounding))
+            x <- x[coordvec]
+            ecdfdf <- ecdf
+        }, rounding, nbrows, simplify = TRUE)
+
 
 
 
@@ -114,7 +126,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
         df_final <- bind_rows(list_df)
         transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    }, expdf, nbrows, mc.cores = nbcpu)
+    }, expdf, nbrows, colnamevec, mc.cores = nbcpu)
 
 
     # res <- getting_var_names(extension, workdir)
