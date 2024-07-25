@@ -61,6 +61,13 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+.checkunique <- function(x, xname) {
+        if (!isTRUE(all.equal(length(x), 1)))
+            stop("The element ", xname,
+                " should be unique, contact the developper.")
+}
+
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
 
     ## Defining variables
@@ -76,6 +83,8 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
     ## operations
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
+    .checkunique(nbrows, "nbrows")
+
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
         nbrows) {
         ## Filters the score columns according to the strand of the transcript
