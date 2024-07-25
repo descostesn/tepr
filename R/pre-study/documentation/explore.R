@@ -10,7 +10,7 @@ library(stringr)
 
 working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
 extension <- "*.bg"
-name_table <- "Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.chr22.tsv" # nolint
+name_table <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
 rounding <- 10
 
 
@@ -19,9 +19,9 @@ rounding <- 10
 ##################
 
 
-getting_var_names <- function(extension, working_directory) {
+getting_var_names <- function(extension, workdir) {
 
-  bedgraph_files <- list.files(working_directory, pattern = extension,
+  bedgraph_files <- list.files(workdir, pattern = extension,
     full.names = TRUE)
   files <- bedgraph_files %>% map(~{filename <- tools::file_path_sans_ext(basename(.))}) # nolint
   string <- files
@@ -55,8 +55,10 @@ getting_var_names <- function(extension, working_directory) {
   return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) # nolint
 }
 
-# expression_threshold=0.1
-main_table_read <- function(name_table, extension, working_directory,
+
+
+
+main_table_read <- function(name_table, extension, workingdirectory,
     expression_threshold) {
 
     df_final <- data.frame()
@@ -66,14 +68,13 @@ main_table_read <- function(name_table, extension, working_directory,
     expressed_gene_name_list <- character()
 
     #Load data without header
-    res <- getting_var_names(extension,
-      file.path(working_directory, "bedgraphs"))
+    res <- getting_var_names(extension, workingdirectory)
     col_names <- res$col_names
     var_names <- res$var_names
 
     main_table <- data.frame()
-    main_table <- read.delim(paste0(working_directory,"/", name_table),
-                      header = FALSE, sep = "\t", col.names = col_names)
+    main_table <- read.delim(name_table, header = FALSE, sep = "\t",
+      col.names = col_names)
 
     for (gene in unique(main_table$gene)){
     gene_name_list <- c(gene_name_list, gene)
@@ -111,13 +112,12 @@ main_table_read <- function(name_table, extension, working_directory,
 }
 
 
-
 genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
-    extension, working_directory) {
+    extension, workdir) {
 
     gc()
 
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension, workdir)
     col_names <- res$col_names
     var_names <- res$var_names  
 
@@ -127,21 +127,42 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
 
     j = 0
     concat_df <- data.frame()
-    ## Looping through all the transcripts
+
+    ## Looping through all the transcripts i.e performs the loop for each
+    ## transcript that has been kept by the function main_table_read because
+    ## it was expressed
     for (variable in expressed_transcript_name_list) {
 
         gene_table <- data.frame()
         bigDF <- data.frame()
 
+        ## Isolating the rows corresponding to the transcript
+        ## Question: Could we do it at once for all expressed transcripts with
+        ## a match (transcriptmaintable in selectedtrans, remove na, use the
+        ## transcript column as factor to split the main table)
         transcript_table <- data.frame()
         transcript <- filter(main_table, main_table$transcript == variable)
+        ## This replacement is not necessary in my hands
         transcript[transcript == "NAN"] <- NA
+        ## Changing the name of transcript can be useful to conserve it. So far,
+        ## it seems to be done to keep looking for the strand. It could be
+        ## stored in a variable. Add verification that the strand is unique
+        ## in transcript.
         bigDF <- transcript
+        ## This is equivalent to nrow(transcript). Check if every transcript has
+        ## the same number of windows, if it is the case, it is not necessary
+        ## to take this into account.
         my_length <- length(bigDF[,'window'])
 
+# ---------------------------------------------------------------------------------------------------
+## SUMMARY
+##
+## This section filters the score columns according to the strand of the transcript considered
+
+        ## This only builds the names of the columns containing the scores
         var_names_score <- paste0(var_names,"_score")
 
-        if (transcript$strand[1] == "-") {
+        if (transcript$strand[1] == "-") { # see above, the strand can be stored in a variable instead of calculating it. # nolint
             bigDF <- bigDF %>%
             select(!matches("plus"))
             bigDF$coord <- seq(from = my_length, to = 1, by = -1)
@@ -153,21 +174,34 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             bigDF$coord <- seq(from=1, to=my_length,by=1)
             conditions <- var_names_score[grepl("plus",var_names_score)]
         }
+# ---------------------------------------------------------------------------------------------------
 
+        ## To my understanding this Fills missing values in selected columns
+        ## using first down and then up previous entry.
         bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+
+        ## The code below creates a data.frame of two columns with the name of
+        ## the experiment as key and the expression as value. This is the kind
+        ## of transformation we do before using ggplot2. However I do not see
+        ## why keeping the previous columns is necessary. They will be repeated
+        ## several times.
         df_long <- bigDF %>% 
             gather(key = "variable", value = "value", conditions)
+        ## Makes the values as integer by multiplying by 10. Why not using the
+        ## ceil or floor function. Is it important to increase the scores?
         df_long[,'value'] <- as.numeric(df_long[,'value'])
         df_long[,'value_round']<- round(df_long$value*rounding)
 
-        j = j + 1
         #  Update the progress bar
+        j = j + 1
         setTxtProgressBar(pb, j)
 
         list_df <- list()
         i <- 1
+        ## This for loop is equivalent to computing on each column, bigDF might
+        ## not be useful.
         for (my_var in unique(df_long$variable)) {
-            df_subset <- subset(df_long, subset = variable == my_var) 
+            df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
             df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
             ecdf_df <- ecdf(df_expanded[,"coord"])
             df_subset$Fx <- ecdf_df(df_subset$coord) 
@@ -175,13 +209,26 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             i <- i + 1
         }
 
+        ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
+        ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
+        ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
+        ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
+        ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
         df_final <- bind_rows(list_df)
         transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
 
+#---------------
+## ADDED BY ME
+modified_dataset <- transcript_table
+#---------------
+
+
+# ------------------------------------------------
+## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST
         # getting rid of plus and minus
         if (transcript_table$strand[1]=="-") {
             # Drop columns containing "minus"
-            columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+            columns_to_drop <- grep("plus", col_names, value = TRUE)
             dataset_without_dropped <- transcript_table %>%
             select(-all_of(columns_to_drop))
 
@@ -190,7 +237,7 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
         rename_with(~gsub(".minus", "", .), contains(".minus"))
         } else {
             # Drop columns containing "minus"
-            columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+            columns_to_drop <- grep("minus", col_names, value = TRUE)
             dataset_without_dropped <- transcript_table %>%
             select(-all_of(columns_to_drop))
 
@@ -198,9 +245,10 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
             modified_dataset <- dataset_without_dropped %>%
             rename_with(~gsub(".plus", "", .), contains(".plus"))
         }
+# ----------------------------------------------------
         concat_df <- bind_rows(concat_df, modified_dataset)
     }
-
+saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
     # # Close the progress bar
     close(pb)
     # list_gene_table <- concat_df %>% select(gene) %>% distinct()
@@ -623,10 +671,11 @@ Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 # MAIN
 ##################
 
-results_main_table <- main_table_read(name_table, extension, working_directory, 0.1) # nolint
+results_main_table <- main_table_read(name_table, extension,
+  file.path(working_directory, "bedgraphs"), 0.1) # nolint
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
-    working_directory)
+    workdir = file.path(working_directory, "bedgraphs"))
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
 

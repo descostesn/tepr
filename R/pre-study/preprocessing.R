@@ -51,6 +51,27 @@ createfolder <- function(outfold) {
         dir.create(outfold, recursive = TRUE)
 }
 
+checkexptab <- function(exptab) {
+    colnamevec <- c("condition", "direction", "path", "replicate", "strand")
+    if (!isTRUE(all.equal(sort(colnames(exptab)), colnamevec)))
+        stop("The experiment table should have the columns: ",
+            "'condition', 'direction', 'path', 'replicate', 'strand'")
+
+    if (!isTRUE(all.equal(length(unique(exptab$condition)), 2)))
+        stop("The table should only contain two conditions")
+
+    directionvec <- unique(exptab$direction)
+    if (!isTRUE(all.equal(length(directionvec), 2)) ||
+        !isTRUE(all.equal(directionvec, c("fwd", "rev"))))
+        stop("Only two values are allowed for the column direction of the",
+            "experiment table, 'fwd' and 'rev'")
+
+    strandvec <- unique(exptab$strand)
+    if (!isTRUE(all.equal(strandvec, c("+", "-"))))
+        stop("The strand column of the experiment table should only contain",
+            " '+' and '-'.")
+}
+
 createblacklist <- function(blacklistname, outputfolder) { # nolint
 
     blacklistgr <- AnnotationHub::query(AnnotationHub::AnnotationHub(),
@@ -94,6 +115,10 @@ sortedbedformat <- function(gencode) {
 ##################
 
 createfolder(robjoutputfold)
+
+## Reading the information about experiments
+exptab <- read.csv(exptabpath, header = TRUE)
+checkexptab(exptab)
 
 ## Read gencode file
 gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
@@ -141,10 +166,10 @@ protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
 lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
 ## Retrieving values from bigwig files
-exptab <- read.csv(exptabpath, header = TRUE)
 protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
     nbcpu, database_name)
 lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
     database_name)
 alldf <- rbind(protcoddf, lncrnadf)
+saveRDS(alldf, file = file.path(robjoutputfold, "alldffrompreprocessing.rds"))
 #alldf <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds") # nolint

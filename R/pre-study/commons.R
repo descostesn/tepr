@@ -90,19 +90,19 @@ buildscoreforintervals <- function(grintervals, expdf, grname, nbcpu,
     database_name, verbose = TRUE) {
 
     if (verbose) message("Processing ", grname)
-
+    expnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
     scorelist <- parallel::mcmapply(function(bwpath, expname, grintervals,
         verbose) {
         if (verbose) message("\t Retrieving bw values for ", expname)
         meanvec <- .retrievemeanfrombw(grintervals, bwpath, verbose)
         return(meanvec)
-    }, expdf$path, expdf$name, MoreArgs = list(grintervals, verbose),
+    }, expdf$path, expnamevec, MoreArgs = list(grintervals, verbose),
         SIMPLIFY = FALSE, mc.cores = nbcpu)
 
     ## Building matrix of mean scores
     if (verbose) message("\t Building matrix")
     scoremat <- do.call("cbind", scorelist)
-    colnames(scoremat) <- expdf$name
+    colnames(scoremat) <- expnamevec
     dfintervals <- as.data.frame(grintervals)
     if (!isTRUE(all.equal(nrow(scoremat), nrow(dfintervals))))
         stop("Differing number of rows for score matrix and annotations in ",

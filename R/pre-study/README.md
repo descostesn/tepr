@@ -1,8 +1,9 @@
 This folder contains scripts that aims at performing the bash commands with R and verify the conformity of the code.
 
 - [preprocessing.R](preprocessing.R): Derived from the bash commands contained in [preprocessing.sh](../../BashAndR/pre-study/preprocessing.sh)
-- [conformity_with_victorprocessing](conformity_with_victorprocessing): Series of tests to check potential differences between R and Bash.
+- [conformity_with_victorprocessing.R](conformity_with_victorprocessing.R): Series of tests to check potential differences between R and Bash.
 - [commons.R](commons.R): Avoid duplicating code between the scripts.
+- [downstream.R](downstream.R): This script goes through documentation/[explore.R](documentation/explore.R) and homogenizes it with preprocessing.R. Of note, as described below, the bins are not exactly the same. It becomes difficult to make a function-to-function comparison. However, the codes are run in parallel to make sure that the data structures are similar.
 
 **Note: Difference between bash and R**
 
