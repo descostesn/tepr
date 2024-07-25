@@ -66,6 +66,11 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10) {
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
 
+    ## Filtering the main table to keep only the expressed transcripts
+    idx <- match(maintable$transcript, exprstransnames)
+    idxnoexpr <- which(is.na(idx))
+    maintable <- maintable[-idxnoexpr, ]
+
     res <- getting_var_names(extension, workdir)
     col_names <- res$col_names
     var_names <- res$var_names  
