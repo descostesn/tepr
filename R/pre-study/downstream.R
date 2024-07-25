@@ -16,7 +16,7 @@ library("tidyselect")
 alldfpath <- "/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 expthres <- 0.1
-nbcpu <- 6
+nbcpu <- 10
 
 
 ##################
@@ -61,8 +61,9 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-genesECDF <- function(allexprsdfs, expdf, rounding = 10) {
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) {
 
+    ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
 
@@ -74,34 +75,62 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10) {
     ## Splitting the table by each transcript to perform transcript specific
     ## operations
     transdflist <- split(maintable, factor(maintable$transcript))
+    nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
+    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
+        nbrows) {
+        ## Filters the score columns according to the strand of the transcript
+        str <- 
 
-    res <- getting_var_names(extension, workdir)
-    col_names <- res$col_names
-    var_names <- res$var_names  
 
-    total_iterations <- length(exprstransnames)
-    #setting the progress bar
-    pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
 
-    j = 0
-    concat_df <- data.frame()
 
+
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ## This for loop is equivalent to computing on each column, bigDF might
+        ## not be useful.
+        for (my_var in unique(df_long$variable)) {
+            df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
+            df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
+            ecdf_df <- ecdf(df_expanded[,"coord"])
+            df_subset$Fx <- ecdf_df(df_subset$coord) 
+            list_df[[i]] <- df_subset
+            i <- i + 1
+        }
+
+        ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
+        ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
+        ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
+        ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
+        ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
+        df_final <- bind_rows(list_df)
+        transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    }, expdf, nbrows, mc.cores = nbcpu)
+
+
+    # res <- getting_var_names(extension, workdir)
+    # col_names <- res$col_names
+    # var_names <- res$var_names
+    # total_iterations <- length(exprstransnames)
+    # #setting the progress bar
+    # pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
+    # j = 0
+    # concat_df <- data.frame()
     ## Looping through all the transcripts i.e performs the loop for each
     ## transcript that has been kept by the function maintable_read because
     ## it was expressed
-    for (variable in exprstransnames) {
-
-        gene_table <- data.frame()
-        bigDF <- data.frame()
+    # for (variable in exprstransnames) {
+    #     gene_table <- data.frame()
+    #     bigDF <- data.frame()
 
         ## Isolating the rows corresponding to the transcript
         ## Question: Could we do it at once for all expressed transcripts with
         ## a match (transcriptmaintable in selectedtrans, remove na, use the
         ## transcript column as factor to split the main table)
-        transcript_table <- data.frame()
-        transcript <- filter(maintable, maintable$transcript == variable)
+        # transcript_table <- data.frame()
+        # transcript <- filter(maintable, maintable$transcript == variable)
         ## This replacement is not necessary in my hands
-        transcript[transcript == "NAN"] <- NA
+        # transcript[transcript == "NAN"] <- NA
         ## Changing the name of transcript can be useful to conserve it. So far,
         ## it seems to be done to keep looking for the strand. It could be
         ## stored in a variable. Add verification that the strand is unique
@@ -233,4 +262,4 @@ allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 
 
 
-resultsECDF <- genesECDF(allexprsdfs, expdf)
+resultsECDF <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
