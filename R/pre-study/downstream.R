@@ -196,6 +196,7 @@ meananddiff <- function(resultsecdf, expdf) {
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
             currentcond, colnamevec)
+        names(meandifflist) <- NULL
 
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
