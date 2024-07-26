@@ -113,7 +113,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
 
 meananddiff <- function(resultsecdf, exptab) {
 
-    lapply(exptab$condition, function(currentcond, df) {
+    res <- lapply(exptab$condition, function(currentcond, df) {
 
         message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
@@ -122,39 +122,40 @@ meananddiff <- function(resultsecdf, exptab) {
             stop("Problem in function meananddiff, condition not found in ",
                 "column names. Contact the developer.")
 
-        ## Separating column names by values and Fx
+        ## Separating column names by scores and Fx
         idxcondfx <- grep("Fx", colnames(df[idxcond]))
         if (isTRUE(all.equal(length(idxcondfx), 0)))
             stop("Problem in function meananddiff, column Fx not found in ",
                 "column names. Contact the developer.")
-        idxcondlist <- list(condval = idxcond[idxcondfx],
-            condfx = idxcond[-idxcondfx])
+        idxcondlist <- list(scores = idxcond[idxcondfx],
+            fx = idxcond[-idxcondfx])
 
-        ## Computing mean and diff values for score and fx columns
+        ## The difference is used to calculate the AUC
+        nbrows <- nrow(df)
+        tosub <- df$window / nbrows
+        colnamevec <- colnames(df)
+        meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
+            condname, colnamevec){
+            message("\t Calculating average and difference between replicates",
+                " for columns ", idxname, " of ", condname)
+
+            if (length(idxvalvec) >= 2)
+                meanvec <- rowMeans(df[, idxvalvec], na.rm = FALSE)
+            else
+                meanvec <- df[, idxvalvec]
+
+            diffres <- data.frame(df[, idxvalvec] - tosub)
+            colnames(diffres) <- paste(colnamevec[idxvalvec], "diff", sep = "_")
+            meanname <- paste0("mean_", idxname, "_", condname)
+            return(cbind(meanname = meanvec, diffres))
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
+            currentcond, colnamevec), SIMPLIFY = FALSE)
+        meandiffres <- do.call("cbind", meandifflist)
+        return(meandiffres)
     }, resultsecdf)
     
     
-        # Calculate row means for the specified columns
-        # Check if there is more than one replicate
-        if (length(replicate_numbers) > 1) {
-            ## !! I do not get how this can work since the column are not defined!!
-          concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F) # nolint
-          concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE) # nolint
-        } else { ## ! this case is not necessary, 
-          # Handle case when column_vector_value is empty
-          new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item # nolint
-          new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item # nolint
-## !! I do not get how this can work since the column are not defined!!
-        concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
-        concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
-        }
-## !! I do not get how this can work since the column are not defined!!
-        concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC # nolint
-        column_vector_value <- character() ## obligatory to reset the columns values to empty # nolint
-        column_vector_Fx <- character() # nolint
-    }
-
-      return(concat_dfFx=concat_df)
+        !!!!!!!!!!!!!!!
 }
 
 
