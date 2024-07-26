@@ -219,32 +219,32 @@ genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
 
 #---------------
 ## ADDED BY ME
-modified_dataset <- transcript_table
+#modified_dataset <- transcript_table
 #---------------
 
 
 # ------------------------------------------------
 ## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST
         # getting rid of plus and minus
-        # if (transcript_table$strand[1]=="-") {
-        #     # Drop columns containing "minus"
-        #     columns_to_drop <- grep("plus", col_names, value = TRUE)
-        #     dataset_without_dropped <- transcript_table %>%
-        #     select(-all_of(columns_to_drop))
+        if (transcript_table$strand[1]=="-") {
+            # Drop columns containing "minus"
+            columns_to_drop <- grep("plus", col_names, value = TRUE)
+            dataset_without_dropped <- transcript_table %>%
+            select(-all_of(columns_to_drop))
 
         # # Modify column names by removing "_plus"
-        # modified_dataset <- dataset_without_dropped %>%
-        # rename_with(~gsub(".minus", "", .), contains(".minus"))
-        # } else {
-        #     # Drop columns containing "minus"
-        #     columns_to_drop <- grep("minus", col_names, value = TRUE)
-        #     dataset_without_dropped <- transcript_table %>%
-        #     select(-all_of(columns_to_drop))
+        modified_dataset <- dataset_without_dropped %>%
+        rename_with(~gsub(".minus", "", .), contains(".minus"))
+        } else {
+            # Drop columns containing "minus"
+            columns_to_drop <- grep("minus", col_names, value = TRUE)
+            dataset_without_dropped <- transcript_table %>%
+            select(-all_of(columns_to_drop))
 
         #     # Modify column names by removing "_plus"
-        #     modified_dataset <- dataset_without_dropped %>%
-        #     rename_with(~gsub(".plus", "", .), contains(".plus"))
-        # }
+            modified_dataset <- dataset_without_dropped %>%
+            rename_with(~gsub(".plus", "", .), contains(".plus"))
+         }
 # ----------------------------------------------------
         concat_df <- bind_rows(concat_df, modified_dataset)
     }
@@ -285,7 +285,7 @@ calculates_meanFx <- function(concat_df, window_number) {
         if (length(replicate_numbers) > 1) {
             ## !! I do not get how this can work since the column are not defined!!
           concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F) # nolint
-          concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE) # nolint
+          concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE)
         } else { ## ! this case is not necessary, 
           # Handle case when column_vector_value is empty
           new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item # nolint
@@ -677,7 +677,8 @@ results_main_table <- main_table_read(name_table, extension,
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
     workdir = file.path(working_directory, "bedgraphs"))
-resultsECDF <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds") # nolint
+saveRDS(resultsECDF, file = "/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds")
+#resultsECDF <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds") # nolint
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
 
