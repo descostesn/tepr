@@ -111,7 +111,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     return(concatdf)
 }
 
-calculates_meanFx <- function(concat_df, window_number) {
+meananddiff <- function(concat_df, window_number) {
 
     res <- getting_var_names(extension, file.path(working_directory, "bedgraphs/")) # nolint
     Conditions <- res$Conditions
