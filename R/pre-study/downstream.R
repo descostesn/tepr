@@ -129,21 +129,9 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     return(idxcondlist)
 }
 
-meananddiff <- function(resultsecdf, exptab) {
+.meandiffscorefx <- function(idxcondlist, df, tosub, nbrows, currentcond,
+    colnamevec) {
 
-    rescondlist <- lapply(exptab$condition, function(currentcond, df) {
-
-        message("Merging columns for condition ", currentcond)
-        ## Retrieving columns having condition name as substring
-        idxcond <- .condcolidx(currentcond, df)
-
-        ## Separating idx of column names by scores and Fx
-        idxcondlist <- .idxcondlist(df, idxcond)
-
-        ## The difference is used to calculate the AUC
-        nbrows <- nrow(df)
-        tosub <- df$window / nbrows
-        colnamevec <- colnames(df)
         meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
             condname, colnamevec){
             message("\t Calculating average and difference between replicates",
@@ -160,6 +148,29 @@ meananddiff <- function(resultsecdf, exptab) {
             return(cbind(meanname = meanvec, diffres))
         }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
             currentcond, colnamevec), SIMPLIFY = FALSE)
+        return(meandifflist)
+}
+
+meananddiff <- function(resultsecdf, exptab) {
+
+    rescondlist <- lapply(exptab$condition, function(currentcond, df) {
+
+        message("Merging columns for condition ", currentcond)
+        ## Retrieving columns having condition name as substring
+        idxcond <- .condcolidx(currentcond, df)
+
+        ## Separating idx of column names by scores and Fx
+        idxcondlist <- .idxcondlist(df, idxcond)
+
+        ## The difference is used to calculate the AUC
+        nbrows <- nrow(df)
+        tosub <- df$window / nbrows
+        colnamevec <- colnames(df)
+        meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
+            currentcond, colnamevec)
+        
+        
+
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
     }, resultsecdf)
