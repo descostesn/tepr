@@ -168,8 +168,6 @@ meananddiff <- function(resultsecdf, exptab) {
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
             currentcond, colnamevec)
-        
-        
 
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
@@ -193,3 +191,4 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+dfmeandiff <- meananddiff(resultsecdf, exptab)
