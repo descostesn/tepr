@@ -180,7 +180,7 @@ meananddiff <- function(resultsecdf, expdf) {
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
 
-    return(cbind(df, res))
+    return(cbind(resultsecdf, res))
 }
 
 
