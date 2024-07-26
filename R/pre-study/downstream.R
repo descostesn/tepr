@@ -111,16 +111,21 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     return(concatdf)
 }
 
+.condcolidx <- function(currentcond, df) {
+    idxcond <- grep(currentcond, colnames(df))
+    if (isTRUE(all.equal(length(idxcond), 0)))
+        stop("Problem in function meananddiff, condition not found in ",
+                "column names. Contact the developer.")
+    return(idxcond)
+}
+
 meananddiff <- function(resultsecdf, exptab) {
 
-    res <- lapply(exptab$condition, function(currentcond, df) {
+    rescondlist <- lapply(exptab$condition, function(currentcond, df) {
 
         message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
-        idxcond <- grep(currentcond, colnames(df))
-        if (isTRUE(all.equal(length(idxcond), 0)))
-            stop("Problem in function meananddiff, condition not found in ",
-                "column names. Contact the developer.")
+        idxcond <- .condcolidx(currentcond, df)
 
         ## Separating column names by scores and Fx
         idxcondfx <- grep("Fx", colnames(df[idxcond]))
@@ -153,9 +158,9 @@ meananddiff <- function(resultsecdf, exptab) {
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
     }, resultsecdf)
-    
-    
-        !!!!!!!!!!!!!!!
+
+    res <- do.call("cbind", rescondlist)
+    return(res)
 }
 
 
