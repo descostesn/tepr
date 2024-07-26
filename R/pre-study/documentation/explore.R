@@ -226,29 +226,29 @@ modified_dataset <- transcript_table
 # ------------------------------------------------
 ## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST
         # getting rid of plus and minus
-        if (transcript_table$strand[1]=="-") {
-            # Drop columns containing "minus"
-            columns_to_drop <- grep("plus", col_names, value = TRUE)
-            dataset_without_dropped <- transcript_table %>%
-            select(-all_of(columns_to_drop))
+        # if (transcript_table$strand[1]=="-") {
+        #     # Drop columns containing "minus"
+        #     columns_to_drop <- grep("plus", col_names, value = TRUE)
+        #     dataset_without_dropped <- transcript_table %>%
+        #     select(-all_of(columns_to_drop))
 
-        # Modify column names by removing "_plus"
-        modified_dataset <- dataset_without_dropped %>%
-        rename_with(~gsub(".minus", "", .), contains(".minus"))
-        } else {
-            # Drop columns containing "minus"
-            columns_to_drop <- grep("minus", col_names, value = TRUE)
-            dataset_without_dropped <- transcript_table %>%
-            select(-all_of(columns_to_drop))
+        # # Modify column names by removing "_plus"
+        # modified_dataset <- dataset_without_dropped %>%
+        # rename_with(~gsub(".minus", "", .), contains(".minus"))
+        # } else {
+        #     # Drop columns containing "minus"
+        #     columns_to_drop <- grep("minus", col_names, value = TRUE)
+        #     dataset_without_dropped <- transcript_table %>%
+        #     select(-all_of(columns_to_drop))
 
-            # Modify column names by removing "_plus"
-            modified_dataset <- dataset_without_dropped %>%
-            rename_with(~gsub(".plus", "", .), contains(".plus"))
-        }
+        #     # Modify column names by removing "_plus"
+        #     modified_dataset <- dataset_without_dropped %>%
+        #     rename_with(~gsub(".plus", "", .), contains(".plus"))
+        # }
 # ----------------------------------------------------
         concat_df <- bind_rows(concat_df, modified_dataset)
     }
-saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
+#saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
     # # Close the progress bar
     close(pb)
     # list_gene_table <- concat_df %>% select(gene) %>% distinct()
