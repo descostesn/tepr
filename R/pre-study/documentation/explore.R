@@ -818,23 +818,19 @@ Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 # MAIN
 ##################
 
-# results_main_table <- main_table_read(name_table, extension,
-#   file.path(working_directory, "bedgraphs"), 0.1) # nolint
-# resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
-#     expressed_transcript_name_list = results_main_table[[2]], extension,
-#     working_dir = file.path(working_directory, "bedgraphs"))
-#saveRDS(resultsECDF, file = "/g/romebioinfo/Projects/tepr/robjsave/resultsECDF_fromexplore.rds")
-resultsECDF <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds") # nolint
-#concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
-#saveRDS(concat_dfFX_res, file = "/g/romebioinfo/Projects/tepr/robjsave/concat_dfFX_res_fromexplore.rds")
-concat_dfFX_res <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concat_dfFX_res_fromexplore.rds")
+results_main_table <- main_table_read(name_table, extension,
+  file.path(working_directory, "bedgraphs"), 0.1) # nolint
+resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
+    expressed_transcript_name_list = results_main_table[[2]], extension,
+    working_dir = file.path(working_directory, "bedgraphs"))
+concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
 ## !! Skipping this for the moment
 condition_comparison(extension,file.path(working_directory, "bedgraphs")) ## Does not return anything
 dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") # nolint
 condition_compared(extension,working_directory,) ## Does not return anything
 
-concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res,)
+concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
 count_NA_res <- countNA_fun(main_table, extension, working_directory)
