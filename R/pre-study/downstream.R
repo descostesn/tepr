@@ -70,7 +70,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
                 " should be unique, contact the developer.")
 }
 
-.computeecdf <- function(transdflist, expdf, framevec, colnamevec) {
+.computeecdf <- function(transdflist, expdf, framevec, colnamevec, rounding) {
 
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
@@ -120,9 +120,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
 
     ## Calculating ecdf for each transcript
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        framevec, colnamevec) {
-            return(.computeecdf(transtable, expdf, framevec, colnamevec))
-        }, expdf, framevec, colnamevec, mc.cores = nbcpu)
+        framevec, colnamevec, rounding) {
+            return(.computeecdf(transtable, expdf, framevec, colnamevec,
+                rounding))
+        }, expdf, framevec, colnamevec, rounding, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
     return(concatdf)
@@ -215,7 +216,6 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-!! need to remove the strands to have a unique score column
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 
 -----------------
