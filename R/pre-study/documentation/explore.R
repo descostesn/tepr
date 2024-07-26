@@ -402,6 +402,8 @@ return(concat_df=concat_df)
 # return(concat_dfFx=concat_df)
 # }
 
+# concat_df <- resultsECDF
+# window_number <- 200
 calculates_meanFx <- function(concat_df,window_number){
 
 res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
