@@ -359,7 +359,7 @@ return(concat_df=concat_df)
 
 # calculates_meanFx <- function(concat_df,window_number){
 
-# res <- getting_var_names(extension, working_directory)
+# res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
 # Conditions <- res$Conditions
 # replicate_numbers <- res$replicate_numbers
 
@@ -404,7 +404,7 @@ return(concat_df=concat_df)
 
 calculates_meanFx <- function(concat_df,window_number){
 
-res <- getting_var_names(extension, working_directory)
+res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
 Conditions <- res$Conditions
 replicate_numbers <- res$replicate_numbers
 
