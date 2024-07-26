@@ -102,6 +102,9 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
             return(fx)
         }, rounding, framevec, simplify = TRUE)
         colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_")
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!! need to remove the other strand -> make a unique score column
+
         res <- cbind(transtable, ecdfmat)
         return(res)
     }, expdf, framevec, colnamevec, mc.cores = nbcpu)
@@ -196,7 +199,11 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
+!! need to remove the strands to have a unique score column
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+
+-----------------
+
 dfmeandiff <- meananddiff(resultsecdf, expdf)
 
 
