@@ -94,6 +94,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
         .checkunique(str, "str")
         colnamestr <- colnamevec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
+        direction <- unique(expdf[which(expdf$strand == str), "direction"])
+        .checkunique(direction, "direction")
+        opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
+        .checkunique(opposedirect, "opposite direction")
 
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- apply(scoremat, 2, function(x, rounding, framevec) {
@@ -101,9 +105,12 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
             fx <- ecdf(extendedframevec)(framevec)
             return(fx)
         }, rounding, framevec, simplify = TRUE)
-        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_")
+        colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
+        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), "score", sep = "_")
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!! need to remove the other strand -> make a unique score column
+        ## Remove opposite strand from transtable and erase strand substring
+        transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
+        colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
 
         res <- cbind(transtable, ecdfmat)
         return(res)
