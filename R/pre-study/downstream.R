@@ -119,6 +119,16 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     return(idxcond)
 }
 
+.idxcondlist <- function(df, idxcond) {
+    idxcondfx <- grep("Fx", colnames(df[idxcond]))
+    if (isTRUE(all.equal(length(idxcondfx), 0)))
+        stop("Problem in function meananddiff, column Fx not found in ",
+                "column names. Contact the developer.")
+    idxcondlist <- list(scores = idxcond[-idxcondfx],
+            fx = idxcond[idxcondfx])
+    return(idxcondlist)
+}
+
 meananddiff <- function(resultsecdf, exptab) {
 
     rescondlist <- lapply(exptab$condition, function(currentcond, df) {
@@ -128,12 +138,7 @@ meananddiff <- function(resultsecdf, exptab) {
         idxcond <- .condcolidx(currentcond, df)
 
         ## Separating column names by scores and Fx
-        idxcondfx <- grep("Fx", colnames(df[idxcond]))
-        if (isTRUE(all.equal(length(idxcondfx), 0)))
-            stop("Problem in function meananddiff, column Fx not found in ",
-                "column names. Contact the developer.")
-        idxcondlist <- list(scores = idxcond[idxcondfx],
-            fx = idxcond[-idxcondfx])
+        idxcondlist <- .idxcondlist(df, idxcond)
 
         ## The difference is used to calculate the AUC
         nbrows <- nrow(df)
