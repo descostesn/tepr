@@ -137,7 +137,7 @@ meananddiff <- function(resultsecdf, exptab) {
         ## Retrieving columns having condition name as substring
         idxcond <- .condcolidx(currentcond, df)
 
-        ## Separating column names by scores and Fx
+        ## Separating idx of column names by scores and Fx
         idxcondlist <- .idxcondlist(df, idxcond)
 
         ## The difference is used to calculate the AUC
