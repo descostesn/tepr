@@ -111,27 +111,29 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     return(concatdf)
 }
 
-meananddiff <- function(concat_df, window_number) {
+meananddiff <- function(resultsecdf, exptab) {
 
-    res <- getting_var_names(extension, file.path(working_directory, "bedgraphs/")) # nolint
-    Conditions <- res$Conditions
-    replicate_numbers <- res$replicate_numbers
-    column_vector_value <- character()
-    column_vector_Fx <- character()
+    lapply(exptab$condition, function(currentcond, df) {
 
-    for (cond in Conditions) {
-        mean_value_condi_name <- paste0("mean_value_", cond)
-        mean_Fx_condi_name <- paste0("mean_Fx_", cond)
-        diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+        message("Merging columns for condition ", currentcond)
+        ## Retrieving columns having condition name as substring
+        idxcond <- grep(currentcond, colnames(df))
+        if (isTRUE(all.equal(length(idxcond), 0)))
+            stop("Problem in function meananddiff, condition not found in ",
+                "column names. Contact the developer.")
 
-        for (rep_num in replicate_numbers) {
-            new_column_value <- paste0("value_", cond, "_rep", rep_num, "_score") # Generate a new item # nolint
-            new_column_Fx <- paste0("Fx_", cond, "_rep", rep_num, "_score") # Generate a new item # nolint
-            column_vector_value <- c(column_vector_value, new_column_value)
-            column_vector_Fx <- c(column_vector_Fx, new_column_Fx)
+        ## Separating column names by values and Fx
+        idxcondfx <- grep("Fx", colnames(df[idxcond]))
+        if (isTRUE(all.equal(length(idxcondfx), 0)))
+            stop("Problem in function meananddiff, column Fx not found in ",
+                "column names. Contact the developer.")
+        idxcondlist <- list(condval = idxcond[idxcondfx],
+            condfx = idxcond[-idxcondfx])
 
-        }
-
+        ## Computing mean and diff values for score and fx columns
+    }, resultsecdf)
+    
+    
         # Calculate row means for the specified columns
         # Check if there is more than one replicate
         if (length(replicate_numbers) > 1) {
