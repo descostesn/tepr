@@ -142,18 +142,20 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
             else
                 meanvec <- df[, idxvalvec]
 
-            diffres <- data.frame(df[, idxvalvec] - tosub)
+            diffres <- data.frame(df[, idxvalvec] - tosub) ## data.frame is used in case there is only one column # nolint
             colnames(diffres) <- paste(colnamevec[idxvalvec], "diff", sep = "_")
             meanname <- paste0("mean_", idxname, "_", condname)
-            return(cbind(meanname = meanvec, diffres))
+            res <- cbind(meanvec, diffres)
+            colnames(res)[1] <- meanname
+            return(res)
         }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
             currentcond, colnamevec), SIMPLIFY = FALSE)
         return(meandifflist)
 }
 
-meananddiff <- function(resultsecdf, exptab) {
+meananddiff <- function(resultsecdf, expdf) {
 
-    rescondlist <- lapply(exptab$condition, function(currentcond, df) {
+    rescondlist <- lapply(unique(expdf$condition), function(currentcond, df) {
 
         message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
@@ -174,7 +176,11 @@ meananddiff <- function(resultsecdf, exptab) {
     }, resultsecdf)
 
     res <- do.call("cbind", rescondlist)
-    return(res)
+    if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
+        stop("The results of mean and diff should have the same number of ",
+            "rows than resultsecdf, contact the developer")
+
+    return(cbind(df, res))
 }
 
 
@@ -191,4 +197,4 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
-dfmeandiff <- meananddiff(resultsecdf, exptab)
+dfmeandiff <- meananddiff(resultsecdf, expdf)
