@@ -828,7 +828,7 @@ saveRDS(resultsECDF, file = "/g/romebioinfo/Projects/tepr/robjsave/resultsECDF_f
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 saveRDS(concat_dfFX_res, file = "/g/romebioinfo/Projects/tepr/robjsave/concat_dfFX_res_fromexplore.rds")
 
-condition_comparison(extension,working_directory) ## Does not return anything
+condition_comparison(extension,file.path(working_directory, "bedgraphs")) ## Does not return anything
 dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") # nolint
 condition_compared(extension,working_directory,) ## Does not return anything
 
