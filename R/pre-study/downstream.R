@@ -144,8 +144,8 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     if (isTRUE(all.equal(length(idxcondfx), 0)))
         stop("Problem in function meananddiff, column Fx not found in ",
                 "column names. Contact the developer.")
-    idxcondlist <- list(scores = idxcond[-idxcondfx],
-            fx = idxcond[idxcondfx])
+    idxcondlist <- list(value = idxcond[-idxcondfx],
+            Fx = idxcond[idxcondfx])
     return(idxcondlist)
 }
 
@@ -155,18 +155,24 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
         meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
             condname, colnamevec){
             message("\t Calculating average and difference between replicates",
-                " for columns ", idxname, " of ", condname)
+                " for columns '", idxname, "' of ", condname)
 
+            ## Calculating the column of mean scores for currentcond
+            ## The result is a data.frame made of a single column
             if (length(idxvalvec) >= 2)
-                meanvec <- rowMeans(df[, idxvalvec], na.rm = FALSE)
+                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
             else
-                meanvec <- df[, idxvalvec]
+                meandf <- df[, idxvalvec]
+            colnames(meandf) <- paste0("mean_", idxname, "_", condname)
 
-            diffres <- data.frame(df[, idxvalvec] - tosub) ## data.frame is used in case there is only one column # nolint
-            colnames(diffres) <- paste(colnamevec[idxvalvec], "diff", sep = "_")
-            meanname <- paste0("mean_", idxname, "_", condname)
-            res <- cbind(meanvec, diffres)
-            colnames(res)[1] <- meanname
+            if (isTRUE(all.equal(idxname, "Fx"))) {
+                diffres <- meandf - tosub
+                colnames(diffres) <- paste0("diff_", idxname, "_", condname)
+                res <- cbind(meandf, diffres)
+            } else {
+                res <- meandf
+            }
+
             return(res)
         }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
             currentcond, colnamevec), SIMPLIFY = FALSE)
