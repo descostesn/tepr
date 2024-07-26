@@ -70,8 +70,27 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
                 " should be unique, contact the developer.")
 }
 
-.computeecdf <- function(transdflist, expdf, framevec, colnamevec, rounding) {
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
 
+    ## Defining variables
+    maintable <- allexprsdfs[[1]]
+    exprstransnames <- allexprsdfs[[2]]
+
+    ## Filtering the main table to keep only the expressed transcripts
+    idx <- match(maintable$transcript, exprstransnames)
+    idxnoexpr <- which(is.na(idx))
+    maintable <- maintable[-idxnoexpr, ]
+
+    ## Splitting the table by each transcript to perform transcript specific
+    ## operations
+    transdflist <- split(maintable, factor(maintable$transcript))
+    nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
+    .checkunique(nbrows, "nbrows")
+    framevec <- seq_len(nbrows)
+    colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
+
+    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
+        framevec, colnamevec) {
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
         .checkunique(str, "str")
@@ -97,35 +116,10 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
 
         res <- cbind(transtable, ecdfmat)
         return(res)
-}
-
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
-
-    ## Defining variables
-    maintable <- allexprsdfs[[1]]
-    exprstransnames <- allexprsdfs[[2]]
-
-    ## Filtering the main table to keep only the expressed transcripts
-    idx <- match(maintable$transcript, exprstransnames)
-    idxnoexpr <- which(is.na(idx))
-    maintable <- maintable[-idxnoexpr, ]
-
-    ## Splitting the table by each transcript to perform transcript specific
-    ## operations
-    transdflist <- split(maintable, factor(maintable$transcript))
-    nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
-    .checkunique(nbrows, "nbrows")
-    framevec <- seq_len(nbrows)
-    colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
-
-    ## Calculating ecdf for each transcript
-    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        framevec, colnamevec, rounding) {
-            return(.computeecdf(transtable, expdf, framevec, colnamevec,
-                rounding))
-        }, expdf, framevec, colnamevec, rounding, mc.cores = nbcpu)
+    }, expdf, framevec, colnamevec, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
+
     return(concatdf)
 }
 
@@ -320,3 +314,8 @@ concat_df[["diff_Fx_ctrl"]] <- concat_df[["mean_Fx_ctrl"]] - concat_df$coord/win
 4       0.0000000 0.0000000000  -0.02000000             0          0     -0.020
 5       0.0000000 0.0000000000  -0.02500000             0          0     -0.025
 6       0.2200845 0.0002486325  -0.02975137             0          0     -0.030
+
+
+
+
+
