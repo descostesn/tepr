@@ -134,7 +134,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
 .condcolidx <- function(currentcond, df) {
     idxcond <- grep(currentcond, colnames(df))
     if (isTRUE(all.equal(length(idxcond), 0)))
-        stop("Problem in function meananddiff, condition not found in ",
+        stop("Problem in function createmeandiff, condition not found in ",
                 "column names. Contact the developer.")
     return(idxcond)
 }
@@ -142,7 +142,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
 .idxscorefx <- function(df, idxcond) {
     idxcondfx <- grep("Fx", colnames(df[idxcond]))
     if (isTRUE(all.equal(length(idxcondfx), 0)))
-        stop("Problem in function meananddiff, column Fx not found in ",
+        stop("Problem in function createmeandiff, column Fx not found in ",
                 "column names. Contact the developer.")
     idxcondlist <- list(value = idxcond[-idxcondfx],
             Fx = idxcond[idxcondfx])
@@ -179,7 +179,11 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
         return(meandifflist)
 }
 
-meananddiff <- function(resultsecdf, expdf) {
+createmeandiff <- function(resultsecdf, expdf) {
+
+    ## for each condition, creates three columns:
+    ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
+    ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
 
     rescondlist <- lapply(unique(expdf$condition), function(currentcond, df) {
 
@@ -190,7 +194,7 @@ meananddiff <- function(resultsecdf, expdf) {
         ## Separating idx of column names by scores and Fx
         idxcondlist <- .idxscorefx(df, idxcond)
 
-        ## The difference is used to calculate the AUC
+        ## The difference is used to calculate the AUC later on
         nbrows <- nrow(df)
         tosub <- df$window / nbrows
         colnamevec <- colnames(df)
@@ -224,4 +228,4 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
-dfmeandiff <- meananddiff(resultsecdf, expdf)
+dfmeandiff <- createmeandiff(resultsecdf, expdf)
