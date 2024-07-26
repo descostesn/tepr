@@ -833,7 +833,7 @@ condition_compared(extension,working_directory,) ## Does not return anything
 concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
-count_NA_res <- countNA_fun(main_table, extension, working_directory)
+count_NA_res <- countNA_fun(results_main_table[[1]], extension, working_directory)
 KneeID_res <- KneeID_fun(concat_Diff_mean_res)
 
 AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
@@ -846,6 +846,13 @@ AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
 tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
 
+
+mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
 tst_df <- tst_df %>%
   mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
     !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
@@ -855,3 +862,4 @@ tst_df <- tst_df %>% mutate(
     Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
   ) %>% relocate(Group, .before = 2)
+
