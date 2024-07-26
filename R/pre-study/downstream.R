@@ -246,6 +246,13 @@ dfmeandiff <- meananddiff(resultsecdf, expdf)
 
 
 
+for each condition, it compiles three variables: 
+- "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
+- "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
+
+concat_df[["mean_value_ctrl"]] <- rowMeans(concat_df[, c("value_ctrl_rep1_score", "value_ctrl_rep2_score")], na.rm = F)
+concat_df["mean_Fx_ctrl"]] <- rowMeans(concat_df[, c("Fx_ctrl_rep1_score", "Fx_ctrl_rep2_score")], na.rm = FALSE)
+concat_df[["diff_Fx_ctrl"]] <- concat_df[["mean_Fx_ctrl"]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC
 
 > head(concat_dfFX_res)
          biotype  chr     coor1     coor2         transcript gene strand window
