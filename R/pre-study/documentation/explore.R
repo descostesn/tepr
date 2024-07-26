@@ -823,7 +823,7 @@ resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
 saveRDS(resultsECDF, file = "/g/romebioinfo/Projects/tepr/robjsave/resultsECDF_fromexplore.rds")
 #resultsECDF <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds") # nolint
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
-
+saveRDS(resultsECDF, file = "/g/romebioinfo/Projects/tepr/robjsave/concat_dfFX_res_fromexplore.rds")
 
 condition_comparison(extension,working_directory) ## Does not return anything
 dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") # nolint
