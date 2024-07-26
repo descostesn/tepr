@@ -229,3 +229,162 @@ expdf <- read.csv(exptabpath, header = TRUE)
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
+
+
+
+> head(resultsECDF,2)
+         biotype  chr     coor1     coor2         transcript gene strand window
+1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
+2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
+                           id         ctrl_rep1         ctrl_rep2
+1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
+2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
+          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
+1 HS_rep1.forward HS_rep2.forward     1                     0
+2 HS_rep1.forward HS_rep2.forward     2                     0
+  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
+1                     0                   0                   0
+2                     0                   0                   0
+  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
+1                  0                  0                0                0
+2                  0                  0                0                0
+
+
+> head(concat_dfFX_res,2)
+         biotype  chr     coor1     coor2         transcript gene strand window
+1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
+2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
+                           id         ctrl_rep1         ctrl_rep2
+1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
+2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
+          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
+1 HS_rep1.forward HS_rep2.forward     1                     0
+2 HS_rep1.forward HS_rep2.forward     2                     0
+  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
+1                     0                   0                   0
+2                     0                   0                   0
+  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
+1                  0                  0                0                0
+2                  0                  0                0                0
+  mean_value_ctrl mean_Fx_ctrl diff_Fx_ctrl mean_value_HS mean_Fx_HS diff_Fx_HS
+1               0            0       -0.005             0          0     -0.005
+2               0            0       -0.010             0          0     -0.010
+
+
+
+> head(concat_Diff_mean_res,2)
+         biotype  chr     coor1     coor2         transcript gene strand window
+1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
+2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
+                           id         ctrl_rep1         ctrl_rep2
+1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
+2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
+          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
+1 HS_rep1.forward HS_rep2.forward     1                     0
+2 HS_rep1.forward HS_rep2.forward     2                     0
+  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
+1                     0                   0                   0
+2                     0                   0                   0
+  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
+1                  0                  0                0                0
+2                  0                  0                0                0
+  mean_value_ctrl mean_Fx_ctrl diff_Fx_ctrl mean_value_HS mean_Fx_HS diff_Fx_HS
+1               0            0       -0.005             0          0     -0.005
+2               0            0       -0.010             0          0     -0.010
+
+
+> head(dAUC_allcondi_res,2)
+          transcript gene strand window_size
+1 ENST00000000233.10 ARF5      +          16
+2  ENST00000000412.8 M6PR      -          46
+
+
+
+          transcript    gene strand window_size
+1 ENST00000000233.10    ARF5      +          16
+2  ENST00000000412.8    M6PR      -          46
+3 ENST00000000442.11   ESRRA      +          56
+4  ENST00000001008.6   FKBP4      +          52
+5  ENST00000001146.7 CYP26B1      -          93
+6  ENST00000002125.9 NDUFAF7      +          87
+
+
+
+
+> head(count_NA_res)
+# A tibble: 6 × 4
+  gene    transcript         strand Count_NA
+  <chr>   <chr>              <chr>     <int>
+1 ARF5    ENST00000000233.10 +             0
+2 ESRRA   ENST00000000442.11 +             0
+3 FKBP4   ENST00000001008.6  +             0
+4 NDUFAF7 ENST00000002125.9  +             0
+5 SEMA3F  ENST00000002829.8  +             0
+6 CFTR    ENST00000003084.11 +             2
+
+
+> head(KneeID_res)
+          transcript
+1 ENST00000000233.10
+2  ENST00000000412.8
+3 ENST00000000442.11
+4  ENST00000001008.6
+5  ENST00000001146.7
+6  ENST00000002125.9
+
+> head(AUC_KS_Knee_NA.df)
+          transcript    gene strand window_size Count_NA
+1 ENST00000000233.10    ARF5      +          16        0
+2  ENST00000000412.8    M6PR      -          46       16
+3 ENST00000000442.11   ESRRA      +          56        0
+4  ENST00000001008.6   FKBP4      +          52        0
+5  ENST00000001146.7 CYP26B1      -          93        0
+6  ENST00000002125.9 NDUFAF7      +          87        0
+
+
+> head(AUC_KS_Knee_NA.df)
+# A tibble: 6 × 9
+  transcript         chr    coor1  coor2 strand gene   size window_size Count_NA
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <int>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16        0
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46       16
+3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56        0
+4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52        0
+5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93        0
+6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87        0
+
+
+> head(tst_df)
+# A tibble: 6 × 9
+  transcript         chr    coor1  coor2 strand gene   size window_size Count_NA
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <int>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16        0
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46       16
+3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56        0
+4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52        0
+5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93        0
+6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87        0
+
+
+> tst_df <- tst_df %>%
+  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
+    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
+  relocate(Universe, .before = 1)
+Error in `mutate()`:
+ℹ In argument: `Universe = ifelse(...)`.
+Caused by error:
+! object 'MeanValueFull_ctrl' not found
+Run `rlang::last_trace()` to see where the error occurred.
+
+
+> tst_df <- tst_df %>% mutate(
+    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
+    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
+  ) %>% relocate(Group, .before = 2)
+Error in `mutate()`:
+ℹ In argument: `Group = ifelse(...)`.
+Caused by error:
+! object 'Universe' not found
+Run `rlang::last_trace()` to see where the error occurred.
+
