@@ -191,10 +191,8 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
-    ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
-    ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
-
-    rescondlist <- lapply(unique(expdf$condition), function(currentcond, df,
+    condvec <- unique(expdf$condition)
+    rescondlist <- lapply(condvec, function(currentcond, df,
       verbose) {
 
         if (verbose) message("Merging columns for condition ", currentcond)
@@ -214,17 +212,24 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
         meandiffres <- do.call("cbind", meandifflist)
 
-        !!!!!!!!!!!
+        return(meandiffres)
+    }, resultsecdf, verbose)
+
+    resmean <- do.call("cbind", rescondlist)
+
+    ## Computing all differences on mean columns
+    ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
+    ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
+    if (verbose) message("Commputing all differences on mean columns")
+    
+
+            !!!!!!!!!!!
             "Diff_meanValue_ctrl_HS" 
       "Diff_meanValue_HS_ctrl"
       "Diff_meanFx_ctrl_HS"
       "Diff_meanFx_HS_ctrl"
           !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          
-        return(meandiffres)
-    }, resultsecdf, verbose)
 
-    res <- do.call("cbind", rescondlist)
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
