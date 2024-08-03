@@ -111,202 +111,349 @@ main_table_read <- function(name_table, extension, workingdirectory,
     return(list(main_table=main_table,expressed_transcript_name_list=expressed_transcript_name_list)) # nolint
 }
 
+genesECDF <- function(main_table, rounding, expressed_transcript_name_list, extension, working_directory){
+gc()
+  
+res <- getting_var_names(extension, working_directory)
+col_names <- res$col_names
+var_names <- res$var_names  
+  
+total_iterations <- length(expressed_transcript_name_list)
+#setting the progress bar
+pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
 
-genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
-    extension, workdir) {
-
-    gc()
-
-    res <- getting_var_names(extension, workdir)
-    col_names <- res$col_names
-    var_names <- res$var_names  
-
-    total_iterations <- length(expressed_transcript_name_list)
-    #setting the progress bar
-    pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
-
-    j = 0
-    concat_df <- data.frame()
-
-    ## Looping through all the transcripts i.e performs the loop for each
-    ## transcript that has been kept by the function main_table_read because
-    ## it was expressed
-    for (variable in expressed_transcript_name_list) {
-
-        gene_table <- data.frame()
-        bigDF <- data.frame()
-
-        ## Isolating the rows corresponding to the transcript
-        ## Question: Could we do it at once for all expressed transcripts with
-        ## a match (transcriptmaintable in selectedtrans, remove na, use the
-        ## transcript column as factor to split the main table)
-        transcript_table <- data.frame()
-        transcript <- filter(main_table, main_table$transcript == variable)
-        ## This replacement is not necessary in my hands
-        transcript[transcript == "NAN"] <- NA
-        ## Changing the name of transcript can be useful to conserve it. So far,
-        ## it seems to be done to keep looking for the strand. It could be
-        ## stored in a variable. Add verification that the strand is unique
-        ## in transcript.
-        bigDF <- transcript
-        ## This is equivalent to nrow(transcript). Check if every transcript has
-        ## the same number of windows, if it is the case, it is not necessary
-        ## to take this into account.
-        my_length <- length(bigDF[,'window'])
-
-# ---------------------------------------------------------------------------------------------------
-## SUMMARY
-##
-## This section filters the score columns according to the strand of the transcript considered
-
-        ## This only builds the names of the columns containing the scores
-        var_names_score <- paste0(var_names,"_score")
-
-        if (transcript$strand[1] == "-") { # see above, the strand can be stored in a variable instead of calculating it. # nolint
-            bigDF <- bigDF %>%
-            select(!matches("plus"))
-            bigDF$coord <- seq(from = my_length, to = 1, by = -1)
-            bigDF <- arrange(bigDF, coord)
-            conditions <- var_names_score[grepl("minus", var_names_score)]
-        } else {
-            bigDF <- bigDF %>%
-            select(!matches("minus"))
-            bigDF$coord <- seq(from=1, to=my_length,by=1)
-            conditions <- var_names_score[grepl("plus",var_names_score)]
-        }
-# ---------------------------------------------------------------------------------------------------
-
-        ## To my understanding this Fills missing values in selected columns
-        ## using first down and then up previous entry.
-        bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
-
-        ## The code below creates a data.frame of two columns with the name of
-        ## the experiment as key and the expression as value. This is the kind
-        ## of transformation we do before using ggplot2. However I do not see
-        ## why keeping the previous columns is necessary. They will be repeated
-        ## several times.
-        df_long <- bigDF %>% 
-            gather(key = "variable", value = "value", conditions)
-        ## Makes the values as integer by multiplying by 10. Why not using the
-        ## ceil or floor function. Is it important to increase the scores?
-        df_long[,'value'] <- as.numeric(df_long[,'value'])
-        df_long[,'value_round']<- round(df_long$value*rounding)
-
-        #  Update the progress bar
-        j = j + 1
-        setTxtProgressBar(pb, j)
-
-        list_df <- list()
-        i <- 1
-        ## This for loop is equivalent to computing on each column, bigDF might
-        ## not be useful.
-        for (my_var in unique(df_long$variable)) {
-            df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
-            df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
-            ecdf_df <- ecdf(df_expanded[,"coord"])
-            df_subset$Fx <- ecdf_df(df_subset$coord) 
-            list_df[[i]] <- df_subset
-            i <- i + 1
-        }
-
-        ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
-        ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
-        ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
-        ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
-        ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
-        df_final <- bind_rows(list_df)
-        transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
-
-#---------------
-## ADDED BY ME
-modified_dataset <- transcript_table
-#---------------
-
-
-# ------------------------------------------------
-## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST
-        # getting rid of plus and minus
-        if (transcript_table$strand[1]=="-") {
-            # Drop columns containing "minus"
-            columns_to_drop <- grep("plus", col_names, value = TRUE)
-            dataset_without_dropped <- transcript_table %>%
-            select(-all_of(columns_to_drop))
-
-        # Modify column names by removing "_plus"
-        modified_dataset <- dataset_without_dropped %>%
-        rename_with(~gsub(".minus", "", .), contains(".minus"))
-        } else {
-            # Drop columns containing "minus"
-            columns_to_drop <- grep("minus", col_names, value = TRUE)
-            dataset_without_dropped <- transcript_table %>%
-            select(-all_of(columns_to_drop))
-
-            # Modify column names by removing "_plus"
-            modified_dataset <- dataset_without_dropped %>%
-            rename_with(~gsub(".plus", "", .), contains(".plus"))
-        }
-# ----------------------------------------------------
-        concat_df <- bind_rows(concat_df, modified_dataset)
-    }
-saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
-    # # Close the progress bar
-    close(pb)
-    # list_gene_table <- concat_df %>% select(gene) %>% distinct()
-    gc()
-
-    return(concat_df = concat_df)
+j=0
+concat_df <- data.frame()
+## Looping through all the transcripts
+for (variable in expressed_transcript_name_list){
+  gene_table <- data.frame()
+  bigDF <- data.frame()  
+  
+  transcript_table <- data.frame()
+  transcript <- filter(main_table, main_table$transcript==variable) 
+  transcript[transcript == "NAN"] <- NA
+  bigDF <- transcript
+  my_length <- length(bigDF[,'window'])
+  
+  
+  var_names_score <- paste0(var_names,"_score")
+  
+  if (transcript$strand[1]=="-") {
+    bigDF <- bigDF %>%
+      select(!matches("plus"))
+    bigDF$coord <- seq(from=my_length, to=1,by=-1)
+    bigDF <- arrange(bigDF, coord)
+    conditions <- var_names_score[grepl("minus",var_names_score)]
+  } else {
+    bigDF <- bigDF %>%
+      select(!matches("minus"))
+    bigDF$coord <- seq(from=1, to=my_length,by=1)
+    conditions <- var_names_score[grepl("plus",var_names_score)]
+  }
+  
+  bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+  
+  df_long <- bigDF %>% 
+    gather(key = "variable", value = "value", conditions)
+  df_long[,'value'] <- as.numeric(df_long[,'value'])
+  df_long[,'value_round']<- round(df_long$value*rounding)
+  
+  j=j+1
+#  Update the progress bar
+  setTxtProgressBar(pb, j)
+  
+  list_df <- list()
+  i <- 1
+  for (my_var in unique(df_long$variable)){
+    
+    df_subset <- subset(df_long, subset = variable == my_var) 
+    df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ]
+    ecdf_df <- ecdf(df_expanded[,"coord"])
+    df_subset$Fx <- ecdf_df(df_subset$coord) 
+    list_df[[i]] <- df_subset
+    i <- i + 1
+  }
+  
+  df_final <- bind_rows(list_df)
+  transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) 
+  
+  # getting rid of plus and minus
+  if (transcript_table$strand[1]=="-") {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+    dataset_without_dropped <- transcript_table %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".minus", "", .), contains(".minus"))
+    
+  } else {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+    dataset_without_dropped <- transcript_table %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".plus", "", .), contains(".plus"))
+    
+  }
+  concat_df <- bind_rows(concat_df, modified_dataset)
+  
 }
 
+# # Close the progress bar
+ close(pb)  
+# list_gene_table <- concat_df %>% select(gene) %>% distinct()
+gc()
+
+return(concat_df=concat_df)
+}
+
+# genesECDF <- function(main_table, rounding, expressed_transcript_name_list,
+#     extension, workdir) {
+
+#     gc()
+
+#     res <- getting_var_names(extension, workdir)
+#     col_names <- res$col_names
+#     var_names <- res$var_names  
+
+#     total_iterations <- length(expressed_transcript_name_list)
+#     #setting the progress bar
+#     pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
+
+#     j = 0
+#     concat_df <- data.frame()
+
+#     ## Looping through all the transcripts i.e performs the loop for each
+#     ## transcript that has been kept by the function main_table_read because
+#     ## it was expressed
+#     for (variable in expressed_transcript_name_list) {
+
+#         gene_table <- data.frame()
+#         bigDF <- data.frame()
+
+#         ## Isolating the rows corresponding to the transcript
+#         ## Question: Could we do it at once for all expressed transcripts with
+#         ## a match (transcriptmaintable in selectedtrans, remove na, use the
+#         ## transcript column as factor to split the main table)
+#         transcript_table <- data.frame()
+#         transcript <- filter(main_table, main_table$transcript == variable)
+#         ## This replacement is not necessary in my hands
+#         transcript[transcript == "NAN"] <- NA
+#         ## Changing the name of transcript can be useful to conserve it. So far,
+#         ## it seems to be done to keep looking for the strand. It could be
+#         ## stored in a variable. Add verification that the strand is unique
+#         ## in transcript.
+#         bigDF <- transcript
+#         ## This is equivalent to nrow(transcript). Check if every transcript has
+#         ## the same number of windows, if it is the case, it is not necessary
+#         ## to take this into account.
+#         my_length <- length(bigDF[,'window'])
+
+# # ---------------------------------------------------------------------------------------------------
+# ## SUMMARY
+# ##
+# ## This section filters the score columns according to the strand of the transcript considered
+
+#         ## This only builds the names of the columns containing the scores
+#         var_names_score <- paste0(var_names,"_score")
+
+#         if (transcript$strand[1] == "-") { # see above, the strand can be stored in a variable instead of calculating it. # nolint
+#             bigDF <- bigDF %>%
+#             select(!matches("plus"))
+#             bigDF$coord <- seq(from = my_length, to = 1, by = -1)
+#             bigDF <- arrange(bigDF, coord)
+#             conditions <- var_names_score[grepl("minus", var_names_score)]
+#         } else {
+#             bigDF <- bigDF %>%
+#             select(!matches("minus"))
+#             bigDF$coord <- seq(from=1, to=my_length,by=1)
+#             conditions <- var_names_score[grepl("plus",var_names_score)]
+#         }
+# # ---------------------------------------------------------------------------------------------------
+
+#         ## To my understanding this Fills missing values in selected columns
+#         ## using first down and then up previous entry.
+#         bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+
+#         ## The code below creates a data.frame of two columns with the name of
+#         ## the experiment as key and the expression as value. This is the kind
+#         ## of transformation we do before using ggplot2. However I do not see
+#         ## why keeping the previous columns is necessary. They will be repeated
+#         ## several times.
+#         df_long <- bigDF %>% 
+#             gather(key = "variable", value = "value", conditions)
+#         ## Makes the values as integer by multiplying by 10. Why not using the
+#         ## ceil or floor function. Is it important to increase the scores?
+#         df_long[,'value'] <- as.numeric(df_long[,'value'])
+#         df_long[,'value_round']<- round(df_long$value*rounding)
+
+#         #  Update the progress bar
+#         j = j + 1
+#         setTxtProgressBar(pb, j)
+
+#         list_df <- list()
+#         i <- 1
+#         ## This for loop is equivalent to computing on each column, bigDF might
+#         ## not be useful.
+#         for (my_var in unique(df_long$variable)) {
+#             df_subset <- subset(df_long, subset = variable == my_var) # This is just selecting the lines that we had in the initial table # nolint
+#             df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ] # nolint
+#             ecdf_df <- ecdf(df_expanded[,"coord"])
+#             df_subset$Fx <- ecdf_df(df_subset$coord) 
+#             list_df[[i]] <- df_subset
+#             i <- i + 1
+#         }
+
+#         ## This two lines are equivalent to cbind a matrix of Fx to the transcript table used at the beginning
+#         ## The columns are biotype, chr, coor1, coor2, transcript, gene, strand, window, id, ctrl_rep1.plus, ctrl_rep2.plus,
+#         ## HS_rep1.plus, HS_rep2.plus, coord, value_ctrl_rep1.plus_score, value_ctrl_rep2.plus_score,
+#         ## value_HS_rep1.plus_score, value_HS_rep2.plus_score, Fx_ctrl_rep1.plus_score, Fx_ctrl_rep2.plus_score,
+#         ## Fx_HS_rep1.plus_score, Fx_HS_rep2.plus_score
+#         df_final <- bind_rows(list_df)
+#         transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) # nolint
+
+# #---------------
+# ## ADDED BY ME
+# #modified_dataset <- transcript_table
+# #---------------
 
 
-calculates_meanFx <- function(concat_df, window_number) {
+# # ------------------------------------------------
+# ## THIS CANNOT BE TRIGGERED BECAUSE THE COLUMNS DO NOT EXIST (????)
+#         # getting rid of plus and minus
+#         if (transcript_table$strand[1]=="-") {
+#             # Drop columns containing "minus"
+#             columns_to_drop <- grep("plus", col_names, value = TRUE)
+#             dataset_without_dropped <- transcript_table %>%
+#             select(-all_of(columns_to_drop))
 
-    res <- getting_var_names(extension, working_directory)
-    Conditions <- res$Conditions
-    replicate_numbers <- res$replicate_numbers
-    column_vector_value <- character()
-    column_vector_Fx <- character()
+#         # # Modify column names by removing "_plus"
+#         modified_dataset <- dataset_without_dropped %>%
+#         rename_with(~gsub(".minus", "", .), contains(".minus"))
+#         } else {
+#             # Drop columns containing "minus"
+#             columns_to_drop <- grep("minus", col_names, value = TRUE)
+#             dataset_without_dropped <- transcript_table %>%
+#             select(-all_of(columns_to_drop))
 
-    for (cond in Conditions) {
-        mean_value_condi_name <- paste0("mean_value_", cond)
-        mean_Fx_condi_name <- paste0("mean_Fx_", cond)
-        diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+#         #     # Modify column names by removing "_plus"
+#             modified_dataset <- dataset_without_dropped %>%
+#             rename_with(~gsub(".plus", "", .), contains(".plus"))
+#          }
+# # ----------------------------------------------------
+#         concat_df <- bind_rows(concat_df, modified_dataset)
+#     }
+# #saveRDS(concat_df, file = file.path("/g/romebioinfo/Projects/tepr/robjsave/concatdf_fromexplore.rds"))
+#     # # Close the progress bar
+#     close(pb)
+#     # list_gene_table <- concat_df %>% select(gene) %>% distinct()
+#     gc()
 
-        for (rep_num in replicate_numbers) {
-            new_column_value <- paste0("value_", cond, "_rep", rep_num, "_score") # Generate a new item # nolint
-            new_column_Fx <- paste0("Fx_", cond, "_rep", rep_num, "_score") # Generate a new item # nolint
-            column_vector_value <- c(column_vector_value, new_column_value)
-            column_vector_Fx <- c(column_vector_Fx, new_column_Fx)
+#     return(concat_df = concat_df)
+# }
 
-        }
 
-        # Calculate row means for the specified columns
-        # Check if there is more than one replicate
-        if (length(replicate_numbers) > 1) {
-          concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F) # nolint
-          concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE) # nolint
-        } else {
-          # Handle case when column_vector_value is empty
-          new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item # nolint
-          new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item # nolint
+# calculates_meanFx <- function(concat_df,window_number){
 
-        concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
-        concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
-        }
+# res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
+# Conditions <- res$Conditions
+# replicate_numbers <- res$replicate_numbers
 
-        concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC # nolint
-        column_vector_value <- character() ## obligatory to reset the columns values to empty # nolint
-        column_vector_Fx <- character() # nolint
-      }
 
-      return(concat_dfFx=concat_df)
+# column_vector_value <- character()
+# column_vector_Fx <- character()
+
+
+# for (cond in Conditions) {
+#   mean_value_condi_name <- paste0("mean_value_", cond)
+#   mean_Fx_condi_name <- paste0("mean_Fx_", cond)
+#   diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  
+#   for (rep_num in replicate_numbers) {
+#     new_column_value <- paste0("value_", cond, "_rep", rep_num, "_score") # Generate a new item
+#     new_column_Fx <- paste0("Fx_", cond, "_rep", rep_num, "_score") # Generate a new item
+#     column_vector_value <- c(column_vector_value, new_column_value)
+#     column_vector_Fx <- c(column_vector_Fx, new_column_Fx)
+#   }
+#   # Calculate row means for the specified columns
+#   # Check if there is more than one replicate
+#   if (length(replicate_numbers) > 1) {
+#     concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F)
+#     concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE)
+#   } else {
+#     # Handle case when column_vector_value is empty
+#     new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item
+#     new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item
+    
+#     concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
+#     concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
+#   }
+  
+#   concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC
+  
+#   column_vector_value <- character() ## obligatory to reset the columns values to empty
+#   column_vector_Fx <- character()
+# }
+
+# return(concat_dfFx=concat_df)
+# }
+
+# concat_df <- resultsECDF
+# window_number <- 200
+calculates_meanFx <- function(concat_df,window_number){
+
+res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
+Conditions <- res$Conditions
+replicate_numbers <- res$replicate_numbers
+
+
+column_vector_value <- character()
+column_vector_Fx <- character()
+
+
+for (cond in Conditions) {
+  mean_value_condi_name <- paste0("mean_value_", cond)
+  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
+  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  
+  for (rep_num in replicate_numbers) {
+    new_column_value <- paste0("value_", cond, "_rep", rep_num, "_score") # Generate a new item
+    new_column_Fx <- paste0("Fx_", cond, "_rep", rep_num, "_score") # Generate a new item
+    column_vector_value <- c(column_vector_value, new_column_value)
+    column_vector_Fx <- c(column_vector_Fx, new_column_Fx)
+  }
+  # Calculate row means for the specified columns
+  # Check if there is more than one replicate
+  if (length(replicate_numbers) > 1) {
+    concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F)
+    concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE)
+  } else {
+    # Handle case when column_vector_value is empty
+    new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item
+    new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item
+    
+    concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
+    concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
+  }
+  
+  concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC
+  
+  column_vector_value <- character() ## obligatory to reset the columns values to empty
+  column_vector_Fx <- character()
+}
+
+return(concat_dfFx=concat_df)
 }
 
 
 
 condition_comparison <- function(extension,working_directory) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (i in 1:length(Conditions)) {
@@ -325,7 +472,7 @@ condition_comparison <- function(extension,working_directory) {
 condition_compared <- function(extension, working_directory,
   dontcompare = NULL) {
 
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
     Conditions <- res$Conditions
 
     for (i in 1:length(Conditions)) {
@@ -350,7 +497,7 @@ Diff_mean_fun <- function(concat_df, dontcompare = NULL) {
   if(is.null(dontcompare)) {dontcompare <- c() } 
   # return(dontcompare)
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
   replicate_numbers <- res$replicate_numbers
 
@@ -406,7 +553,7 @@ dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare) {
     mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
     select("transcript", "gene", "strand", "window_size") %>% distinct()
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (i in 1:length(Conditions)) {
@@ -478,7 +625,7 @@ AUC_allcondi_fun <- function(concat_df,window_number) {
 
 
   AUC_allcondi <- concat_df %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct() # nolint
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
   n <- window_number
   cumulative_density <- seq(1, n) / n
@@ -534,7 +681,7 @@ AUC_allcondi_fun <- function(concat_df,window_number) {
 
 countNA_fun <- function(main_table, extension, working_directory) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   col_names <- res$col_names
   score_columns <- grep("score$", col_names, value = TRUE)  
 
@@ -575,7 +722,7 @@ countNA_fun <- function(main_table, extension, working_directory) {
 KneeID_fun <- function(concat_df) {
 
   gene_summary_allcondi <- concat_df %>% select("transcript") %>% distinct()
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (cond in Conditions) {
@@ -613,7 +760,7 @@ KneeID_fun <- function(concat_df) {
 
 Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   Complete_summary <-  left_join(concat_df, AUC_KS_Knee_NA_DF,
@@ -675,19 +822,36 @@ results_main_table <- main_table_read(name_table, extension,
   file.path(working_directory, "bedgraphs"), 0.1) # nolint
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
-    workdir = file.path(working_directory, "bedgraphs"))
+    working_dir = file.path(working_directory, "bedgraphs"))
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
 
-
-condition_comparison(extension,working_directory) ## Does not return anything
+## !! Skipping this for the moment
+condition_comparison(extension,file.path(working_directory, "bedgraphs")) ## Does not return anything
 dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") # nolint
 condition_compared(extension,working_directory,) ## Does not return anything
 
-concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res,)
+concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
+
+start_time <- Sys.time()
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
-count_NA_res <- countNA_fun(main_table, extension, working_directory)
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
+count_NA_res <- countNA_fun(results_main_table[[1]], extension, working_directory)
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
 KneeID_res <- KneeID_fun(concat_Diff_mean_res)
+end_time <- Sys.time()
+print(end_time - start_time)
+
 
 AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
   by = c("transcript", "gene", "strand", "window_size"))  %>% 
@@ -699,6 +863,13 @@ AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
 tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
 
+
+mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
 tst_df <- tst_df %>%
   mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
     !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
@@ -708,3 +879,4 @@ tst_df <- tst_df %>% mutate(
     Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
   ) %>% relocate(Group, .before = 2)
+
