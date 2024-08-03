@@ -453,7 +453,7 @@ return(concat_dfFx=concat_df)
 
 condition_comparison <- function(extension,working_directory) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (i in 1:length(Conditions)) {
@@ -472,7 +472,7 @@ condition_comparison <- function(extension,working_directory) {
 condition_compared <- function(extension, working_directory,
   dontcompare = NULL) {
 
-    res <- getting_var_names(extension, working_directory)
+    res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
     Conditions <- res$Conditions
 
     for (i in 1:length(Conditions)) {
@@ -497,7 +497,7 @@ Diff_mean_fun <- function(concat_df, dontcompare = NULL) {
   if(is.null(dontcompare)) {dontcompare <- c() } 
   # return(dontcompare)
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
   replicate_numbers <- res$replicate_numbers
 
@@ -553,7 +553,7 @@ dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare) {
     mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
     select("transcript", "gene", "strand", "window_size") %>% distinct()
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (i in 1:length(Conditions)) {
@@ -625,7 +625,7 @@ AUC_allcondi_fun <- function(concat_df,window_number) {
 
 
   AUC_allcondi <- concat_df %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct() # nolint
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
   n <- window_number
   cumulative_density <- seq(1, n) / n
@@ -681,7 +681,7 @@ AUC_allcondi_fun <- function(concat_df,window_number) {
 
 countNA_fun <- function(main_table, extension, working_directory) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   col_names <- res$col_names
   score_columns <- grep("score$", col_names, value = TRUE)  
 
@@ -722,7 +722,7 @@ countNA_fun <- function(main_table, extension, working_directory) {
 KneeID_fun <- function(concat_df) {
 
   gene_summary_allcondi <- concat_df %>% select("transcript") %>% distinct()
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   for (cond in Conditions) {
@@ -760,7 +760,7 @@ KneeID_fun <- function(concat_df) {
 
 Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 
-  res <- getting_var_names(extension, working_directory)
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
   Complete_summary <-  left_join(concat_df, AUC_KS_Knee_NA_DF,
