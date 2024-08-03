@@ -3,6 +3,10 @@ library(purrr)
 library(tidyr)
 library(stringr)
 
+!!!!!!!
+environment: /g/romebioinfo/tmp/explore
+!!!!!!!!!
+
 
 ##################
 # PARAMETERS
