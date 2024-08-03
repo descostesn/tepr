@@ -288,6 +288,77 @@ resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 
+!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare) {
+
+  if(is.null(dontcompare)) {dontcompare <- c()} 
+
+  dAUC_allcondi <- concat_df  %>% 
+    filter(window==round(window_number/2))  %>%
+    mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
+    select("transcript", "gene", "strand", "window_size") %>% distinct()
+
+  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
+  Conditions <- res$Conditions
+
+  for (i in 1:length(Conditions)) {
+    for (j in (1+i):length(Conditions)) {
+      if (j > length(Conditions)){ break}
+      cond1 <- Conditions[i]
+      cond2 <- Conditions[j]
+
+      ## making sure to not do useless comparison for the user,
+      compare <- paste0(cond1, " vs ", cond2)
+      if (! compare %in% dontcompare) {
+        mean_Fx_condi_name1 <- paste0("mean_Fx_", cond1) #e,g Control
+        mean_Fx_condi_name2 <- paste0("mean_Fx_", cond2) #e.g HS
+
+        Diff_meanFx_name1 <- paste0("Diff_meanFx_",cond1,"_",cond2)
+        Diff_meanFx_name2 <- paste0("Diff_meanFx_",cond2,"_",cond1) 
+
+        df_name <- paste0("gene_summary_AUC_", Diff_meanFx_name1)
+        assign(df_name,data.frame()) 
+
+        # Get the data frame using the dynamically generated name
+        dAUC_summary_condi_df <- data.frame()
+        dAUC_summary_condi_df <- get(df_name)
+        dAUC <- paste0("dAUC_",Diff_meanFx_name2)
+        p_dAUC <- paste0("p_dAUC_",Diff_meanFx_name2)
+        D_dAUC <- paste0("D_dAUC_",Diff_meanFx_name2)
+
+        dAUC_summary_condi_df  <- concat_df %>%
+          group_by(transcript) %>% arrange(coord) %>%
+          reframe(gene=gene[1], strand=strand, transcript=transcript, 
+            !!dAUC := trapz(coord,!!sym(Diff_meanFx_name2)),# delta AUC
+            !!p_dAUC := ks.test(!!sym(mean_Fx_condi_name1),
+            !!sym(mean_Fx_condi_name2))$p.value,
+            !!D_dAUC := ks.test(!!sym(mean_Fx_condi_name1),
+            !!sym(mean_Fx_condi_name2))$statistic,) %>% dplyr::distinct()
+        assign(df_name, dAUC_summary_condi_df)
+        dAUC_allcondi <- left_join(dAUC_allcondi, dAUC_summary_condi_df, by = c("transcript", "gene","strand")) # nolint
+      }
+    }
+  }
+
+  dAUC_allcondi <- dAUC_allcondi %>%
+  mutate(across(contains("p_dAUC"), ~ modify_p_values(.))) 
+
+  # Get the column names containing "p_dAUC"
+  p_dAUC_columns <- grep("p_dAUC", colnames(dAUC_allcondi), value = TRUE)
+
+  # Loop through each column, calculate adjusted p-values, and create new columns
+  for (col_name in p_dAUC_columns) {
+    print(col_name)
+    adjusted_col_name <- paste0("adjFDR_", col_name)
+    dAUC_allcondi[[adjusted_col_name]] <- p.adjust(dAUC_allcondi[[col_name]], method = "fdr")
+  }
+  return(dAUC_allcondi)
+}
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 > head(concat_Diff_mean_res)
