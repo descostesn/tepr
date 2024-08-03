@@ -188,6 +188,39 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
         return(meandifflist)
 }
 
+.creatematdiff <- function(condvec, resmean) {
+
+  categoryvec <- c("value", "Fx")
+  matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
+    meancolnames <- paste("mean", currentcat, condvec, sep = "_")
+
+    ## Generating all combinations of elements (combn not good)
+    idxvec <- seq_len(length(condvec))
+    matidx <- matrix(c(idxvec, rev(idxvec)), ncol = 2)
+
+    ## Generating differences of columns
+    difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
+        currentcat, condvec) {
+          res <- matrixStats::rowDiffs(as.matrix(
+            resmean[,meancolnames[idxvec]]))
+          colnamestr <- paste("Diff", paste0("mean", currentcat),
+            paste(condvec[idxvec], collapse = "_"), sep = "_")
+          res <- as.vector(res)
+          attr(res, "name") <- colnamestr
+          return(res)
+      }, meancolnames, resmean, currentcat, condvec, simplify = FALSE)
+
+      ## Combining vectors into a matrix and defining col names
+      diffmat <- do.call("cbind", difflist)
+      colnames(diffmat) <- sapply(difflist, function(x) attributes(x)$name)
+      return(diffmat)
+  }, condvec, resmean)
+
+  ## Building a matrix from the diff on values and Fx
+  matdiff <- do.call("cbind", matdifflist)
+  return(matdiff)
+}
+
 createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
     ## for each condition, creates three columns:
@@ -223,27 +256,10 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
     ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
     if (verbose) message("Commputing all differences on mean columns")
-    .creatematdifflist
-    categoryvec <- c("value", "Fx")
-    matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
-      meancolnames <- paste("mean", currentcat, condvec, sep = "_")
-      ## Generating all combinations of elements (combn not good)
-      idxvec <- seq_len(length(condvec))
-      matidx <- matrix(c(idxvec, rev(idxvec)), ncol = 2)
-      difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
-        currentcat, condvec) {
-        res <- matrixStats::rowDiffs(as.matrix(resmean[,meancolnames[idxvec]]))
-        colnamestr <- paste("Diff", paste0("mean", currentcat),
-          paste(condvec[idxvec], collapse = "_"), sep = "_")
-        res <- as.vector(res)
-        attr(res, "name") <- colnamestr
-        return(res)
-      }, meancolnames, resmean, currentcat, condvec, simplify = FALSE)
-      diffmat <- do.call("cbind", difflist)
-      colnames(diffmat) <- sapply(difflist, function(x) attributes(x)$name)
-      return(diffmat)
-    }, condvec, resmean)
-    matdiff <- do.call("cbind", matdifflist)
+    matdiff <- .creatematdiff(condvec, resmean)
+
+    
+    
 
 !!
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
