@@ -318,7 +318,6 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 
 
-> head(concat_Diff_mean_res,2)
 > head(concat_Diff_mean_res)
          biotype  chr     coor1     coor2         transcript gene strand window
 1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
@@ -377,98 +376,120 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 5        0.0000000000
 6       -0.0002486325
 
+
+
+Time difference of 30.59541 secs
 > head(dAUC_allcondi_res,2)
-          transcript gene strand window_size
-1 ENST00000000233.10 ARF5      +          16
-2  ENST00000000412.8 M6PR      -          46
+          transcript gene strand window_size dAUC_Diff_meanFx_HS_ctrl
+1 ENST00000000233.10 ARF5      +          16                7.3183914
+2  ENST00000000412.8 M6PR      -          46               -0.6347988
+  p_dAUC_Diff_meanFx_HS_ctrl D_dAUC_Diff_meanFx_HS_ctrl
+1                  0.1122497                       0.12
+2                  1.0000000                       0.02
+  adjFDR_p_dAUC_Diff_meanFx_HS_ctrl
+1                         0.2732393
+2                         1.0000000
+
+
+Time difference of 1.000898 mins
+> head(AUC_allcondi_res,2)
+          transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
+1 ENST00000000233.10 ARF5      +          16 -16.1578100 0.01195204      0.160
+2  ENST00000000412.8 M6PR      -          46   0.4324419 0.99999997      0.025
+  MeanValueFull_ctrl    AUC_HS  p_AUC_HS D_AUC_HS MeanValueFull_HS
+1           4.877027 -8.839419 0.3274975    0.095         4.564402
+2           9.180490 -0.202357 0.9996971    0.035         9.789388
+  adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
+1        0.04014826       0.4433998
+2        1.00000000       1.0000000
+
+Time difference of 5.873777 secs
+> head(count_NA_res,2)
+# A tibble: 2 × 4
+  gene  transcript         strand Count_NA
+  <chr> <chr>              <chr>     <int>
+1 ARF5  ENST00000000233.10 +             0
+2 ESRRA ENST00000000442.11 +             0
+
+
+Time difference of 6.39923 secs
+> head(KneeID_res,2)
+          transcript knee_AUC_ctrl max_diff_Fx_ctrl knee_AUC_HS max_diff_Fx_HS
+1 ENST00000000233.10           200       0.00000000         115     0.01909246
+2  ENST00000000412.8            29       0.02321981          29     0.02434586
 
 
 
-          transcript    gene strand window_size
-1 ENST00000000233.10    ARF5      +          16
-2  ENST00000000412.8    M6PR      -          46
-3 ENST00000000442.11   ESRRA      +          56
-4  ENST00000001008.6   FKBP4      +          52
-5  ENST00000001146.7 CYP26B1      -          93
-6  ENST00000002125.9 NDUFAF7      +          87
+
+> AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
+  by = c("transcript", "gene", "strand", "window_size"))  %>%
+  left_join(., KneeID_res, by = c("transcript"))  %>%
+  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
+> AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
+  summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
+  gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
+  left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
+> head(AUC_KS_Knee_NA.df,2)
+# A tibble: 2 × 27
+  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
+# ℹ 18 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>
+
+
+> head(tst_df,2)
+# A tibble: 2 × 33
+  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
+# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
 
 
 
 
-> head(count_NA_res)
-# A tibble: 6 × 4
-  gene    transcript         strand Count_NA
-  <chr>   <chr>              <chr>     <int>
-1 ARF5    ENST00000000233.10 +             0
-2 ESRRA   ENST00000000442.11 +             0
-3 FKBP4   ENST00000001008.6  +             0
-4 NDUFAF7 ENST00000002125.9  +             0
-5 SEMA3F  ENST00000002829.8  +             0
-6 CFTR    ENST00000003084.11 +             2
-
-
-> head(KneeID_res)
-          transcript
-1 ENST00000000233.10
-2  ENST00000000412.8
-3 ENST00000000442.11
-4  ENST00000001008.6
-5  ENST00000001146.7
-6  ENST00000002125.9
-
-> head(AUC_KS_Knee_NA.df)
-          transcript    gene strand window_size Count_NA
-1 ENST00000000233.10    ARF5      +          16        0
-2  ENST00000000412.8    M6PR      -          46       16
-3 ENST00000000442.11   ESRRA      +          56        0
-4  ENST00000001008.6   FKBP4      +          52        0
-5  ENST00000001146.7 CYP26B1      -          93        0
-6  ENST00000002125.9 NDUFAF7      +          87        0
-
-
-> head(AUC_KS_Knee_NA.df)
-# A tibble: 6 × 9
-  transcript         chr    coor1  coor2 strand gene   size window_size Count_NA
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <int>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16        0
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46       16
-3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56        0
-4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52        0
-5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93        0
-6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87        0
-
-
-> head(tst_df)
-# A tibble: 6 × 9
-  transcript         chr    coor1  coor2 strand gene   size window_size Count_NA
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <int>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16        0
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46       16
-3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56        0
-4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52        0
-5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93        0
-6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87        0
-
-
-> tst_df <- tst_df %>%
+> mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
+tst_df <- tst_df %>%
   mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
     !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
     !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
   relocate(Universe, .before = 1)
-Error in `mutate()`:
-ℹ In argument: `Universe = ifelse(...)`.
-Caused by error:
-! object 'MeanValueFull_ctrl' not found
-Run `rlang::last_trace()` to see where the error occurred.
-
-
-> tst_df <- tst_df %>% mutate(
+tst_df <- tst_df %>% mutate(
     Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
   ) %>% relocate(Group, .before = 2)
-Error in `mutate()`:
-ℹ In argument: `Group = ifelse(...)`.
-Caused by error:
-! object 'Universe' not found
-Run `rlang::last_trace()` to see where the error occurred.
-
+> head(tst_df)
+# A tibble: 6 × 35
+  Universe Group   transcript chr    coor1  coor2 strand gene   size window_size
+  <lgl>    <chr>   <chr>      <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>
+1 FALSE    NA      ENST00000… chr7  1.28e8 1.28e8 +      ARF5   3290          16
+2 FALSE    NA      ENST00000… chr12 8.94e6 8.95e6 -      M6PR   9285          46
+3 TRUE     Outgro… ENST00000… chr11 6.43e7 6.43e7 +      ESRRA 11220          56
+4 TRUE     Outgro… ENST00000… chr12 2.79e6 2.81e6 +      FKBP4 10454          52
+5 FALSE    NA      ENST00000… chr2  7.21e7 7.21e7 -      CYP2… 18625          93
+6 TRUE     Outgro… ENST00000… chr2  3.72e7 3.72e7 +      NDUF… 17503          87
+# ℹ 25 more variables: AUC_ctrl <dbl>, p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
