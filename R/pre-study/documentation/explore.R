@@ -831,10 +831,27 @@ dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs C
 condition_compared(extension,working_directory,) ## Does not return anything
 
 concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
+
+start_time <- Sys.time()
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
 count_NA_res <- countNA_fun(results_main_table[[1]], extension, working_directory)
+end_time <- Sys.time()
+print(end_time - start_time)
+
+start_time <- Sys.time()
 KneeID_res <- KneeID_fun(concat_Diff_mean_res)
+end_time <- Sys.time()
+print(end_time - start_time)
+
 
 AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
   by = c("transcript", "gene", "strand", "window_size"))  %>% 
