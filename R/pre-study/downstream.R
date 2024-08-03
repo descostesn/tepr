@@ -10,6 +10,7 @@ library("dplyr")
 library("tidyselect")
 library("parallel")
 library("matrixStats")
+library("pracma")
 
 !!!!!!!!!
 environment: /g/romebioinfo/tmp/downstream
@@ -298,10 +299,29 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-dAUC_allcondi_fun <- function(df, nbwindows, dontcompare = NULL) {
+dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
   bytranslist <- split(df, factor(df$transcript))
-  !!lapply(bytranslist, function(transtab) {})
+  condvec <- unique(expdf$condition)
+  !!lapply(bytranslist, function(transtab, condvec) {
+
+    ## Retrieve the column names for each comparison
+    idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
+    name1 <- paste0("Diff_meanFx_", condvec[idxctrl], "_", condvec[-idxctrl])
+    name2 <- paste0("Diff_meanFx_", condvec[-idxctrl], "_", condvec[idxctrl])
+
+    ## Perform a kolmogorov-smirnoff test between the two columns
+    resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+
+    ## Calculate the area - delta AUC
+    deltaauc <- pracma::trapz(transtab[,"window"], transtab[, name2])
+    ## Retrieve the p-value
+    pvalks <- resks$p.value
+    ## The KS test statistic is defined as the maximum value of the difference
+    ## between A and B’s cumulative distribution functions (CDF)
+    statks <- resks$statistic
+
+  }, condvec)
   
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   !!!!!!!!!!!!!!!!!!! This pre-creation could be avoided with a split
