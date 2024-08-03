@@ -240,24 +240,6 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 
 
-> head(resultsECDF,2)
-         biotype  chr     coor1     coor2         transcript gene strand window
-1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
-2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
-                           id         ctrl_rep1         ctrl_rep2
-1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
-2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
-          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
-1 HS_rep1.forward HS_rep2.forward     1                     0
-2 HS_rep1.forward HS_rep2.forward     2                     0
-  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
-1                     0                   0                   0
-2                     0                   0                   0
-  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
-1                  0                  0                0                0
-2                  0                  0                0                0
-
-
 > head(concat_dfFX_res,2)
          biotype  chr     coor1     coor2         transcript gene strand window
 1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
