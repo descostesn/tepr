@@ -322,12 +322,27 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     statks <- resks$statistic
 
     ## Build a one line data.frame with the proper col names
-    resdf <- data.frame(deltaauc, pvalks, statks)
-    colnames(resdf) <- paste(colnames(resdf), name2, sep = "_")
+    ksaucdf <- data.frame(deltaauc, pvalks, statks)
+    colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+
+    ## Retrieving transcript information
+    !! must check all unique
+    transcript <- unique(transtab$transcript)
+    gene <- unique(transtab$gene)
+    strand <- unique(transtab$strand)
+    .checkunique(transcript, "transcript-dAUC_allcondi_fun")
+    .checkunique(gene, "gene-dAUC_allcondi_fun")
+    .checkunique(strand, "strand-dAUC_allcondi_fun")
+    windsize <- floor((transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+    infodf <- data.frame(transcript, gene, strand, windsize)
+
+    ## Combining the two df as result
+    resdf <- cbind(infodf, ksaucdf)
     return(resdf)
   }, condvec)
-  resdf <- do.call("rbind", resdflist)
-  
+
+!! CURRENT !!  resdf <- do.call("rbind", resdflist)
+
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   !!!!!!!!!!!!!!!!!!! This pre-creation could be avoided with a split
   dAUC_allcondi <- df  %>% 
