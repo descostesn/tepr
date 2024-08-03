@@ -295,11 +295,14 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-dAUC_allcondi_fun <- function(concat_df, nbwindows, dontcompare = NULL) {
+dAUC_allcondi_fun <- function(df, nbwindows, dontcompare = NULL) {
 
+  bytranslist <- split(df, factor(df$transcript))
+  !!lapply(bytranslist, function(transtab) {})
+  
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   !!!!!!!!!!!!!!!!!!! This pre-creation could be avoided with a split
-  dAUC_allcondi <- concat_df  %>% 
+  dAUC_allcondi <- df  %>% 
     filter(window==round(nbwindows/2))  %>%
     mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
     select("transcript", "gene", "strand", "window_size") %>% distinct()
@@ -343,7 +346,7 @@ dAUC_allcondi_fun <- function(concat_df, nbwindows, dontcompare = NULL) {
         D_dAUC <- paste0("D_dAUC_",Diff_meanFx_name2)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!! This performs a treatment by transcript, use a split
-        dAUC_summary_condi_df  <- concat_df %>%
+        dAUC_summary_condi_df  <- df %>%
           group_by(transcript) %>% arrange(coord) %>%
           reframe(gene=gene[1], strand=strand, transcript=transcript, 
             !!dAUC := trapz(coord,!!sym(Diff_meanFx_name2)),# delta AUC
