@@ -9,6 +9,8 @@ library("tidyr")
 library("dplyr")
 library("tidyselect")
 library("parallel")
+library("matrixStats")
+
 
 
 ##################
@@ -221,7 +223,25 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
     ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
     if (verbose) message("Commputing all differences on mean columns")
-    
+    categoryvec <- c("value", "Fx")
+    matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
+      meancolnames <- paste("mean", currentcat, condvec, sep = "_")
+      ## Generating all combinations of elements (combn not good)
+      idxvec <- seq_len(length(condvec))
+      matidx <- matrix(c(idxvec, rev(idxvec)), ncol = 2)
+      difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
+        currentcat, condvec) {
+        res <- matrixStats::rowDiffs(as.matrix(resmean[,meancolnames[idxvec]]))
+        colnamestr <- paste("Diff", paste0("mean", currentcat),
+          paste(condvec[idxvec], collapse = "_"), sep = "_")
+        res <- as.vector(res)
+        attr(res, "name") <- colnamestr
+        return(res)
+      }, meancolnames, resmean, currentcat, condvec, simplify = FALSE)
+      diffmat <- do.call("cbind", difflist)
+      colnames(diffmat) <- sapply(difflist, function(x) attributes(x)$name)
+      return(diffmat)
+    }, condvec, resmean)
 
             !!!!!!!!!!!
             "Diff_meanValue_ctrl_HS" 
