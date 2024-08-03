@@ -134,7 +134,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
-    return(concatdf)
+    return(list(concatdf, nbrows))
 }
 
 
@@ -293,7 +293,7 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare = NULL) {
 
-
+  ## Create a data.frame with the columns: transcript, gene, strand, window_size
   dAUC_allcondi <- concat_df  %>% 
     filter(window==round(window_number/2))  %>%
     mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
