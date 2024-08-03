@@ -303,7 +303,7 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
   bytranslist <- split(df, factor(df$transcript))
   condvec <- unique(expdf$condition)
-  !!lapply(bytranslist, function(transtab, condvec) {
+  resdflist <- lapply(bytranslist, function(transtab, condvec) {
 
     ## Retrieve the column names for each comparison
     idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
@@ -313,7 +313,7 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     ## Perform a kolmogorov-smirnoff test between the two columns
     resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
-    ## Calculate the area - delta AUC
+    ## Calculate the area under the curve of the difference of means - delta AUC
     deltaauc <- pracma::trapz(transtab[,"window"], transtab[, name2])
     ## Retrieve the p-value
     pvalks <- resks$p.value
@@ -321,7 +321,12 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     ## between A and B’s cumulative distribution functions (CDF)
     statks <- resks$statistic
 
+    ## Build a one line data.frame with the proper col names
+    resdf <- data.frame(deltaauc, pvalks, statks)
+    colnames(resdf) <- paste(colnames(resdf), name2, sep = "_")
+    return(resdf)
   }, condvec)
+  resdf <- do.call("rbind", resdflist)
   
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   !!!!!!!!!!!!!!!!!!! This pre-creation could be avoided with a split
