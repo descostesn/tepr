@@ -25,17 +25,19 @@ nbcpu <- 10
 #FUNCTIONS
 ##################
 
-averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
+averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
 
     scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
     ## Calculate the average expression per transcript (over each frame)
+    if(verbose) message("\t Calculating average expression per transcript") # nolint
     dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
         dplyr::summarize(gene = gene[1], strand = strand[1], # nolint
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
                 ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
     ## Remove a line if it contains only values < expthres (separating strands)
+    if(verbose) message("\t Removing lines with values < expthres")
     dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
         expthres) {
             if ((isTRUE(all.equal(strandname, "+")) &&
@@ -98,19 +100,22 @@ averageandfilterexprs <- function(expdf, alldf, expthres) { # nolint
         return(res)
 }
 
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
+  verbose = FALSE) { # nolint
 
     ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
 
     ## Filtering the main table to keep only the expressed transcripts
+    if (verbose) message("\t Filtering to keep only the expressed transcripts")
     idx <- match(maintable$transcript, exprstransnames)
     idxnoexpr <- which(is.na(idx))
     maintable <- maintable[-idxnoexpr, ]
 
     ## Splitting the table by each transcript to perform transcript specific
     ## operations
+    if (verbose) message("\t Splitting the table by each transcript")
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
@@ -118,6 +123,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
     colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
     ## Computing ecdf on each transcript
+    if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
         framevec, colnamevec, rounding) {
         res <- .computeecdf(transtable, expdf, rounding, framevec, colnamevec)
@@ -179,7 +185,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1) { # nolint
         return(meandifflist)
 }
 
-createmeandiff <- function(resultsecdf, expdf) {
+createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
@@ -187,7 +193,7 @@ createmeandiff <- function(resultsecdf, expdf) {
 
     rescondlist <- lapply(unique(expdf$condition), function(currentcond, df) {
 
-        message("Merging columns for condition ", currentcond)
+        if (verbose) message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
         idxcond <- .condcolidx(currentcond, df)
 
@@ -226,7 +232,9 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
+message("Filtering transcripts based on expression")
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
+message("Calculating ECDF")
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
