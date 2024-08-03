@@ -291,9 +291,8 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare) {
+dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare = NULL) {
 
-  if(is.null(dontcompare)) {dontcompare <- c()} 
 
   dAUC_allcondi <- concat_df  %>% 
     filter(window==round(window_number/2))  %>%
