@@ -223,6 +223,7 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
     ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
     if (verbose) message("Commputing all differences on mean columns")
+    .creatematdifflist
     categoryvec <- c("value", "Fx")
     matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
       meancolnames <- paste("mean", currentcat, condvec, sep = "_")
@@ -242,14 +243,9 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
       colnames(diffmat) <- sapply(difflist, function(x) attributes(x)$name)
       return(diffmat)
     }, condvec, resmean)
+    matdiff <- do.call("cbind", matdifflist)
 
-            !!!!!!!!!!!
-            "Diff_meanValue_ctrl_HS" 
-      "Diff_meanValue_HS_ctrl"
-      "Diff_meanFx_ctrl_HS"
-      "Diff_meanFx_HS_ctrl"
-          !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+!!
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
