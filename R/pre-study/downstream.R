@@ -258,10 +258,10 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     if (verbose) message("Commputing all differences on mean columns")
     matdiff <- .creatematdiff(condvec, resmean)
 
-    
-    
+    ## Combining the matrices with mean columns and differences of the mean
+    ## columns
+    res <- cbind(resmean, matdiff)
 
-!!
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
