@@ -156,12 +156,13 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
 }
 
 .meandiffscorefx <- function(idxcondlist, df, tosub, nbrows, currentcond,
-    colnamevec) {
+    colnamevec, verbose) {
 
         meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
-            condname, colnamevec){
-            message("\t Calculating average and difference between replicates",
-                " for columns '", idxname, "' of ", condname)
+            currentcond, colnamevec, verbose) {
+            if (verbose)
+              message("\t Calculating average and difference between ",
+                "replicates for columns '", idxname, "' of ", currentcond)
 
             ## Calculating the column of mean scores for currentcond
             ## The result is a data.frame made of a single column
@@ -169,19 +170,19 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
                 meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
             else
                 meandf <- df[, idxvalvec]
-            colnames(meandf) <- paste0("mean_", idxname, "_", condname)
+            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
                 diffres <- meandf - tosub
-                colnames(diffres) <- paste0("diff_", idxname, "_", condname)
+                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
             } else {
                 res <- meandf
             }
-
             return(res)
         }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
-            currentcond, colnamevec), SIMPLIFY = FALSE)
+            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
+
         return(meandifflist)
 }
 
@@ -190,8 +191,11 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
+    ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
+    ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
 
-    rescondlist <- lapply(unique(expdf$condition), function(currentcond, df) {
+    rescondlist <- lapply(unique(expdf$condition), function(currentcond, df,
+      verbose) {
 
         if (verbose) message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
@@ -205,12 +209,20 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         tosub <- df$window / nbrows
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
-            currentcond, colnamevec)
+            currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
 
         meandiffres <- do.call("cbind", meandifflist)
+
+        !!!!!!!!!!!
+            "Diff_meanValue_ctrl_HS" 
+      "Diff_meanValue_HS_ctrl"
+      "Diff_meanFx_ctrl_HS"
+      "Diff_meanFx_HS_ctrl"
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          
         return(meandiffres)
-    }, resultsecdf)
+    }, resultsecdf, verbose)
 
     res <- do.call("cbind", rescondlist)
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
@@ -237,6 +249,13 @@ allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 message("Calculating ECDF")
 resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
+
+
+
+
+
+
+
 
 
 
