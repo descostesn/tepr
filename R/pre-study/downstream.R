@@ -284,18 +284,22 @@ expdf <- read.csv(exptabpath, header = TRUE)
 message("Filtering transcripts based on expression")
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 message("Calculating ECDF")
-resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resultsecdf <- resecdf[[1]]
+nbwindows <- resecdf[[2]]
+
+message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-dAUC_allcondi_fun <- function(concat_df, window_number, dontcompare = NULL) {
+dAUC_allcondi_fun <- function(concat_df, nbwindows, dontcompare = NULL) {
 
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   dAUC_allcondi <- concat_df  %>% 
-    filter(window==round(window_number/2))  %>%
+    filter(window==round(nbwindows/2))  %>%
     mutate(window_size = abs(coor2-coor1), .keep = "all") %>%
     select("transcript", "gene", "strand", "window_size") %>% distinct()
 
