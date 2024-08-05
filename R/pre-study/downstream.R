@@ -325,7 +325,7 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
     ## Calculate the area under the curve of the difference of means - delta AUC
-    deltaauc <- pracma::trapz(transtab[,"window"], transtab[, name2])
+    deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
     ## Retrieve the p-value
     pvalks <- resks$p.value
     ## The KS test statistic is defined as the maximum value of the difference
