@@ -102,6 +102,12 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
         colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
 
+        ## Defining coordinates according to the strand
+        if (isTRUE(all.equal(str, '+')))
+            transtable <- cbind(transtable, coord = transtable$window)
+        else
+            transtable <- cbind(transtable, coord = rev(transtable$window))
+
         res <- cbind(transtable, ecdfmat)
         return(res)
 }
@@ -298,7 +304,8 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+df=dfmeandiff
+dontcompare = NULL
 dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
   bytranslist <- split(df, factor(df$transcript))
@@ -326,7 +333,6 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
 
     ## Retrieving transcript information
-    !! must check all unique
     transcript <- unique(transtab$transcript)
     gene <- unique(transtab$gene)
     strand <- unique(transtab$strand)
