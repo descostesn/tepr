@@ -399,25 +399,25 @@ auc_allconditions <- function(df, nbwindows) {
             transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
             ## Computing AUC, pval, and stat for each condition\
-            resauclist <- lapply(condvec,
-                function(currentcond, cumulativedensity){
-                    difffxname <- paste0("diff_Fx_", currentcond)
-                    meanvalname <- paste0("mean_value_", currentcond)
-                    meanfxname <- paste0("mean_Fx_", currentcond)
+            resauclist <- lapply(condvec, function(currentcond, transtab,
+                cumulativedensity) {
+
                     #mean value over the full gene body
                     fullmeanname <- paste0("MeanValueFull_", cond)
 
-                    auc
+                    ## Definition of column names
+                    difffxname <- paste0("diff_Fx_", currentcond)
+                    meanvalname <- paste0("mean_value_", currentcond)
+                    meanfxname <- paste0("mean_Fx_", currentcond)
 
-                }, cumulativedensity)
+                    auc <- pracma::trapz(transtab[,"coord"],
+                        transtab[, difffxname])
+
+                }, transtab, cumulativedensity)
 
     }, condvec, cumulativedensity)
 
   
-  AUC_summary_condi_df <- df %>%
-    group_by(transcript) %>%
-    arrange(coord) %>% 
-    reframe(gene=gene[1], 
               !!AUC := trapz(coord,!!sym(diff_Fx_condi_name)),
               !!p_AUC := {
       tryCatch({
