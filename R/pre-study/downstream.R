@@ -382,7 +382,80 @@ message("Computing and comparing AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
 !!!!!!!!!!!!!!!!!!!
+# Calculate the Area Under Curve (AUC), All conditions vs y=x 
+# Calculate Mean Value over the full gene body in All conditions.
 
+AUC_allcondi_fun <- function(concat_df,window_number){
+
+  # Load a library using require()
+  if (!require(pracma)) {
+    install.packages("pracma")
+    library(pracma)
+  }    
+  
+  
+AUC_allcondi <- concat_df %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct()
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+
+
+
+n <- window_number
+cumulative_density <- seq(1, n) / n
+
+for (cond in Conditions) {
+  #already present columns
+  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  mean_value_condi_name <- paste0("mean_value_", cond)
+  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
+
+  df_name <- paste0("gene_summary_AUC_", cond)
+  assign(df_name,data.frame()) 
+  
+  # Get the data frame using the dynamically generated name
+  AUC_summary_condi_df <- data.frame()
+  AUC_summary_condi_df <- get(df_name)
+  
+  #new column
+  AUC <- paste0("AUC_", cond)
+  p_AUC <- paste0("p_AUC_", cond)
+  D_AUC <- paste0("D_AUC_", cond)
+  MeanValueFull_condi_name <- paste0("MeanValueFull_", cond) #mean value over the full gene body
+  
+  AUC_summary_condi_df <- concat_df %>%
+    group_by(transcript) %>%
+    arrange(coord) %>% 
+    reframe(gene=gene[1], 
+              !!AUC := trapz(coord,!!sym(diff_Fx_condi_name)),
+              !!p_AUC := {
+      tryCatch({
+        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
+        result$p.value
+      }, error = function(e) NA)
+    },
+              !!D_AUC := {
+      tryCatch({
+        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
+        result$statistic
+      }, error = function(e) NA)
+    },
+              strand=strand,
+              transcript=transcript, 
+              !!(MeanValueFull_condi_name) :=mean(!!sym(mean_value_condi_name))) %>% 
+    dplyr::distinct()
+  
+  assign(df_name, AUC_summary_condi_df)
+  
+  AUC_allcondi <- left_join(AUC_allcondi, AUC_summary_condi_df, by = c("transcript", "gene","strand"))
+}
+
+  AUC_allcondi <- AUC_allcondi %>%
+  mutate(across(contains("p_AUC"), ~ modify_p_values(.))) 
+
+return(AUC_allcondi)
+}
+
+!!!!!!!!!!!!!!!!!!!
 Time difference of 1.000898 mins
 > head(AUC_allcondi_res,2)
           transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
