@@ -304,13 +304,16 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
-df=dfmeandiff
-dontcompare = NULL
+# df=dfmeandiff
+# dontcompare = NULL
 dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
   bytranslist <- split(df, factor(df$transcript))
   condvec <- unique(expdf$condition)
   resdflist <- lapply(bytranslist, function(transtab, condvec) {
+
+    ## Sorting table according to strand
+    transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
     ## Retrieve the column names for each comparison
     idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
