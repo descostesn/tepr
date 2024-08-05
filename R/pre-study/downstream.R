@@ -308,7 +308,7 @@ nbwindows <- resecdf[[2]]
 
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
-
+dfaucallcond <- dauc_allconditions(df, expdf, nbwindows)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -316,9 +316,9 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
             transcript <- unique(transtab$transcript)
         gene <- unique(transtab$gene)
         strand <- unique(transtab$strand)
-        .checkunique(transcript, "transcript-dAUC_allcondi_fun")
-        .checkunique(gene, "gene-dAUC_allcondi_fun")
-        .checkunique(strand, "strand-dAUC_allcondi_fun")
+        .checkunique(transcript, "transcript-dauc_allconditions")
+        .checkunique(gene, "gene-dauc_allconditions")
+        .checkunique(strand, "strand-dauc_allconditions")
         if (isTRUE(all.equal(strand, '+')))
             windsize <- floor(
                 (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
@@ -330,7 +330,7 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 }
 
 
-dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
+dauc_allconditions <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
     bytranslist <- split(df, factor(df$transcript))
     condvec <- unique(expdf$condition)
