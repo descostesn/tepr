@@ -342,7 +342,7 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     .checkunique(transcript, "transcript-dAUC_allcondi_fun")
     .checkunique(gene, "gene-dAUC_allcondi_fun")
     .checkunique(strand, "strand-dAUC_allcondi_fun")
-    windsize <- floor((transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+    windsize <- floor((abs(transtab$end[nbwindows] - transtab$start[1]))/nbwindows)
     infodf <- data.frame(transcript, gene, strand, windsize)
 
     ## Combining the two df as result
