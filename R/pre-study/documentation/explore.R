@@ -3,6 +3,10 @@ library(purrr)
 library(tidyr)
 library(stringr)
 
+!!!!!!!
+environment: /g/romebioinfo/tmp/explore
+!!!!!!!!!
+
 
 ##################
 # PARAMETERS
@@ -832,6 +836,7 @@ condition_compared(extension,working_directory,) ## Does not return anything
 
 concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
 
+## Time difference of 36.69392 secs
 start_time <- Sys.time()
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
 end_time <- Sys.time()

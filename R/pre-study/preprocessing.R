@@ -60,6 +60,10 @@ checkexptab <- function(exptab) {
     if (!isTRUE(all.equal(length(unique(exptab$condition)), 2)))
         stop("The table should only contain two conditions")
 
+    if (isTRUE(all.equal(length(grep("ctrl", exptab$condition)), 0)))
+        stop("The control condition (or condition 1) should be designated",
+            " by 'ctrl'")
+
     directionvec <- unique(exptab$direction)
     if (!isTRUE(all.equal(length(directionvec), 2)) ||
         !isTRUE(all.equal(directionvec, c("fwd", "rev"))))

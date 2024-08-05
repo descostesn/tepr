@@ -10,7 +10,11 @@ library("dplyr")
 library("tidyselect")
 library("parallel")
 library("matrixStats")
+library("pracma")
 
+!!!!!!!!!
+environment: /g/romebioinfo/tmp/downstream
+!!!!!!!!!!!
 
 
 ##################
@@ -98,6 +102,12 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
         colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
 
+        ## Defining coordinates according to the strand
+        if (isTRUE(all.equal(str, '+')))
+            transtable <- cbind(transtable, coord = transtable$window)
+        else
+            transtable <- cbind(transtable, coord = rev(transtable$window))
+
         res <- cbind(transtable, ecdfmat)
         return(res)
 }
@@ -134,7 +144,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
-    return(concatdf)
+    return(list(concatdf, nbrows))
 }
 
 
@@ -157,10 +167,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     return(idxcondlist)
 }
 
-.meandiffscorefx <- function(idxcondlist, df, tosub, nbrows, currentcond,
+.meandiffscorefx <- function(idxcondlist, df, nbrows, currentcond,
     colnamevec, verbose) {
 
-        meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbrows,
             currentcond, colnamevec, verbose) {
             if (verbose)
               message("\t Calculating average and difference between ",
@@ -175,14 +185,14 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
-                diffres <- meandf - tosub
+                diffres <- meandf - df$coord / nbrows
                 colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
             } else {
                 res <- meandf
             }
             return(res)
-        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbrows,
             currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
 
         return(meandifflist)
@@ -201,8 +211,17 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     ## Generating differences of columns
     difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
         currentcat, condvec) {
+          ## The original code performs the subtractions as follows:
+          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2)
+          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1)
+          ## concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]] # nolint
+          ## concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]] # nolint
+          ##
+          ## The function rowDiffs of the package matrixStats substracts the second argument to the first one. To respect the code just above, # nolint
+          ## The indexes must be inverted with rev: meancolnames[rev(idxvec)]] -> for instance, given the two columns "mean_value_HS" and "mean_value_ctrl" # nolint
+          ## as input, the function rowDiffs will do the subtraction "mean_value_ctrl" - "mean_value_HS" # nolint
           res <- matrixStats::rowDiffs(as.matrix(
-            resmean[,meancolnames[idxvec]]))
+            resmean[,meancolnames[rev(idxvec)]]))
           colnamestr <- paste("Diff", paste0("mean", currentcat),
             paste(condvec[idxvec], collapse = "_"), sep = "_")
           res <- as.vector(res)
@@ -239,9 +258,8 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
         ## The difference is used to calculate the AUC later on
         nbrows <- nrow(df)
-        tosub <- df$window / nbrows
         colnamevec <- colnames(df)
-        meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
+        meandifflist <- .meandiffscorefx(idxcondlist, df, nbrows,
             currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
 
@@ -270,6 +288,75 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 }
 
 
+
+.returninfodf <- function(transtab, nbwindows) {
+
+        transcript <- unique(transtab$transcript)
+        gene <- unique(transtab$gene)
+        strand <- unique(transtab$strand)
+        .checkunique(transcript, "transcript-dauc_allconditions")
+        .checkunique(gene, "gene-dauc_allconditions")
+        .checkunique(strand, "strand-dauc_allconditions")
+        if (isTRUE(all.equal(strand, '+')))
+            windsize <- floor(
+                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+        else
+            windsize <- floor(
+                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
+        infodf <- data.frame(transcript, gene, strand, windsize)
+        return(infodf)
+}
+
+dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
+    dontcompare = NULL) {
+
+    bytranslist <- split(df, factor(df$transcript))
+    condvec <- unique(expdf$condition)
+    resdflist <- mclapply(bytranslist, function(transtab, condvec) {
+
+        ## Sorting table according to strand
+        transtab <- transtab[order(as.numeric(transtab$coord)), ]
+
+        ## Retrieve the column names for each comparison
+        idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
+        diffname <- paste0("Diff_meanFx_",
+            condvec[-idxctrl], "_", condvec[idxctrl])
+
+        ## Perform a kolmogorov-smirnoff test between the two columns
+        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+
+        ## Calculate the area under the curve of the difference of means
+        ## -> delta AUC
+        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        ## Retrieve the p-value
+        pvalks <- resks$p.value
+        ## The KS test statistic is defined as the maximum value of the
+        ## difference between A and B’s cumulative distribution functions (CDF)
+        statks <- resks$statistic
+
+        ## Build a one line data.frame with the proper col names
+        ksaucdf <- data.frame(deltaauc, pvalks, statks)
+        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+
+        ## Retrieving transcript information
+        infodf <- .returninfodf(transtab, nbwindows)
+
+        ## Combining the two df as result
+        resdf <- cbind(infodf, ksaucdf)
+        return(resdf)
+    }, condvec, mc.cores = nbcpu)
+
+    resdf <- do.call("rbind", resdflist)
+#   dAUC_allcondi <- dAUC_allcondi %>%
+#   mutate(across(contains("p_dAUC"), ~ modify_p_values(.)))
+
+    return(resdf)
+}
+
+
+
 ##################
 # MAIN
 ##################
@@ -284,75 +371,17 @@ expdf <- read.csv(exptabpath, header = TRUE)
 message("Filtering transcripts based on expression")
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 message("Calculating ECDF")
-resultsecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resultsecdf <- resecdf[[1]]
+nbwindows <- resecdf[[2]]
+
+message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
+message("Computing and comparing AUC")
+dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
-
-
-> head(concat_Diff_mean_res)
-         biotype  chr     coor1     coor2         transcript gene strand window
-1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
-2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
-                           id         ctrl_rep1         ctrl_rep2
-1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
-2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
-          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
-1 HS_rep1.forward HS_rep2.forward     1              0.000000
-2 HS_rep1.forward HS_rep2.forward     2              0.000000
-  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
-1                     0                   0                   0
-2                     0                   0                   0
-  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
-1        0.000000000                  0                0                0
-2        0.000000000                  0                0                0
-  mean_value_ctrl mean_Fx_ctrl diff_Fx_ctrl mean_value_HS mean_Fx_HS diff_Fx_HS
-1       0.0000000 0.0000000000  -0.00500000             0          0     -0.005
-2       0.0000000 0.0000000000  -0.01000000             0          0     -0.010
-  Diff_meanValue_ctrl_HS Diff_meanValue_HS_ctrl Diff_meanFx_ctrl_HS
-1              0.0000000              0.0000000        0.0000000000
-2              0.0000000              0.0000000        0.0000000000
-  Diff_meanFx_HS_ctrl
-1        0.0000000000
-2        0.0000000000
-
-
-head(dfmeandiff,2)
-         biotype  chr     start       end         transcript gene strand window
-1 protein_coding chr7 127588411 127588426 ENST00000000233.10 ARF5      +      1
-2 protein_coding chr7 127588427 127588442 ENST00000000233.10 ARF5      +      2
-                           id ctrl1_score ctrl2_score HS1_score HS2_score
-1 ENST00000000233.10_ARF5_+_1           0           0         0         0
-2 ENST00000000233.10_ARF5_+_2           0           0         0         0
-  Fx_ctrl1_score Fx_ctrl2_score Fx_HS1_score Fx_HS2_score mean_value_ctrl
-1              0              0            0            0               0
-2              0              0            0            0               0
-  mean_Fx_ctrl  diff_Fx_ctrl mean_value_HS mean_Fx_HS    diff_Fx_HS
-1            0 -3.310381e-07             0          0 -3.310381e-07
-2            0 -6.620763e-07             0          0 -6.620763e-07
-  Diff_meanvalue_ctrl_HS Diff_meanvalue_HS_ctrl Diff_meanFx_ctrl_HS
-1                      0                      0                   0
-2                      0                      0                   0
-  Diff_meanFx_HS_ctrl
-1                   0
-2                   0
-
-
-
-
-
-Time difference of 30.59541 secs
-> head(dAUC_allcondi_res,2)
-          transcript gene strand window_size dAUC_Diff_meanFx_HS_ctrl
-1 ENST00000000233.10 ARF5      +          16                7.3183914
-2  ENST00000000412.8 M6PR      -          46               -0.6347988
-  p_dAUC_Diff_meanFx_HS_ctrl D_dAUC_Diff_meanFx_HS_ctrl
-1                  0.1122497                       0.12
-2                  1.0000000                       0.02
-  adjFDR_p_dAUC_Diff_meanFx_HS_ctrl
-1                         0.2732393
-2                         1.0000000
-
+!!!!!!!!!!!!!!!!!!!
 
 Time difference of 1.000898 mins
 > head(AUC_allcondi_res,2)
