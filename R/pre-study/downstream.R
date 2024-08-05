@@ -379,7 +379,7 @@ nbwindows <- resecdf[[2]]
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
-message("Computing and comparing AUC")
+message("Computing the differences (d or delta) of AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
 !!!!!!!!!!!!!!!!!!!
