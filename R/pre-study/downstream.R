@@ -211,8 +211,17 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     ## Generating differences of columns
     difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
         currentcat, condvec) {
+          ## The original code performs the subtractions as follows:
+          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2)
+          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1)
+          ## concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]] # nolint
+          ## concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]] # nolint
+          ##
+          ## The function rowDiffs of the package matrixStats substracts the second argument to the first one. To respect the code just above, # nolint
+          ## The indexes must be inverted with rev: meancolnames[rev(idxvec)]] -> for instance, given the two columns "mean_value_HS" and "mean_value_ctrl" # nolint
+          ## as input, the function rowDiffs will do the subtraction "mean_value_ctrl" - "mean_value_HS" # nolint
           res <- matrixStats::rowDiffs(as.matrix(
-            resmean[,meancolnames[idxvec]]))
+            resmean[,meancolnames[rev(idxvec)]]))
           colnamestr <- paste("Diff", paste0("mean", currentcat),
             paste(condvec[idxvec], collapse = "_"), sep = "_")
           res <- as.vector(res)
