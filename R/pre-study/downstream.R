@@ -385,7 +385,7 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 # Calculate the Area Under Curve (AUC), All conditions vs y=x 
 # Calculate Mean Value over the full gene body in All conditions.
 
-AUC_allcondi_fun <- function(df, nbwindows) {
+auc_allconditions <- function(df, nbwindows) {
 
     cumulative_density <- seq(1, nbwindows) / nbwindows
     bytranslist <- split(df, factor(df$transcript))
