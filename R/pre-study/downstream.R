@@ -289,7 +289,7 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
 
 
-.returninfodf <- function(transtab, nbwindows) {
+.returninfodf <- function(transtab, nbwindows = NULL) {
 
         transcript <- unique(transtab$transcript)
         gene <- unique(transtab$gene)
@@ -297,15 +297,20 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         .checkunique(transcript, "transcript-dauc_allconditions")
         .checkunique(gene, "gene-dauc_allconditions")
         .checkunique(strand, "strand-dauc_allconditions")
-        if (isTRUE(all.equal(strand, '+')))
-            windsize <- floor(
-                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
-        else
-            windsize <- floor(
-                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
-        infodf <- data.frame(transcript, gene, strand, windsize)
+        infodf <- data.frame(transcript, gene, strand)
+
+        if (!is.null(nbwindows)) {
+            if(isTRUE(all.equal(strand, '+')))
+                windsize <- floor(
+                    (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+            else
+                windsize <- floor(
+                    (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
+            infodf <- cbind(infodf, windsize)
+        }
         return(infodf)
 }
+
 
 dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     dontcompare = NULL) {
@@ -386,6 +391,7 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 # Calculate the Area Under Curve (AUC), All conditions vs y=x 
 # Calculate Mean Value over the full gene body in All conditions.
 
+!! df = dfmeandiff
 auc_allconditions <- function(df, nbwindows) {
 
     cumulativedensity <- seq(1, nbwindows) / nbwindows
@@ -410,15 +416,26 @@ auc_allconditions <- function(df, nbwindows) {
                     meanvalname <- paste0("mean_value_", currentcond)
                     meanfxname <- paste0("mean_Fx_", currentcond)
 
+                    ## Perform a kolmogorov-smirnoff test between the mean_Fx
+                    ## and the cumulative density
+                    resks <- suppressWarnings(ks.test(transtab[, meanfxname],
+                        cumulativedensity))
+
                     auc <- pracma::trapz(transtab[,"coord"],
                         transtab[, difffxname])
+                    pvalaucks <- resks$p.value
+                    stataucks <- resks$statistic
+                    fullmean <- mean(transtab[, meanvalname])
+
+                    ## Retrieving transcript information
+                    infodf <- .returninfodf(transtab, nbwindows)
 
                 }, transtab, cumulativedensity)
 
     }, condvec, cumulativedensity)
 
   
-              !!AUC := trapz(coord,!!sym(diff_Fx_condi_name)),
+              
               !!p_AUC := {
       tryCatch({
         result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
