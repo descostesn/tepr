@@ -312,8 +312,24 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
-# df=dfmeandiff
-# dontcompare = NULL
+.returninfodf <- function(transtab, nbwindows) {
+            transcript <- unique(transtab$transcript)
+        gene <- unique(transtab$gene)
+        strand <- unique(transtab$strand)
+        .checkunique(transcript, "transcript-dAUC_allcondi_fun")
+        .checkunique(gene, "gene-dAUC_allcondi_fun")
+        .checkunique(strand, "strand-dAUC_allcondi_fun")
+        if (isTRUE(all.equal(strand, '+')))
+            windsize <- floor(
+                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+        else
+            windsize <- floor(
+                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
+        infodf <- data.frame(transcript, gene, strand, windsize)
+        return(infodf)
+}
+
+
 dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
     bytranslist <- split(df, factor(df$transcript))
@@ -347,19 +363,7 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
         colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
 
         ## Retrieving transcript information
-        transcript <- unique(transtab$transcript)
-        gene <- unique(transtab$gene)
-        strand <- unique(transtab$strand)
-        .checkunique(transcript, "transcript-dAUC_allcondi_fun")
-        .checkunique(gene, "gene-dAUC_allcondi_fun")
-        .checkunique(strand, "strand-dAUC_allcondi_fun")
-        if (isTRUE(all.equal(strand, '+')))
-            windsize <- floor(
-                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
-        else
-            windsize <- floor(
-                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
-        infodf <- data.frame(transcript, gene, strand, windsize)
+        infodf <- .returninfodf(transtab, nbwindows)
 
         ## Combining the two df as result
         resdf <- cbind(infodf, ksaucdf)
@@ -367,21 +371,10 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
     }, condvec)
 
     resdf <- do.call("rbind", resdflist)
+#   dAUC_allcondi <- dAUC_allcondi %>%
+#   mutate(across(contains("p_dAUC"), ~ modify_p_values(.)))
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  dAUC_allcondi <- dAUC_allcondi %>%
-  mutate(across(contains("p_dAUC"), ~ modify_p_values(.))) 
-
-  # Get the column names containing "p_dAUC"
-  p_dAUC_columns <- grep("p_dAUC", colnames(dAUC_allcondi), value = TRUE)
-
-  # Loop through each column, calculate adjusted p-values, and create new columns
-  for (col_name in p_dAUC_columns) {
-    print(col_name)
-    adjusted_col_name <- paste0("adjFDR_", col_name)
-    dAUC_allcondi[[adjusted_col_name]] <- p.adjust(dAUC_allcondi[[col_name]], method = "fdr")
-  }
-  return(dAUC_allcondi)
+    return(resdf)
 }
 
 
