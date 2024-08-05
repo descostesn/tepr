@@ -329,16 +329,17 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
-        deltadauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
         ## Retrieve the p-value
-        pvaldaucks <- resks$p.value
+        pvaldeltaaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
-        statdaucks <- resks$statistic
+        statdeltaaucks <- resks$statistic
 
         ## Build a one line data.frame with the proper col names
-        ksdaucdf <- data.frame(deltadauc, pvaldaucks, statdaucks)
-        colnames(ksdaucdf) <- paste(colnames(ksdaucdf), name2, sep = "_")
+        ksdeltaaucdf <- data.frame(deltadauc, pvaldeltaaucks, statdeltaaucks)
+        colnames(ksdeltaaucdf) <- paste(colnames(ksdeltaaucdf), name2,
+            sep = "_")
 
         ## Retrieving transcript information
         infodf <- .returninfodf(transtab, nbwindows)
@@ -403,30 +404,15 @@ auc_allconditions <- function(df, nbwindows) {
                     difffxname <- paste0("diff_Fx_", currentcond)
                     meanvalname <- paste0("mean_value_", currentcond)
                     meanfxname <- paste0("mean_Fx_", currentcond)
+                    #mean value over the full gene body
+                    fullmeanname <- paste0("MeanValueFull_", cond)
+
+                    auc
 
                 }, cumulativedensity)
 
     }, condvec, cumulativedensity)
 
-
-for (cond in Conditions) {
-  #already present columns
-  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
-  mean_value_condi_name <- paste0("mean_value_", cond)
-  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
-
-  df_name <- paste0("gene_summary_AUC_", cond)
-  assign(df_name,data.frame()) 
-  
-  # Get the data frame using the dynamically generated name
-  AUC_summary_condi_df <- data.frame()
-  AUC_summary_condi_df <- get(df_name)
-  
-  #new column
-  AUC <- paste0("AUC_", cond)
-  p_AUC <- paste0("p_AUC_", cond)
-  D_AUC <- paste0("D_AUC_", cond)
-  MeanValueFull_condi_name <- paste0("MeanValueFull_", cond) #mean value over the full gene body
   
   AUC_summary_condi_df <- df %>%
     group_by(transcript) %>%
