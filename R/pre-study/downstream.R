@@ -316,55 +316,57 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf)
 # dontcompare = NULL
 dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
-  bytranslist <- split(df, factor(df$transcript))
-  condvec <- unique(expdf$condition)
-  resdflist <- lapply(bytranslist, function(transtab, condvec) {
+    bytranslist <- split(df, factor(df$transcript))
+    condvec <- unique(expdf$condition)
+    resdflist <- lapply(bytranslist, function(transtab, condvec) {
 
-    ## Sorting table according to strand
-    transtab <- transtab[order(as.numeric(transtab$coord)), ]
+        ## Sorting table according to strand
+        transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
-    ## Retrieve the column names for each comparison
-    idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
-    name1 <- paste0("mean_Fx_", condvec[idxctrl])
-    name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-    diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_", condvec[idxctrl])
+        ## Retrieve the column names for each comparison
+        idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
+        diffname <- paste0("Diff_meanFx_",
+            condvec[-idxctrl], "_", condvec[idxctrl])
 
-    ## Perform a kolmogorov-smirnoff test between the two columns
-    resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+        ## Perform a kolmogorov-smirnoff test between the two columns
+        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
-    ## Calculate the area under the curve of the difference of means - delta AUC
-    deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
-    ## Retrieve the p-value
-    pvalks <- resks$p.value
-    ## The KS test statistic is defined as the maximum value of the difference
-    ## between A and B’s cumulative distribution functions (CDF)
-    statks <- resks$statistic
+        ## Calculate the area under the curve of the difference of means
+        ## -> delta AUC
+        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        ## Retrieve the p-value
+        pvalks <- resks$p.value
+        ## The KS test statistic is defined as the maximum value of the
+        ## difference between A and B’s cumulative distribution functions (CDF)
+        statks <- resks$statistic
 
-    ## Build a one line data.frame with the proper col names
-    ksaucdf <- data.frame(deltaauc, pvalks, statks)
-    colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+        ## Build a one line data.frame with the proper col names
+        ksaucdf <- data.frame(deltaauc, pvalks, statks)
+        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
 
-    ## Retrieving transcript information
-    transcript <- unique(transtab$transcript)
-    gene <- unique(transtab$gene)
-    strand <- unique(transtab$strand)
-    .checkunique(transcript, "transcript-dAUC_allcondi_fun")
-    .checkunique(gene, "gene-dAUC_allcondi_fun")
-    .checkunique(strand, "strand-dAUC_allcondi_fun")
-    if (isTRUE(all.equal(strand, '+')))
-        windsize <- floor(
-            (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
-    else
-        windsize <- floor(
-            (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
-    infodf <- data.frame(transcript, gene, strand, windsize)
+        ## Retrieving transcript information
+        transcript <- unique(transtab$transcript)
+        gene <- unique(transtab$gene)
+        strand <- unique(transtab$strand)
+        .checkunique(transcript, "transcript-dAUC_allcondi_fun")
+        .checkunique(gene, "gene-dAUC_allcondi_fun")
+        .checkunique(strand, "strand-dAUC_allcondi_fun")
+        if (isTRUE(all.equal(strand, '+')))
+            windsize <- floor(
+                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+        else
+            windsize <- floor(
+                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
+        infodf <- data.frame(transcript, gene, strand, windsize)
 
-    ## Combining the two df as result
-    resdf <- cbind(infodf, ksaucdf)
-    return(resdf)
-  }, condvec)
+        ## Combining the two df as result
+        resdf <- cbind(infodf, ksaucdf)
+        return(resdf)
+    }, condvec)
 
-!! CURRENT !!  resdf <- do.call("rbind", resdflist)
+    resdf <- do.call("rbind", resdflist)
 
   ## Create a data.frame with the columns: transcript, gene, strand, window_size
   !!!!!!!!!!!!!!!!!!! This pre-creation could be avoided with a split
