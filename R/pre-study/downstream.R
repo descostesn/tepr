@@ -288,29 +288,6 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 }
 
 
-##################
-# MAIN
-##################
-
-## Reading alldf and info tab
-alldf <- readRDS(alldfpath)
-expdf <- read.csv(exptabpath, header = TRUE)
-
-## Filtering out non expressed transcripts:
-## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
-## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
-message("Filtering transcripts based on expression")
-allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-message("Calculating ECDF")
-resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
-resultsecdf <- resecdf[[1]]
-nbwindows <- resecdf[[2]]
-
-message("Calculating means and differences")
-dfmeandiff <- createmeandiff(resultsecdf, expdf)
-dfaucallcond <- dauc_allconditions(df, expdf, nbwindows)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!
 
 .returninfodf <- function(transtab, nbwindows) {
             transcript <- unique(transtab$transcript)
@@ -329,12 +306,12 @@ dfaucallcond <- dauc_allconditions(df, expdf, nbwindows)
         return(infodf)
 }
 
-
-dauc_allconditions <- function(df, expdf, nbwindows, dontcompare = NULL) {
+dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
+    dontcompare = NULL) {
 
     bytranslist <- split(df, factor(df$transcript))
     condvec <- unique(expdf$condition)
-    resdflist <- lapply(bytranslist, function(transtab, condvec) {
+    resdflist <- mclapply(bytranslist, function(transtab, condvec) {
 
         ## Sorting table according to strand
         transtab <- transtab[order(as.numeric(transtab$coord)), ]
@@ -368,7 +345,7 @@ dauc_allconditions <- function(df, expdf, nbwindows, dontcompare = NULL) {
         ## Combining the two df as result
         resdf <- cbind(infodf, ksaucdf)
         return(resdf)
-    }, condvec)
+    }, condvec, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
 #   dAUC_allcondi <- dAUC_allcondi %>%
@@ -378,72 +355,32 @@ dauc_allconditions <- function(df, expdf, nbwindows, dontcompare = NULL) {
 }
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+##################
+# MAIN
+##################
 
-> head(concat_Diff_mean_res)
-         biotype  chr     coor1     coor2         transcript gene strand window
-1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
-2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
-                           id         ctrl_rep1         ctrl_rep2
-1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
-2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
-          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
-1 HS_rep1.forward HS_rep2.forward     1              0.000000
-2 HS_rep1.forward HS_rep2.forward     2              0.000000
-  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
-1                     0                   0                   0
-2                     0                   0                   0
-  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
-1        0.000000000                  0                0                0
-2        0.000000000                  0                0                0
-  mean_value_ctrl mean_Fx_ctrl diff_Fx_ctrl mean_value_HS mean_Fx_HS diff_Fx_HS
-1       0.0000000 0.0000000000  -0.00500000             0          0     -0.005
-2       0.0000000 0.0000000000  -0.01000000             0          0     -0.010
-  Diff_meanValue_ctrl_HS Diff_meanValue_HS_ctrl Diff_meanFx_ctrl_HS
-1              0.0000000              0.0000000        0.0000000000
-2              0.0000000              0.0000000        0.0000000000
-  Diff_meanFx_HS_ctrl
-1        0.0000000000
-2        0.0000000000
+## Reading alldf and info tab
+alldf <- readRDS(alldfpath)
+expdf <- read.csv(exptabpath, header = TRUE)
 
+## Filtering out non expressed transcripts:
+## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
+## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
+message("Filtering transcripts based on expression")
+allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
+message("Calculating ECDF")
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resultsecdf <- resecdf[[1]]
+nbwindows <- resecdf[[2]]
 
-head(dfmeandiff,2)
-         biotype  chr     start       end         transcript gene strand window
-1 protein_coding chr7 127588411 127588426 ENST00000000233.10 ARF5      +      1
-2 protein_coding chr7 127588427 127588442 ENST00000000233.10 ARF5      +      2
-                           id ctrl1_score ctrl2_score HS1_score HS2_score
-1 ENST00000000233.10_ARF5_+_1           0           0         0         0
-2 ENST00000000233.10_ARF5_+_2           0           0         0         0
-  Fx_ctrl1_score Fx_ctrl2_score Fx_HS1_score Fx_HS2_score mean_value_ctrl
-1              0              0            0            0               0
-2              0              0            0            0               0
-  mean_Fx_ctrl  diff_Fx_ctrl mean_value_HS mean_Fx_HS    diff_Fx_HS
-1            0 -3.310381e-07             0          0 -3.310381e-07
-2            0 -6.620763e-07             0          0 -6.620763e-07
-  Diff_meanvalue_ctrl_HS Diff_meanvalue_HS_ctrl Diff_meanFx_ctrl_HS
-1                      0                      0                   0
-2                      0                      0                   0
-  Diff_meanFx_HS_ctrl
-1                   0
-2                   0
+message("Calculating means and differences")
+dfmeandiff <- createmeandiff(resultsecdf, expdf)
 
+message("Computing and comparing AUC")
+dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
-
-
-
-Time difference of 30.59541 secs
-> head(dAUC_allcondi_res,2)
-          transcript gene strand window_size dAUC_Diff_meanFx_HS_ctrl
-1 ENST00000000233.10 ARF5      +          16                7.3183914
-2  ENST00000000412.8 M6PR      -          46               -0.6347988
-  p_dAUC_Diff_meanFx_HS_ctrl D_dAUC_Diff_meanFx_HS_ctrl
-1                  0.1122497                       0.12
-2                  1.0000000                       0.02
-  adjFDR_p_dAUC_Diff_meanFx_HS_ctrl
-1                         0.2732393
-2                         1.0000000
-
+!!!!!!!!!!!!!!!!!!!
 
 Time difference of 1.000898 mins
 > head(AUC_allcondi_res,2)
