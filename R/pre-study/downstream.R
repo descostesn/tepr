@@ -167,7 +167,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     return(idxcondlist)
 }
 
-.meandiffscorefx <- function(idxcondlist, df, tosub, nbrows, currentcond,
+.meandiffscorefx <- function(idxcondlist, df, nbrows, currentcond,
     colnamevec, verbose) {
 
         meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
@@ -185,7 +185,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
-                diffres <- meandf - tosub
+                diffres <- meandf - df$coord / nbrows
                 colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
             } else {
@@ -249,9 +249,9 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
         ## The difference is used to calculate the AUC later on
         nbrows <- nrow(df)
-        tosub <- df$coord / nbrows
+        tosub <- !!
         colnamevec <- colnames(df)
-        meandifflist <- .meandiffscorefx(idxcondlist, df, tosub, nbrows,
+        meandifflist <- .meandiffscorefx(idxcondlist, df, nbrows,
             currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
 
