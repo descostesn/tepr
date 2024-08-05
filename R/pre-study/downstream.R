@@ -329,22 +329,22 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
-        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        deltadauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
         ## Retrieve the p-value
-        pvalks <- resks$p.value
+        pvaldaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
-        statks <- resks$statistic
+        statdaucks <- resks$statistic
 
         ## Build a one line data.frame with the proper col names
-        ksaucdf <- data.frame(deltaauc, pvalks, statks)
-        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+        ksdaucdf <- data.frame(deltadauc, pvaldaucks, statdaucks)
+        colnames(ksdaucdf) <- paste(colnames(ksdaucdf), name2, sep = "_")
 
         ## Retrieving transcript information
         infodf <- .returninfodf(transtab, nbwindows)
 
         ## Combining the two df as result
-        resdf <- cbind(infodf, ksaucdf)
+        resdf <- cbind(infodf, ksdaucdf)
         return(resdf)
     }, condvec, mc.cores = nbcpu)
 
@@ -385,23 +385,55 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 # Calculate the Area Under Curve (AUC), All conditions vs y=x 
 # Calculate Mean Value over the full gene body in All conditions.
 
-AUC_allcondi_fun <- function(concat_df,window_number){
+AUC_allcondi_fun <- function(df, nbwindows) {
 
-  # Load a library using require()
-  if (!require(pracma)) {
-    install.packages("pracma")
-    library(pracma)
-  }    
-  
-  
-AUC_allcondi <- concat_df %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct()
-res <- getting_var_names(extension, working_directory)
-Conditions <- res$Conditions
+    cumulative_density <- seq(1, nbwindows) / nbwindows
+    bytranslist <- split(df, factor(df$transcript))
 
 
+#######################
 
-n <- window_number
-cumulative_density <- seq(1, n) / n
+
+    condvec <- unique(expdf$condition)
+    resdflist <- mclapply(bytranslist, function(transtab, condvec) {
+
+        ## Sorting table according to strand
+        transtab <- transtab[order(as.numeric(transtab$coord)), ]
+
+        ## Retrieve the column names for each comparison
+        idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
+        diffname <- paste0("Diff_meanFx_",
+            condvec[-idxctrl], "_", condvec[idxctrl])
+
+        ## Perform a kolmogorov-smirnoff test between the two columns
+        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+
+        ## Calculate the area under the curve of the difference of means
+        ## -> delta AUC
+        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        ## Retrieve the p-value
+        pvalks <- resks$p.value
+        ## The KS test statistic is defined as the maximum value of the
+        ## difference between A and B’s cumulative distribution functions (CDF)
+        statks <- resks$statistic
+
+        ## Build a one line data.frame with the proper col names
+        ksaucdf <- data.frame(deltaauc, pvalks, statks)
+        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+
+        ## Retrieving transcript information
+        infodf <- .returninfodf(transtab, nbwindows)
+
+        ## Combining the two df as result
+        resdf <- cbind(infodf, ksaucdf)
+        return(resdf)
+    }, condvec, mc.cores = nbcpu)
+
+#######################
+
+
 
 for (cond in Conditions) {
   #already present columns
@@ -422,7 +454,7 @@ for (cond in Conditions) {
   D_AUC <- paste0("D_AUC_", cond)
   MeanValueFull_condi_name <- paste0("MeanValueFull_", cond) #mean value over the full gene body
   
-  AUC_summary_condi_df <- concat_df %>%
+  AUC_summary_condi_df <- df %>%
     group_by(transcript) %>%
     arrange(coord) %>% 
     reframe(gene=gene[1], 
