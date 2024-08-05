@@ -249,7 +249,6 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
         ## The difference is used to calculate the AUC later on
         nbrows <- nrow(df)
-        tosub <- !!
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, nbrows,
             currentcond, colnamevec, verbose)
