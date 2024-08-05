@@ -290,7 +290,8 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 
 
 .returninfodf <- function(transtab, nbwindows) {
-            transcript <- unique(transtab$transcript)
+
+        transcript <- unique(transtab$transcript)
         gene <- unique(transtab$gene)
         strand <- unique(transtab$strand)
         .checkunique(transcript, "transcript-dauc_allconditions")
