@@ -170,7 +170,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
 .meandiffscorefx <- function(idxcondlist, df, nbrows, currentcond,
     colnamevec, verbose) {
 
-        meandifflist <- mapply(function(idxvalvec, idxname, df, tosub, nbrows,
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbrows,
             currentcond, colnamevec, verbose) {
             if (verbose)
               message("\t Calculating average and difference between ",
@@ -192,7 +192,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
                 res <- meandf
             }
             return(res)
-        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, tosub, nbrows,
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbrows,
             currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
 
         return(meandifflist)
