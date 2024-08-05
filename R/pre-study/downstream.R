@@ -426,11 +426,15 @@ auc_allconditions <- function(df, nbwindows) {
                     pvalaucks <- resks$p.value
                     stataucks <- resks$statistic
                     fullmean <- mean(transtab[, meanvalname])
+                    aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
+                    colnames(aucdf[, "fullmean"]) <- fullmeanname
+                    rownames(aucdf) <- paste(.returninfodf(transtab),
+                        collapse = "-")
 
-                    ## Retrieving transcript information
-                    infodf <- .returninfodf(transtab, nbwindows)
+                    return(aucdf)
 
                 }, transtab, cumulativedensity)
+!!!!!!! CURRENT !!!!!!!!!!!!!!!!!!!!            aucdf <- do.call("cbind", resauclist)
 
     }, condvec, cumulativedensity)
 
