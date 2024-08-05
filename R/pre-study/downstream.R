@@ -317,8 +317,8 @@ dAUC_allcondi_fun <- function(df, expdf, nbwindows, dontcompare = NULL) {
 
     ## Retrieve the column names for each comparison
     idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
-    name1 <- paste0("meanFx_", condvec[idxctrl], "_", condvec[-idxctrl])
-    name2 <- paste0("meanFx_", condvec[-idxctrl], "_", condvec[idxctrl])
+    name1 <- paste0("mean_Fx_", condvec[idxctrl])
+    name2 <- paste0("mean_Fx_", condvec[-idxctrl])
     diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_", condvec[idxctrl])
 
     ## Perform a kolmogorov-smirnoff test between the two columns
