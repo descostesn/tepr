@@ -288,7 +288,9 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 }
 
 
-
+!!!!!!!!!!!!!
+!!!!!!!!!!!!!! DEBUG NEGATIVE WINDSIZE
+!!!!!!!!!!!!!!!
 .returninfodf <- function(transtab, nbwindows = NULL) {
 
         transcript <- unique(transtab$transcript)
