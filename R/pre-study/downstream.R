@@ -302,7 +302,7 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         infodf <- data.frame(transcript, gene, strand)
 
         if (!is.null(nbwindows)) {
-            if(isTRUE(all.equal(strand, '+')))
+            if(isTRUE(all.equal(as.character(strand), '+')))
                 windsize <- floor(
                     (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
             else
@@ -341,11 +341,11 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
         pvaldeltadaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
-        statdeltaaucks <- resks$statistic
+        statdeltadaucks <- resks$statistic
 
         ## Build a one line data.frame with the proper col names
-        ksdeltaaucdf <- data.frame(deltadauc, pvaldeltaaucks, statdeltaaucks)
-        colnames(ksdeltaaucdf) <- paste(colnames(ksdeltaaucdf), name2,
+        ksdeltadaucdf <- data.frame(deltadauc, pvaldeltadaucks, statdeltadaucks)
+        colnames(ksdeltadaucdf) <- paste(colnames(ksdeltadaucdf), name2,
             sep = "_")
 
         ## Retrieving transcript information
