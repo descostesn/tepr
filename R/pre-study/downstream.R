@@ -24,7 +24,7 @@ library("pracma")
 alldfpath <- "/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
 expthres <- 0.1
-nbcpu <- 10
+nbcpu <- 5
 
 
 ##################
@@ -329,16 +329,16 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
         name1 <- paste0("mean_Fx_", condvec[idxctrl])
         name2 <- paste0("mean_Fx_", condvec[-idxctrl])
         diffname <- paste0("Diff_meanFx_",
-            condvec[-idxctrl], "_", condvec[idxctrl])
+            condvec[-idxctrl], "_", condvec[idxctrl]) 
 
         ## Perform a kolmogorov-smirnoff test between the two columns
         resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
-        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        deltadauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
         ## Retrieve the p-value
-        pvaldeltaaucks <- resks$p.value
+        pvaldeltadaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
         statdeltaaucks <- resks$statistic
