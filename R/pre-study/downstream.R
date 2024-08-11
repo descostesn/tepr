@@ -12,9 +12,9 @@ library("parallel")
 library("matrixStats")
 library("pracma")
 
-!!!!!!!!!
-environment: /g/romebioinfo/tmp/downstream
-!!!!!!!!!!!
+# !!!!!!!!!
+# environment: /g/romebioinfo/tmp/downstream
+# !!!!!!!!!!!
 
 
 ##################

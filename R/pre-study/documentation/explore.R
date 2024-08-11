@@ -3,9 +3,9 @@ library(purrr)
 library(tidyr)
 library(stringr)
 
-!!!!!!!
-environment: /g/romebioinfo/tmp/explore
-!!!!!!!!!
+# !!!!!!!
+# environment: /g/romebioinfo/tmp/explore
+# !!!!!!!!!
 
 
 ##################
