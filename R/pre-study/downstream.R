@@ -352,7 +352,7 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
         infodf <- .returninfodf(transtab, nbwindows)
 
         ## Combining the two df as result
-        resdf <- cbind(infodf, ksdaucdf)
+        resdf <- cbind(infodf, ksdeltadaucdf)
         return(resdf)
     }, condvec, mc.cores = nbcpu)
 
