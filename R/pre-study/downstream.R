@@ -389,7 +389,6 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 # Calculate the Area Under Curve (AUC), All conditions vs y=x 
 # Calculate Mean Value over the full gene body in All conditions.
 
-!! df = dfmeandiff
 auc_allconditions <- function(df, nbwindows) {
 
     cumulativedensity <- seq(1, nbwindows) / nbwindows
@@ -422,21 +421,15 @@ auc_allconditions <- function(df, nbwindows) {
                     transtab[, difffxname])
                   pvalaucks <- resks$p.value
                   stataucks <- resks$statistic
-                  fullmean <- mean(transtab[, meanvalname])
+                  meanvaluefull <- mean(transtab[, meanvalname])
                   aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
-                  colnames(aucdf)[4] <- fullmeanname
+                  colnames(aucdf) <- paste(colnames(aucdf), currentcond,
+                    sep = "_")
                   rownames(aucdf) <- paste(.returninfodf(transtab),
                     collapse = "-")
                   return(aucdf)
                 }, transtab, cumulativedensity)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                
-!!!!!!! CURRENT !!!!!!!!!!!!!!!!!!!!            aucdf <- do.call("cbind", resauclist)
-
+                aucdf <- do.call("cbind", resauclist)
     }, condvec, cumulativedensity)
 
   
