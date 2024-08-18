@@ -436,8 +436,6 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
                 return(aucdf)
     }, condvec, cumulative, mc.cores = nbcpu)
 
-    
-    
     aucallconditions <- do.call("rbind", resdflist)
     return(aucallconditions)
 }
