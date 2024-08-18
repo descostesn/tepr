@@ -103,7 +103,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
 
         ## Defining coordinates according to the strand
-        if (isTRUE(all.equal(str, '+')))
+        if (isTRUE(all.equal(str, "+")))
             transtable <- cbind(transtable, coord = transtable$window)
         else
             transtable <- cbind(transtable, coord = rev(transtable$window))
@@ -221,7 +221,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
           ## The indexes must be inverted with rev: meancolnames[rev(idxvec)]] -> for instance, given the two columns "mean_value_HS" and "mean_value_ctrl" # nolint
           ## as input, the function rowDiffs will do the subtraction "mean_value_ctrl" - "mean_value_HS" # nolint
           res <- matrixStats::rowDiffs(as.matrix(
-            resmean[,meancolnames[rev(idxvec)]]))
+            resmean[, meancolnames[rev(idxvec)]]))
           colnamestr <- paste("Diff", paste0("mean", currentcat),
             paste(condvec[idxvec], collapse = "_"), sep = "_")
           res <- as.vector(res)
@@ -298,12 +298,12 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         infodf <- data.frame(transcript, gene, strand)
 
         if (!is.null(nbwindows)) {
-            if(isTRUE(all.equal(as.character(strand), '+')))
+            if(isTRUE(all.equal(as.character(strand), "+")))
                 windsize <- floor(
-                    (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
+                    (transtab$end[nbwindows] - transtab$start[1]) / nbwindows)
             else
                 windsize <- floor(
-                    (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
+                    (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
             infodf <- cbind(infodf, windsize)
         }
         return(infodf)
@@ -324,15 +324,15 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
         name1 <- paste0("mean_Fx_", condvec[idxctrl])
         name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-        diffname <- paste0("Diff_meanFx_",
-            condvec[-idxctrl], "_", condvec[idxctrl]) 
+        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",
+          condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
         resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
-        deltadauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        deltadauc <- pracma::trapz(transtab[, "coord"], transtab[, diffname])
         ## Retrieve the p-value
         pvaldeltadaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
@@ -353,9 +353,6 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     }, condvec, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
-#   dAUC_allcondi <- dAUC_allcondi %>%
-#   mutate(across(contains("p_dAUC"), ~ modify_p_values(.)))
-
     return(resdf)
 }
 
@@ -367,7 +364,7 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
   condvec <- unique(expdf$condition)
 
   resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative) {
-    ## Sorting table according to strand
+            ## Sorting table according to strand
             transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
             ## Computing AUC, pval, and stat for each condition
@@ -384,7 +381,9 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
                   resks <- suppressWarnings(ks.test(transtab[, meanfxname],
                     cumulative))
 
-                  auc <- pracma::trapz(transtab[,"coord"],
+                  ## Build data.frame with auc information for the current
+                  ## transcript
+                  auc <- pracma::trapz(transtab[, "coord"],
                     transtab[, difffxname])
                   pvalaucks <- resks$p.value
                   stataucks <- resks$statistic
