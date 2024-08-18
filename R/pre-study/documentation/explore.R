@@ -12,7 +12,8 @@ library(stringr)
 # PARAMETERS
 ##################
 
-working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
+#working_directory <- "/g/romebioinfo/Projects/tepr/downloads"
+working_directory <- "/mnt/c/Users/descoste/Documents/analysis/cristofari/explore"
 extension <- "*.bg"
 name_table <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
 rounding <- 10
