@@ -112,8 +112,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         return(res)
 }
 
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
-  verbose = FALSE) { # nolint
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
+  verbose = FALSE) {
 
     ## Defining variables
     maintable <- allexprsdfs[[1]]
@@ -212,8 +212,8 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
         currentcat, condvec) {
           ## The original code performs the subtractions as follows:
-          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2)
-          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1)
+          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2) # nolint
+          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1) # nolint
           ## concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]] # nolint
           ## concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]] # nolint
           ##
