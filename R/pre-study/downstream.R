@@ -360,35 +360,6 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
 }
 
 
-
-##################
-# MAIN
-##################
-
-## Reading alldf and info tab
-alldf <- readRDS(alldfpath)
-expdf <- read.csv(exptabpath, header = TRUE)
-
-## Filtering out non expressed transcripts:
-## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
-## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
-message("Filtering transcripts based on expression")
-allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-message("Calculating ECDF")
-resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
-resultsecdf <- resecdf[[1]]
-nbwindows <- resecdf[[2]]
-
-message("Calculating means and differences")
-dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
-
-message("Computing the differences (d or delta) of AUC")
-dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
-
-!!!!!!!!!!!!!!!!!!!
-# Calculate the Area Under Curve (AUC), All conditions vs y=x 
-# Calculate Mean Value over the full gene body in All conditions.
-
 auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
 
   cumulative <- seq(1, nbwindows) / nbwindows
@@ -439,6 +410,37 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
     aucallconditions <- do.call("rbind", resdflist)
     return(aucallconditions)
 }
+
+
+
+
+##################
+# MAIN
+##################
+
+## Reading alldf and info tab
+alldf <- readRDS(alldfpath)
+expdf <- read.csv(exptabpath, header = TRUE)
+
+## Filtering out non expressed transcripts:
+## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
+## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
+message("Filtering transcripts based on expression")
+allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
+message("Calculating ECDF")
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resultsecdf <- resecdf[[1]]
+nbwindows <- resecdf[[2]]
+
+message("Calculating means and differences")
+dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
+
+message("Computing the differences (d or delta) of AUC")
+dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
+
+# Calculate the Area Under Curve (AUC), All conditions vs y=x
+# Calculate Mean Value over the full gene body in All conditions.
+aucallcond <- auc_allconditions(df, nbwindows, nbcpu = nbcpu)
 
 
 !!!!!!!!!!!!!!!!!!!
