@@ -406,12 +406,12 @@ auc_allconditions <- function(df, nbwindows) {
             ## Sorting table according to strand
             transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
-            ## Computing AUC, pval, and stat for each condition\
+            ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
                 cumulativedensity) {
 
                     #mean value over the full gene body
-                    fullmeanname <- paste0("MeanValueFull_", cond)
+                    fullmeanname <- paste0("MeanValueFull_", currentcond)
 
                     ## Definition of column names
                     difffxname <- paste0("diff_Fx_", currentcond)
@@ -423,19 +423,21 @@ auc_allconditions <- function(df, nbwindows) {
                     resks <- suppressWarnings(ks.test(transtab[, meanfxname],
                         cumulativedensity))
 
-                    auc <- pracma::trapz(transtab[,"coord"],
+)                  auc <- pracma::trapz(transtab[,"coord"],
                         transtab[, difffxname])
                     pvalaucks <- resks$p.value
                     stataucks <- resks$statistic
                     fullmean <- mean(transtab[, meanvalname])
                     aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
-                    colnames(aucdf[, "fullmean"]) <- fullmeanname
+                    colnames(aucdf)[4] <- fullmeanname
                     rownames(aucdf) <- paste(.returninfodf(transtab),
                         collapse = "-")
 
                     return(aucdf)
 
                 }, transtab, cumulativedensity)
+
+                
 !!!!!!! CURRENT !!!!!!!!!!!!!!!!!!!!            aucdf <- do.call("cbind", resauclist)
 
     }, condvec, cumulativedensity)
