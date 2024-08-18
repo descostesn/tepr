@@ -420,7 +420,7 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
                   pvalaucks <- resks$p.value
                   stataucks <- resks$statistic
                   meanvaluefull <- mean(transtab[, meanvalname])
-                  aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
+                  aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
                   colnames(aucdf) <- paste(colnames(aucdf), currentcond,
                     sep = "_")
                   rownames(aucdf) <- paste(.returninfodf(transtab),
