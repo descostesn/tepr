@@ -54,6 +54,11 @@ Previously -
 
 With new version -
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!~ PROBLEM IN SIGN FOR NEGATIVE STRAND AND COL NAMES SHOULD BE CORRECTED 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 ```
 > head(dfaucallcond)
                            transcript    gene strand windsize
