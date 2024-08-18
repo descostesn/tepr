@@ -389,13 +389,13 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 # Calculate the Area Under Curve (AUC), All conditions vs y=x 
 # Calculate Mean Value over the full gene body in All conditions.
 
-auc_allconditions <- function(df, nbwindows) {
+auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
 
     cumulativedensity <- seq(1, nbwindows) / nbwindows
     bytranslist <- split(df, factor(df$transcript))
     condvec <- unique(expdf$condition)
 
-    resdflist <- lapply(bytranslist, function(transtab, condvec,
+    resdflist <- mclapply(bytranslist, function(transtab, condvec,
         cumulativedensity) {
 
             ## Sorting table according to strand
@@ -430,7 +430,8 @@ auc_allconditions <- function(df, nbwindows) {
                   return(aucdf)
                 }, transtab, cumulativedensity)
                 aucdf <- do.call("cbind", resauclist)
-    }, condvec, cumulativedensity)
+                return(aucdf)
+    }, condvec, cumulativedensity, mc.cores = nbcpu)
 
   
               
