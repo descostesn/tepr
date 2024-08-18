@@ -373,8 +373,6 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
             ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
                 cumulative) {
-                  #mean value over the full gene body
-                  fullmeanname <- paste0("MeanValueFull_", currentcond)
 
                   ## Definition of column names
                   difffxname <- paste0("diff_Fx_", currentcond)
