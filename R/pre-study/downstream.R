@@ -391,19 +391,17 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
 auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
 
-    cumulativedensity <- seq(1, nbwindows) / nbwindows
-    bytranslist <- split(df, factor(df$transcript))
-    condvec <- unique(expdf$condition)
+  cumulative <- seq(1, nbwindows) / nbwindows
+  bytranslist <- split(df, factor(df$transcript))
+  condvec <- unique(expdf$condition)
 
-    resdflist <- mclapply(bytranslist, function(transtab, condvec,
-        cumulativedensity) {
-
-            ## Sorting table according to strand
+  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative) {
+    ## Sorting table according to strand
             transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
             ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
-                cumulativedensity) {
+                cumulative) {
                   #mean value over the full gene body
                   fullmeanname <- paste0("MeanValueFull_", currentcond)
 
@@ -415,7 +413,7 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
                   ## Perform a kolmogorov-smirnoff test between the mean_Fx
                   ## and the cumulative density
                   resks <- suppressWarnings(ks.test(transtab[, meanfxname],
-                    cumulativedensity))
+                    cumulative))
 
                   auc <- pracma::trapz(transtab[,"coord"],
                     transtab[, difffxname])
@@ -427,133 +425,25 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
                     sep = "_")
                   rownames(aucdf) <- paste(.returninfodf(transtab),
                     collapse = "-")
+                  transinfo <- data.frame(
+                    transcript = transtab[1, "transcript"],
+                    gene = transtab[1, "gene"],
+                    strand = transtab[1, "strand"])
+                  aucdf <- cbind(transinfo, aucdf)
                   return(aucdf)
-                }, transtab, cumulativedensity)
+                }, transtab, cumulative)
                 aucdf <- do.call("cbind", resauclist)
                 return(aucdf)
-    }, condvec, cumulativedensity, mc.cores = nbcpu)
+    }, condvec, cumulative, mc.cores = nbcpu)
 
-  
-              
-              !!p_AUC := {
-      tryCatch({
-        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
-        result$p.value
-      }, error = function(e) NA)
-    },
-              !!D_AUC := {
-      tryCatch({
-        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
-        result$statistic
-      }, error = function(e) NA)
-    },
-              strand=strand,
-              transcript=transcript, 
-              !!(MeanValueFull_condi_name) :=mean(!!sym(mean_value_condi_name))) %>% 
-    dplyr::distinct()
-  
-  assign(df_name, AUC_summary_condi_df)
-  
-  AUC_allcondi <- left_join(AUC_allcondi, AUC_summary_condi_df, by = c("transcript", "gene","strand"))
-}
-
-  AUC_allcondi <- AUC_allcondi %>%
-  mutate(across(contains("p_AUC"), ~ modify_p_values(.))) 
-
-return(AUC_allcondi)
-}
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-for (cond in Conditions) {
-  #already present columns
-  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
-  mean_value_condi_name <- paste0("mean_value_", cond)
-  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
-
-  df_name <- paste0("gene_summary_AUC_", cond)
-  assign(df_name,data.frame()) 
-  
-  # Get the data frame using the dynamically generated name
-  AUC_summary_condi_df <- data.frame()
-  AUC_summary_condi_df <- get(df_name)
-  
-  #new column
-  AUC <- paste0("AUC_", cond)
-  p_AUC <- paste0("p_AUC_", cond)
-  D_AUC <- paste0("D_AUC_", cond)
-  MeanValueFull_condi_name <- paste0("MeanValueFull_", cond) #mean value over the full gene body
-  
-  AUC_summary_condi_df <- df %>%
-    group_by(transcript) %>%
-    arrange(coord) %>% 
-    reframe(gene=gene[1], 
-              !!AUC := trapz(coord,!!sym(diff_Fx_condi_name)),
-              !!p_AUC := {
-      tryCatch({
-        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
-        result$p.value
-      }, error = function(e) NA)
-    },
-              !!D_AUC := {
-      tryCatch({
-        result <- suppressWarnings(ks.test(!!sym(mean_Fx_condi_name),cumulative_density))
-        result$statistic
-      }, error = function(e) NA)
-    },
-              strand=strand,
-              transcript=transcript, 
-              !!(MeanValueFull_condi_name) :=mean(!!sym(mean_value_condi_name))) %>% 
-    dplyr::distinct()
-  
-  assign(df_name, AUC_summary_condi_df)
-  
-  AUC_allcondi <- left_join(AUC_allcondi, AUC_summary_condi_df, by = c("transcript", "gene","strand"))
-}
-
-  AUC_allcondi <- AUC_allcondi %>%
-  mutate(across(contains("p_AUC"), ~ modify_p_values(.))) 
-
-return(AUC_allcondi)
-}
-
-
-
-#######################
-
-        ## Retrieve the column names for each comparison
-        idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
-        name1 <- paste0("mean_Fx_", condvec[idxctrl])
-        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-        diffname <- paste0("Diff_meanFx_",
-            condvec[-idxctrl], "_", condvec[idxctrl])
-
-        ## Perform a kolmogorov-smirnoff test between the two columns
-        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
-
-        ## Calculate the area under the curve of the difference of means
-        ## -> delta AUC
-        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
-        ## Retrieve the p-value
-        pvalks <- resks$p.value
-        ## The KS test statistic is defined as the maximum value of the
-        ## difference between A and B’s cumulative distribution functions (CDF)
-        statks <- resks$statistic
-
-        ## Build a one line data.frame with the proper col names
-        ksaucdf <- data.frame(deltaauc, pvalks, statks)
-        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
-
-        ## Retrieving transcript information
-        infodf <- .returninfodf(transtab, nbwindows)
-
-        ## Combining the two df as result
-        resdf <- cbind(infodf, ksaucdf)
-        return(resdf)
     
-
-#######################
+    
+    
+    
+    
+    aucallconditions <- do.call("rbind", resdflist)
+    return(aucallconditions)
+}
 
 
 !!!!!!!!!!!!!!!!!!!
