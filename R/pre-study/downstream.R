@@ -288,9 +288,6 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 }
 
 
-!!!!!!!!!!!!!
-!!!!!!!!!!!!!! DEBUG NEGATIVE WINDSIZE
-!!!!!!!!!!!!!!!
 .returninfodf <- function(transtab, nbwindows = NULL) {
 
         transcript <- unique(transtab$transcript)
@@ -409,34 +406,35 @@ auc_allconditions <- function(df, nbwindows) {
             ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
                 cumulativedensity) {
+                  #mean value over the full gene body
+                  fullmeanname <- paste0("MeanValueFull_", currentcond)
 
-                    #mean value over the full gene body
-                    fullmeanname <- paste0("MeanValueFull_", currentcond)
+                  ## Definition of column names
+                  difffxname <- paste0("diff_Fx_", currentcond)
+                  meanvalname <- paste0("mean_value_", currentcond)
+                  meanfxname <- paste0("mean_Fx_", currentcond)
 
-                    ## Definition of column names
-                    difffxname <- paste0("diff_Fx_", currentcond)
-                    meanvalname <- paste0("mean_value_", currentcond)
-                    meanfxname <- paste0("mean_Fx_", currentcond)
+                  ## Perform a kolmogorov-smirnoff test between the mean_Fx
+                  ## and the cumulative density
+                  resks <- suppressWarnings(ks.test(transtab[, meanfxname],
+                    cumulativedensity))
 
-                    ## Perform a kolmogorov-smirnoff test between the mean_Fx
-                    ## and the cumulative density
-                    resks <- suppressWarnings(ks.test(transtab[, meanfxname],
-                        cumulativedensity))
-
-)                  auc <- pracma::trapz(transtab[,"coord"],
-                        transtab[, difffxname])
-                    pvalaucks <- resks$p.value
-                    stataucks <- resks$statistic
-                    fullmean <- mean(transtab[, meanvalname])
-                    aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
-                    colnames(aucdf)[4] <- fullmeanname
-                    rownames(aucdf) <- paste(.returninfodf(transtab),
-                        collapse = "-")
-
-                    return(aucdf)
-
+                  auc <- pracma::trapz(transtab[,"coord"],
+                    transtab[, difffxname])
+                  pvalaucks <- resks$p.value
+                  stataucks <- resks$statistic
+                  fullmean <- mean(transtab[, meanvalname])
+                  aucdf <- data.frame(auc, pvalaucks, stataucks, fullmean)
+                  colnames(aucdf)[4] <- fullmeanname
+                  rownames(aucdf) <- paste(.returninfodf(transtab),
+                    collapse = "-")
+                  return(aucdf)
                 }, transtab, cumulativedensity)
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 
 !!!!!!! CURRENT !!!!!!!!!!!!!!!!!!!!            aucdf <- do.call("cbind", resauclist)
 
