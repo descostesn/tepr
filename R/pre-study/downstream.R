@@ -357,6 +357,21 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
 }
 
 
+.buildaucdf <- function(transtab, difffxname, resks, meanvalname,
+  currentcond) {
+    auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
+    pvalaucks <- resks$p.value
+    stataucks <- resks$statistic
+    meanvaluefull <- mean(transtab[, meanvalname])
+    aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
+    colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
+    rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
+    transinfo <- data.frame(transcript = transtab[1, "transcript"],
+                    gene = transtab[1, "gene"], strand = transtab[1, "strand"])
+    aucdf <- cbind(transinfo, aucdf)
+    return(aucdf)
+}
+
 auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
 
   cumulative <- seq(1, nbwindows) / nbwindows
@@ -383,21 +398,8 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
 
                   ## Build data.frame with auc information for the current
                   ## transcript
-                  auc <- pracma::trapz(transtab[, "coord"],
-                    transtab[, difffxname])
-                  pvalaucks <- resks$p.value
-                  stataucks <- resks$statistic
-                  meanvaluefull <- mean(transtab[, meanvalname])
-                  aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
-                  colnames(aucdf) <- paste(colnames(aucdf), currentcond,
-                    sep = "_")
-                  rownames(aucdf) <- paste(.returninfodf(transtab),
-                    collapse = "-")
-                  transinfo <- data.frame(
-                    transcript = transtab[1, "transcript"],
-                    gene = transtab[1, "gene"],
-                    strand = transtab[1, "strand"])
-                  aucdf <- cbind(transinfo, aucdf)
+                  aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
+                    currentcond)
                   return(aucdf)
                 }, transtab, cumulative)
                 aucdf <- do.call("cbind", resauclist)
