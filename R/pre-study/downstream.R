@@ -439,7 +439,6 @@ auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
     
     
     
-    
     aucallconditions <- do.call("rbind", resdflist)
     return(aucallconditions)
 }
