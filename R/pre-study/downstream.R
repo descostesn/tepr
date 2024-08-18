@@ -165,36 +165,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     return(idxcondlist)
 }
 
-.meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
-    colnamevec, verbose) {
-
-        meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
-            currentcond, colnamevec, verbose) {
-            if (verbose)
-              message("\t Calculating average and difference between ",
-                "replicates for columns '", idxname, "' of ", currentcond)
-
-            ## Calculating the column of mean scores for currentcond
-            ## The result is a data.frame made of a single column
-            if (length(idxvalvec) >= 2)
-                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
-            else
-                meandf <- df[, idxvalvec]
-            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
-
-            if (isTRUE(all.equal(idxname, "Fx"))) {
-                diffres <- meandf - df$coord / nbwindows
-                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
-                res <- cbind(meandf, diffres)
-            } else {
-                res <- meandf
-            }
-            return(res)
-        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbwindows,
-            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
-
-        return(meandifflist)
-}
 
 .creatematdiff <- function(condvec, resmean) {
 
@@ -236,6 +206,38 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   ## Building a matrix from the diff on values and Fx
   matdiff <- do.call("cbind", matdifflist)
   return(matdiff)
+}
+
+
+.meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
+    colnamevec, verbose) {
+
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
+            currentcond, colnamevec, verbose) {
+            if (verbose)
+              message("\t Calculating average and difference between ",
+                "replicates for columns '", idxname, "' of ", currentcond)
+
+            ## Calculating the column of mean scores for currentcond
+            ## The result is a data.frame made of a single column
+            if (length(idxvalvec) >= 2)
+                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
+            else
+                meandf <- df[, idxvalvec]
+            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
+
+            if (isTRUE(all.equal(idxname, "Fx"))) {
+                diffres <- meandf - df$coord / nbwindows
+                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
+                res <- cbind(meandf, diffres)
+            } else {
+                res <- meandf
+            }
+            return(res)
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbwindows,
+            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
+
+        return(meandifflist)
 }
 
 createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
