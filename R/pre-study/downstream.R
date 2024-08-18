@@ -437,7 +437,7 @@ dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
 # Calculate the Area Under Curve (AUC), All conditions vs y=x
 # Calculate Mean Value over the full gene body in All conditions.
-aucallcond <- auc_allconditions(df, nbwindows, nbcpu = nbcpu)
+aucallcond <- auc_allconditions(dfmeandiff, nbwindows, nbcpu = nbcpu)
 
 
 !!!!!!!!!!!!!!!!!!!
