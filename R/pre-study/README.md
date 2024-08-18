@@ -55,10 +55,51 @@ Previously -
 With new version -
 
 ```
-
+> head(dfaucallcond)
+                           transcript    gene strand windsize
+ENST00000000233.10 ENST00000000233.10    ARF5      +       16
+ENST00000000412.8   ENST00000000412.8    M6PR      -       46
+ENST00000000442.11 ENST00000000442.11   ESRRA      +       56
+ENST00000001008.6   ENST00000001008.6   FKBP4      +       52
+ENST00000001146.7   ENST00000001146.7 CYP26B1      -       93
+ENST00000002125.9   ENST00000002125.9 NDUFAF7      +       87
+                   deltadauc_mean_Fx_HS pvaldeltadaucks_mean_Fx_HS
+ENST00000000233.10            7.3737429                  0.1122497
+ENST00000000412.8            -0.9388293                  0.3927338
+ENST00000000442.11            4.3545663                  0.8642828
+ENST00000001008.6             2.8527550                  0.4653198
+ENST00000001146.7             5.6966363                  0.2202056
+ENST00000002125.9             0.3127958                  1.0000000
+                   statdeltadaucks_mean_Fx_HS
+ENST00000000233.10                      0.120
+ENST00000000412.8                       0.090
+ENST00000000442.11                      0.060
+ENST00000001008.6                       0.085
+ENST00000001146.7                       0.105
+ENST00000002125.9                       0.025
 ```
 
 
 Here is for the function "AUC_allcondi_fun":
 
 Previously -
+
+```
+> head(AUC_allcondi)
+          transcript    gene strand window_size    AUC_ctrl p_AUC_ctrl
+1 ENST00000000233.10    ARF5      +          16 -16.1578100 0.01195204
+2  ENST00000000412.8    M6PR      -          46   0.4324419 0.99999997
+3 ENST00000000442.11   ESRRA      +          56   5.1660784 0.46531984
+4  ENST00000001008.6   FKBP4      +          52  -0.1766325 0.14195987
+5  ENST00000001146.7 CYP26B1      -          93  -3.0554547 0.01637739
+6  ENST00000002125.9 NDUFAF7      +          87   3.6587823 0.92281679
+  D_AUC_ctrl MeanValueFull_ctrl    AUC_HS   p_AUC_HS D_AUC_HS MeanValueFull_HS
+1      0.160           4.877027 -8.839419 0.32749746    0.095        4.5644025
+2      0.025           9.180490 -0.202357 0.99969715    0.035        9.7893877
+3      0.085           3.896399  9.717586 0.14195987    0.115        2.8989286
+4      0.115           7.615390  2.618716 0.32749746    0.095       22.4691040
+5      0.155           0.170454 -9.178374 0.02984147    0.145        0.1724797
+6      0.055           3.684554  4.015115 0.92281679    0.055        4.0567575
+```
+
+With new version -
