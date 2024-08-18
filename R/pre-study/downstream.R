@@ -167,10 +167,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     return(idxcondlist)
 }
 
-.meandiffscorefx <- function(idxcondlist, df, nbrows, currentcond,
+.meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
     colnamevec, verbose) {
 
-        meandifflist <- mapply(function(idxvalvec, idxname, df, nbrows,
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
             currentcond, colnamevec, verbose) {
             if (verbose)
               message("\t Calculating average and difference between ",
@@ -185,14 +185,14 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
-                diffres <- meandf - df$coord / nbrows
+                diffres <- meandf - df$coord / nbwindows
                 colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
             } else {
                 res <- meandf
             }
             return(res)
-        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbrows,
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbwindows,
             currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
 
         return(meandifflist)
@@ -240,13 +240,13 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
   return(matdiff)
 }
 
-createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
+createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
     condvec <- unique(expdf$condition)
-    rescondlist <- lapply(condvec, function(currentcond, df,
+    rescondlist <- lapply(condvec, function(currentcond, df, nbwindows,
       verbose) {
 
         if (verbose) message("Merging columns for condition ", currentcond)
@@ -257,16 +257,15 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         idxcondlist <- .idxscorefx(df, idxcond)
 
         ## The difference is used to calculate the AUC later on
-        nbrows <- nrow(df)
         colnamevec <- colnames(df)
-        meandifflist <- .meandiffscorefx(idxcondlist, df, nbrows,
+        meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
             currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
 
         meandiffres <- do.call("cbind", meandifflist)
 
         return(meandiffres)
-    }, resultsecdf, verbose)
+    }, resultsecdf, nbwindows, verbose)
 
     resmean <- do.call("cbind", rescondlist)
 
@@ -381,7 +380,7 @@ resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
 
 message("Calculating means and differences")
-dfmeandiff <- createmeandiff(resultsecdf, expdf)
+dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 
 message("Computing the differences (d or delta) of AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
