@@ -12,19 +12,17 @@ library("parallel")
 library("matrixStats")
 library("pracma")
 
-!!!!!!!!!
-environment: /g/romebioinfo/tmp/downstream
-!!!!!!!!!!!
-
 
 ##################
 # PARAMETERS
 ##################
 
-alldfpath <- "/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds"
-exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
+#alldfpath <- "/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds"
+#exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
+alldfpath <- "alldffrompreprocessing.rds"
+exptabpath <- "exptab.csv" # nolint
 expthres <- 0.1
-nbcpu <- 10
+nbcpu <- 5
 
 
 ##################
@@ -103,7 +101,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
 
         ## Defining coordinates according to the strand
-        if (isTRUE(all.equal(str, '+')))
+        if (isTRUE(all.equal(str, "+")))
             transtable <- cbind(transtable, coord = transtable$window)
         else
             transtable <- cbind(transtable, coord = rev(transtable$window))
@@ -112,8 +110,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         return(res)
 }
 
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
-  verbose = FALSE) { # nolint
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
+  verbose = FALSE) {
 
     ## Defining variables
     maintable <- allexprsdfs[[1]]
@@ -167,36 +165,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     return(idxcondlist)
 }
 
-.meandiffscorefx <- function(idxcondlist, df, nbrows, currentcond,
-    colnamevec, verbose) {
-
-        meandifflist <- mapply(function(idxvalvec, idxname, df, nbrows,
-            currentcond, colnamevec, verbose) {
-            if (verbose)
-              message("\t Calculating average and difference between ",
-                "replicates for columns '", idxname, "' of ", currentcond)
-
-            ## Calculating the column of mean scores for currentcond
-            ## The result is a data.frame made of a single column
-            if (length(idxvalvec) >= 2)
-                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
-            else
-                meandf <- df[, idxvalvec]
-            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
-
-            if (isTRUE(all.equal(idxname, "Fx"))) {
-                diffres <- meandf - df$coord / nbrows
-                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
-                res <- cbind(meandf, diffres)
-            } else {
-                res <- meandf
-            }
-            return(res)
-        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbrows,
-            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
-
-        return(meandifflist)
-}
 
 .creatematdiff <- function(condvec, resmean) {
 
@@ -212,8 +180,8 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
     difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
         currentcat, condvec) {
           ## The original code performs the subtractions as follows:
-          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2)
-          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1)
+          ## Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2) # nolint
+          ## Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1) # nolint
           ## concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]] # nolint
           ## concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]] # nolint
           ##
@@ -221,7 +189,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
           ## The indexes must be inverted with rev: meancolnames[rev(idxvec)]] -> for instance, given the two columns "mean_value_HS" and "mean_value_ctrl" # nolint
           ## as input, the function rowDiffs will do the subtraction "mean_value_ctrl" - "mean_value_HS" # nolint
           res <- matrixStats::rowDiffs(as.matrix(
-            resmean[,meancolnames[rev(idxvec)]]))
+            resmean[, meancolnames[rev(idxvec)]]))
           colnamestr <- paste("Diff", paste0("mean", currentcat),
             paste(condvec[idxvec], collapse = "_"), sep = "_")
           res <- as.vector(res)
@@ -240,13 +208,45 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1,
   return(matdiff)
 }
 
-createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
+
+.meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
+    colnamevec, verbose) {
+
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
+            currentcond, colnamevec, verbose) {
+            if (verbose)
+              message("\t Calculating average and difference between ",
+                "replicates for columns '", idxname, "' of ", currentcond)
+
+            ## Calculating the column of mean scores for currentcond
+            ## The result is a data.frame made of a single column
+            if (length(idxvalvec) >= 2)
+                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
+            else
+                meandf <- df[, idxvalvec]
+            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
+
+            if (isTRUE(all.equal(idxname, "Fx"))) {
+                diffres <- meandf - df$coord / nbwindows
+                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
+                res <- cbind(meandf, diffres)
+            } else {
+                res <- meandf
+            }
+            return(res)
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbwindows,
+            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
+
+        return(meandifflist)
+}
+
+createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
     condvec <- unique(expdf$condition)
-    rescondlist <- lapply(condvec, function(currentcond, df,
+    rescondlist <- lapply(condvec, function(currentcond, df, nbwindows,
       verbose) {
 
         if (verbose) message("Merging columns for condition ", currentcond)
@@ -257,16 +257,15 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         idxcondlist <- .idxscorefx(df, idxcond)
 
         ## The difference is used to calculate the AUC later on
-        nbrows <- nrow(df)
         colnamevec <- colnames(df)
-        meandifflist <- .meandiffscorefx(idxcondlist, df, nbrows,
+        meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
             currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
 
         meandiffres <- do.call("cbind", meandifflist)
 
         return(meandiffres)
-    }, resultsecdf, verbose)
+    }, resultsecdf, nbwindows, verbose)
 
     resmean <- do.call("cbind", rescondlist)
 
@@ -288,8 +287,7 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
 }
 
 
-
-.returninfodf <- function(transtab, nbwindows) {
+.returninfodf <- function(transtab, nbwindows = NULL) {
 
         transcript <- unique(transtab$transcript)
         gene <- unique(transtab$gene)
@@ -297,15 +295,22 @@ createmeandiff <- function(resultsecdf, expdf, verbose = FALSE) {
         .checkunique(transcript, "transcript-dauc_allconditions")
         .checkunique(gene, "gene-dauc_allconditions")
         .checkunique(strand, "strand-dauc_allconditions")
-        if (isTRUE(all.equal(strand, '+')))
-            windsize <- floor(
-                (transtab$end[nbwindows] - transtab$start[1])/nbwindows)
-        else
-            windsize <- floor(
-                (transtab$end[1] - transtab$start[nbwindows])/nbwindows)
-        infodf <- data.frame(transcript, gene, strand, windsize)
+        infodf <- data.frame(transcript, gene, strand)
+
+        if (!is.null(nbwindows)) {
+            if (isTRUE(all.equal(as.character(strand), "+"))) {
+                windsize <- floor(
+                    (transtab$end[nbwindows] - transtab$start[1]) / nbwindows)
+            } else {
+                transtab <- transtab[order(as.numeric(transtab$coord)), ]
+                windsize <- floor(
+                    (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
+            }
+            infodf <- cbind(infodf, windsize)
+        }
         return(infodf)
 }
+
 
 dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     dontcompare = NULL) {
@@ -315,45 +320,98 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     resdflist <- mclapply(bytranslist, function(transtab, condvec) {
 
         ## Sorting table according to strand
-        transtab <- transtab[order(as.numeric(transtab$coord)), ]
+        #transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
         name1 <- paste0("mean_Fx_", condvec[idxctrl])
         name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-        diffname <- paste0("Diff_meanFx_",
-            condvec[-idxctrl], "_", condvec[idxctrl])
+        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",
+          condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
         resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
-        deltaauc <- pracma::trapz(transtab[,"coord"], transtab[, diffname])
+        deltadauc <- pracma::trapz(transtab[, "coord"], transtab[, diffname])
         ## Retrieve the p-value
-        pvalks <- resks$p.value
+        pvaldeltadaucks <- resks$p.value
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
-        statks <- resks$statistic
+        statdeltadaucks <- resks$statistic
 
         ## Build a one line data.frame with the proper col names
-        ksaucdf <- data.frame(deltaauc, pvalks, statks)
-        colnames(ksaucdf) <- paste(colnames(ksaucdf), name2, sep = "_")
+        ksdeltadaucdf <- data.frame(deltadauc, pvaldeltadaucks, statdeltadaucks)
+        colnames(ksdeltadaucdf) <- paste(colnames(ksdeltadaucdf), name2,
+            sep = "_")
 
         ## Retrieving transcript information
         infodf <- .returninfodf(transtab, nbwindows)
 
         ## Combining the two df as result
-        resdf <- cbind(infodf, ksaucdf)
+        resdf <- cbind(infodf, ksdeltadaucdf)
         return(resdf)
     }, condvec, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
-#   dAUC_allcondi <- dAUC_allcondi %>%
-#   mutate(across(contains("p_dAUC"), ~ modify_p_values(.)))
-
     return(resdf)
 }
+
+
+.buildaucdf <- function(transtab, difffxname, resks, meanvalname,
+  currentcond) {
+    auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
+    pvalaucks <- resks$p.value
+    stataucks <- resks$statistic
+    meanvaluefull <- mean(transtab[, meanvalname])
+    aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
+    colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
+    rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
+    transinfo <- data.frame(transcript = transtab[1, "transcript"],
+                    gene = transtab[1, "gene"], strand = transtab[1, "strand"])
+    aucdf <- cbind(transinfo, aucdf)
+    return(aucdf)
+}
+
+auc_allconditions <- function(df, nbwindows, nbcpu = 1) {
+
+  cumulative <- seq(1, nbwindows) / nbwindows
+  bytranslist <- split(df, factor(df$transcript))
+  condvec <- unique(expdf$condition)
+
+  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative) {
+            ## Sorting table according to strand
+            #transtab <- transtab[order(as.numeric(transtab$coord)), ]
+
+            ## Computing AUC, pval, and stat for each condition
+            resauclist <- lapply(condvec, function(currentcond, transtab,
+                cumulative) {
+
+                  ## Definition of column names
+                  difffxname <- paste0("diff_Fx_", currentcond)
+                  meanvalname <- paste0("mean_value_", currentcond)
+                  meanfxname <- paste0("mean_Fx_", currentcond)
+
+                  ## Perform a kolmogorov-smirnoff test between the mean_Fx
+                  ## and the cumulative density
+                  resks <- suppressWarnings(ks.test(transtab[, meanfxname],
+                    cumulative))
+
+                  ## Build data.frame with auc information for the current
+                  ## transcript
+                  aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
+                    currentcond)
+                  return(aucdf)
+                }, transtab, cumulative)
+                aucdf <- do.call("cbind", resauclist)
+                return(aucdf)
+    }, condvec, cumulative, mc.cores = nbcpu)
+
+    aucallconditions <- do.call("rbind", resdflist)
+    return(aucallconditions)
+}
+
 
 
 
@@ -376,13 +434,17 @@ resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
 
 message("Calculating means and differences")
-dfmeandiff <- createmeandiff(resultsecdf, expdf)
+dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 
-message("Computing and comparing AUC")
+message("Computing the differences (d or delta) of AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
 
-!!!!!!!!!!!!!!!!!!!
+# Calculate the Area Under Curve (AUC), All conditions vs y=x
+# Calculate Mean Value over the full gene body in All conditions.
+aucallcond <- auc_allconditions(dfmeandiff, nbwindows, nbcpu = nbcpu)
 
+
+!!!!!!!!!!!!!!!!!!!
 Time difference of 1.000898 mins
 > head(AUC_allcondi_res,2)
           transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
