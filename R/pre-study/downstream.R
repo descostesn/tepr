@@ -305,8 +305,8 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
                 transtab <- transtab[order(as.numeric(transtab$coord)), ]
                 windsize <- floor(
                     (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
-            infodf <- cbind(infodf, windsize)
             }
+            infodf <- cbind(infodf, windsize)
         }
         return(infodf)
 }
