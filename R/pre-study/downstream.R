@@ -298,13 +298,15 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         infodf <- data.frame(transcript, gene, strand)
 
         if (!is.null(nbwindows)) {
-            if(isTRUE(all.equal(as.character(strand), "+")))
+            if (isTRUE(all.equal(as.character(strand), "+"))) {
                 windsize <- floor(
                     (transtab$end[nbwindows] - transtab$start[1]) / nbwindows)
-            else
+            } else {
+                transtab <- transtab[order(as.numeric(transtab$coord)), ]
                 windsize <- floor(
                     (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
             infodf <- cbind(infodf, windsize)
+            }
         }
         return(infodf)
 }
@@ -318,7 +320,7 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     resdflist <- mclapply(bytranslist, function(transtab, condvec) {
 
         ## Sorting table according to strand
-        transtab <- transtab[order(as.numeric(transtab$coord)), ]
+        #transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
