@@ -445,13 +445,22 @@ aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu = nbcpu)
 
 !!!!!!!!!!!!!!!!!!!!
 
+df = dfmeandiff
+KneeID_fun <- function(df, expdf) {
 
-KneeID_fun <- function(concat_df) {
+  bytranslist <- split(df, factor(df$transcript))
+  condvec <- unique(expdf$condition)
 
+  lapply(bytranslist, function(transtab, condvec) {
+    rescond <- lapply(condvec, function(currentcond){
+      diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+      df_name <- paste0("gene_summary_AUC_", cond)
 
-
-
-  gene_summary_allcondi <- concat_df %>% select("transcript") %>% distinct()
+!!!!!!!!!!!!!!!!!!!!!!!!!!!! CURRENT  TO DO  
+    })
+  }, condvec)
+!!
+  gene_summary_allcondi <- df %>% select("transcript") %>% distinct()
   res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
   Conditions <- res$Conditions
 
@@ -469,7 +478,7 @@ KneeID_fun <- function(concat_df) {
     max_column_name <- paste0("max_", diff_Fx_condi_name)
     knee_column_name <- paste0("knee_AUC_", cond)
 
-    gene_summary_condi_df <- concat_df %>%
+    gene_summary_condi_df <- df %>%
       dplyr::group_by(transcript)  %>%
       dplyr::filter(!!sym(diff_Fx_condi_name) == max(!!sym(diff_Fx_condi_name)))  %>% # !!sym() inside the filter() to convert the variable name to a symbol and then access the column using the !! operator. # nolint
       slice_min(coord, n = 1)  %>% #if equality of difference within the same gene it takes the closest knee from the TSS # nolint
