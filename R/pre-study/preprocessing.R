@@ -142,6 +142,8 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     print(excludeorkeepgrlist(missinggr, toremovegr, removefrom = removeopt))
 }
 
+
+
 ##################
 # MAIN
 ##################
@@ -192,33 +194,6 @@ checkremoval(protcodgr, protcodnoblackgr, "proteincoding", "blacklist",
 checkremoval(lncrnagr, lncrnanoblackgr, "lncrna", "blacklist",
     blacklistgr, removeopt = TRUE)
 
-
-
-
-
-
-
-
-
-
-
-
-protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
-message("Intervals of the protein coding genes before removing black list:")
-head(protcodbeforestr)
-protcodafterstr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep=":")
-message("Intervals of the protein coding genes after removing black list:")
-head(protcodafterstr)
-message("Comparing intervals before and after black list removal to find the modified ones")
-idx <- match(protcodbeforestr, protcodafterstr)
-idxna <- which(is.na(idx))
-missinggr <- protcodgr[idxna, ]
-message("Examples of intervals overlapping black lists:")
-print(missinggr)
-message("Applying excludeorkeepgrlist to these intervals")
-print(excludeorkeepgrlist(missinggr, blacklistgr))
-
-
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
 ## used has only 1 as mapping scores. See parameters.
@@ -230,23 +205,10 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
 
 ## Check excluded intervals because of low mappability for protein coding
-
-!!!!!!! checklowmappabilityremoval <- function() {}
-protcodbeforestr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep = ":")
-message("Intervals of the protein coding genes before removing low mappability:")
-head(protcodbeforestr)
-protcodafterstr <- paste(seqnames(protcodnoblacknomapgr), start(protcodnoblacknomapgr), end(protcodnoblacknomapgr), strand(protcodnoblacknomapgr), sep = ":")
-message("Intervals of the protein coding genes after removing low mappability:")
-head(protcodafterstr)
-message("Comparing intervals before and after low mappability removal to find the modified ones")
-idx <- match(protcodbeforestr, protcodafterstr)
-idxna <- which(is.na(idx))
-missinggr <- protcodnoblackgr[idxna, ]
-message("Examples of intervals overlapping low mappability:")
-print(missinggr)
-message("Applying excludeorkeepgrlist to these intervals")
-print(excludeorkeepgrlist(missinggr, maptrackgr, removefrom = FALSE))
-
+checkremoval(protcodnoblackgr, protcodnoblacknomapgr, "proteincoding",
+    "maptrack", maptrackgr, removeopt = FALSE)
+checkremoval(lncrnanoblackgr, lncrnanoblacknomapgr, "lncrna", "maptrack",
+    maptrackgr, removeopt = FALSE)
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
