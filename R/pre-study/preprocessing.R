@@ -120,14 +120,14 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     beforestr <- paste(GenomeInfoDb::seqnames(datagr), start(datagr),
         end(datagr), BiocGenerics::strand(datagr), sep = ":")
     message("Intervals of the ", dataname, " before removing ", removename, ":")
-    head(beforestr)
+    print(head(beforestr))
 
     ## Same thing for the after removal data
     afterstr <- paste(GenomeInfoDb::seqnames(dataremovedgr),
         start(dataremovedgr), end(dataremovedgr),
         BiocGenerics::strand(dataremovedgr), sep = ":")
     message("Intervals of the ", dataname, " after removing ", removename, ":")
-    head(afterstr)
+    print(head(afterstr))
 
     ## Retrieving the entries that were lost from datagr to see how they change
     message("Comparing intervals before and after ", removename,
@@ -188,7 +188,7 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## Check excluded intervals using blacklist
 checkremoval(protcodgr, protcodnoblackgr, "proteincoding", "blacklist",
     blacklistgr, removeopt = TRUE)
-
+!! call on lncrna
 
 
 
