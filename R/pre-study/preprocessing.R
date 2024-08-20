@@ -160,7 +160,12 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## Check excluded intervals
 protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
+message("Intervals of the protein coding genes before removing black list:")
+head(protcodbeforestr)
 protcodafterstr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep=":")
+message("Intervals of the protein coding genes after removing black list:")
+head(protcodafterstr)
+message("Comparing intervals before and after black list removal to find the modified ones")
 idx <- match(protcodbeforestr, protcodafterstr)
 idxna <- which(is.na(idx))
 missinggr <- protcodgr[idxna[1:5], ]
@@ -181,6 +186,9 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
 
 ## Check excluded intervals because of low mappability
+protcodbeforestr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep = ":")
+message("Intervals of the protein coding genes before removing low mappability:")
+head(protcodbeforestr)
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
