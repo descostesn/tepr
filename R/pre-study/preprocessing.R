@@ -158,7 +158,9 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
-## Check excluded intervals for protein coding
+## Check excluded intervals using blacklist
+
+!!!!!!!!!!! checkblacklistremoval <- function() {}
 protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
 message("Intervals of the protein coding genes before removing black list:")
 head(protcodbeforestr)
@@ -186,6 +188,8 @@ lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
 
 ## Check excluded intervals because of low mappability for protein coding
+
+!!!!!!! checklowmappabilityremoval <- function() {}
 protcodbeforestr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep = ":")
 message("Intervals of the protein coding genes before removing low mappability:")
 head(protcodbeforestr)
