@@ -168,7 +168,7 @@ head(protcodafterstr)
 message("Comparing intervals before and after black list removal to find the modified ones")
 idx <- match(protcodbeforestr, protcodafterstr)
 idxna <- which(is.na(idx))
-missinggr <- protcodgr[idxna[1:5], ]
+missinggr <- protcodgr[idxna, ]
 message("Examples of intervals overlapping black lists:")
 print(missinggr)
 message("Applying excludeorkeepgrlist to these intervals")
@@ -195,7 +195,7 @@ head(protcodafterstr)
 message("Comparing intervals before and after low mappability removal to find the modified ones")
 idx <- match(protcodbeforestr, protcodafterstr)
 idxna <- which(is.na(idx))
-missinggr <- protcodnoblackgr[idxna[1:123], ]
+missinggr <- protcodnoblackgr[idxna, ]
 message("Examples of intervals overlapping low mappability:")
 print(missinggr)
 message("Applying excludeorkeepgrlist to these intervals")
