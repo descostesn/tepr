@@ -126,18 +126,19 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     afterstr <- paste(GenomeInfoDb::seqnames(dataremovedgr),
         start(dataremovedgr), end(dataremovedgr),
         BiocGenerics::strand(dataremovedgr), sep = ":")
-    message("Intervals of the ", dataname, " after removing ", removename, ":")
+    message("\n\n Intervals of the ", dataname, " after removing ", removename,
+        ":")
     print(head(afterstr))
 
     ## Retrieving the entries that were lost from datagr to see how they change
-    message("Comparing intervals before and after ", removename,
+    message("\n\n Comparing intervals before and after ", removename,
         " removal to find the modified ones")
     idx <- match(beforestr, afterstr)
     idxna <- which(is.na(idx))
     missinggr <- datagr[idxna, ]
-    message("Examples of intervals overlapping ", removename, ":")
+    message("\n Examples of intervals overlapping ", removename, ":")
     print(missinggr)
-    message("Applying excludeorkeepgrlist to these intervals")
+    message("\n\n Data after applying excludeorkeepgrlist to these intervals")
     print(excludeorkeepgrlist(missinggr, toremovegr, removefrom = removeopt))
 }
 
