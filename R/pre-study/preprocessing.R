@@ -120,7 +120,7 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     beforestr <- paste(GenomeInfoDb::seqnames(datagr), start(datagr),
         end(datagr), BiocGenerics::strand(datagr), sep = ":")
     message("Intervals of the ", dataname, " before removing ", removename, ":")
-    print(head(beforestr))
+    print(datagr)
 
     ## Same thing for the after removal data
     afterstr <- paste(GenomeInfoDb::seqnames(dataremovedgr),
@@ -128,7 +128,7 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
         BiocGenerics::strand(dataremovedgr), sep = ":")
     message("\n\n Intervals of the ", dataname, " after removing ", removename,
         ":")
-    print(head(afterstr))
+    print(dataremovedgr)
 
     ## Retrieving the entries that were lost from datagr to see how they change
     message("\n\n Comparing intervals before and after ", removename,
