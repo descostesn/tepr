@@ -113,6 +113,33 @@ sortedbedformat <- function(gencode) {
     return(gencodebed)
 }
 
+checkremoval <- function(datagr, dataremovedgr, dataname, removename,
+    toremovegr, removeopt) {
+
+    ## For each record, build the string chr:start:end:strand
+    beforestr <- paste(GenomeInfoDb::seqnames(datagr), start(datagr),
+        end(datagr), BiocGenerics::strand(datagr), sep = ":")
+    message("Intervals of the ", dataname, " before removing ", removename, ":")
+    head(beforestr)
+
+    ## Same thing for the after removal data
+    afterstr <- paste(GenomeInfoDb::seqnames(dataremovedgr),
+        start(dataremovedgr), end(dataremovedgr),
+        BiocGenerics::strand(dataremovedgr), sep = ":")
+    message("Intervals of the ", dataname, " after removing ", removename, ":")
+    head(afterstr)
+
+    ## Retrieving the entries that were lost from datagr to see how they change
+    message("Comparing intervals before and after ", removename,
+        " removal to find the modified ones")
+    idx <- match(beforestr, afterstr)
+    idxna <- which(is.na(idx))
+    missinggr <- datagr[idxna, ]
+    message("Examples of intervals overlapping ", removename, ":")
+    print(missinggr)
+    message("Applying excludeorkeepgrlist to these intervals")
+    print(excludeorkeepgrlist(missinggr, toremovegr, removefrom = removeopt))
+}
 
 ##################
 # MAIN
@@ -159,8 +186,21 @@ protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## Check excluded intervals using blacklist
+checkremoval(protcodgr, protcodnoblackgr, "proteincoding", "blacklist",
+    blacklistgr, removeopt = TRUE)
 
-!!!!!!!!!!! checkblacklistremoval <- function() {}
+
+
+
+
+
+
+
+
+
+
+
+
 protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
 message("Intervals of the protein coding genes before removing black list:")
 head(protcodbeforestr)
