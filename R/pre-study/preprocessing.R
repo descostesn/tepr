@@ -158,6 +158,18 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
+## Check excluded intervals
+protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
+protcodafterstr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep=":")
+idx <- match(protcodbeforestr, protcodafterstr)
+idxna <- which(is.na(idx))
+missinggr <- protcodgr[idxna[1:5], ]
+message("Examples of intervals overlapping black lists:")
+print(missinggr)
+message("Applying excludeorkeepgrlist to these intervals")
+print(excludeorkeepgrlist(missinggr, blacklistgr))
+
+
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
 ## used has only 1 as mapping scores. See parameters.
@@ -167,6 +179,8 @@ protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
     removefrom = FALSE)
 lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
+
+## Check excluded intervals because of low mappability
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
