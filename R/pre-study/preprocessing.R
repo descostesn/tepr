@@ -143,16 +143,20 @@ lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
 lncrnagr <- bedtogr(lncrnabed)
 
-## Exclude blacklist
-blacklistgr <- createblacklist(blacklistname, outputfolder)
-protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
-lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
-
 ## Saving objects to check conformity with bash results
 saveRDS(protcodbed, file = file.path(robjoutputfold, "protcodbed.rds"))
 saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
 saveRDS(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.rds"))
 saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
+protcodbed <- readRDS(file.path(robjoutputfold, "protcodbed.rds"))
+protcodgr <- readRDS(file.path(robjoutputfold, "protcodgr.rds"))
+lncrnabed <- readRDS(file.path(robjoutputfold, "lncrnabed.rds"))
+lncrnagr <- readRDS(file.path(robjoutputfold, "lncrnagr.rds"))
+
+## Exclude blacklist
+blacklistgr <- createblacklist(blacklistname, outputfolder)
+protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
+lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
 ## Exclude low mappability
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
