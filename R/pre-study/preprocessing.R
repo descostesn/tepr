@@ -158,7 +158,7 @@ blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
 lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 
-## Check excluded intervals
+## Check excluded intervals for protein coding
 protcodbeforestr <- paste(seqnames(protcodgr), start(protcodgr), end(protcodgr), strand(protcodgr), sep=":")
 message("Intervals of the protein coding genes before removing black list:")
 head(protcodbeforestr)
@@ -185,10 +185,22 @@ protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
 lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
     removefrom = FALSE)
 
-## Check excluded intervals because of low mappability
+## Check excluded intervals because of low mappability for protein coding
 protcodbeforestr <- paste(seqnames(protcodnoblackgr), start(protcodnoblackgr), end(protcodnoblackgr), strand(protcodnoblackgr), sep = ":")
 message("Intervals of the protein coding genes before removing low mappability:")
 head(protcodbeforestr)
+protcodafterstr <- paste(seqnames(protcodnoblacknomapgr), start(protcodnoblacknomapgr), end(protcodnoblacknomapgr), strand(protcodnoblacknomapgr), sep = ":")
+message("Intervals of the protein coding genes after removing low mappability:")
+head(protcodafterstr)
+message("Comparing intervals before and after low mappability removal to find the modified ones")
+idx <- match(protcodbeforestr, protcodafterstr)
+idxna <- which(is.na(idx))
+missinggr <- protcodnoblackgr[idxna[1:123], ]
+message("Examples of intervals overlapping low mappability:")
+print(missinggr)
+message("Applying excludeorkeepgrlist to these intervals")
+print(excludeorkeepgrlist(missinggr, maptrackgr, removefrom = FALSE))
+
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
