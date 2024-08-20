@@ -189,7 +189,8 @@ lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
 ## Check excluded intervals using blacklist
 checkremoval(protcodgr, protcodnoblackgr, "proteincoding", "blacklist",
     blacklistgr, removeopt = TRUE)
-!! call on lncrna
+checkremoval(lncrnagr, lncrnanoblackgr, "lncrna", "blacklist",
+    blacklistgr, removeopt = TRUE)
 
 
 
