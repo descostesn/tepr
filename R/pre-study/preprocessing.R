@@ -277,10 +277,26 @@ bedgraphgrlist <- retrieveandfilterfrombg(allwindowsgr, exptab, blacklistgr,
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
-lapply(bedgraphgrlist, function(currentgr, allwindowsgr) {
+mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
 
-    res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr)
-}, allwindowsgr)
+    message("Overlapping ", currentname, " with annotations on strand ",
+        currentstrand)
+    BiocGenerics::strand(currentgr) <- currentstrand
+    res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
+        ignore.strand = FALSE)
+
+    ## Retrieving the names and frame of the mapped annotations
+    idxanno <- S4Vectors::subjectHits(res)
+    message("\t Retrieving transcript name and frame number")
+    rownamelist <- strsplit(names(allwindowsgr)[idxanno], "_")
+    transcriptvec <- sapply(rownamelist, "[", 1)
+    framevec <- as.numeric(gsub("frame", "", sapply(rownamelist, "[", 2)))
+    ## The frame numbering starting at 0 (empty suffix), need to transform to +1
+    framevec[which(is.na(framevec))] <- 0
+    framevec <- framevec + 1
+
+}, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
+    SIMPLIFY = FALSE)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
