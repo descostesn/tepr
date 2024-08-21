@@ -114,30 +114,28 @@ sortedbedformat <- function(gencode) {
 checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     toremovegr, removeopt) {
 
-    ## For each record, build the string chr:start:end:strand
-    beforestr <- paste(GenomeInfoDb::seqnames(datagr), start(datagr),
-        end(datagr), BiocGenerics::strand(datagr), sep = ":")
-    message("Intervals of the ", dataname, " before removing ", removename, ":")
-    print(datagr)
+    message("\n\n Checking operations for ", dataname, " with data of ",
+        removename)
 
-    ## Same thing for the after removal data
-    afterstr <- paste(GenomeInfoDb::seqnames(dataremovedgr),
-        start(dataremovedgr), end(dataremovedgr),
-        BiocGenerics::strand(dataremovedgr), sep = ":")
-    message("\n\n Intervals of the ", dataname, " after removing ", removename,
-        ":")
-    print(dataremovedgr)
+    ## Calculating number of elements overlapping toremovegr
+    res <- GenomicRanges::findOverlaps(datagr, toremovegr)
+    nboverdata <- length(unique(S4Vectors::queryHits(res)))
 
-    ## Retrieving the entries that were lost from datagr to see how they change
-    message("\n\n Comparing intervals before and after ", removename,
-        " removal to find the modified ones")
-    idx <- match(beforestr, afterstr)
-    idxna <- which(is.na(idx))
-    missinggr <- datagr[idxna, ]
-    message("\n Examples of intervals overlapping ", removename, ":")
-    print(missinggr)
-    message("\n\n Data after applying excludeorkeepgrlist to these intervals")
-    print(excludeorkeepgrlist(missinggr, toremovegr, removefrom = removeopt))
+    if (removeopt) {
+        message("The number of elements that should be removed is: ",
+            nboverdata)
+        message("The number of elements of the resulting object after ",
+            "subtraction should be: ", length(datagr) - nboverdata)
+        message("The number of elements in the resulting object is: ",
+            length(dataremovedgr))
+    } else {
+        message("The number of elements of the data to keep is: ",
+            length(toremovegr))
+        message("The number of elements before the overlap is: ",
+            length(datagr))
+        message("The number of elements in the resulting object is: ",
+            length(dataremovedgr))
+    }
 }
 
 
