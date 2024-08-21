@@ -161,7 +161,6 @@ gencode <- gencode[which(gencode$V3 == "transcript"), ]
 ## is one, or a transcript chosen by an Ensembl algorithm otherwise.
 gencodeprotcod <- grepsequential("MANE_Select", gencode)
 protcodbed <- sortedbedformat(gencodeprotcod)
-protcodgr <- bedtogr(protcodbed)
 
 ## Retrieve long non-coding transcripts
 lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
@@ -169,7 +168,7 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
-lncrnagr <- bedtogr(lncrnabed)
+
 
 ## Saving objects to check conformity with bash results
 saveRDS(protcodbed, file = file.path(robjoutputfold, "protcodbed.rds"))
