@@ -10,8 +10,6 @@ library("GenomeInfoDb")
 library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
-#library("clusterProfiler")
-#library("org.Hs.eg.db")
 
 source("commons.R")
 
