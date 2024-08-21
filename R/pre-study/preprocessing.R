@@ -144,7 +144,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE) {
             ranges = IRanges::IRanges(start = currentbed[, 2],
                                   end = currentbed[, 3],
                                   names = currentbed[, 4]),
-            strand = if (strand) currentbed[, 6] else "+",
+            strand = if (strand) currentbed[, 6] else "*",
             symbol = if (symbol) currentbed[, 5] else NA)
     return(grres)
 }
@@ -226,7 +226,7 @@ if (verbose) message("Reading the black list")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 if (verbose) message("Reading the highly mappable ranges")
 maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack)
+maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
 ## Retrieving the values for each annotations
 
