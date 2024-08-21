@@ -32,7 +32,7 @@ robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
 ## Scroll down to the table containing pre-computed tracks for hg38, hg19, mm10,
 ## and mm9 in bins of 24, 36, 50, and 100 bp in single- or multireads.
 ## The bed file below is for hg38 unique reads of 50 bp.
-maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.Unique.Mappability.bed" # nolint
+maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 ## Size of the window to extract values
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
