@@ -11,7 +11,7 @@ library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
 
-source("commons.R")
+# source("commons.R")
 
 
 ##################
