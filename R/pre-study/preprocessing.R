@@ -182,27 +182,29 @@ makewindowsbedtools <- function(expgr, binsize) {
 }
 
 
-retrieveandfilterfrombg <- function(allwindows, exptab, blacklistgr, maptrackgr,
-    nbcpu, verbose = TRUE) {
+retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
+    verbose = TRUE) {
 
     expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
-    bedgraphgrlist <- mcmapply(function(currentpath, currentname, allwindows, blacklistgr,
+    bedgraphgrlist <- mcmapply(function(currentpath, currentname, blacklistgr,
         maptrackgr, nbcpu, verbose) {
 
         if (verbose) message("\t Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
 
         if (verbose) message("\t\t Filtering out scores in black list ranges")
-        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr)
+        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr,
+            ignore.strand = TRUE)
         idxblack <- unique(S4Vectors::queryHits(resblack))
         BiocGenerics::score(valgr)[idxblack] <- NA
 
         if (verbose) message("\t\t Keeping high mappability scores")
-        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr)
+        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr,
+            ignore.strand = TRUE)
         idxhigh <- unique(S4Vectors::queryHits(reshigh))
         if (isTRUE(all.equal(length(idxhigh), length(valgr))))
             message("Only highly mappable element were found")
@@ -212,7 +214,7 @@ retrieveandfilterfrombg <- function(allwindows, exptab, blacklistgr, maptrackgr,
 
         return(valgr)
 
-    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
+    }, exptab$path, expnamevec, MoreArgs = list(blacklistgr,
         maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
 
     return(bedgraphgrlist)
@@ -256,10 +258,13 @@ lncrnabed <- sortedbedformat(lncrna)
 if (verbose) message("Combine the annotations")
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed)
+
 if (verbose) message("Make windows for all annotations")
 allwindows <- makewindowsbedtools(allannogr, windsize)
+
 if (verbose) message("Reading the black list")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
+
 if (verbose) message("Reading the highly mappable ranges")
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
