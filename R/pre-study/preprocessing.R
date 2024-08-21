@@ -35,7 +35,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg3
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-nbcpu <- 6
+nbcpu <- 20
 database_name <- "org.Hs.eg.db"
 
 
@@ -170,6 +170,68 @@ lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
 
 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+makewindowsbedtools <- function(expgr, binsize) {
+
+    ## Filtering out intervals smaller than binsize
+    idxsmall <- which(GenomicRanges::width(expgr) < binsize)
+    lsmall <- length(idxsmall)
+    if (!isTRUE(all.equal(lsmall, 0))) {
+        message("Excluding ", lsmall, "/", length(expgr), " annotations that ",
+        "are too short.")
+        expgr <- expgr[-idxsmall]
+    }
+
+    ## Change row names to keep the gene symbols
+    names(expgr) <- paste(names(expgr), expgr$symbol, sep = "_")
+
+    ## command retrieved with HelloRanges:
+    ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
+    ## Note: In R, bedtools does not have the "-i srcwinnum" option
+    res <- GenomicRanges::tile(expgr, n = binsize)
+    res <- unlist(res, use.names = FALSE)
+
+    ## Adding back metadata from names
+    tmplist <- strsplit(names(res), "_")
+    transvec <- sapply(tmplist, "[", 1)
+    symbolvec <- sapply(tmplist, "[", 2)
+    names(res) <- transvec
+    S4Vectors::elementMetadata(res)[, "symbol"] <- symbolvec
+
+    ## Making names of each element of the list unique
+    names(res) <- make.unique(names(res), sep = "_frame")
+    return(res)
+}
+
+
+
+## Combine the annotations
+allannobed <- rbind(protcodbed, lncrnabed)
+allannogr <- bedtogr(allannobed)
+## Make windows for all annotations
+allwindows <- makewindowsbedtools(allannogr, windsize)
+## Retrieving the values for each annotations for each bigwig
+
+retrievebwval <- function(exptab) {
+    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+    mapply(function(currentpath, currentname) {}, )
+    bwval <- rtracklayer::import.bw(bwpath,
+        selection = rangeselect, as = "NumericList")
+
+}
+
+## Set scores overlapping blacklist to NA
+## Set scores NOT in the high mappability to NA
+## Calculate an arithmetic weighted mean giving weight of !!!!
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 ## Saving objects to check conformity with bash results
 saveRDS(protcodbed, file = file.path(robjoutputfold, "protcodbed.rds"))
 saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
@@ -180,19 +242,6 @@ saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
 # lncrnabed <- readRDS(file.path(robjoutputfold, "lncrnabed.rds"))
 # lncrnagr <- readRDS(file.path(robjoutputfold, "lncrnagr.rds"))
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## Combine the annotations
-allanno <- rbind(protcodgr, lncrnagr)
-## Make windows for each annotations
-## Retrieving the values for each annotations for each bigwig
-## Set scores overlapping blacklist to NA
-## Set scores NOT in the high mappability to NA
-## Calculate an arithmetic weighted mean giving weight of !!!!
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
@@ -237,7 +286,7 @@ checkremoval(lncrnanoblackgr, lncrnanoblacknomapgr, "lncrna", "maptrack",
 
 ## Make windows of windsize for each annotation
 ## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
-protcodwindows <- makewindowsbedtools(protcodnoblacknomapgr, windsize)
+
 lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
 
 ## Retrieving values from bigwig files
