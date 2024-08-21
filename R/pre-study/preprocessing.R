@@ -252,8 +252,11 @@ retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
         if (verbose) message("\t Keeping high mappability scores")
         reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr)
         idxhigh <- unique(S4Vectors::queryHits(reshigh))
-        ## Setting the scores of the ranges NOT in idxhigh to NA
-        BiocGenerics::score(valgr)[-idxhigh] <- NA
+        if (isTRUE(all.equal(length(idxhigh), length(valgr))))
+            message("Only highly mappable element were found")
+        else
+            ## Setting the scores of the ranges NOT in idxhigh to NA
+            BiocGenerics::score(valgr)[-idxhigh] <- NA
 
 
     }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
