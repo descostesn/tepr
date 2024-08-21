@@ -181,6 +181,20 @@ saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
 # lncrnabed <- readRDS(file.path(robjoutputfold, "lncrnabed.rds"))
 # lncrnagr <- readRDS(file.path(robjoutputfold, "lncrnagr.rds"))
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## Combine the annotations
+allanno <- rbind(protcodgr, lncrnagr)
+## Make windows for each annotations
+## Retrieving the values for each annotations for each bigwig
+## Set scores overlapping blacklist to NA
+## Set scores NOT in the high mappability to NA
+## Calculate an arithmetic weighted mean giving weight of !!!!
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 ## Exclude blacklist
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
@@ -197,6 +211,20 @@ checkremoval(lncrnagr, lncrnanoblackgr, "lncrna", "blacklist",
 ## used has only 1 as mapping scores. See parameters.
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack)
+
+
+!!!!!!!!
+keepgrlist <- function(datagr, maptrackgr) {
+    res <- GenomicRanges::findOverlaps(datagr, maptrackgr)
+    idxtokeep <- unique(S4Vectors::queryHits(res))
+    datagr <- datagr[idxtokeep, ]
+    return(datagr)
+}
+protcodnoblackmaponlygr <- keepgrlist(protcodnoblackgr, maptrackgr)
+lncrnanoblackmaponlygr <- keepgrlist(lncrnanoblackgr, maptrackgr)
+
+!!!!!!!!!!!
+
 protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
     removefrom = FALSE)
 lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
