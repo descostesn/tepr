@@ -124,8 +124,10 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
     if (removeopt) {
         message("The number of elements that should be removed is: ",
             nboverdata)
+        subres <- length(datagr) - nboverdata
         message("The number of elements of the resulting object after ",
-            "subtraction should be: ", length(datagr) - nboverdata)
+            "subtraction should be: ", length(datagr), "-", nboverdata, "=",
+            subres)
         message("The number of elements in the resulting object is: ",
             length(dataremovedgr))
     } else {
