@@ -32,7 +32,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg3
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv"
-nbcpu <- 20
+nbcpu <- 6
 database_name <- "org.Hs.eg.db"
 
 
@@ -257,7 +257,6 @@ retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
         else
             ## Setting the scores of the ranges NOT in idxhigh to NA
             BiocGenerics::score(valgr)[-idxhigh] <- NA
-
 
     }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
         maptrackgr, nbcpu, verbose))
