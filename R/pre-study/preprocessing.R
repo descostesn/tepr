@@ -207,7 +207,6 @@ makewindowsbedtools <- function(expgr, binsize) {
 }
 
 
-
 ## Combine the annotations
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed)
@@ -215,12 +214,18 @@ allannogr <- bedtogr(allannobed)
 allwindows <- makewindowsbedtools(allannogr, windsize)
 ## Retrieving the values for each annotations for each bigwig
 
-retrievebwval <- function(exptab) {
-    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-    mapply(function(currentpath, currentname) {}, )
-    bwval <- rtracklayer::import.bw(bwpath,
-        selection = rangeselect, as = "NumericList")
+retrievebwval <- function(allwindows, exptab, nbcpu, verbose = TRUE) {
 
+    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+
+    ## Looping on each experiment bw file
+    mapply(function(currentpath, currentname, allwindows, nbcpu, verbose) {
+
+        if (verbose) message("\t Retrieving bw values for ", currentname)
+        valvec <- rtracklayer::import.bw(currentpath, which = allwindows,
+            as = "GRanges")
+
+    }, exptab$path, expnamevec, MoreArgs = list(allwindows, nbcpu, verbose))
 }
 
 ## Set scores overlapping blacklist to NA
