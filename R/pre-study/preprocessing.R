@@ -295,6 +295,15 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
     framevec[which(is.na(framevec))] <- 0
     framevec <- framevec + 1
 
+    message("\t Building scoring results by transcript")
+    ## Correspondance of bg score index with the transcript frame
+    idxbgscorevec <- S4Vectors::queryHits(res)
+    idxframedf <- data.frame(idxbgscore = idxbgscorevec, transframe = framevec,
+        annoidx = idxanno)
+    ## Separating the bedgraph score indexes by transcript names
+    idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
+
+
 }, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
     SIMPLIFY = FALSE)
 
