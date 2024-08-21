@@ -222,20 +222,32 @@ allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed)
 ## Make windows for all annotations
 allwindows <- makewindowsbedtools(allannogr, windsize)
-## Retrieving the values for each annotations for each bigwig
+## Retrieving the black list
+blacklistgr <- createblacklist(blacklistname, outputfolder)
+## Retrieving the values for each annotations
 
-retrievebwval <- function(allwindows, exptab, nbcpu, verbose = TRUE) {
+retrievescores <- function(allwindows, exptab, blacklistgr, nbcpu,
+    verbose = TRUE) {
 
     expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 
     ## Looping on each experiment bw file
-    mapply(function(currentpath, currentname, allwindows, nbcpu, verbose) {
+    # currentpath <- exptab$path[1]
+    # currentname <- expnamevec[1]
+    mapply(function(currentpath, currentname, allwindows, blacklistgr, nbcpu,
+        verbose) {
 
-        if (verbose) message("\t Retrieving bw values for ", currentname)
-        valvec <- rtracklayer::import.bedGraph(currentpath, which = allwindows,
-            as = "GRanges")
+        if (verbose) message("Retrieving values for ", currentname)
+        valgr <- rtracklayer::import.bedGraph(currentpath)
 
-    }, exptab$path, expnamevec, MoreArgs = list(allwindows, nbcpu, verbose))
+        if (verbose) message("\t Filtering out scores in black list ranges")
+        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr)
+        idxblack <- unique(S4Vectors::queryHits(resblack))
+        BiocGenerics::score(valgr)[idxblack] <- NA
+
+
+    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr, nbcpu,
+        verbose))
 }
 
 ## Set scores overlapping blacklist to NA
