@@ -303,6 +303,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
     ## Separating the bedgraph score indexes by transcript names
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
+???????????????????????????????? why do we have only one or two score for one frame
 
 }, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
     SIMPLIFY = FALSE)
