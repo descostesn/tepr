@@ -217,16 +217,20 @@ lncrnabed <- sortedbedformat(lncrna)
 
 
 
-## Combine the annotations
+if (verbose) message("Combine the annotations")
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed)
-## Make windows for all annotations
+if (verbose) message("Make windows for all annotations")
 allwindows <- makewindowsbedtools(allannogr, windsize)
-## Retrieving the black list
+if (verbose) message("Reading the black list")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
+if (verbose) message("Reading the highly mappable ranges")
+maptrack <- read.delim(maptrackpath, header = FALSE)
+maptrackgr <- bedtogr(maptrack)
+
 ## Retrieving the values for each annotations
 
-retrievescores <- function(allwindows, exptab, blacklistgr, nbcpu,
+retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
     verbose = TRUE) {
 
     expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
@@ -234,8 +238,8 @@ retrievescores <- function(allwindows, exptab, blacklistgr, nbcpu,
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
-    mapply(function(currentpath, currentname, allwindows, blacklistgr, nbcpu,
-        verbose) {
+    mapply(function(currentpath, currentname, allwindows, blacklistgr,
+        maptrackgr, nbcpu, verbose) {
 
         if (verbose) message("Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
@@ -245,9 +249,15 @@ retrievescores <- function(allwindows, exptab, blacklistgr, nbcpu,
         idxblack <- unique(S4Vectors::queryHits(resblack))
         BiocGenerics::score(valgr)[idxblack] <- NA
 
+        if (verbose) message("\t Keeping high mappability scores")
+        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr)
+        idxhigh <- unique(S4Vectors::queryHits(reshigh))
+        ## Setting the scores of the ranges NOT in idxhigh to NA
+        BiocGenerics::score(valgr)[-idxhigh] <- NA
 
-    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr, nbcpu,
-        verbose))
+
+    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
+        maptrackgr, nbcpu, verbose))
 }
 
 ## Set scores overlapping blacklist to NA
