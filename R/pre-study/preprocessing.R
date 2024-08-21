@@ -275,10 +275,8 @@ message("Reading and filtering bedgraphs")
 bedgraphgrlist <- retrieveandfilterfrombg(allwindows, exptab, blacklistgr,
     maptrackgr, nbcpu)
 
-
-## Set scores overlapping blacklist to NA
-## Set scores NOT in the high mappability to NA
-## Calculate an arithmetic weighted mean giving weight of !!!!
+## Retrieving values according to annotations and calculate an arithmetic
+## weighted mean
 
 
 
