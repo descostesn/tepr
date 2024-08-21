@@ -230,7 +230,7 @@ maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
 ## Retrieving the values for each annotations
 
-retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
+retrieveandfilterfrombg <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
     verbose = TRUE) {
 
     expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
@@ -238,7 +238,7 @@ retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
-    mapply(function(currentpath, currentname, allwindows, blacklistgr,
+    bedgraphgrlist <- mcmapply(function(currentpath, currentname, allwindows, blacklistgr,
         maptrackgr, nbcpu, verbose) {
 
         if (verbose) message("Retrieving values for ", currentname)
@@ -258,8 +258,12 @@ retrievescores <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
             ## Setting the scores of the ranges NOT in idxhigh to NA
             BiocGenerics::score(valgr)[-idxhigh] <- NA
 
+        return(valgr)
+
     }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
-        maptrackgr, nbcpu, verbose))
+        maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
+
+    return(bedgraphgrlist)
 }
 
 ## Set scores overlapping blacklist to NA
