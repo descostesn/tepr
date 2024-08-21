@@ -183,9 +183,7 @@ makewindowsbedtools <- function(expgr, binsize) {
 
 
 retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
-    verbose = TRUE) {
-
-    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+    expnamevec, verbose = TRUE) {
 
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
@@ -260,7 +258,7 @@ allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed)
 
 if (verbose) message("Make windows for all annotations")
-allwindows <- makewindowsbedtools(allannogr, windsize)
+allwindowsgr <- makewindowsbedtools(allannogr, windsize)
 
 if (verbose) message("Reading the black list")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
@@ -272,13 +270,17 @@ maptrackgr <- bedtogr(maptrack, strand = FALSE)
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
 message("Reading and filtering bedgraphs")
-bedgraphgrlist <- retrieveandfilterfrombg(allwindows, exptab, blacklistgr,
-    maptrackgr, nbcpu)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+bedgraphgrlist <- retrieveandfilterfrombg(allwindowsgr, exptab, blacklistgr,
+    maptrackgr, nbcpu, expnamevec)
 
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
+lapply(bedgraphgrlist, function(currentgr, allwindowsgr) {
 
+    res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr)
+}, allwindowsgr)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
