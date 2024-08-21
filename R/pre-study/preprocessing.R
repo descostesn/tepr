@@ -26,15 +26,12 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/gencode.v43.b
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
 outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
-## Mappability tracks in bed format can be downloaded from https://bismap.hoffmanlab.org/ # nolint
-## Scroll down to the table containing pre-computed tracks for hg38, hg19, mm10,
-## and mm9 in bins of 24, 36, 50, and 100 bp in single- or multireads.
-## The bed file below is for hg38 unique reads of 50 bp.
+## The bed file below was created and sent by Victor
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 ## Size of the window to extract values
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
-exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv"
 nbcpu <- 20
 database_name <- "org.Hs.eg.db"
 
@@ -222,7 +219,7 @@ retrievebwval <- function(allwindows, exptab, nbcpu, verbose = TRUE) {
     mapply(function(currentpath, currentname, allwindows, nbcpu, verbose) {
 
         if (verbose) message("\t Retrieving bw values for ", currentname)
-        valvec <- rtracklayer::import.bw(currentpath, which = allwindows,
+        valvec <- rtracklayer::import.bedGraph(currentpath, which = allwindows,
             as = "GRanges")
 
     }, exptab$path, expnamevec, MoreArgs = list(allwindows, nbcpu, verbose))
