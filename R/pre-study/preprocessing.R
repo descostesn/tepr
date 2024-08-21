@@ -182,6 +182,42 @@ makewindowsbedtools <- function(expgr, binsize) {
 }
 
 
+retrieveandfilterfrombg <- function(allwindows, exptab, blacklistgr, maptrackgr,
+    nbcpu, verbose = TRUE) {
+
+    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+
+    ## Looping on each experiment bw file
+    # currentpath <- exptab$path[1]
+    # currentname <- expnamevec[1]
+    bedgraphgrlist <- mcmapply(function(currentpath, currentname, allwindows, blacklistgr,
+        maptrackgr, nbcpu, verbose) {
+
+        if (verbose) message("\t Retrieving values for ", currentname)
+        valgr <- rtracklayer::import.bedGraph(currentpath)
+
+        if (verbose) message("\t\t Filtering out scores in black list ranges")
+        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr)
+        idxblack <- unique(S4Vectors::queryHits(resblack))
+        BiocGenerics::score(valgr)[idxblack] <- NA
+
+        if (verbose) message("\t\t Keeping high mappability scores")
+        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr)
+        idxhigh <- unique(S4Vectors::queryHits(reshigh))
+        if (isTRUE(all.equal(length(idxhigh), length(valgr))))
+            message("Only highly mappable element were found")
+        else
+            ## Setting the scores of the ranges NOT in idxhigh to NA
+            BiocGenerics::score(valgr)[-idxhigh] <- NA
+
+        return(valgr)
+
+    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
+        maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
+
+    return(bedgraphgrlist)
+}
+
 
 ##################
 # MAIN
@@ -228,43 +264,12 @@ if (verbose) message("Reading the highly mappable ranges")
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
-## Retrieving the values for each annotations
+## Retrieving the values of the bedgraph files, removing black lists and keeping
+## high mappability scores
+message("Reading and filtering bedgraphs")
+bedgraphgrlist <- retrieveandfilterfrombg(allwindows, exptab, blacklistgr,
+    maptrackgr, nbcpu)
 
-retrieveandfilterfrombg <- function(allwindows, exptab, blacklistgr, maptrackgr, nbcpu,
-    verbose = TRUE) {
-
-    expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-
-    ## Looping on each experiment bw file
-    # currentpath <- exptab$path[1]
-    # currentname <- expnamevec[1]
-    bedgraphgrlist <- mcmapply(function(currentpath, currentname, allwindows, blacklistgr,
-        maptrackgr, nbcpu, verbose) {
-
-        if (verbose) message("Retrieving values for ", currentname)
-        valgr <- rtracklayer::import.bedGraph(currentpath)
-
-        if (verbose) message("\t Filtering out scores in black list ranges")
-        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr)
-        idxblack <- unique(S4Vectors::queryHits(resblack))
-        BiocGenerics::score(valgr)[idxblack] <- NA
-
-        if (verbose) message("\t Keeping high mappability scores")
-        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr)
-        idxhigh <- unique(S4Vectors::queryHits(reshigh))
-        if (isTRUE(all.equal(length(idxhigh), length(valgr))))
-            message("Only highly mappable element were found")
-        else
-            ## Setting the scores of the ranges NOT in idxhigh to NA
-            BiocGenerics::score(valgr)[-idxhigh] <- NA
-
-        return(valgr)
-
-    }, exptab$path, expnamevec, MoreArgs = list(allwindows, blacklistgr,
-        maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
-
-    return(bedgraphgrlist)
-}
 
 ## Set scores overlapping blacklist to NA
 ## Set scores NOT in the high mappability to NA
