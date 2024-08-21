@@ -132,7 +132,7 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
             length(dataremovedgr))
     } else {
         message("The number of elements of the data to keep is: ",
-            length(toremovegr))
+            length(nboverdata))
         message("The number of elements before the overlap is: ",
             length(datagr))
         message("The number of elements in the resulting object is: ",
