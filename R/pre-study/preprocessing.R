@@ -305,15 +305,21 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
 
     ## For each transcript, retrieve the information and the bedgraph
     ## coordinates, strand and scores
-    mapply(function(tab, nametrs, annogr, bggr, strd) {
+    mapply(function(tab, nametrs, annogr, bggr, strd, expname) {
 
         ## Retrieving information about tables
-        rownames(annogr) <- 
+        names(annogr) <- NULL
         annodf <- as.data.frame(annogr[tab$annoidx])
+        colnames(annodf) <- paste0("trs_", colnames(annodf))
         bgdf <- as.data.frame(bggr[tab$idxbgscore])
+        colnames(bgdf) <- paste0(expname, colnames(bgdf))
+
+        ## Building the complete data.frame
+        df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
+            frame = tab$transframe))
 
     }, idxbgscorebytrans, names(idxbgscorebytrans),
-        MoreArgs = list(allwindowsgr, currentgr, currentstrand))
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
 
 }, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
     SIMPLIFY = FALSE)
