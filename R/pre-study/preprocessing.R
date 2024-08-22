@@ -148,13 +148,13 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
                 strand = if (strand) currentbed[, 6] else "*",
                 symbol = if (symbol) currentbed[, 5] else NA)
     else
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
-                ranges = IRanges::IRanges(start = currentbed[, 3],
-                                      end = currentbed[, 4],
-                                      names = currentbed[, 5]),
-                strand = if (strand) currentbed[, 7] else "*",
-                symbol = if (symbol) currentbed[, 6] else NA,
-                biotype = currentbed[, 1])
+        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
+                ranges = IRanges::IRanges(start = currentbed[, 2],
+                                      end = currentbed[, 3],
+                                      names = currentbed[, 4]),
+                strand = if (strand) currentbed[, 6] else "*",
+                symbol = if (symbol) currentbed[, 5] else NA,
+                biotype = currentbed[, 7])
     return(grres)
 }
 
@@ -273,8 +273,8 @@ lncrnabed <- sortedbedformat(lncrna)
 
 
 if (verbose) message("Combine the annotations")
-protcodbed <- cbind(biotype = "protein-coding", protcodbed)
-lncrnabed <- cbind(biotype = "lncRNA", lncrnabed)
+protcodbed <- cbind(protcodbed, biotype = "protein-coding")
+lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed, biotype = TRUE)
 
