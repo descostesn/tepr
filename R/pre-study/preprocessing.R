@@ -292,7 +292,7 @@ maptrackgr <- bedtogr(maptrack, strand = FALSE)
 ## high mappability scores
 message("Reading and filtering bedgraphs")
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-bedgraphgrlist <- retrieveandfilterfrombg(allwindowsgr, exptab, blacklistgr,
+bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpu, expnamevec)
 
 ## Retrieving values according to annotations and calculate an arithmetic
