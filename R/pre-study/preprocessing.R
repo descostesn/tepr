@@ -303,8 +303,17 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
     ## Separating the bedgraph score indexes by transcript names
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
-???????????????????????????????? why do we have only one or two score for one frame
-???????????????????????????????? add the binsize in the df or retrieve it later
+    ## For each transcript, retrieve the information and the bedgraph
+    ## coordinates, strand and scores
+    mapply(function(tab, nametrs, annogr, bggr, strd) {
+
+        ## Retrieving information about tables
+        rownames(annogr) <- 
+        annodf <- as.data.frame(annogr[tab$annoidx])
+        bgdf <- as.data.frame(bggr[tab$idxbgscore])
+
+    }, idxbgscorebytrans, names(idxbgscorebytrans),
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand))
 
 }, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
     SIMPLIFY = FALSE)
