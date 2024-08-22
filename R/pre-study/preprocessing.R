@@ -298,6 +298,10 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
+# currentgr=bedgraphgrlist[[1]]
+# currentstrand=exptab$strand[1]
+# currentname=expnamevec[1]
+
 mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
