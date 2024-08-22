@@ -138,16 +138,26 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
 }
 
 
-bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE) {
+bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
-    grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-            ranges = IRanges::IRanges(start = currentbed[, 2],
-                                  end = currentbed[, 3],
-                                  names = currentbed[, 4]),
-            strand = if (strand) currentbed[, 6] else "*",
-            symbol = if (symbol) currentbed[, 5] else NA)
+    if (!biotype)
+        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
+                ranges = IRanges::IRanges(start = currentbed[, 2],
+                                      end = currentbed[, 3],
+                                      names = currentbed[, 4]),
+                strand = if (strand) currentbed[, 6] else "*",
+                symbol = if (symbol) currentbed[, 5] else NA)
+    else
+        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
+                ranges = IRanges::IRanges(start = currentbed[, 3],
+                                      end = currentbed[, 4],
+                                      names = currentbed[, 5]),
+                strand = if (strand) currentbed[, 7] else "*",
+                symbol = if (symbol) currentbed[, 6] else NA,
+                biotype = currentbed[, 1])
     return(grres)
 }
+
 
 makewindowsbedtools <- function(expgr, binsize) {
 
@@ -254,8 +264,10 @@ lncrnabed <- sortedbedformat(lncrna)
 
 
 if (verbose) message("Combine the annotations")
+protcodbed <- cbind(biotype = "protein-coding", protcodbed)
+lncrnabed <- cbind(biotype = "lncRNA", lncrnabed)
 allannobed <- rbind(protcodbed, lncrnabed)
-allannogr <- bedtogr(allannobed)
+allannogr <- bedtogr(allannobed, biotype = TRUE)
 
 if (verbose) message("Make windows for all annotations")
 allwindowsgr <- makewindowsbedtools(allannogr, windsize)
