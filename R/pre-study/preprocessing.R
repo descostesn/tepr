@@ -159,7 +159,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 }
 
 
-makewindowsbedtools <- function(expgr, binsize) {
+makewindowsbedtools <- function(expgr, binsize, biotype = FALSE) {
 
     ## Filtering out intervals smaller than binsize
     idxsmall <- which(GenomicRanges::width(expgr) < binsize)
@@ -171,7 +171,11 @@ makewindowsbedtools <- function(expgr, binsize) {
     }
 
     ## Change row names to keep the gene symbols
-    names(expgr) <- paste(names(expgr), expgr$symbol, sep = "_")
+    if (!biotype)
+        names(expgr) <- paste(names(expgr), expgr$symbol, sep = "_")
+    else
+        names(expgr) <- paste(names(expgr), expgr$symbol, expgr$biotype,
+            sep = "_")
 
     ## command retrieved with HelloRanges:
     ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
@@ -185,6 +189,11 @@ makewindowsbedtools <- function(expgr, binsize) {
     symbolvec <- sapply(tmplist, "[", 2)
     names(res) <- transvec
     S4Vectors::elementMetadata(res)[, "symbol"] <- symbolvec
+
+    if (biotype) {
+        biotypevec <- sapply(tmplist, "[", 3)
+        S4Vectors::elementMetadata(res)[, "biotype"] <- biotypevec
+    }
 
     ## Making names of each element of the list unique
     names(res) <- make.unique(names(res), sep = "_frame")
@@ -270,7 +279,7 @@ allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed, biotype = TRUE)
 
 if (verbose) message("Make windows for all annotations")
-allwindowsgr <- makewindowsbedtools(allannogr, windsize)
+allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
 
 if (verbose) message("Reading the black list")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
