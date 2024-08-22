@@ -330,6 +330,12 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
 
     ## For each transcript, retrieve the information and the bedgraph
     ## coordinates, strand and scores
+    # tab <- idxbgscorebytrans[[1]]
+    # nametrs <- names(idxbgscorebytrans)[1]
+    # annogr <- allwindowsgr
+    # bggr <- currentgr
+    # strd <- currentstrand
+    # expname <- currentname
     mapply(function(tab, nametrs, annogr, bggr, strd, expname) {
 
         ## Retrieving information about tables
@@ -342,6 +348,72 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         ## Building the complete data.frame
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
             frame = tab$transframe))
+
+
+
+[(Nombre de NT avec coverage A)*(coverage A) + (Nombre de NT avec coverage B)*(coverage B) + … + (Nombre de NT avec coverage Z)*(coverage Z) ] / (nombre total de nucleotide pour la window) ( meme si il y a des fragments avec coverage de 0). 
+
+
+        !!!!!!!!!!!!!!!
+ 
+
+lelement1 <- df$ctrl1fwdend[6]-df$ctrl1fwdstart[6]
+        elementcoord1 <- seq(df$ctrl1fwdstart[6], df$ctrl1fwdend[6], by = 1)
+        over1 <- which(elementcoord >= 127588491 & elementcoord <= 127588507)
+        weight1 <- (100*length(over1))/lelement1
+        
+lelement2 <- df$ctrl1fwdend[7]-df$ctrl1fwdstart[7]
+        elementcoord1 <- seq(df$ctrl1fwdstart[7], df$ctrl1fwdend[7], by = 1)
+        over2 <- which(elementcoord >= 127588491 & elementcoord <= 127588507)
+        weight2 <- (100*length(over2))/lelement2
+        
+!!!!!!!!!!!!!!!!!!!!!
+
+        lwindow <- 127588507-127588491
+        windowcoord <- seq(127588491, 127588507, by = 1)
+        idxscore1 <- which(windowcoord >= df$ctrl1fwdstart[6] & windowcoord <= df$ctrl1fwdend[6])
+        idxscore2 <- which(windowcoord >= df$ctrl1fwdstart[7] & windowcoord <= df$ctrl1fwdend[7])
+        weight1 <- (100*length(idxscore1))/lelement
+        weight2 <- (100*length(idxscore2))/lelement
+        windscore <- rep(NA, lwindow)
+        windweight <- rep(0, lwindow)
+        windscore[idxscore1] <- df$ctrl1fwdscore[6]
+        windscore[idxscore2] <- df$ctrl1fwdscore[7]
+        windweight[idxscore1] <- weight1
+        windweight[idxscore2] <- weight2
+
+        weighted.mean(windscore, windweight)
+        
+
+
+
+
+!!!!!!!!!!!!!!!
+
+        lelement1 <- df$ctrl1fwdend[6]-df$ctrl1fwdstart[6]
+        elementcoord1 <- seq(df$ctrl1fwdstart[6], df$ctrl1fwdend[6], by = 1)
+        over1 <- which(elementcoord >= df$trs_start[6] & elementcoord <= df$trs_end[6])
+        weight1 <- (100*length(over1))/lelement1
+        
+        lelement2 <- df$ctrl1fwdend[7]-df$ctrl1fwdstart[7]
+        elementcoord1 <- seq(df$ctrl1fwdstart[7], df$ctrl1fwdend[7], by = 1)
+        over2 <- which(elementcoord >= df$trs_start[6] & elementcoord <= df$trs_end[6])
+        weight2 <- (100*length(over2))/lelement2
+        
+
+        lwindow <- df$trs_end[6]-df$trs_start[6]
+        windowcoord <- seq(df$trs_start[6], df$trs_end[6], by = 1)
+        idxscore1 <- which(windowcoord >= df$ctrl1fwdstart[6] & windowcoord <= df$ctrl1fwdend[6])
+        idxscore2 <- which(windowcoord >= df$ctrl1fwdstart[7] & windowcoord <= df$ctrl1fwdend[7])
+        windscore <- rep(NA, lwindow)
+        windweight <- rep(0, lwindow)
+        windscore[idxscore1] <- df$ctrl1fwdscore[6]
+        windscore[idxscore2] <- df$ctrl1fwdscore[7]
+        windweight[idxscore1] <- weight1
+        windweight[idxscore2] <- weight2
+
+        weighted.mean(windscore, windweight)
+        !!!!!!!!!!!!!!!!!!!
 
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
