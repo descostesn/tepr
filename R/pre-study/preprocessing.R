@@ -278,7 +278,7 @@ allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
-message("Reading the black list and keeping scores with high mappability")
+message("Removing the black list and keeping scores with high mappability")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
@@ -370,15 +370,21 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
             ## frames
             df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
             dupidx <- which(duplicated(df$frame))
-            dupframenbvec <- unique(df$frame[dupidx])
-            colscore <- paste0(expname, "score")
-            ## For each duplicated frame
-            wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
 
-            ## Remove duplicated frames and replace scores by wmean and adding
-            ## the coord column
-            res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
-                dupframenbvec, colscore, strd, wmeanvec)
+            if (!isTRUE(all.equal(length(dupidx), 0))) {
+                dupframenbvec <- unique(df$frame[dupidx])
+                colscore <- paste0(expname, "score")
+                ## For each duplicated frame
+                wmeanvec <- .computewmeanvec(dupframenbvec, df, expname,
+                    colscore)
+
+                ## Remove duplicated frames and replace scores by wmean and
+                ## adding the coord column
+                res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+                    dupframenbvec, colscore, strd, wmeanvec)
+            } else {
+                res <- df
+            }
             return(res)
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
