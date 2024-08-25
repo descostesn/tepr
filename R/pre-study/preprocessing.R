@@ -349,12 +349,198 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
             frame = tab$transframe))
 
+!!!!!!!!!!!!!!!!!
+bigtsvpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
+shdf <- read.delim(bigtsvpath, header = FALSE)
+colnames(shdf) <- c("biotype", "chr", "start", "end", "transcript", "gene", "strand", "window", "id", "name1", "score1", "name2", "score2", "name3", "score3", "name4", "score4", "name5", "score5", "name6", "score6", "name7", "score7", "name8", "score8")
+head(shdf)
+testsh <- shdf[which(shdf$gene == "ARF5"), ]
+testsh[6,]
+               biotype  chr     start       end         transcript gene strand
+6021606 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5      +
+        window   score1
+6021606      6 0.440169
+
+
+
+test <- df[which(df$trs_symbol == "ARF5"), ]
+idxnodupnoz <- which(!duplicated(test$frame) & test$ctrl1fwdscore != 0)
+head(df[idxnodupnoz,])
+head(df[which(df$frame == 6), ])
 
 
 [(Nombre de NT avec coverage A)*(coverage A) + (Nombre de NT avec coverage B)*(coverage B) + … + (Nombre de NT avec coverage Z)*(coverage Z) ] / (nombre total de nucleotide pour la window) ( meme si il y a des fragments avec coverage de 0). 
 
 
-        !!!!!!!!!!!!!!!
+
+
+> head(testsh[,c(1:8,11)],20)
+               biotype  chr     start       end         transcript gene strand
+6021601 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +
+6021602 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +
+6021603 protein-coding chr7 127588443 127588459 ENST00000000233.10 ARF5      +
+6021604 protein-coding chr7 127588459 127588475 ENST00000000233.10 ARF5      +
+6021605 protein-coding chr7 127588475 127588491 ENST00000000233.10 ARF5      +
+6021606 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5      +
+6021607 protein-coding chr7 127588507 127588523 ENST00000000233.10 ARF5      +
+6021608 protein-coding chr7 127588523 127588539 ENST00000000233.10 ARF5      +
+6021609 protein-coding chr7 127588539 127588555 ENST00000000233.10 ARF5      +
+6021610 protein-coding chr7 127588555 127588571 ENST00000000233.10 ARF5      +
+6021611 protein-coding chr7 127588571 127588587 ENST00000000233.10 ARF5      +
+6021612 protein-coding chr7 127588587 127588603 ENST00000000233.10 ARF5      +
+6021613 protein-coding chr7 127588603 127588619 ENST00000000233.10 ARF5      +
+6021614 protein-coding chr7 127588619 127588635 ENST00000000233.10 ARF5      +
+6021615 protein-coding chr7 127588635 127588651 ENST00000000233.10 ARF5      +
+6021616 protein-coding chr7 127588651 127588667 ENST00000000233.10 ARF5      +
+6021617 protein-coding chr7 127588667 127588683 ENST00000000233.10 ARF5      +
+6021618 protein-coding chr7 127588683 127588699 ENST00000000233.10 ARF5      +
+6021619 protein-coding chr7 127588699 127588715 ENST00000000233.10 ARF5      +
+6021620 protein-coding chr7 127588715 127588731 ENST00000000233.10 ARF5      +
+        window   score1
+6021601      1 0.000000
+6021602      2 0.000000
+6021603      3 0.000000
+6021604      4 0.000000
+6021605      5 0.000000
+6021606      6 0.440169
+6021607      7 1.006100
+6021608      8 1.006100
+6021609      9 1.320506
+6021610     10 1.949319
+6021611     11 1.006100
+6021612     12 1.006100
+6021613     13 1.572031
+6021614     14 2.012200
+6021615     15 1.320506
+6021616     16 1.446269
+6021617     17 2.012200
+6021618     18 1.446269
+6021619     19 1.006100
+6021620     20 1.006100
+
+
+
+
+   trs_seqnames trs_start   trs_end trs_width trs_strand trs_symbol
+1          chr7 127588411 127588426        16          +       ARF5
+2          chr7 127588427 127588442        16          +       ARF5
+3          chr7 127588443 127588459        17          +       ARF5
+4          chr7 127588460 127588475        16          +       ARF5
+5          chr7 127588476 127588492        17          +       ARF5
+6          chr7 127588493 127588508        16          +       ARF5
+7          chr7 127588493 127588508        16          +       ARF5
+8          chr7 127588509 127588525        17          +       ARF5
+9          chr7 127588526 127588541        16          +       ARF5
+10         chr7 127588542 127588558        17          +       ARF5
+11         chr7 127588542 127588558        17          +       ARF5
+12         chr7 127588559 127588574        16          +       ARF5
+13         chr7 127588559 127588574        16          +       ARF5
+14         chr7 127588575 127588590        16          +       ARF5
+15         chr7 127588591 127588607        17          +       ARF5
+16         chr7 127588608 127588623        16          +       ARF5
+17         chr7 127588608 127588623        16          +       ARF5
+18         chr7 127588624 127588640        17          +       ARF5
+19         chr7 127588641 127588656        16          +       ARF5
+20         chr7 127588657 127588673        17          +       ARF5
+   ctrl1fwdseqnames ctrl1fwdstart ctrl1fwdend ctrl1fwdwidth ctrl1fwdstrand
+1              chr7     127586671   127588500          1830              +
+2              chr7     127586671   127588500          1830              +
+3              chr7     127586671   127588500          1830              +
+4              chr7     127586671   127588500          1830              +
+5              chr7     127586671   127588500          1830              +
+6              chr7     127586671   127588500          1830              +
+7              chr7     127588501   127588550            50              +
+8              chr7     127588501   127588550            50              +
+9              chr7     127588501   127588550            50              +
+10             chr7     127588501   127588550            50              +
+11             chr7     127588551   127588570            20              +
+12             chr7     127588551   127588570            20              +
+13             chr7     127588571   127588610            40              +
+14             chr7     127588571   127588610            40              +
+15             chr7     127588571   127588610            40              +
+16             chr7     127588571   127588610            40              +
+17             chr7     127588611   127588640            30              +
+18             chr7     127588611   127588640            30              +
+19             chr7     127588641   127588660            20              +
+20             chr7     127588641   127588660            20              +
+   ctrl1fwdscore         transcript frame
+1         0.0000 ENST00000000233.10     1
+2         0.0000 ENST00000000233.10     2
+3         0.0000 ENST00000000233.10     3
+4         0.0000 ENST00000000233.10     4
+5         0.0000 ENST00000000233.10     5
+6         0.0000 ENST00000000233.10     6
+7         1.0061 ENST00000000233.10     6
+8         1.0061 ENST00000000233.10     7
+9         1.0061 ENST00000000233.10     8
+10        1.0061 ENST00000000233.10     9
+11        2.0122 ENST00000000233.10     9
+12        2.0122 ENST00000000233.10    10
+13        1.0061 ENST00000000233.10    10
+14        1.0061 ENST00000000233.10    11
+15        1.0061 ENST00000000233.10    12
+16        1.0061 ENST00000000233.10    13
+17        2.0122 ENST00000000233.10    13
+18        2.0122 ENST00000000233.10    14
+19        1.0061 ENST00000000233.10    15
+20        1.0061 ENST00000000233.10    16
+
+
+
+
+
+
+
+
+
+ctrl1fwdscore         transcript frame
+1         0.0000 ENST00000000233.10     1
+2         0.0000 ENST00000000233.10     2
+3         0.0000 ENST00000000233.10     3
+4         0.0000 ENST00000000233.10     4
+5         0.0000 ENST00000000233.10     5
+6         0.0000 ENST00000000233.10     6
+7         1.0061 ENST00000000233.10     6
+8         1.0061 ENST00000000233.10     7
+9         1.0061 ENST00000000233.10     8
+10        1.0061 ENST00000000233.10     9
+11        2.0122 ENST00000000233.10     9
+12        2.0122 ENST00000000233.10    10
+13        1.0061 ENST00000000233.10    10
+14        1.0061 ENST00000000233.10    11
+15        1.0061 ENST00000000233.10    12
+16        1.0061 ENST00000000233.10    13
+17        2.0122 ENST00000000233.10    13
+18        2.0122 ENST00000000233.10    14
+19        1.0061 ENST00000000233.10    15
+20        1.0061 ENST00000000233.10    16
+
+
+        window   score1
+6021601      1 0.000000
+6021602      2 0.000000
+6021603      3 0.000000
+6021604      4 0.000000
+6021605      5 0.000000
+6021606      6 0.440169
+6021607      7 1.006100
+6021608      8 1.006100
+6021609      9 1.320506
+6021610     10 1.949319
+6021611     11 1.006100
+6021612     12 1.006100
+6021613     13 1.572031
+6021614     14 2.012200
+6021615     15 1.320506
+6021616     16 1.446269
+6021617     17 2.012200
+6021618     18 1.446269
+6021619     19 1.006100
+6021620     20 1.006100
+
+
+
+!!!!!!!!!!!!!!!
  
 
 lelement1 <- df$ctrl1fwdend[6]-df$ctrl1fwdstart[6]
