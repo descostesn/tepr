@@ -363,13 +363,6 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
     currentstrand, currentname, windsize, nbcputrans) {
 
-        # tab <- idxbgscorebytrans[[693]]
-        # nametrs <- names(idxbgscorebytrans)[693]
-        # annogr <- allwindowsgr
-        # bggr <- currentgr
-        # strd <- currentstrand
-        # expname <- currentname
-
         dfwmeanbytranslist <- mcmapply(function(tab, nametrs, annogr, bggr,
             strd, expname, windsize) {
 
@@ -403,6 +396,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
         windsize), mc.cores = nbcputrans)
+
         return(dfwmeanbytranslist)
 }
 
