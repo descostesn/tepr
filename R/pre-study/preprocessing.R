@@ -360,6 +360,33 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
         return(res)
 }
 
+summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
+    currentstrand, currentname, windsize) {
+
+        dfwmeanbytranslist <- mapply(function(tab, nametrs, annogr, bggr, strd,
+        expname, windsize) {
+
+            ## Building the complete data.frame and identifying duplicated
+            ## frames
+            df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
+            dupidx <- which(duplicated(df$frame))
+            dupframenbvec <- unique(df$frame[dupidx])
+            colscore <- paste0(expname, "score")
+            ## For each duplicated frame
+            wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
+
+            ## Remove duplicated frames and replace scores by wmean and adding
+            ## the coord column
+            res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+                dupframenbvec, colscore, strd, wmeanvec)
+            return(res)
+        }, idxbgscorebytrans, names(idxbgscorebytrans),
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
+        windsize))
+        return(dfwmeanbytranslist)
+}
+
+
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
@@ -396,35 +423,9 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
 
     ## For each transcript, retrieve the information and the bedgraph
     ## coordinates, strand and scores, applying a weighted mean
-    # tab <- idxbgscorebytrans[[1]]
-    # nametrs <- names(idxbgscorebytrans)[1]
-    # annogr <- allwindowsgr
-    # bggr <- currentgr
-    # strd <- currentstrand
-    # expname <- currentname
-    dfwmeanbytranslist <- mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
-
-        ## Building the complete data.frame
-        df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
-
-        ###########
-        ## Applying a weighted mean on duplicated frames
-        ###########
-
-        dupidx <- which(duplicated(df$frame))
-        dupframenbvec <- unique(df$frame[dupidx])
-        colscore <- paste0(expname, "score")
-        ## For each duplicated frame
-        wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
-
-        ## Remove duplicated frames and replace scores by wmean and adding the
-        ## coord column
-        res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
-            dupframenbvec, colscore, strd, wmeanvec)
-        return(res)
-    }, idxbgscorebytrans, names(idxbgscorebytrans),
-        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
-        windsize))
+    message("\t Weighted mean on duplicated frames for each transcript")
+    dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
+        currentgr, currentstrand, currentname, windsize)
 
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
