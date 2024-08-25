@@ -349,7 +349,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
             frame = tab$transframe))
 
-
+!!
 windowstart <- test[1, "trs_start"]
 windowend <- test[1, "trs_end"]
 lwindow <- windowend - windowstart
@@ -374,10 +374,14 @@ score2 <- test[2, "ctrl1fwdscore"]
 weighted.mean(c(score1, score2), (overnt1, overnt2))
 0.50305
 
+!!
+    }, idxbgscorebytrans, names(idxbgscorebytrans),
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
 
+}, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
+    SIMPLIFY = FALSE)
 
-
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # !!!!!!!!!!!!!!!!!
 # CODE TO RETRIEVE A WORKIND EXAMPLE
@@ -648,13 +652,6 @@ weighted.mean(c(score1, score2), (overnt1, overnt2))
         # weighted.mean(windscore, windweight)
         # !!!!!!!!!!!!!!!!!!!
 
-    }, idxbgscorebytrans, names(idxbgscorebytrans),
-        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
-
-}, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
-    SIMPLIFY = FALSE)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 ## Saving objects to check conformity with bash results
