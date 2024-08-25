@@ -302,6 +302,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 # currentstrand=exptab$strand[1]
 # currentname=expnamevec[1]
 
+## For each bedgraph
 mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
@@ -353,46 +354,37 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         ## Applying a weighted mean on duplicated frames
         ###########
         dupframeidx <- which(duplicated(df$frame))
-        wmmeandflist <- lapply(duprameidx, function(idxdup, df, expname) {
+        ## For each duplicated frame
+        wmeanvec <- sapply(dupframeidx, function(idxdup, df, expname) {
 
             ## Selecting all rows having a duplicated frame found at index idx
             allframedf <- df[which(df$frame == df$frame[idxdup]), ]
             if (isTRUE(all.equal(nrow(allframedf), 1)))
                 stop("There should be more than one frame selected")
 
-            ## Retrieving the coordinates and the size of the transcript
-            windowstart <- allframedf[1, "trs_start")]
-            windowend <- allframedf[1, "trs_end")]
-            lwindow <- windowend - windowstart
-
             ## Testing that the coord of the window is the same for all scores selected (this should not give an error) # nolint
-            if (!isTRUE(all.equal(length(unique(windowstart)), 1)) || !isTRUE(all.equal(length(unique(windowend)), 1))) # nolint
+            if (!isTRUE(all.equal(length(unique(allframedf[, "trs_start"])), 1)) || !isTRUE(all.equal(length(unique(allframedf[, "trs_end"])), 1))) # nolint
                 stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper.") # nolint
 
+            ## Retrieving the coordinates and the size of the transcript
+            windowstart <- allframedf[1, "trs_start"]
+            windowend <- allframedf[1, "trs_end"]
+            lwindow <- windowend - windowstart
+
             ## Retrieve the nb of overlapping nt for each score
-            overtntvec <- sapply(allframedf, 1, function(x, expname, windowstart, windowend) {
+            overntvec <- apply(allframedf, 1, function(x, expname, windowstart, windowend) {
                 nt <- seq(from = x[paste0(expname, "start")], to = x[paste0(expname, "end")], by = 1)
                 overnt <- length(which(nt >= windowstart & nt <= windowend))
                 return(overnt)
             }, expname, windowstart, windowend)
 
             ## Computing weighted mean
-            wmean <- weighted.mean(allframedf[, paste0(expname, "score")], overntvec))
+            wmean <- weighted.mean(allframedf[, paste0(expname, "score")], overntvec)
+            return(wmean)
+        }, df, expname)
 
-            ## Returning a single line with the wmean replacing the score
-            !!
-        }, df, expname, simplify = FALSE)
+        ## Remove duplicated frames and replace scores by wmean
 
-!!
-## Retrieving scores (to be inserted in the below formula)
-score1 <- test[1, "ctrl1fwdscore"]
-score2 <- test[2, "ctrl1fwdscore"]
-
-## Perform the weigthed mean on nb of nucleotides with function
-
-0.50305
-
-!!
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
 
