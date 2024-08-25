@@ -290,31 +290,35 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 .computewmeanvec <- function(dupframenbvec, df, expname, colscolre) {
     wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
 
-            ## Selecting all rows having a duplicated frame found at index idx
-            allframedf <- df[which(df$frame == namedup), ]
-            if (isTRUE(all.equal(nrow(allframedf), 1)))
-                stop("There should be more than one frame selected")
+        ## Selecting all rows having a duplicated frame found at index idx
+        allframedf <- df[which(df$frame == namedup), ]
+        if (isTRUE(all.equal(nrow(allframedf), 1)))
+            stop("There should be more than one frame selected")
 
-            ## Testing that the coord of the window is the same for all scores selected (this should not give an error) # nolint
-            if (!isTRUE(all.equal(length(unique(allframedf[, "trs_start"])), 1)) || !isTRUE(all.equal(length(unique(allframedf[, "trs_end"])), 1))) # nolint
-                stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper.") # nolint
+        ## Testing that the coord of the window is the same for all scores
+        ## selected (this should not give an error)
+        if (!isTRUE(all.equal(length(unique(allframedf[, "trs_start"])), 1)) ||
+            !isTRUE(all.equal(length(unique(allframedf[, "trs_end"])), 1)))
+                stop("The size of the window is not unique for the frame rows ",
+                    "selected, this should not happen, contact the developper.")
 
-            ## Retrieving the coordinates and the size of the transcript
-            windowstart <- allframedf[1, "trs_start"]
-            windowend <- allframedf[1, "trs_end"]
-            lwindow <- windowend - windowstart
+        ## Retrieving the coordinates and the size of the transcript
+        windowstart <- allframedf[1, "trs_start"]
+        windowend <- allframedf[1, "trs_end"]
 
-            ## Retrieve the nb of overlapping nt for each score
-            overntvec <- apply(allframedf, 1, function(x, expname, windowstart, windowend) {
-                nt <- seq(from = x[paste0(expname, "start")], to = x[paste0(expname, "end")], by = 1)
+        ## Retrieve the nb of overlapping nt for each score
+        overntvec <- apply(allframedf, 1,
+            function(x, expname, windowstart, windowend) {
+                nt <- seq(from = x[paste0(expname, "start")],
+                    to = x[paste0(expname, "end")], by = 1)
                 overnt <- length(which(nt >= windowstart & nt <= windowend))
                 return(overnt)
             }, expname, windowstart, windowend)
 
-            ## Computing weighted mean
-            wmean <- weighted.mean(allframedf[, colscore], overntvec)
-            return(wmean)
-        }, df, expname, colscore)
+        ## Computing weighted mean
+        wmean <- weighted.mean(allframedf[, colscore], overntvec)
+        return(wmean)
+    }, df, expname, colscore)
     return(wmeanvec)
 }
 
