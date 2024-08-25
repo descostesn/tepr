@@ -353,12 +353,14 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         ###########
         ## Applying a weighted mean on duplicated frames
         ###########
-        dupframeidx <- which(duplicated(df$frame))
+
+        dupidx <- which(duplicated(df$frame))
+        dupframenbvec <- unique(df$frame[dupidx])
         ## For each duplicated frame
-        wmeanvec <- sapply(dupframeidx, function(idxdup, df, expname) {
+        wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname) {
 
             ## Selecting all rows having a duplicated frame found at index idx
-            allframedf <- df[which(df$frame == df$frame[idxdup]), ]
+            allframedf <- df[which(df$frame == namedup), ]
             if (isTRUE(all.equal(nrow(allframedf), 1)))
                 stop("There should be more than one frame selected")
 
@@ -384,15 +386,16 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         }, df, expname)
 
         ## Remove duplicated frames and replace scores by wmean
-        dupframenamevec <- df$frame[dupframeidx]
-        df <- df[-dupframeidx, ]
+        df <- df[-dupidx, ]
         if (!isTRUE(all.equal(nrow(df), windsize)))
             stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", nametrs)
-        dupframeunique <- unique(dupframenamevec)
-        idxscorereplace <- match(dupframeunique, df$frame)
-        if (!isTRUE(all.equal(dupframeunique, df$frame[idxscorereplace])))
+        idxscorereplace <- match(dupframenbvec, df$frame)
+        if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
             stop("Problem in replacing scores by wmean, contact the developer.")
         df[idxscorereplace, paste0(expname, "score")] <- wmeanvec
+
+        ## Adding the coord column
+        
   
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
