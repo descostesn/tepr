@@ -329,7 +329,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
     ## For each transcript, retrieve the information and the bedgraph
-    ## coordinates, strand and scores
+    ## coordinates, strand and scores, applying a weighted mean
     # tab <- idxbgscorebytrans[[1]]
     # nametrs <- names(idxbgscorebytrans)[1]
     # annogr <- allwindowsgr
@@ -349,14 +349,31 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
             frame = tab$transframe))
 
-!!
-windowstart <- test[1, "trs_start"]
-windowend <- test[1, "trs_end"]
-lwindow <- windowend - windowstart
+        ###########
+        ## Applying a weighted mean on duplicated frames
+        ###########
+        dupframeidx <- which(duplicated(df$frame))
+        lapply(duprameidx, function(idx, df) {
 
-## Testing that the coord of the window is the same for all scores selected (this should not give an error)
-if (!isTRUE(all.equal(length(unique(windowstart)), 1)) || !isTRUE(all.equal(length(unique(windowend)), 1)))
-    stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper")
+            ## Selecting all rows having a duplicated frame found at index idx
+            allframedf <- df[which(df$frame == df$frame[idx]), ]
+            if (isTRUE(all.equal(nrow(allframedf), 1)))
+                stop("There should be more than one frame selected")
+
+            ## Retrieving the coordinates and the size of the transcript
+            windowstart <- allframedf[1, "trs_start"]
+            windowend <- allframedf[1, "trs_end"]
+            lwindow <- windowend - windowstart
+
+            ## Testing that the coord of the window is the same for all scores selected (this should not give an error) # nolint
+            if (!isTRUE(all.equal(length(unique(windowstart)), 1)) || !isTRUE(all.equal(length(unique(windowend)), 1))) # nolint
+                stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper.") # nolint
+
+
+        }, df)
+
+!!
+
 
 ## Retrieve the coordinates of the scores
 nt1 <- seq(from = test[1, "ctrl1fwdstart"], to = test[1, "ctrl1fwdend"], by = 1)
