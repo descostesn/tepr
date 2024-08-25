@@ -370,10 +370,10 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
             ## frames
             df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
             dupidx <- which(duplicated(df$frame))
+            colscore <- paste0(expname, "score")
 
             if (!isTRUE(all.equal(length(dupidx), 0))) {
                 dupframenbvec <- unique(df$frame[dupidx])
-                colscore <- paste0(expname, "score")
                 ## For each duplicated frame
                 wmeanvec <- .computewmeanvec(dupframenbvec, df, expname,
                     colscore)
