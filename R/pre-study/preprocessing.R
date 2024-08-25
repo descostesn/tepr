@@ -395,7 +395,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
             return(res)
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
-        windsize), mc.cores = nbcputrans)
+        windsize), SIMPLIFY = FALSE, mc.cores = nbcputrans)
 
         return(dfwmeanbytranslist)
 }
