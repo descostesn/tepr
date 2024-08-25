@@ -456,9 +456,22 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
 
 saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 
-!!message("Join all the elements of the list into one data.frame. (it might take a while)")
-!!idxframedf <- purrr::reduce(idxframedflist, dplyr::full_join,
+## Creating a rowid that will be used for merging
+message("Adding rowid for each bedgraph")
+bedgraphwmeanlist <- mclapply(bedgraphwmeanlist, function(tab) {
+    rowid <- paste(tab$trs_seqnames, tab$trs_start, tab$trs_end, tab$trs_strand,
+        tab$trs_symbol, paste0("frame", tab$frame), paste0("coord", tab$coord),
+        sep = "_")
+    return(cbind(tab, rowid))
+}, mc.cores = nbcpubg)
+
+message("Join all the elements of the list into one data.frame. (it might take",
+    " a while)")
+start_time <- Sys.time()
+completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
     by = c("annoidx", "transframe"))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time)
 
 
 
