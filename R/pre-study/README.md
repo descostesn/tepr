@@ -199,3 +199,58 @@ Note again the difference in AUC for the second line. It seems to happen when th
 
 ```
 
+Here is the output of building bedgraphwmeanlist that indicates time spent on each file. Here the average time is ~4.5 min using 20 cpu:
+
+```
+Retrieving values according to annotations and calculate an arithmetic weighted mean for each bedgraph
+Overlapping ctrl1fwd with annotations on strand +
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 5.16446928977966
+         Combining transcripts
+Overlapping ctrl1rev with annotations on strand -
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 4.10114480654399
+         Combining transcripts
+Overlapping ctrl2fwd with annotations on strand +
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 5.39748361508052
+         Combining transcripts
+Overlapping ctrl2rev with annotations on strand -
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 4.82642058928808
+         Combining transcripts
+Overlapping HS1fwd with annotations on strand +
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+
+                 ## Analysis performed in: 4.55429952144623
+         Combining transcripts
+Overlapping HS1rev with annotations on strand -
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 4.86994267702103
+         Combining transcripts
+Overlapping HS2fwd with annotations on strand +
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+                 ## Analysis performed in: 4.63248418966929
+         Combining transcripts
+Overlapping HS2rev with annotations on strand -
+         Retrieving transcript name and frame number
+         Building scoring results by transcript
+         Weighted mean on duplicated frames for each transcript
+
+                 ## Analysis performed in: 4.54002116123835
+         Combining transcripts
+```
