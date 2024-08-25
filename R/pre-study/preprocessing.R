@@ -371,7 +371,20 @@ test <- df[which(df$frame == 6), ]
 
 [(Nombre de NT avec coverage A)*(coverage A) + (Nombre de NT avec coverage B)*(coverage B) + … + (Nombre de NT avec coverage Z)*(coverage Z) ] / (nombre total de nucleotide pour la window) ( meme si il y a des fragments avec coverage de 0). 
 
+## Size of the window
+lwindow <- test[1, "trs_end"] - test[1, "trs_start"]
+## Testing that the coord of the window is the same for all scores selected (this should not give an error)
+if (!isTRUE(all.equal(length(unique(test$trs_start)), 1)) || !isTRUE(all.equal(length(unique(test$trs_end)), 1)))
+    stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper")
 
+
+length(unique(test$trs_end))
+windcoord <- seq(from = df$trs)
+nbnt
+        # 
+
+        idxscore2 <- which(windowcoord >= df$ctrl1fwdstart[7] & windowcoord <= df$ctrl1fwdend[7])
+        
 
 
 > head(testsh[,c(1:8,11)],20)
