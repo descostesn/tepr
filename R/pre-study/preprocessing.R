@@ -357,14 +357,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
             stop("Problem in replacing scores by wmean, contact the developer.")
         df[idxscorereplace, colscore] <- wmeanvec
 
-        ## Adding the coord column
-        coord <- seq_len(windsize)
-        if (isTRUE(all.equal(strd, "-")))
-            coord <- rev(coord)
-        res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end", "trs_width",
-            "trs_strand", "trs_symbol", colscore, "transcript", "frame")],
-            coord)
-        return(res)
+        return(df)
 }
 
 summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
@@ -394,11 +387,18 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
                 ## Remove duplicated frames and replace scores by wmean and
                 ## adding the coord column
-                res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+                df <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
                     dupframenbvec, colscore, strd, wmeanvec)
-            } else {
-                res <- df
             }
+
+            ## Adding the coord column
+            coord <- seq_len(windsize)
+            if (isTRUE(all.equal(strd, "-")))
+                coord <- rev(coord)
+            res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end",
+                "trs_width", "trs_strand", "trs_symbol", colscore,
+                "transcript", "frame")], coord)
+
             return(res)
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
@@ -453,7 +453,9 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
 
     if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)), windsize)))
         stop("Problem in replacing scores by weighted mean on the data")
-!! current
+
+    dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+    return(dfwmeanbytrans)
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
