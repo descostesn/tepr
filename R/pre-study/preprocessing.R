@@ -353,42 +353,43 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         ## Applying a weighted mean on duplicated frames
         ###########
         dupframeidx <- which(duplicated(df$frame))
-        lapply(duprameidx, function(idx, df) {
+        wmmeandflist <- lapply(duprameidx, function(idxdup, df, expname) {
 
             ## Selecting all rows having a duplicated frame found at index idx
-            allframedf <- df[which(df$frame == df$frame[idx]), ]
+            allframedf <- df[which(df$frame == df$frame[idxdup]), ]
             if (isTRUE(all.equal(nrow(allframedf), 1)))
                 stop("There should be more than one frame selected")
 
             ## Retrieving the coordinates and the size of the transcript
-            windowstart <- allframedf[1, "trs_start"]
-            windowend <- allframedf[1, "trs_end"]
+            windowstart <- allframedf[1, "trs_start")]
+            windowend <- allframedf[1, "trs_end")]
             lwindow <- windowend - windowstart
 
             ## Testing that the coord of the window is the same for all scores selected (this should not give an error) # nolint
             if (!isTRUE(all.equal(length(unique(windowstart)), 1)) || !isTRUE(all.equal(length(unique(windowend)), 1))) # nolint
                 stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper.") # nolint
 
+            ## Retrieve the nb of overlapping nt for each score
+            overtntvec <- sapply(allframedf, 1, function(x, expname, windowstart, windowend) {
+                nt <- seq(from = x[paste0(expname, "start")], to = x[paste0(expname, "end")], by = 1)
+                overnt <- length(which(nt >= windowstart & nt <= windowend))
+                return(overnt)
+            }, expname, windowstart, windowend)
 
-        }, df)
+            ## Computing weighted mean
+            wmean <- weighted.mean(allframedf[, paste0(expname, "score")], overntvec))
+
+            ## Returning a single line with the wmean replacing the score
+            !!
+        }, df, expname, simplify = FALSE)
 
 !!
-
-
-## Retrieve the coordinates of the scores
-nt1 <- seq(from = test[1, "ctrl1fwdstart"], to = test[1, "ctrl1fwdend"], by = 1)
-nt2 <- seq(from = test[2, "ctrl1fwdstart"], to = test[2, "ctrl1fwdend"], by = 1)
-
-## Calculate the number of nucleotides (nt) overlapping the window
-overnt1 <- length(which(nt1 >= windowstart & nt1 <= windowend))
-overnt2 <- length(which(nt2 >= windowstart & nt2 <= windowend))
-
 ## Retrieving scores (to be inserted in the below formula)
 score1 <- test[1, "ctrl1fwdscore"]
 score2 <- test[2, "ctrl1fwdscore"]
 
 ## Perform the weigthed mean on nb of nucleotides with function
-weighted.mean(c(score1, score2), (overnt1, overnt2))
+
 0.50305
 
 !!
