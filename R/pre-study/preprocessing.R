@@ -265,32 +265,23 @@ removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
 lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
 lncrnabed <- sortedbedformat(lncrna)
 
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-if (verbose) message("Combine the annotations")
+## Combine the annotations
+message("Combine the annotations")
 protcodbed <- cbind(protcodbed, biotype = "protein-coding")
 lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed, biotype = TRUE)
 
-if (verbose) message("Make windows for all annotations")
+## Make windows for all annotations
+message("Make windows for all annotations")
 allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
-
-if (verbose) message("Reading the black list")
-blacklistgr <- createblacklist(blacklistname, outputfolder)
-
-if (verbose) message("Reading the highly mappable ranges")
-maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
-message("Reading and filtering bedgraphs")
+message("Reading the black list and keeping scores with high mappability")
+blacklistgr <- createblacklist(blacklistname, outputfolder)
+maptrack <- read.delim(maptrackpath, header = FALSE)
+maptrackgr <- bedtogr(maptrack, strand = FALSE)
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpu, expnamevec)
