@@ -426,7 +426,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     message("\t Weighted mean on duplicated frames for each transcript")
     dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
         currentgr, currentstrand, currentname, windsize)
-
+    !!! CURRENT
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
 
