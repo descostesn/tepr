@@ -435,8 +435,11 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
     ## For each transcript, retrieve the information and the bedgraph
     ## coordinates, strand and scores, applying a weighted mean
     message("\t Weighted mean on duplicated frames for each transcript")
+    start_time <- Sys.time()
     dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
         currentgr, currentstrand, currentname, windsize, nbcputrans)
+    end_time <- Sys.time()
+    message("## Analysis performed in: ", end_time - start_time)
     !!! CURRENT
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
