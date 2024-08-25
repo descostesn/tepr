@@ -366,7 +366,7 @@ testsh[6,]
 test <- df[which(df$trs_symbol == "ARF5"), ]
 idxnodupnoz <- which(!duplicated(test$frame) & test$ctrl1fwdscore != 0)
 head(df[idxnodupnoz,])
-head(df[which(df$frame == 6), ])
+test <- df[which(df$frame == 6), ]
 
 
 [(Nombre de NT avec coverage A)*(coverage A) + (Nombre de NT avec coverage B)*(coverage B) + … + (Nombre de NT avec coverage Z)*(coverage Z) ] / (nombre total de nucleotide pour la window) ( meme si il y a des fragments avec coverage de 0). 
