@@ -349,24 +349,22 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
             frame = tab$transframe))
 
-!!!!!!!!!!!!!!!!!
-bigtsvpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
-shdf <- read.delim(bigtsvpath, header = FALSE)
-colnames(shdf) <- c("biotype", "chr", "start", "end", "transcript", "gene", "strand", "window", "id", "name1", "score1", "name2", "score2", "name3", "score3", "name4", "score4", "name5", "score5", "name6", "score6", "name7", "score7", "name8", "score8")
-head(shdf)
-testsh <- shdf[which(shdf$gene == "ARF5"), ]
-testsh[6,]
-               biotype  chr     start       end         transcript gene strand
-6021606 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5      +
-        window   score1
-6021606      6 0.440169
+# !!!!!!!!!!!!!!!!!
+# bigtsvpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/dTAG_Cugusi_stranded_20230810.tsv" # nolint
+# shdf <- read.delim(bigtsvpath, header = FALSE)
+# colnames(shdf) <- c("biotype", "chr", "start", "end", "transcript", "gene", "strand", "window", "id", "name1", "score1", "name2", "score2", "name3", "score3", "name4", "score4", "name5", "score5", "name6", "score6", "name7", "score7", "name8", "score8")
+# head(shdf)
+# testsh <- shdf[which(shdf$gene == "ARF5"), ]
+# testsh[6,]
+#                biotype  chr     start       end         transcript gene strand
+# 6021606 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5      +
+#         window   score1
+# 6021606      6 0.440169
 
-
-
-test <- df[which(df$trs_symbol == "ARF5"), ]
-idxnodupnoz <- which(!duplicated(test$frame) & test$ctrl1fwdscore != 0)
-head(df[idxnodupnoz,])
-test <- df[which(df$frame == 6), ]
+# test <- df[which(df$trs_symbol == "ARF5"), ]
+# idxnodupnoz <- which(!duplicated(test$frame) & test$ctrl1fwdscore != 0)
+# head(df[idxnodupnoz,])
+# test <- df[which(df$frame == 6), ]
 
 
 !!!!!!!!!!!!! Test with nb of nt
@@ -412,50 +410,6 @@ weighted.mean(c(score1, score2), (overnt1, overnt2))
 weighted.mean(c(score1, score2), (percent1, percent2))
 0.50305
 
-############
-## Trying the same code with the values of victor
-## 6021606 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5  +
-## 
-############
-
-## Retrieving the coordinates of the window
-windowstart <- test[1, "trs_start"]
-windowend <- test[1, "trs_end"]
-lwindow <- windowend - windowstart
-
-## Testing that the coord of the window is the same for all scores selected (this should not give an error)
-if (!isTRUE(all.equal(length(unique(windowstart)), 1)) || !isTRUE(all.equal(length(unique(windowend)), 1)))
-    stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper")
-
-## Retrieve the coordinates of the scores
-nt1 <- seq(from = test[1, "ctrl1fwdstart"], to = test[1, "ctrl1fwdend"], by = 1)
-nt2 <- seq(from = test[2, "ctrl1fwdstart"], to = test[2, "ctrl1fwdend"], by = 1)
-
-## Calculate the number of nucleotides (nt) overlapping the window
-overnt1 <- length(which(nt1 >= windowstart & nt1 <= windowend))
-overnt2 <- length(which(nt2 >= windowstart & nt2 <= windowend))
-
-## Retrieve a percentage of overlap
-percent1 <- (100*overnt1)/lwindow
-percent2 <- (100*overnt2)/lwindow
-
-## Retrieving scores (to be inserted in the below formula)
-score1 <- test[1, "ctrl1fwdscore"]
-score2 <- test[2, "ctrl1fwdscore"]
-
-## Perform the weighted mean on nb of nucleotides
-((score1*overnt1) + (score2*overnt2))/lwindow
-0.5365867
-## Perform the weigthed mean on nb of nucleotides with function
-weighted.mean(c(score1, score2), (overnt1, overnt2))
-0.50305
-
-## Perform the weighted mean on percent of nucleotides
-((score1*percent1) + (score2*percent2))/lwindow
- 3.577244
-## Perform the weigthed mean on nb of nucleotides with function
-weighted.mean(c(score1, score2), (percent1, percent2))
-0.50305
 
 > head(testsh[,c(1:8,11)],20)
                biotype  chr     start       end         transcript gene strand
