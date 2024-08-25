@@ -450,7 +450,10 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
         currentgr, currentstrand, currentname, windsize, nbcputrans)
     end_time <- Sys.time()
     message("## Analysis performed in: ", end_time - start_time)
-    !!! CURRENT
+
+    if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)), windsize)))
+        stop("Problem in replacing scores by weighted mean on the data")
+!! current
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
