@@ -365,10 +365,10 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 }
 
 summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
-    currentstrand, currentname, windsize) {
+    currentstrand, currentname, windsize, nbcputrans) {
 
-        dfwmeanbytranslist <- mapply(function(tab, nametrs, annogr, bggr, strd,
-        expname, windsize) {
+        dfwmeanbytranslist <- mcmapply(function(tab, nametrs, annogr, bggr,
+            strd, expname, windsize) {
 
             ## Building the complete data.frame and identifying duplicated
             ## frames
@@ -392,7 +392,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
             return(res)
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
-        windsize))
+        windsize), mc.cores = nbcputrans)
         return(dfwmeanbytranslist)
 }
 
@@ -405,7 +405,8 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 # currentname=expnamevec[1]
 
 ## For each bedgraph
-mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
+mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
+    nbcputrans) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
         currentstrand)
@@ -435,10 +436,10 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     ## coordinates, strand and scores, applying a weighted mean
     message("\t Weighted mean on duplicated frames for each transcript")
     dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
-        currentgr, currentstrand, currentname, windsize, nbcpu)
+        currentgr, currentstrand, currentname, windsize, nbcputrans)
     !!! CURRENT
 }, bedgraphgrlist, exptab$strand, expnamevec,
-    MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
+    MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
 
 
