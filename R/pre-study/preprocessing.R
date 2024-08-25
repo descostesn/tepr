@@ -32,7 +32,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg3
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv"
-nbcpu <- 6
+nbcpu <- 8
 database_name <- "org.Hs.eg.db"
 
 
@@ -299,9 +299,14 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! COMPLETE CODE CAN BE RETRIEVED BELOW. TRY TO SEPARATE SCORING RETRIEVAL FROM WMEAN CALCULATION
 
 
-## For each bedgraph
-!!!!!!!!!!!!!!!!!!! change this to integrate it when computing wmean
-mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
+## For each bedgraph, retrive the scores
+
+# currentgr <- bedgraphgrlist[[1]]
+# currentstrand <- exptab$strand[1]
+# currentname <- expnamevec[1]
+
+idxframedflist <- mcmapply(function(currentgr, currentstrand, currentname,
+    allwindowsgr, windsize) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
         currentstrand)
@@ -311,7 +316,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
 
     ## Retrieving the names and frame of the mapped annotations
     idxanno <- S4Vectors::subjectHits(res)
-    message("\t Retrieving transcript name and frame number")
+    message("\t Retrieving transcript name and frame number (please wait)")
     rownamelist <- strsplit(names(allwindowsgr)[idxanno], "_")
     transcriptvec <- sapply(rownamelist, "[", 1)
     framevec <- as.numeric(gsub("frame", "", sapply(rownamelist, "[", 2)))
@@ -322,8 +327,15 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     message("\t Building scoring results by transcript")
     ## Correspondance of bg score index with the transcript frame
     idxbgscorevec <- S4Vectors::queryHits(res)
-    idxframedf <- data.frame(idxbgscore = idxbgscorevec, transframe = framevec,
-        annoidx = idxanno)
+    idxframedf <- data.frame(annoidx = idxanno, transframe = framevec,
+        idxbgscore = idxbgscorevec)
+    colnames(idxframedf)[3] <- currentname
+
+}, bedgraphgrlist, exptab$strand, expnamevec,
+    MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE, mc.cores = nbcpu)
+
+
+
     ## Separating the bedgraph score indexes by transcript names
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
@@ -403,8 +415,6 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
         windsize))
 
-}, bedgraphgrlist, exptab$strand, expnamevec,
-    MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
 
 
 
