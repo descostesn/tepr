@@ -409,8 +409,8 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 # currentname=expnamevec[1]
 
 ## For each bedgraph
-mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
-    nbcputrans) {
+bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
+    allwindowsgr, windsize, nbcputrans) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
         currentstrand)
@@ -448,8 +448,11 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
     if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)), windsize)))
         stop("Problem in replacing scores by weighted mean on the data")
 
+    message("\t Combining transcripts")
     dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+
     return(dfwmeanbytrans)
+
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
