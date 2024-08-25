@@ -345,6 +345,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         colnames(annodf) <- paste0("trs_", colnames(annodf))
         bgdf <- as.data.frame(bggr[tab$idxbgscore])
         colnames(bgdf) <- paste0(expname, colnames(bgdf))
+        colscore <- paste0(expname, "score")
 
         ## Building the complete data.frame
         df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
@@ -357,7 +358,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         dupidx <- which(duplicated(df$frame))
         dupframenbvec <- unique(df$frame[dupidx])
         ## For each duplicated frame
-        wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname) {
+        wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
 
             ## Selecting all rows having a duplicated frame found at index idx
             allframedf <- df[which(df$frame == namedup), ]
@@ -381,9 +382,9 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
             }, expname, windowstart, windowend)
 
             ## Computing weighted mean
-            wmean <- weighted.mean(allframedf[, paste0(expname, "score")], overntvec)
+            wmean <- weighted.mean(allframedf[, colscore], overntvec)
             return(wmean)
-        }, df, expname)
+        }, df, expname, colscore)
 
         ## Remove duplicated frames and replace scores by wmean
         df <- df[-dupidx, ]
@@ -392,11 +393,20 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         idxscorereplace <- match(dupframenbvec, df$frame)
         if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
             stop("Problem in replacing scores by wmean, contact the developer.")
-        df[idxscorereplace, paste0(expname, "score")] <- wmeanvec
+        df[idxscorereplace, colscore] <- wmeanvec
 
         ## Adding the coord column
-        
-  
+        coord <- seq_len(windsize)
+        if (isTRUE(all.equal(strd, "-")))
+            coord <- rev(coord)
+
+ [1] "trs_seqnames"     "trs_start"        "trs_end"          "trs_width"
+ [5] "trs_strand"       "trs_symbol"       "ctrl1fwdscore"
+[13] "transcript"       "frame"
+
+
+        return(cbind(df, coord))
+
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
         windsize))
