@@ -242,58 +242,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
 }
 
 
-##################
-# MAIN
-##################
 
-createfolder(robjoutputfold)
-
-## Reading the information about experiments
-exptab <- read.csv(exptabpath, header = TRUE)
-checkexptab(exptab)
-
-## Read gencode file
-gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
-gencode <- gencode[which(gencode$V3 == "transcript"), ]
-
-## Selecting Ensembl_canonical transcripts i.e. most representative transcript
-## of the protein coding gene. This will be the MANE_Select transcript if there
-## is one, or a transcript chosen by an Ensembl algorithm otherwise.
-gencodeprotcod <- grepsequential("MANE_Select", gencode)
-protcodbed <- sortedbedformat(gencodeprotcod)
-
-## Retrieve long non-coding transcripts
-lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
-removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
-                "transcript_support_level 4")
-lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
-lncrnabed <- sortedbedformat(lncrna)
-
-## Combine the annotations
-message("Combine the annotations")
-protcodbed <- cbind(protcodbed, biotype = "protein-coding")
-lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
-allannobed <- rbind(protcodbed, lncrnabed)
-allannogr <- bedtogr(allannobed, biotype = TRUE)
-
-## Make windows for all annotations
-message("Make windows for all annotations")
-idxpar <- grep("PAR_Y", names(allannogr))
-if (!isTRUE(all.equal(length(idxpar), 0)))
-    allannogr <- allannogr[-idxpar,]
-allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
-
-## Retrieving the values of the bedgraph files, removing black lists and keeping
-## high mappability scores
-message("Removing the black list and keeping scores with high mappability")
-blacklistgr <- createblacklist(blacklistname, outputfolder)
-maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack, strand = FALSE)
-expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
-    maptrackgr, nbcpubg, expnamevec)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 .computewmeanvec <- function(dupframenbvec, df, expname, colscore) {
     wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
 
@@ -399,6 +348,61 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
         return(dfwmeanbytranslist)
 }
+
+
+
+##################
+# MAIN
+##################
+
+createfolder(robjoutputfold)
+
+## Reading the information about experiments
+exptab <- read.csv(exptabpath, header = TRUE)
+checkexptab(exptab)
+
+## Read gencode file
+gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+gencode <- gencode[which(gencode$V3 == "transcript"), ]
+
+## Selecting Ensembl_canonical transcripts i.e. most representative transcript
+## of the protein coding gene. This will be the MANE_Select transcript if there
+## is one, or a transcript chosen by an Ensembl algorithm otherwise.
+gencodeprotcod <- grepsequential("MANE_Select", gencode)
+protcodbed <- sortedbedformat(gencodeprotcod)
+
+## Retrieve long non-coding transcripts
+lncrna <- grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
+removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
+                "transcript_support_level 4")
+lncrna <- grepsequential(removevec, lncrna, invert = TRUE)
+lncrnabed <- sortedbedformat(lncrna)
+
+## Combine the annotations
+message("Combine the annotations")
+protcodbed <- cbind(protcodbed, biotype = "protein-coding")
+lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
+allannobed <- rbind(protcodbed, lncrnabed)
+allannogr <- bedtogr(allannobed, biotype = TRUE)
+
+## Make windows for all annotations
+message("Make windows for all annotations")
+idxpar <- grep("PAR_Y", names(allannogr))
+if (!isTRUE(all.equal(length(idxpar), 0)))
+    allannogr <- allannogr[-idxpar,]
+allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
+
+## Retrieving the values of the bedgraph files, removing black lists and keeping
+## high mappability scores
+message("Removing the black list and keeping scores with high mappability")
+blacklistgr <- createblacklist(blacklistname, outputfolder)
+maptrack <- read.delim(maptrackpath, header = FALSE)
+maptrackgr <- bedtogr(maptrack, strand = FALSE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
+    maptrackgr, nbcpubg, expnamevec)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 ## Retrieving values according to annotations and calculate an arithmetic
