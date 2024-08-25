@@ -443,7 +443,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize,
     dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
         currentgr, currentstrand, currentname, windsize, nbcputrans)
     end_time <- Sys.time()
-    message("## Analysis performed in: ", end_time - start_time)
+    message("\t\t ## Analysis performed in: ", end_time - start_time)
 
     if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)), windsize)))
         stop("Problem in replacing scores by weighted mean on the data")
