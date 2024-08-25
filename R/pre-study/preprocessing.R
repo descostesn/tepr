@@ -338,7 +338,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     # bggr <- currentgr
     # strd <- currentstrand
     # expname <- currentname
-    mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
+    dfwmeanbytranslist <- mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
 
         ## Retrieving information about tables
         names(annogr) <- NULL
