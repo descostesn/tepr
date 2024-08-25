@@ -277,7 +277,7 @@ saveRDS(alldfconformity,
 ## Reading the table obtained with the bash and R code
 rdf <- alldf
 shdf <- read.delim(bigtsvpath, header = FALSE)
-colnames(bashalldf) <- c("biotype", "chr", "start", "end", "transcript", "gene",
+colnames(shdf) <- c("biotype", "chr", "start", "end", "transcript", "gene",
     "strand", "window", "id", "name1", "score1", "name2", "score2", "name3",
     "score3", "name4", "score4", "name5", "score5", "name6", "score6", "name7",
     "score7", "name8", "score8")
