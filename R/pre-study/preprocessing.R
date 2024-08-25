@@ -402,13 +402,9 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
 
 ## Retrieving values according to annotations and calculate an arithmetic
-## weighted mean
-
-# currentgr=bedgraphgrlist[[1]]
-# currentstrand=exptab$strand[1]
-# currentname=expnamevec[1]
-
-## For each bedgraph
+## weighted mean for each bedgraph
+message("Retrieving values according to annotations and calculate an ",
+    "arithmetic weighted mean for each bedgraph")
 bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
     allwindowsgr, windsize, nbcputrans) {
 
