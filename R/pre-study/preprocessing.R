@@ -31,9 +31,13 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg3
 ## Size of the window to extract values
 windsize <- 200
 ## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
-exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv"
-nbcpu <- 8
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
 database_name <- "org.Hs.eg.db"
+## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
+nbcpubg <- 8
+## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
+nbcputrans <- 20
+
 
 
 ##################
@@ -284,7 +288,7 @@ maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
-    maptrackgr, nbcpu, expnamevec)
+    maptrackgr, nbcpubg, expnamevec)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 .computewmeanvec <- function(dupframenbvec, df, expname, colscore) {
@@ -431,7 +435,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     ## coordinates, strand and scores, applying a weighted mean
     message("\t Weighted mean on duplicated frames for each transcript")
     dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
-        currentgr, currentstrand, currentname, windsize)
+        currentgr, currentstrand, currentname, windsize, nbcpu)
     !!! CURRENT
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
