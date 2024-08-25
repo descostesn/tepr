@@ -475,7 +475,12 @@ completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time)
 
-
+start_time <- Sys.time()
+completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
+    by = c("trs_seqnames", "trs_start", "trs_end", "trs_width", "trs_strand", "trs_symbol",
+"transcript", "frame", "coord", "rowid"))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
