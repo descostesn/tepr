@@ -402,9 +402,7 @@ expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean for each bedgraph
 message("Retrieving values according to annotations and calculate an ",
@@ -735,70 +733,3 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
         # weighted.mean(windscore, windweight)
         # !!!!!!!!!!!!!!!!!!!
 
-
-
-## Saving objects to check conformity with bash results
-saveRDS(protcodbed, file = file.path(robjoutputfold, "protcodbed.rds"))
-saveRDS(protcodgr, file = file.path(robjoutputfold, "protcodgr.rds"))
-saveRDS(lncrnabed, file = file.path(robjoutputfold, "lncrnabed.rds"))
-saveRDS(lncrnagr, file = file.path(robjoutputfold, "lncrnagr.rds"))
-# protcodbed <- readRDS(file.path(robjoutputfold, "protcodbed.rds"))
-# protcodgr <- readRDS(file.path(robjoutputfold, "protcodgr.rds"))
-# lncrnabed <- readRDS(file.path(robjoutputfold, "lncrnabed.rds"))
-# lncrnagr <- readRDS(file.path(robjoutputfold, "lncrnagr.rds"))
-
-
-## Exclude blacklist
-blacklistgr <- createblacklist(blacklistname, outputfolder)
-protcodnoblackgr <- excludeorkeepgrlist(protcodgr, blacklistgr)
-lncrnanoblackgr <- excludeorkeepgrlist(lncrnagr, blacklistgr)
-
-## Check excluded intervals using blacklist
-checkremoval(protcodgr, protcodnoblackgr, "proteincoding", "blacklist",
-    blacklistgr, removeopt = TRUE)
-checkremoval(lncrnagr, lncrnanoblackgr, "lncrna", "blacklist",
-    blacklistgr, removeopt = TRUE)
-
-## Exclude low mappability
-## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES - the mappability track
-## used has only 1 as mapping scores. See parameters.
-maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack)
-
-
-!!!!!!!!
-keepgrlist <- function(datagr, maptrackgr) {
-    res <- GenomicRanges::findOverlaps(datagr, maptrackgr)
-    idxtokeep <- unique(S4Vectors::queryHits(res))
-    datagr <- datagr[idxtokeep, ]
-    return(datagr)
-}
-protcodnoblackmaponlygr <- keepgrlist(protcodnoblackgr, maptrackgr)
-lncrnanoblackmaponlygr <- keepgrlist(lncrnanoblackgr, maptrackgr)
-
-!!!!!!!!!!!
-
-protcodnoblacknomapgr <- excludeorkeepgrlist(protcodnoblackgr, maptrackgr,
-    removefrom = FALSE)
-lncrnanoblacknomapgr <- excludeorkeepgrlist(lncrnanoblackgr, maptrackgr,
-    removefrom = FALSE)
-
-## Check excluded intervals because of low mappability for protein coding
-checkremoval(protcodnoblackgr, protcodnoblacknomapgr, "proteincoding",
-    "maptrack", maptrackgr, removeopt = FALSE)
-checkremoval(lncrnanoblackgr, lncrnanoblacknomapgr, "lncrna", "maptrack",
-    maptrackgr, removeopt = FALSE)
-
-## Make windows of windsize for each annotation
-## WARNING: CANNOT FIND EXACTLY THE SAME NUMBER OF LINES
-
-lncrnawindows <- makewindowsbedtools(lncrnanoblacknomapgr, windsize)
-
-## Retrieving values from bigwig files
-protcoddf <- buildscoreforintervals(protcodwindows, exptab, "protein_coding",
-    nbcpu, database_name)
-lncrnadf <- buildscoreforintervals(lncrnawindows, exptab, "lncrna", nbcpu,
-    database_name)
-alldf <- rbind(protcoddf, lncrnadf)
-saveRDS(alldf, file = file.path(robjoutputfold, "alldffrompreprocessing.rds"))
-#alldf <- readRDS("/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds") # nolint
