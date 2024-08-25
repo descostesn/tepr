@@ -331,6 +331,8 @@ idxframedflist <- mcmapply(function(currentgr, currentstrand, currentname,
         idxbgscore = idxbgscorevec)
     colnames(idxframedf)[3] <- currentname
 
+    return(idxframedf)
+
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE, mc.cores = nbcpu)
 
