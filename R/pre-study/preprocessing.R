@@ -399,14 +399,8 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         coord <- seq_len(windsize)
         if (isTRUE(all.equal(strd, "-")))
             coord <- rev(coord)
-
- [1] "trs_seqnames"     "trs_start"        "trs_end"          "trs_width"
- [5] "trs_strand"       "trs_symbol"       "ctrl1fwdscore"
-[13] "transcript"       "frame"
-
-
-        return(cbind(df, coord))
-
+        res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end", "trs_width", "trs_strand", "trs_symbol", colscore, "transcript", "frame")], coord)
+        return(res)
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
         windsize))
