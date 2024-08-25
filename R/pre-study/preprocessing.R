@@ -303,7 +303,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 # currentname=expnamevec[1]
 
 ## For each bedgraph
-mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
+mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
         currentstrand)
@@ -337,7 +337,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
     # bggr <- currentgr
     # strd <- currentstrand
     # expname <- currentname
-    mapply(function(tab, nametrs, annogr, bggr, strd, expname) {
+    mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
 
         ## Retrieving information about tables
         names(annogr) <- NULL
@@ -384,12 +384,22 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr) {
         }, df, expname)
 
         ## Remove duplicated frames and replace scores by wmean
-
+        dupframenamevec <- df$frame[dupframeidx]
+        df <- df[-dupframeidx, ]
+        if (!isTRUE(all.equal(nrow(df), windsize)))
+            stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", nametrs)
+        dupframeunique <- unique(dupframenamevec)
+        idxscorereplace <- match(dupframeunique, df$frame)
+        if (!isTRUE(all.equal(dupframeunique, df$frame[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        df[idxscorereplace, paste0(expname, "score")] <- wmeanvec
+  
     }, idxbgscorebytrans, names(idxbgscorebytrans),
-        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname))
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
+        windsize))
 
-}, bedgraphgrlist, exptab$strand, expnamevec, MoreArgs = list(allwindowsgr),
-    SIMPLIFY = FALSE)
+}, bedgraphgrlist, exptab$strand, expnamevec,
+    MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
