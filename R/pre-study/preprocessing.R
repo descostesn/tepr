@@ -287,7 +287,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpu, expnamevec)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-.computewmeanvec <- function(dupframenbvec, df, expname, colscolre) {
+.computewmeanvec <- function(dupframenbvec, df, expname, colscore) {
     wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
 
         ## Selecting all rows having a duplicated frame found at index idx
@@ -385,7 +385,7 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         dupidx <- which(duplicated(df$frame))
         dupframenbvec <- unique(df$frame[dupidx])
         ## For each duplicated frame
-        wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscolre)
+        wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
 
         ## Remove duplicated frames and replace scores by wmean
         df <- df[-dupidx, ]
