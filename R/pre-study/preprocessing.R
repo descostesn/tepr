@@ -305,6 +305,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 # currentstrand <- exptab$strand[1]
 # currentname <- expnamevec[1]
 
+message("For each bedgraph, retrieve the scores.")
 idxframedflist <- mcmapply(function(currentgr, currentstrand, currentname,
     allwindowsgr, windsize) {
 
@@ -336,8 +337,12 @@ idxframedflist <- mcmapply(function(currentgr, currentstrand, currentname,
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE, mc.cores = nbcpu)
 
+message("Join all the elements of the list into one data.frame. (it might take a while)")
+idxframedf <- purrr::reduce(idxframedflist, dplyr::full_join,
+    by = c("annoidx", "transframe"))
 
 
+------------------
     ## Separating the bedgraph score indexes by transcript names
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
