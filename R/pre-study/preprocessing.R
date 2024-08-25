@@ -337,6 +337,29 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     return(df)
 }
 
+.replaceframeswithwmean <- function(df, dupidx, windsize, nametrs,
+    dupframenbvec, colscore, strd, wmeanvec) {
+
+        ## Remove duplicated frames and replace scores by wmean
+        df <- df[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(df), windsize)))
+            stop("The number of frames should be equal to windsize: ",
+                windsize, " for transcript ", nametrs)
+        idxscorereplace <- match(dupframenbvec, df$frame)
+        if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        df[idxscorereplace, colscore] <- wmeanvec
+
+        ## Adding the coord column
+        coord <- seq_len(windsize)
+        if (isTRUE(all.equal(strd, "-")))
+            coord <- rev(coord)
+        res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end", "trs_width",
+            "trs_strand", "trs_symbol", colscore, "transcript", "frame")],
+            coord)
+        return(res)
+}
+
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
@@ -384,8 +407,6 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         ## Building the complete data.frame
         df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
 
-        
-        
         ###########
         ## Applying a weighted mean on duplicated frames
         ###########
@@ -396,20 +417,10 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
         ## For each duplicated frame
         wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
 
-        ## Remove duplicated frames and replace scores by wmean
-        df <- df[-dupidx, ]
-        if (!isTRUE(all.equal(nrow(df), windsize)))
-            stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", nametrs)
-        idxscorereplace <- match(dupframenbvec, df$frame)
-        if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
-            stop("Problem in replacing scores by wmean, contact the developer.")
-        df[idxscorereplace, colscore] <- wmeanvec
-
-        ## Adding the coord column
-        coord <- seq_len(windsize)
-        if (isTRUE(all.equal(strd, "-")))
-            coord <- rev(coord)
-        res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end", "trs_width", "trs_strand", "trs_symbol", colscore, "transcript", "frame")], coord)
+        ## Remove duplicated frames and replace scores by wmean and adding the
+        ## coord column
+        res <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+            dupframenbvec, colscore, strd, wmeanvec)
         return(res)
     }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
