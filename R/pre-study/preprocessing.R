@@ -454,7 +454,7 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
-
+saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 
 !!message("Join all the elements of the list into one data.frame. (it might take a while)")
 !!idxframedf <- purrr::reduce(idxframedflist, dplyr::full_join,
@@ -733,3 +733,54 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
         # weighted.mean(windscore, windweight)
         # !!!!!!!!!!!!!!!!!!!
 
+# Retrieving values according to annotations and calculate an arithmetic weighted mean for each bedgraph
+# Overlapping ctrl1fwd with annotations on strand +
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 5.16446928977966
+#          Combining transcripts
+# Overlapping ctrl1rev with annotations on strand -
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 4.10114480654399
+#          Combining transcripts
+# Overlapping ctrl2fwd with annotations on strand +
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 5.39748361508052
+#          Combining transcripts
+# Overlapping ctrl2rev with annotations on strand -
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 4.82642058928808
+#          Combining transcripts
+# Overlapping HS1fwd with annotations on strand +
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+
+#                  ## Analysis performed in: 4.55429952144623
+#          Combining transcripts
+# Overlapping HS1rev with annotations on strand -
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 4.86994267702103
+#          Combining transcripts
+# Overlapping HS2fwd with annotations on strand +
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+#                  ## Analysis performed in: 4.63248418966929
+#          Combining transcripts
+# Overlapping HS2rev with annotations on strand -
+#          Retrieving transcript name and frame number
+#          Building scoring results by transcript
+#          Weighted mean on duplicated frames for each transcript
+
+#                  ## Analysis performed in: 4.54002116123835
+#          Combining transcripts
