@@ -295,6 +295,128 @@ expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpu, expnamevec)
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! COMPLETE CODE CAN BE RETRIEVED BELOW. TRY TO SEPARATE SCORING RETRIEVAL FROM WMEAN CALCULATION
+
+
+## For each bedgraph
+!!!!!!!!!!!!!!!!!!! change this to integrate it when computing wmean
+mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
+
+    message("Overlapping ", currentname, " with annotations on strand ",
+        currentstrand)
+    BiocGenerics::strand(currentgr) <- currentstrand
+    res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
+        ignore.strand = FALSE)
+
+    ## Retrieving the names and frame of the mapped annotations
+    idxanno <- S4Vectors::subjectHits(res)
+    message("\t Retrieving transcript name and frame number")
+    rownamelist <- strsplit(names(allwindowsgr)[idxanno], "_")
+    transcriptvec <- sapply(rownamelist, "[", 1)
+    framevec <- as.numeric(gsub("frame", "", sapply(rownamelist, "[", 2)))
+    ## The frame numbering starting at 0 (empty suffix), need to transform to +1
+    framevec[which(is.na(framevec))] <- 0
+    framevec <- framevec + 1
+
+    message("\t Building scoring results by transcript")
+    ## Correspondance of bg score index with the transcript frame
+    idxbgscorevec <- S4Vectors::queryHits(res)
+    idxframedf <- data.frame(idxbgscore = idxbgscorevec, transframe = framevec,
+        annoidx = idxanno)
+    ## Separating the bedgraph score indexes by transcript names
+    idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
+
+    ## For each transcript, retrieve the information and the bedgraph
+    ## coordinates, strand and scores, applying a weighted mean
+    # tab <- idxbgscorebytrans[[1]]
+    # nametrs <- names(idxbgscorebytrans)[1]
+    # annogr <- allwindowsgr
+    # bggr <- currentgr
+    # strd <- currentstrand
+    # expname <- currentname
+    mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
+
+        ## Retrieving information about tables
+        names(annogr) <- NULL
+        annodf <- as.data.frame(annogr[tab$annoidx])
+        colnames(annodf) <- paste0("trs_", colnames(annodf))
+        bgdf <- as.data.frame(bggr[tab$idxbgscore])
+        colnames(bgdf) <- paste0(expname, colnames(bgdf))
+        colscore <- paste0(expname, "score")
+
+        ## Building the complete data.frame
+        df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
+            frame = tab$transframe))
+
+        ###########
+        ## Applying a weighted mean on duplicated frames
+        ###########
+
+        dupidx <- which(duplicated(df$frame))
+        dupframenbvec <- unique(df$frame[dupidx])
+        ## For each duplicated frame
+        wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
+
+            ## Selecting all rows having a duplicated frame found at index idx
+            allframedf <- df[which(df$frame == namedup), ]
+            if (isTRUE(all.equal(nrow(allframedf), 1)))
+                stop("There should be more than one frame selected")
+
+            ## Testing that the coord of the window is the same for all scores selected (this should not give an error) # nolint
+            if (!isTRUE(all.equal(length(unique(allframedf[, "trs_start"])), 1)) || !isTRUE(all.equal(length(unique(allframedf[, "trs_end"])), 1))) # nolint
+                stop("The size of the window is not unique for the frame rows selected, this should not happen, contact the developper.") # nolint
+
+            ## Retrieving the coordinates and the size of the transcript
+            windowstart <- allframedf[1, "trs_start"]
+            windowend <- allframedf[1, "trs_end"]
+            lwindow <- windowend - windowstart
+
+            ## Retrieve the nb of overlapping nt for each score
+            overntvec <- apply(allframedf, 1, function(x, expname, windowstart, windowend) {
+                nt <- seq(from = x[paste0(expname, "start")], to = x[paste0(expname, "end")], by = 1)
+                overnt <- length(which(nt >= windowstart & nt <= windowend))
+                return(overnt)
+            }, expname, windowstart, windowend)
+
+            ## Computing weighted mean
+            wmean <- weighted.mean(allframedf[, colscore], overntvec)
+            return(wmean)
+        }, df, expname, colscore)
+
+        ## Remove duplicated frames and replace scores by wmean
+        df <- df[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(df), windsize)))
+            stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", nametrs)
+        idxscorereplace <- match(dupframenbvec, df$frame)
+        if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        df[idxscorereplace, colscore] <- wmeanvec
+
+        ## Adding the coord column
+        coord <- seq_len(windsize)
+        if (isTRUE(all.equal(strd, "-")))
+            coord <- rev(coord)
+        res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end", "trs_width", "trs_strand", "trs_symbol", colscore, "transcript", "frame")], coord)
+        return(res)
+    }, idxbgscorebytrans, names(idxbgscorebytrans),
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
+        windsize))
+
+}, bedgraphgrlist, exptab$strand, expnamevec,
+    MoreArgs = list(allwindowsgr, windsize), SIMPLIFY = FALSE)
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! INITIAL CODE TO OPTIMIZE ABOVE
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
@@ -303,6 +425,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 # currentname=expnamevec[1]
 
 ## For each bedgraph
+!!!!!!!!!!!!!!!!!!! change this to integrate it when computing wmean
 mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
 
     message("Overlapping ", currentname, " with annotations on strand ",
