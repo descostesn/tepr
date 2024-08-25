@@ -322,6 +322,21 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     return(wmeanvec)
 }
 
+.buildtransinfotable <- function(annogr, tab, bggr, expname, nametrs) {
+
+    ## Retrieving information about tables
+    names(annogr) <- NULL
+    annodf <- as.data.frame(annogr[tab$annoidx])
+    colnames(annodf) <- paste0("trs_", colnames(annodf))
+    bgdf <- as.data.frame(bggr[tab$idxbgscore])
+    colnames(bgdf) <- paste0(expname, colnames(bgdf))
+
+    ## Building the complete data.frame
+    df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
+        frame = tab$transframe))
+    return(df)
+}
+
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean
 
@@ -366,24 +381,18 @@ mapply(function(currentgr, currentstrand, currentname, allwindowsgr, windsize) {
     # expname <- currentname
     dfwmeanbytranslist <- mapply(function(tab, nametrs, annogr, bggr, strd, expname, windsize) {
 
-        ## Retrieving information about tables
-        names(annogr) <- NULL
-        annodf <- as.data.frame(annogr[tab$annoidx])
-        colnames(annodf) <- paste0("trs_", colnames(annodf))
-        bgdf <- as.data.frame(bggr[tab$idxbgscore])
-        colnames(bgdf) <- paste0(expname, colnames(bgdf))
-        colscore <- paste0(expname, "score")
-
         ## Building the complete data.frame
-        df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
-            frame = tab$transframe))
+        df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
 
+        
+        
         ###########
         ## Applying a weighted mean on duplicated frames
         ###########
 
         dupidx <- which(duplicated(df$frame))
         dupframenbvec <- unique(df$frame[dupidx])
+        colscore <- paste0(expname, "score")
         ## For each duplicated frame
         wmeanvec <- .computewmeanvec(dupframenbvec, df, expname, colscore)
 
