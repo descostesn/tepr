@@ -22,7 +22,7 @@ library("pracma")
 alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 expthres <- 0.1
-nbcpu <- 5
+nbcpu <- 20
 
 
 ##################
@@ -438,10 +438,14 @@ expdf <- read.csv(exptabpath, header = TRUE)
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
-message("Filtering transcripts based on expression")
+message("Filtering transcripts based on expression") # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-message("Calculating ECDF")
+message("Calculating ECDF") # nolint
+start_time <- Sys.time()
 resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+
 resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
 
