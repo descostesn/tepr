@@ -31,7 +31,8 @@ nbcpu <- 5
 
 averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
 
-    scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
+    scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
+      "score")
 
     ## Calculate the average expression per transcript (over each frame)
     if(verbose) message("\t Calculating average expression per transcript") # nolint
