@@ -10,7 +10,7 @@ library("GenomeInfoDb")
 library("GenomicRanges")
 library("rtracklayer")
 library("parallel")
-library("purr")
+library("purrr")
 library("dplyr")
 
 # source("commons.R")
