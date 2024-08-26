@@ -93,7 +93,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         scoremat <- scoremat %>% fill(contains("score"), .direction = "downup")
 
         ## Retrieving the direction (fwd or rev) according to the transcript
-        ## strand.
+        ## strand. It will be used to change the column names of scoremat and
+        ## remove columns from transtab.
         direction <- unique(expdf[which(expdf$strand == str), "direction"])
         .checkunique(direction, "direction")
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
