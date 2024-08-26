@@ -74,11 +74,11 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
 .checkunique <- function(x, xname) {
         if (!isTRUE(all.equal(length(x), 1)))
-            stop("The element ", xname,
-                " should be unique, contact the developer.")
+            stop("The element ", xname, # nolint
+                " should be unique, contact the developer.") # nolint
 }
 
-.computeecdf <- function(transtable, expdf, rounding, framevec, colnamevec) {
+.computeecdf <- function(transtable, expdf, rounding, colnamevec) {
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
         .checkunique(str, "str")
@@ -89,7 +89,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
         .checkunique(opposedirect, "opposite direction")
 
-      !!!!!!!!!!!!!!!!!!!!!! NEEDS TO BE DONE ON COORD
+      !!!!!!!!!!!!!!!!!!!!!! NEEDS TO BE DONE ON COORD, REPLACE FRAMEVEC
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- apply(scoremat, 2, function(x, rounding, framevec) {
             extendedframevec <- rep(framevec, ceiling(x * rounding))
@@ -135,16 +135,15 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
-    framevec <- seq_len(nbrows)
     colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction)
 
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        framevec, colnamevec, rounding) {
-        res <- .computeecdf(transtable, expdf, rounding, framevec, colnamevec)
+        colnamevec, rounding) {
+        res <- .computeecdf(transtable, expdf, rounding, colnamevec)
         return(res)
-    }, expdf, framevec, colnamevec, rounding, mc.cores = nbcpu)
+    }, expdf, colnamevec, rounding, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
