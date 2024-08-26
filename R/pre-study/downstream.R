@@ -89,6 +89,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
         .checkunique(opposedirect, "opposite direction")
 
+      !!!!!!!!!!!!!!!!!!!!!! NEEDS TO BE DONE ON COORD
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- apply(scoremat, 2, function(x, rounding, framevec) {
             extendedframevec <- rep(framevec, ceiling(x * rounding))
@@ -130,7 +131,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 
     ## Splitting the table by each transcript to perform transcript specific
     ## operations
-    if (verbose) message("\t Splitting the table by each transcript")
+    if (verbose) message("\t Splitting the table by each transcript") # nolint
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
