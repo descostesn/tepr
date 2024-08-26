@@ -109,7 +109,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
             return(fx)
         }, rounding, transtable$coord, simplify = TRUE)
         colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
-        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), "score", sep = "_") # nolint
+        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_")
 
         ## Remove opposite strand from transtable and erase strand substring
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
@@ -445,9 +445,9 @@ start_time <- Sys.time()
 resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-
 resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
+saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
 
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
