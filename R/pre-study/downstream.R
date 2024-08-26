@@ -19,8 +19,8 @@ library("pracma")
 
 #alldfpath <- "/g/romebioinfo/Projects/tepr/robjsave/alldffrompreprocessing.rds"
 #exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv"
-alldfpath <- "alldffrompreprocessing.rds"
-exptabpath <- "exptab.csv" # nolint
+alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 expthres <- 0.1
 nbcpu <- 5
 
