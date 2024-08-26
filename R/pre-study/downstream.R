@@ -104,7 +104,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
             extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
-            fx <- ecdf(extendedframevec)(framevec)
+            fx <- ecdf(extendedcoordvec)(coordvec)
             return(fx)
         }, rounding, transtable$coord, simplify = TRUE)
         colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
@@ -112,7 +112,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
         ## Remove opposite strand from transtable and erase strand substring
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
-        colnames(transtable) <- gsub(direction, "_score", colnames(transtable))
+        colnames(transtable) <- gsub(direction, "", colnames(transtable))
 
         ## Defining coordinates according to the strand
         if (isTRUE(all.equal(str, "+")))
