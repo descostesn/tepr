@@ -456,7 +456,8 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
 }, bedgraphgrlist, exptab$strand, expnamevec,
     MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
 
-saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
+#saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
+bedgraphwmeanlist <- readRDS("/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 
 ## Creating a rowid that will be used for merging
 message("Adding rowid for each bedgraph")
