@@ -79,6 +79,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 }
 
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) {
+
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$trs_strand))
         .checkunique(str, "str")
@@ -90,7 +91,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         ## NA. Filling the NA values with tidyr::fill.
         scoremat <- transtable[, colnamestr]
         scoremat <- dplyr::arrange(scoremat, transtable$coord)
-        scoremat <- scoremat %>% fill(contains("score"), .direction = "downup")
+        scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
+          .direction = "downup")
 
         ## Retrieving the direction (fwd or rev) according to the transcript
         ## strand. It will be used to change the column names of scoremat and
@@ -98,9 +100,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         direction <- unique(expdf[which(expdf$strand == str), "direction"])
         .checkunique(direction, "direction")
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
-        .checkunique(opposedirect, "opposite direction")
+        .checkunique(opposedirect, "opposite direction") # nolint
 
-      !!!!!!!!!!!!!!!!!!!!!! NEEDS TO BE DONE ON COORD, REPLACE FRAMEVEC
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
             extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
@@ -108,7 +109,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
             return(fx)
         }, rounding, transtable$coord, simplify = TRUE)
         colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
-        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), "score", sep = "_")
+        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), "score", sep = "_") # nolint
 
         ## Remove opposite strand from transtable and erase strand substring
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
