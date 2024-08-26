@@ -83,8 +83,17 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         str <- as.character(unique(transtable$trs_strand))
         .checkunique(str, "str")
         colnamestr <- colnamevec[which(expdf$strand == str)]
+
+        ## Building a matrix containing only the scores in the right direction
+        ## for each experiment. Ordering the scores according to the
+        ## coordinates but using dplyr::arrange because of the way it handles
+        ## NA. Filling the NA values with tidyr::fill.
         scoremat <- transtable[, colnamestr]
         scoremat <- dplyr::arrange(scoremat, transtable$coord)
+        scoremat <- scoremat %>% fill(contains("score"), .direction = "downup")
+
+        ## Retrieving the direction (fwd or rev) according to the transcript
+        ## strand.
         direction <- unique(expdf[which(expdf$strand == str), "direction"])
         .checkunique(direction, "direction")
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
