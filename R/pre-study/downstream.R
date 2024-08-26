@@ -114,12 +114,6 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
         colnames(transtable) <- gsub(direction, "", colnames(transtable))
 
-        ## Defining coordinates according to the strand
-        if (isTRUE(all.equal(str, "+")))
-            transtable <- cbind(transtable, coord = transtable$window)
-        else
-            transtable <- cbind(transtable, coord = rev(transtable$window))
-
         res <- cbind(transtable, ecdfmat)
         return(res)
 }
