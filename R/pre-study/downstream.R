@@ -80,10 +80,11 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) {
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand))
+        str <- as.character(unique(transtable$trs_strand))
         .checkunique(str, "str")
         colnamestr <- colnamevec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
+        scoremat <- dplyr::arrange(scoremat, transtable$coord)
         direction <- unique(expdf[which(expdf$strand == str), "direction"])
         .checkunique(direction, "direction")
         opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
@@ -91,11 +92,11 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
       !!!!!!!!!!!!!!!!!!!!!! NEEDS TO BE DONE ON COORD, REPLACE FRAMEVEC
         ## For each column of the scoremat, compute ecdf
-        ecdfmat <- apply(scoremat, 2, function(x, rounding, framevec) {
-            extendedframevec <- rep(framevec, ceiling(x * rounding))
+        ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
+            extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
             fx <- ecdf(extendedframevec)(framevec)
             return(fx)
-        }, rounding, framevec, simplify = TRUE)
+        }, rounding, transtable$coord, simplify = TRUE)
         colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
         colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), "score", sep = "_")
 
