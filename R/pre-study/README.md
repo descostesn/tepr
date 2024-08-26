@@ -255,8 +255,8 @@ Overlapping HS2rev with annotations on strand -
          Combining transcripts
 ```
 
-Joining the bedgraph tables was relatively fast as it took 56 s:
+Joining the bedgraph tables was relatively fast as it took ~1 min:
 ```
-Join all the elements of the list into one data.frame. (it might take a while)
-                 ## Analysis performed in: 56.7427518367767
+Joining the elements of each bedgraph
+                 ## Analysis performed in: 1.33282744884491
 ```
