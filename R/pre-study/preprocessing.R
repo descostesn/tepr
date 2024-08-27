@@ -442,6 +442,7 @@ maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
 saveRDS(maptrackgr, file.path(robjoutputfold, "maptrackgr.gr"))
+# maptrackgr <- readRDS(file.path(robjoutputfold, "maptrackgr.gr"))
 
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
