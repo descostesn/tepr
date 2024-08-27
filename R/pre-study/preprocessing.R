@@ -404,9 +404,15 @@ message("Removing the black list and keeping scores with high mappability")
 blacklistgr <- createblacklist(blacklistname, outputfolder)
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
+
+saveRDS(maptrackgr, file.path(robjoutputfold, "maptrackgr.gr"))
+
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
+
+saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
+
 
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean for each bedgraph
