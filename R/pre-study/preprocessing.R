@@ -387,11 +387,13 @@ lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
 allannobed <- rbind(protcodbed, lncrnabed)
 allannogr <- bedtogr(allannobed, biotype = TRUE)
 
+saveRDS(allannogr, file = file.path(robjoutputfold, "allannogr.rds"))
+
 ## Make windows for all annotations
 message("Make windows for all annotations")
 idxpar <- grep("PAR_Y", names(allannogr))
 if (!isTRUE(all.equal(length(idxpar), 0)))
-    allannogr <- allannogr[-idxpar,]
+    allannogr <- allannogr[-idxpar, ]
 allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
