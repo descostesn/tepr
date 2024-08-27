@@ -144,23 +144,30 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
 }
 
 
-bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
-    if (!biotype)
+bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
+    allwindows = FALSE) {
+
+    if (!allwindows) {
         grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
                 ranges = IRanges::IRanges(start = currentbed[, 2],
                                       end = currentbed[, 3],
                                       names = currentbed[, 4]),
                 strand = if (strand) currentbed[, 6] else "*",
                 symbol = if (symbol) currentbed[, 5] else NA)
-    else
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-                ranges = IRanges::IRanges(start = currentbed[, 2],
-                                      end = currentbed[, 3],
-                                      names = currentbed[, 4]),
-                strand = if (strand) currentbed[, 6] else "*",
-                symbol = if (symbol) currentbed[, 5] else NA,
-                biotype = currentbed[, 7])
+    } else {
+        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
+                ranges = IRanges::IRanges(start = currentbed[, 3],
+                                      end = currentbed[, 4],
+                                      transcript = currentbed[, 5]),
+                gene = if (symbol) currentbed[, 6] else NA,
+                strand = if (strand) currentbed[, 7] else "*",
+                biotype = currentbed[, 1],
+                window = currentbed[, 8],
+                coord = currentbed[, 9])
+        names(grres) <- apply(currentbed, 1,
+            function(x) paste(x, collapse = "_"))
+    }
     return(grres)
 }
 
@@ -429,9 +436,9 @@ message("Make windows for all annotations")
 idxpar <- grep("PAR_Y", allannobed$ensembl)
 if (!isTRUE(all.equal(length(idxpar), 0)))
     allannobed <- allannobed[-idxpar, ]
+
 allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans)
-
 saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
