@@ -319,7 +319,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
     return(wmeanvec)
 }
 
-.buildtransinfotable <- function(annogr, tab, bggr, expname, nametrs) {
+.buildtransinfotable <- function(annogr, tab, bggr, expname) {
 
     ## Retrieving information about tables
     transcriptvec <- names(annogr)[tab$subjectHits]
@@ -361,7 +361,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
             ## Building the complete data.frame and identifying duplicated
             ## frames
-            df <- .buildtransinfotable(annogr, tab, bggr, expname, nametrs)
+            df <- .buildtransinfotable(annogr, tab, bggr, expname)
             dupidx <- which(duplicated(df$frame))
             colscore <- paste0(expname, "score")
 
