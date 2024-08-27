@@ -361,7 +361,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
             ## Building the complete data.frame and identifying duplicated
             ## frames
-            df <- .buildtransinfotable(annogr, tab, bggr, expname)
+            !!!!!! CURRENT df <- .buildtransinfotable(annogr, tab, bggr, expname)
             dupidx <- which(duplicated(df$frame))
             colscore <- paste0(expname, "score")
 
