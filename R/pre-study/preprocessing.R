@@ -215,21 +215,9 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
         !isTRUE(all.equal(nbwindcheck, 200)))
         stop("Problem in the nb of windows per transcript retrieved")
-    
-!!!!!!!!!!!
-    winddflist <- mclapply(expbed, function(geneinfogr, windcoordvec,
-        nbwindows) {
+    windf <- do.call("rbind", windflist)
 
-            
-            
-
-            
-
-    return(res)
-
-    }, windcoordvec, nbwindows, mc.cores = nbcputrans)
-
-    return(winddflist)
+    return(windf)
 }
 
 makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, biotype = FALSE,
