@@ -188,36 +188,51 @@ makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
 
 windcoordvec <- seq_len(nbwindows)
 
-> testgr <- expgr[which(expgr$symbol == "ARF5"),]
-> testgr <- expgr[which(expgr$symbol == "M6PR"),]
+lapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
 
-currentstart <- start(testgr)
-currentend <- end(testgr)
-currentstrand <- as.character(strand(testgr))
+    ## Retrieve the necessary gene information
+    currentstart <- start(geneinfogr)
+    currentend <- end(geneinfogr)
+    currentstrand <- as.character(strand(geneinfogr))
+    windowvec <- windcoordvec
 
-lgene <- currentend - currentstart
-windowsize <- round(lgene/nbwindows)
-missingbp <- lgene%%nbwindows
-windsizevec <- rep(windowsize, nbwindows)
-if (!isTRUE(all.equal(missingbp, 0)))
-    windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
-cumsumvec <- cumsum(c(currentstart, windsizevec))
-startvec <- cumsumvec[-length(cumsumvec)]
-endvec <- cumsumvec[-1]
-if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
-    stop("Problem in the calculation of windows")
-windowvec <- windcoordvec
+    ## Compute the vector with the size of each window
+    lgene <- currentend - currentstart
+    windowsize <- round(lgene / nbwindows)
+    missingbp <- lgene%%nbwindows
+    windsizevec <- rep(windowsize, nbwindows)
+    ## Add the missing nb of bp (that is ignore by tile) in the last element of
+    ## windsizevec
+    if (!isTRUE(all.equal(missingbp, 0)))
+        windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
 
-if (isTRUE(all.equal(currentstrand, "-"))) {
-    startvec <- rev(startvec)
-    endvec <- rev(endvec)
-    windowvec <- rev(windcoordvec)
-}
+    ## Building the start and end vectors using the cummulative sum
+    cumsumvec <- cumsum(c(currentstart, windsizevec))
+    startvec <- cumsumvec[-length(cumsumvec)]
+    endvec <- cumsumvec[-1]
+    if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
+        stop("Problem in the calculation of windows")
 
-res <- data.frame(chr = seqnames(testgr), coor1 = startvec, coor2 = endvec,
-    strand = currentstrand, window = windowvec, coord = windcoordvec)
+    ## Inverting start, end, and window vectors if strand is negative
+    if (isTRUE(all.equal(currentstrand, "-"))) {
+        startvec <- rev(startvec)
+        endvec <- rev(endvec)
+        windowvec <- rev(windcoordvec)
+    }
 
-return(res)
+    ## Build the result data.frame containing the coordinates of each frame
+    ## alongside window and coord numbers
+    res <- data.frame(chr = seqnames(geneinfogr), coor1 = startvec,
+        coor2 = endvec, strand = currentstrand, window = windowvec,
+        coord = windcoordvec)
+
+    return(res)
+
+}, windcoordvec, nbwindows)
+
+
+
+
 
 
 !!!!!!!!!!!!!!!!!!!!!!!
