@@ -165,7 +165,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 }
 
 
-makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
+makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE) {
 
     ## Filtering out intervals smaller than nbwindows
     idxsmall <- which(GenomicRanges::width(expgr) < nbwindows)
@@ -183,12 +183,9 @@ makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
         namesexpgr <- paste(names(expgr), expgr$symbol, expgr$biotype,
             sep = "_")
 
-!!!!!!!!!!!!!!!!!!!!!
-
-
-windcoordvec <- seq_len(nbwindows)
-
-mclapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
+    ## Splitting each transcript into "nbwindows" windows
+    windcoordvec <- seq_len(nbwindows)
+    winddflist <- mclapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
 
     ## Retrieve the necessary gene information
     currentstart <- start(geneinfogr)
