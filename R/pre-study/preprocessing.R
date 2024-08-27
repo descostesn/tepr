@@ -473,17 +473,11 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
     res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
         ignore.strand = FALSE)
 
-    ## Retrieving the names and frame of the mapped annotations
-    idxanno <- S4Vectors::subjectHits(res)
-    message("\t Retrieving transcript name and frame number")
-    transcriptvec <- names(allwindowsgr)[idxanno]
-
     message("\t Building scoring results by transcript")
-    ## Correspondance of bg score index with the transcript frame
-    idxbgscorevec <- S4Vectors::queryHits(res)
-    idxframedf <- data.frame(idxbgscore = idxbgscorevec, annoidx = idxanno)
     ## Separating the bedgraph score indexes by transcript names
-    idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
+    idxanno <- S4Vectors::subjectHits(res)
+    idxbgscorebytrans <- split(as.data.frame(res),
+        factor(names(allwindowsgr)[idxanno]))
 
     ## For each transcript, retrieve the information and the bedgraph
     ## coordinates, strand and scores, applying a weighted mean
