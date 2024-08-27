@@ -166,9 +166,16 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
 
 
-.divideannoinwindows <- function(expgr, windcoordvec, nbwindows, nbcputrans) {
+.divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
 
-    winddflist <- mclapply(expgr, function(geneinfogr, windcoordvec,
+
+!!!!!!!!!!!!!
+    cl <- parallel::makeCluster(nbcputrans)
+    windflist <- parallel::parLapply(cl, 1:nrow(expbed), function(i, expbed) {paste(expbed[i,], collapse="-")}, expbed)
+    stopCluster(cl)
+    ans <- Reduce("cbind", matrix_of_sums)
+!!!!!!!!!!!
+    winddflist <- mclapply(expbed, function(geneinfogr, windcoordvec,
         nbwindows) {
 
             ## Retrieve the necessary gene information
@@ -231,11 +238,10 @@ makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, biotype = FALSE,
             expbed$ensembl, expbed$symbol, expbed$biotype, sep = "_")
 
     ## Splitting each transcript into "nbwindows" windows
-    if (verbose) message("\t Splitting ", length(expgr), " transcript into ",
+    if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
         nbwindows, " windows data.frame")
     windcoordvec <- seq_len(nbwindows)
-    !!expgr
-    winddflist <- .divideannoinwindows(expgr, windcoordvec, nbwindows,
+    winddflist <- .divideannoinwindows(expbed, windcoordvec, nbwindows,
         nbcputrans)
     winddf <- do.call("rbind", winddflist)
     !!
