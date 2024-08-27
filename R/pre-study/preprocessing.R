@@ -188,7 +188,7 @@ makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
 
 windcoordvec <- seq_len(nbwindows)
 
-lapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
+mclapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
 
     ## Retrieve the necessary gene information
     currentstart <- start(geneinfogr)
@@ -228,7 +228,7 @@ lapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
 
     return(res)
 
-}, windcoordvec, nbwindows)
+}, windcoordvec, nbwindows, mc.cores = nbcputrans)
 
 
 
