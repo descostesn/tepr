@@ -221,8 +221,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
     return(windf)
 }
 
-makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, biotype = FALSE,
-    verbose = FALSE) {
+makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, verbose = TRUE) {
 
     ## Filtering out intervals smaller than nbwindows
     idxsmall <- which((expbed$end - expbed$start) < nbwindows)
