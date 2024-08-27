@@ -449,7 +449,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
 
 saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
-
+# bedgraphgrlist <- readRDS(file.path(robjoutputfold, "bedgraphgrlist.rds"))
 
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean for each bedgraph
