@@ -430,9 +430,9 @@ idxpar <- grep("PAR_Y", allannobed$ensembl)
 if (!isTRUE(all.equal(length(idxpar), 0)))
     allannobed <- allannobed[-idxpar, ]
 allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
-    nbcputrans = nbcputrans, biotype = TRUE)
+    nbcputrans = nbcputrans)
 
-saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr.rds"))
+saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
