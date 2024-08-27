@@ -178,17 +178,23 @@ makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
 
     ## Change row names to keep the gene symbols
     if (!biotype)
-        names(expgr) <- paste(names(expgr), expgr$symbol, sep = "_")
+        namesexpgr <- paste(names(expgr), expgr$symbol, sep = "_")
     else
-        names(expgr) <- paste(names(expgr), expgr$symbol, expgr$biotype,
+        namesexpgr <- paste(names(expgr), expgr$symbol, expgr$biotype,
             sep = "_")
 
 !!!!!!!!!!!!!!!!!!!!!
 
+
+windcoordvec <- seq_len(nbwindows)
+
 > testgr <- expgr[which(expgr$symbol == "ARF5"),]
+> testgr <- expgr[which(expgr$symbol == "M6PR"),]
 
 currentstart <- start(testgr)
 currentend <- end(testgr)
+currentstrand <- as.character(strand(testgr))
+
 lgene <- currentend - currentstart
 windowsize <- round(lgene/nbwindows)
 missingbp <- lgene%%nbwindows
@@ -200,9 +206,18 @@ startvec <- cumsumvec[-length(cumsumvec)]
 endvec <- cumsumvec[-1]
 if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
     stop("Problem in the calculation of windows")
+windowvec <- windcoordvec
 
-  ENST00000000233.10_ARF5_protein-coding     chr7 127588411-127591700      + |
+if (isTRUE(all.equal(currentstrand, "-"))) {
+    startvec <- rev(startvec)
+    endvec <- rev(endvec)
+    windowvec <- rev(windcoordvec)
+}
 
+res <- data.frame(chr = seqnames(testgr), coor1 = startvec, coor2 = endvec,
+    strand = currentstrand, window = windowvec, coord = windcoordvec)
+
+return(res)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!
