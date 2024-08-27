@@ -165,6 +165,55 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 }
 
 
+
+.divideannoinwindows <- function(expgr, windcoordvec, nbwindows, nbcputrans) {
+
+    winddflist <- mclapply(expgr, function(geneinfogr, windcoordvec,
+        nbwindows) {
+
+            ## Retrieve the necessary gene information
+            currentstart <- start(geneinfogr)
+            currentend <- end(geneinfogr)
+            currentstrand <- as.character(strand(geneinfogr))
+            windowvec <- windcoordvec
+
+            ## Compute the vector with the size of each window
+            lgene <- currentend - currentstart
+            windowsize <- round(lgene / nbwindows)
+            missingbp <- lgene%%nbwindows
+            windsizevec <- rep(windowsize, nbwindows)
+            ## Add the missing nb of bp (that is ignore by tile) in the last
+            ## element of windsizevec
+            if (!isTRUE(all.equal(missingbp, 0)))
+                windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+
+            ## Building the start and end vectors using the cummulative sum
+            cumsumvec <- cumsum(c(currentstart, windsizevec))
+            startvec <- cumsumvec[-length(cumsumvec)]
+            endvec <- cumsumvec[-1]
+            if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
+                stop("Problem in the calculation of windows")
+
+            ## Inverting start, end, and window vectors if strand is negative
+            if (isTRUE(all.equal(currentstrand, "-"))) {
+                startvec <- rev(startvec)
+                endvec <- rev(endvec)
+                windowvec <- rev(windcoordvec)
+            }
+
+            ## Build the result data.frame containing the coordinates of each
+            ## frame alongside window and coord numbers
+            res <- data.frame(chr = seqnames(geneinfogr), coor1 = startvec,
+                coor2 = endvec, strand = currentstrand, window = windowvec,
+                coord = windcoordvec)
+
+    return(res)
+
+    }, windcoordvec, nbwindows, mc.cores = nbcputrans)
+
+    return(winddflist)
+}
+
 makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE) {
 
     ## Filtering out intervals smaller than nbwindows
@@ -185,48 +234,10 @@ makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE) {
 
     ## Splitting each transcript into "nbwindows" windows
     windcoordvec <- seq_len(nbwindows)
-    winddflist <- mclapply(expgr, function(geneinfogr, windcoordvec, nbwindows) {
-
-    ## Retrieve the necessary gene information
-    currentstart <- start(geneinfogr)
-    currentend <- end(geneinfogr)
-    currentstrand <- as.character(strand(geneinfogr))
-    windowvec <- windcoordvec
-
-    ## Compute the vector with the size of each window
-    lgene <- currentend - currentstart
-    windowsize <- round(lgene / nbwindows)
-    missingbp <- lgene%%nbwindows
-    windsizevec <- rep(windowsize, nbwindows)
-    ## Add the missing nb of bp (that is ignore by tile) in the last element of
-    ## windsizevec
-    if (!isTRUE(all.equal(missingbp, 0)))
-        windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
-
-    ## Building the start and end vectors using the cummulative sum
-    cumsumvec <- cumsum(c(currentstart, windsizevec))
-    startvec <- cumsumvec[-length(cumsumvec)]
-    endvec <- cumsumvec[-1]
-    if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
-        stop("Problem in the calculation of windows")
-
-    ## Inverting start, end, and window vectors if strand is negative
-    if (isTRUE(all.equal(currentstrand, "-"))) {
-        startvec <- rev(startvec)
-        endvec <- rev(endvec)
-        windowvec <- rev(windcoordvec)
-    }
-
-    ## Build the result data.frame containing the coordinates of each frame
-    ## alongside window and coord numbers
-    res <- data.frame(chr = seqnames(geneinfogr), coor1 = startvec,
-        coor2 = endvec, strand = currentstrand, window = windowvec,
-        coord = windcoordvec)
-
-    return(res)
-
-}, windcoordvec, nbwindows, mc.cores = nbcputrans)
-
+    winddflist <- .divideannoinwindows(expgr, windcoordvec, nbwindows,
+        nbcputrans)
+    !!
+    
 
 
 
