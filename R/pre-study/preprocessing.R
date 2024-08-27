@@ -322,15 +322,15 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
 .buildtransinfotable <- function(annogr, tab, bggr, expname, nametrs) {
 
     ## Retrieving information about tables
+    transcriptvec <- names(annogr)[tab$subjectHits]
     names(annogr) <- NULL
-    annodf <- as.data.frame(annogr[tab$annoidx])
-    colnames(annodf) <- paste0("trs_", colnames(annodf))
-    bgdf <- as.data.frame(bggr[tab$idxbgscore])
+    annodf <- as.data.frame(annogr[tab$subjectHits])
+    annodf <- cbind(annodf, transcript = transcriptvec)
+    bgdf <- as.data.frame(bggr[tab$queryHits])
     colnames(bgdf) <- paste0(expname, colnames(bgdf))
 
     ## Building the complete data.frame
-    df <- do.call("cbind", list(annodf, bgdf, transcript = nametrs,
-        frame = tab$transframe))
+    df <- cbind(annodf, bgdf)
     return(df)
 }
 
@@ -353,6 +353,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
 summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
     currentstrand, currentname, windsize, nbcputrans) {
 
+        # tab=idxbgscorebytrans[[1]]; nametrs=names(idxbgscorebytrans)[1]
+        # annogr=allwindowsgr;bggr=currentgr;strd=currentstrand;
+        # expname=currentname
         dfwmeanbytranslist <- mcmapply(function(tab, nametrs, annogr, bggr,
             strd, expname, windsize) {
 
