@@ -214,7 +214,8 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
     return(winddflist)
 }
 
-makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE) {
+makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE,
+    verbose = FALSE) {
 
     ## Filtering out intervals smaller than nbwindows
     idxsmall <- which(GenomicRanges::width(expgr) < nbwindows)
@@ -233,9 +234,13 @@ makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE) {
             sep = "_")
 
     ## Splitting each transcript into "nbwindows" windows
+    if (verbose) message("\t Splitting ", length(expgr), " transcript into ",
+        nbwindows, " windows data.frame")
     windcoordvec <- seq_len(nbwindows)
+    !!expgr
     winddflist <- .divideannoinwindows(expgr, windcoordvec, nbwindows,
         nbcputrans)
+    winddf <- do.call("rbind", winddflist)
     !!
     
 
@@ -449,16 +454,14 @@ message("Combine the annotations")
 protcodbed <- cbind(protcodbed, biotype = "protein-coding")
 lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
 allannobed <- rbind(protcodbed, lncrnabed)
-allannogr <- bedtogr(allannobed, biotype = TRUE)
-
-saveRDS(allannogr, file = file.path(robjoutputfold, "allannogr.rds"))
 
 ## Make windows for all annotations
 message("Make windows for all annotations")
-idxpar <- grep("PAR_Y", names(allannogr))
+idxpar <- grep("PAR_Y", allannobed$ensembl)
 if (!isTRUE(all.equal(length(idxpar), 0)))
-    allannogr <- allannogr[-idxpar, ]
-allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
+    allannobed <- allannobed[-idxpar, ]
+allwindowsgr <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
+    nbcputrans = nbcputrans, biotype = TRUE)
 
 saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr.rds"))
 
