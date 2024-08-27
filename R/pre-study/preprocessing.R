@@ -455,6 +455,8 @@ protcodbed <- cbind(protcodbed, biotype = "protein-coding")
 lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
 allannobed <- rbind(protcodbed, lncrnabed)
 
+saveRDS(allannobed, file.path(robjoutputfold, "allannobed.rds"))
+
 ## Make windows for all annotations
 message("Make windows for all annotations")
 idxpar <- grep("PAR_Y", allannobed$ensembl)
