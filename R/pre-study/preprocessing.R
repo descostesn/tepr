@@ -165,10 +165,10 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 }
 
 
-makewindowsbedtools <- function(expgr, binsize, biotype = FALSE) {
+makewindowsbedtools <- function(expgr, nbwindows, biotype = FALSE) {
 
-    ## Filtering out intervals smaller than binsize
-    idxsmall <- which(GenomicRanges::width(expgr) < binsize)
+    ## Filtering out intervals smaller than nbwindows
+    idxsmall <- which(GenomicRanges::width(expgr) < nbwindows)
     lsmall <- length(idxsmall)
     if (!isTRUE(all.equal(lsmall, 0))) {
         message("Excluding ", lsmall, "/", length(expgr), " annotations that ",
@@ -183,10 +183,36 @@ makewindowsbedtools <- function(expgr, binsize, biotype = FALSE) {
         names(expgr) <- paste(names(expgr), expgr$symbol, expgr$biotype,
             sep = "_")
 
+!!!!!!!!!!!!!!!!!!!!!
+
+> testgr <- expgr[which(expgr$symbol == "ARF5"),]
+
+currentstart <- start(testgr)
+currentend <- end(testgr)
+lgene <- currentend - currentstart
+windowsize <- round(lgene/nbwindows)
+missingbp <- lgene%%nbwindows
+windsizevec <- rep(windowsize, nbwindows)
+if (!isTRUE(all.equal(missingbp, 0)))
+    windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+cumsumvec <- cumsum(c(currentstart, windsizevec))
+startvec <- cumsumvec[-length(cumsumvec)]
+endvec <- cumsumvec[-1]
+if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
+    stop("Problem in the calculation of windows")
+
+  ENST00000000233.10_ARF5_protein-coding     chr7 127588411-127591700      + |
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
     ## command retrieved with HelloRanges:
     ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
     ## Note: In R, bedtools does not have the "-i srcwinnum" option
-    res <- GenomicRanges::tile(expgr, n = binsize)
+    res <- GenomicRanges::tile(expgr, n = nbwindows)
     res <- unlist(res, use.names = FALSE)
 
     ## Adding back metadata from names
