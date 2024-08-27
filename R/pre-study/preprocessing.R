@@ -214,24 +214,21 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
     return(winddflist)
 }
 
-makewindowsbedtools <- function(expgr, nbwindows, nbcputrans, biotype = FALSE,
+makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, biotype = FALSE,
     verbose = FALSE) {
 
     ## Filtering out intervals smaller than nbwindows
-    idxsmall <- which(GenomicRanges::width(expgr) < nbwindows)
+    idxsmall <- which((expbed$end - expbed$start) < nbwindows)
     lsmall <- length(idxsmall)
     if (!isTRUE(all.equal(lsmall, 0))) {
-        message("Excluding ", lsmall, "/", length(expgr), " annotations that ",
+        message("Excluding ", lsmall, "/", nrow(expbed), " annotations that ",
         "are too short.")
-        expgr <- expgr[-idxsmall]
+        expbed <- expbed[-idxsmall,]
     }
 
-    ## Change row names to keep the gene symbols
-    if (!biotype)
-        namesexpgr <- paste(names(expgr), expgr$symbol, sep = "_")
-    else
-        namesexpgr <- paste(names(expgr), expgr$symbol, expgr$biotype,
-            sep = "_")
+    ## Save row elments str
+    namesexpbed <- paste(expbed$chr, expbed$start, expbed$end,
+            expbed$ensembl, expbed$symbol, expbed$biotype, sep = "_")
 
     ## Splitting each transcript into "nbwindows" windows
     if (verbose) message("\t Splitting ", length(expgr), " transcript into ",
