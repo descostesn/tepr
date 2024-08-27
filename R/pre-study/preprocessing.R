@@ -441,6 +441,10 @@ allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans)
 saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
 
+message("\t Converting to genomic ranges")
+allwindowsgr <- bedtogr(allwindowsbed, allwindows = TRUE)
+saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr,rds"))
+
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
 message("Removing the black list and keeping scores with high mappability")
