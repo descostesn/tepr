@@ -159,7 +159,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
         grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
                 ranges = IRanges::IRanges(start = currentbed[, 3],
                                       end = currentbed[, 4],
-                                      transcript = currentbed[, 5]),
+                                      name = currentbed[, 5]),
                 gene = currentbed[, 6], strand = currentbed[, 7],
                 biotype = currentbed[, 1], window = currentbed[, 8],
                 coord = currentbed[, 9])
@@ -436,10 +436,8 @@ if (!isTRUE(all.equal(length(idxpar), 0)))
 allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans)
 saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
-
-message("\t Converting to genomic ranges (takes a bit of time)")
 allwindowsgr <- bedtogr(allwindowsbed, allwindows = TRUE)
-saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr,rds"))
+
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
@@ -449,19 +447,23 @@ maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
 saveRDS(maptrackgr, file.path(robjoutputfold, "maptrackgr.gr"))
-# maptrackgr <- readRDS(file.path(robjoutputfold, "maptrackgr.gr"))
+# maptrackgr <- readRDS(file.path(robjoutputfold, "maptrackgr.gr")) # nolint
 
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
 
 saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
-# bedgraphgrlist <- readRDS(file.path(robjoutputfold, "bedgraphgrlist.rds"))
+# bedgraphgrlist <- readRDS(file.path(robjoutputfold, "bedgraphgrlist.rds")) # nolint
 
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean for each bedgraph
 message("Retrieving values according to annotations and calculate an ",
     "arithmetic weighted mean for each bedgraph")
+
+# currentgr=bedgraphgrlist[[1]]
+# currentstrand=exptab$strand[1]
+# currentname=expnamevec[1]
 bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
     allwindowsgr, windsize, nbcputrans) {
 
@@ -474,18 +476,12 @@ bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
     ## Retrieving the names and frame of the mapped annotations
     idxanno <- S4Vectors::subjectHits(res)
     message("\t Retrieving transcript name and frame number")
-    rownamelist <- strsplit(names(allwindowsgr)[idxanno], "_")
-    transcriptvec <- sapply(rownamelist, "[", 1)
-    framevec <- as.numeric(gsub("frame", "", sapply(rownamelist, "[", 2)))
-    ## The frame numbering starting at 0 (empty suffix), need to transform to +1
-    framevec[which(is.na(framevec))] <- 0
-    framevec <- framevec + 1
+    transcriptvec <- names(allwindowsgr)[idxanno]
 
     message("\t Building scoring results by transcript")
     ## Correspondance of bg score index with the transcript frame
     idxbgscorevec <- S4Vectors::queryHits(res)
-    idxframedf <- data.frame(idxbgscore = idxbgscorevec, transframe = framevec,
-        annoidx = idxanno)
+    idxframedf <- data.frame(idxbgscore = idxbgscorevec, annoidx = idxanno)
     ## Separating the bedgraph score indexes by transcript names
     idxbgscorebytrans <- split(idxframedf, factor(transcriptvec))
 
