@@ -396,6 +396,8 @@ if (!isTRUE(all.equal(length(idxpar), 0)))
     allannogr <- allannogr[-idxpar, ]
 allwindowsgr <- makewindowsbedtools(allannogr, windsize, biotype = TRUE)
 
+saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr.rds"))
+
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
 message("Removing the black list and keeping scores with high mappability")
