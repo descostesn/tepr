@@ -168,26 +168,21 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
 .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
 
-
-!!!!!!!!!!!!!
     cl <- parallel::makeCluster(nbcputrans)
-    windflist <- parallel::parLapply(cl, 1:nrow(expbed), function(i, expbed) {paste(expbed[i,], collapse="-")}, expbed)
-    stopCluster(cl)
-    ans <- Reduce("cbind", matrix_of_sums)
-!!!!!!!!!!!
-    winddflist <- mclapply(expbed, function(geneinfogr, windcoordvec,
-        nbwindows) {
+    windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
+        function(i, expbed, windcoordvec, nbwindows) {
 
+            currentanno <- expbed[i, ]
             ## Retrieve the necessary gene information
-            currentstart <- start(geneinfogr)
-            currentend <- end(geneinfogr)
-            currentstrand <- as.character(strand(geneinfogr))
+            currentstart <- currentanno$start
+            currentend <- currentanno$end
+            currentstrand <- currentanno$strand
             windowvec <- windcoordvec
 
             ## Compute the vector with the size of each window
             lgene <- currentend - currentstart
             windowsize <- round(lgene / nbwindows)
-            missingbp <- lgene%%nbwindows
+            missingbp <- lgene %% nbwindows
             windsizevec <- rep(windowsize, nbwindows)
             ## Add the missing nb of bp (that is ignore by tile) in the last
             ## element of windsizevec
@@ -198,7 +193,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
             cumsumvec <- cumsum(c(currentstart, windsizevec))
             startvec <- cumsumvec[-length(cumsumvec)]
             endvec <- cumsumvec[-1]
-            if (!isTRUE(all.equal(endvec-startvec, windsizevec)))
+            if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
                 stop("Problem in the calculation of windows")
 
             ## Inverting start, end, and window vectors if strand is negative
@@ -210,9 +205,25 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
             ## Build the result data.frame containing the coordinates of each
             ## frame alongside window and coord numbers
-            res <- data.frame(chr = seqnames(geneinfogr), coor1 = startvec,
-                coor2 = endvec, strand = currentstrand, window = windowvec,
-                coord = windcoordvec)
+            res <- data.frame(chr = currentanno$chrom, coor1 = startvec,
+                coor2 = endvec,  transcript = currentanno$ensembl,
+                gene = currentanno$symbol, strand = currentstrand,
+                window = windowvec, coord = windcoordvec)
+            return(res)}, expbed, windcoordvec, nbwindows)
+    stopCluster(cl)
+    nbwindcheck <- unique(sapply(windflist, nrow))
+    if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
+        !isTRUE(all.equal(nbwindcheck, 200)))
+        stop("Problem in the nb of windows per transcript retrieved")
+    
+!!!!!!!!!!!
+    winddflist <- mclapply(expbed, function(geneinfogr, windcoordvec,
+        nbwindows) {
+
+            
+            
+
+            
 
     return(res)
 
