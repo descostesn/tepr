@@ -160,13 +160,9 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
                 ranges = IRanges::IRanges(start = currentbed[, 3],
                                       end = currentbed[, 4],
                                       transcript = currentbed[, 5]),
-                gene = if (symbol) currentbed[, 6] else NA,
-                strand = if (strand) currentbed[, 7] else "*",
-                biotype = currentbed[, 1],
-                window = currentbed[, 8],
+                gene = currentbed[, 6], strand = currentbed[, 7],
+                biotype = currentbed[, 1], window = currentbed[, 8],
                 coord = currentbed[, 9])
-        names(grres) <- apply(currentbed, 1,
-            function(x) paste(x, collapse = "_"))
     }
     return(grres)
 }
@@ -441,7 +437,7 @@ allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans)
 saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
 
-message("\t Converting to genomic ranges")
+message("\t Converting to genomic ranges (takes a bit of time)")
 allwindowsgr <- bedtogr(allwindowsbed, allwindows = TRUE)
 saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr,rds"))
 
