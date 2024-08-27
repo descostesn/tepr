@@ -94,6 +94,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
           .direction = "downup")
 
+        !!!!!!!!!!!!!!!! replace the scores of transtable with the filled one
+
         ## Retrieving the direction (fwd or rev) according to the transcript
         ## strand. It will be used to change the column names of scoremat and
         ## remove columns from transtab.
