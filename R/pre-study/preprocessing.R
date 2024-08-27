@@ -205,7 +205,8 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE, biotype = FALSE) {
 
             ## Build the result data.frame containing the coordinates of each
             ## frame alongside window and coord numbers
-            res <- data.frame(chr = currentanno$chrom, coor1 = startvec,
+            res <- data.frame(biotype = currentanno$biotype,
+                chr = currentanno$chrom, coor1 = startvec,
                 coor2 = endvec,  transcript = currentanno$ensembl,
                 gene = currentanno$symbol, strand = currentstrand,
                 window = windowvec, coord = windcoordvec)
@@ -429,7 +430,7 @@ message("Make windows for all annotations")
 idxpar <- grep("PAR_Y", allannobed$ensembl)
 if (!isTRUE(all.equal(length(idxpar), 0)))
     allannobed <- allannobed[-idxpar, ]
-allwindowsgr <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
+allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans, biotype = TRUE)
 
 saveRDS(allwindowsgr, file.path(robjoutputfold, "allwindowsgr.rds"))
