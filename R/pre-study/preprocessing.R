@@ -232,49 +232,14 @@ makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, biotype = FALSE,
         expbed <- expbed[-idxsmall,]
     }
 
-    ## Save row elments str
-    namesexpbed <- paste(expbed$chr, expbed$start, expbed$end,
-            expbed$ensembl, expbed$symbol, expbed$biotype, sep = "_")
-
     ## Splitting each transcript into "nbwindows" windows
     if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
         nbwindows, " windows data.frame")
     windcoordvec <- seq_len(nbwindows)
-    winddflist <- .divideannoinwindows(expbed, windcoordvec, nbwindows,
+    winddf <- .divideannoinwindows(expbed, windcoordvec, nbwindows,
         nbcputrans)
-    winddf <- do.call("rbind", winddflist)
-    !!
-    
 
-
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-    ## command retrieved with HelloRanges:
-    ## bedtools_makewindows("-n 200 -b stdin.bed") # nolint
-    ## Note: In R, bedtools does not have the "-i srcwinnum" option
-    res <- GenomicRanges::tile(expgr, n = nbwindows)
-    res <- unlist(res, use.names = FALSE)
-
-    ## Adding back metadata from names
-    tmplist <- strsplit(names(res), "_")
-    transvec <- sapply(tmplist, "[", 1)
-    symbolvec <- sapply(tmplist, "[", 2)
-    names(res) <- transvec
-    S4Vectors::elementMetadata(res)[, "symbol"] <- symbolvec
-
-    if (biotype) {
-        biotypevec <- sapply(tmplist, "[", 3)
-        S4Vectors::elementMetadata(res)[, "biotype"] <- biotypevec
-    }
-
-    ## Making names of each element of the list unique
-    names(res) <- make.unique(names(res), sep = "_frame")
-    return(res)
+    return(winddf)
 }
 
 
