@@ -5,6 +5,8 @@
 # Descostes - July 2024 - R-4.4.1
 ####################
 
+library("dplyr")
+library("ggplot2")
 
 
 ##################
@@ -15,7 +17,9 @@
 ecdfvicpath <- "/g/romebioinfo/Projects/tepr/downloads/Ecdf_victor.tsv"
 
 ## Objects or files generated with downstream.R
-ecdfnicpath <- "/g/romebioinfo/tmp/downstream/"
+ecdfnicpath <- "/g/romebioinfo/tmp/downstream/resultsecdf.rds"
+
+outputfolder <- "/g/romebioinfo/tmp/downstream"
 
 
 ##################
@@ -26,98 +30,24 @@ ecdfnicpath <- "/g/romebioinfo/tmp/downstream/"
 ecdfvic <- read.delim(ecdfvicpath, header = TRUE)
 ecdfnic <- readRDS(ecdfnicpath)
 
-## Retrieving the gene M6PR which is on the negative strand
-testvic <- ecdfvic[which(ecdfvic$gene == "M6PR"), ]
-testnic <- ecdfnic[which(ecdfnic$trs_symbol == "M6PR"), ]
-
-## Plotting correlations on the score cols
-idxvic <- c(ctrl1score = 10, ctrl2score = 11, hs1score = 12, hs2score = 13)
-idxnic <- c(ctrl1score = 7, ctrl2score = 12, hs1score = 13, hs2score = 14)
-
-## Plotting correlations on the bin sizes
-
-
 ## Plotting Fx for each replicate and condition
+genenamevec <- c("M6PR", "ARF5", "EGFR", "HDDC2", "LINC01619")
 
-Ecdf_nicolas  <-readRDS("/Users/victor/Documents/DATA/resultsecdf.rds", refhook = NULL)
+invisible(sapply(genenamevec, function(currentgene, testnic, testvic) {
+  g <- ggplot() +
+  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Fx_HS1score), color="red", linetype=2) +
+  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Fx_HS2score), color="darkred", linetype=2) +
+  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Fx_HS_rep1_score), color="red") +
+  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Fx_HS_rep2_score), color="darkred") +
 
-Ecdf_nicolas <- Ecdf_nicolas %>% rename(
+  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Fx_ctrl1score), color="blue", linetype=2) +
+  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Fx_ctrl2score), color="darkblue", linetype=2) +
+  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Fx_ctrl_rep1_score), color="blue") +
+  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Fx_ctrl_rep2_score), color="darkblue") +
 
-  "gene" = trs_symbol,
+  ylim(0,1) + ylab("Fx") + theme_classic() + ggtitle(currentgene)
 
-  "Fx_HS1_score" = Fx_HS1score,
+  ggplot2::ggsave(filename = paste0(currentgene, "_Fx.png"), plot = g,
+            device = "png", path = outputfolder)
 
-  "Fx_HS2_score" = Fx_HS2score,
-
-  "Fx_ctrl1_score" = Fx_ctrl1score,
-
-  "Fx_ctrl2_score" = Fx_ctrl2score,
-
-  "window" = coord,
-
-  "coord" = frame
-
-)
-
- 
-
-gene_name <- "LINC01619"  # Example gene
-
-ggplot() +
-
- 
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,Fx_HS1_score), color="red", linetype=2)+
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,Fx_HS2_score), color="darkred", linetype=2)+
-
- 
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_HS_rep1_score), color="red") +
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_HS_rep2_score), color="darkred") +
-
- 
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,Fx_ctrl1_score), color="blue", linetype=2)+
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,Fx_ctrl2_score), color="darkblue", linetype=2)+
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_ctrl_rep1_score), color="blue") +
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_ctrl_rep2_score), color="darkblue") +
-
- 
-
-  ylim(0,1) + ylab("Fx") +
-
-  theme_classic()
-
- 
-
-ggplot() +
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,1-Fx_HS1_score), color="red", linetype=2)+
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,1-Fx_HS2_score), color="darkred", linetype=2)+
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_HS_rep1_score), color="red") +
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_HS_rep2_score), color="darkred") +
-
- 
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,1-Fx_ctrl1_score), color="blue", linetype=2)+
-
-  geom_line(data=Ecdf_nicolas %>% filter(gene==gene_name), aes(coord,1-Fx_ctrl2_score), color="darkblue", linetype=2)+
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_ctrl_rep1_score), color="blue") +
-
-  geom_line(data=concat_dfFX_res %>% filter(gene==gene_name), aes(coord,Fx_ctrl_rep2_score), color="darkblue") +
-
- 
-
-  ylim(0,1) + ylab("Fx") +
-
-  theme_classic()
-
+}, testnic, testvic))
