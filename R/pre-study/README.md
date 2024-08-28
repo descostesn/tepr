@@ -244,3 +244,10 @@ Overlapping HS2rev with annotations on strand -
                  ## Analysis performed in: 4.31488925615946
          Combining transcripts
 ```
+
+Joining the data accross experiments took ~2 min:
+
+```
+Joining the elements of each bedgraph
+                 ## Analysis performed in: 2.06274894078573
+```
