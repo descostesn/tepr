@@ -204,59 +204,43 @@ Here is the output of building bedgraphwmeanlist that indicates time spent on ea
 ```
 Retrieving values according to annotations and calculate an arithmetic weighted mean for each bedgraph
 Overlapping ctrl1fwd with annotations on strand +
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 5.16446928977966
+                 ## Analysis performed in: 4.10421471595764
          Combining transcripts
 Overlapping ctrl1rev with annotations on strand -
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 4.10114480654399
+                 ## Analysis performed in: 3.88798656066259
          Combining transcripts
 Overlapping ctrl2fwd with annotations on strand +
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 5.39748361508052
+                 ## Analysis performed in: 4.38854082028071
          Combining transcripts
 Overlapping ctrl2rev with annotations on strand -
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 4.82642058928808
+                 ## Analysis performed in: 3.99022568861643
          Combining transcripts
 Overlapping HS1fwd with annotations on strand +
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-
-                 ## Analysis performed in: 4.55429952144623
+                 ## Analysis performed in: 3.71073666413625
          Combining transcripts
 Overlapping HS1rev with annotations on strand -
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 4.86994267702103
+                 ## Analysis performed in: 3.74223386049271
          Combining transcripts
 Overlapping HS2fwd with annotations on strand +
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-                 ## Analysis performed in: 4.63248418966929
+                 ## Analysis performed in: 4.68919563690821
          Combining transcripts
 Overlapping HS2rev with annotations on strand -
-         Retrieving transcript name and frame number
          Building scoring results by transcript
          Weighted mean on duplicated frames for each transcript
-
-                 ## Analysis performed in: 4.54002116123835
+                 ## Analysis performed in: 4.31488925615946
          Combining transcripts
-```
-
-Joining the bedgraph tables was relatively fast as it took ~1 min:
-```
-Joining the elements of each bedgraph
-                 ## Analysis performed in: 1.33282744884491
 ```
