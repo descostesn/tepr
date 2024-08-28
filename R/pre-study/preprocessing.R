@@ -26,6 +26,9 @@ gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/gencode.v43.b
 ## query_data <- subset(ah, preparerclass == "excluderanges") # nolint
 ## print(query_data) # nolint
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
+## Set this variable to NULL if the online retrieval should be performed
+blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
+
 outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
 robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
 ## The bed file below was created and sent by Victor
