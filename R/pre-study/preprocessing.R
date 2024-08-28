@@ -387,6 +387,56 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
 
 
+bedgraphwmeanreplace <- function(bedgraphgrlist, exptab$strand, expnamevec,
+    allwindowsgr, windsize, nbcputrans) {
+
+        bedgraphwmeanlist <- mapply(function(currentgr, currentstrand,
+            currentname, allwindowsgr, windsize, nbcputrans) {
+
+                message("Overlapping ", currentname, " with annotations on ",
+                    "strand ", currentstrand)
+                BiocGenerics::strand(currentgr) <- currentstrand
+                res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
+                    ignore.strand = FALSE)
+
+                message("\t Building scoring results by transcript")
+                ## Separating the bedgraph score indexes by transcript names
+                idxanno <- S4Vectors::subjectHits(res)
+                idxbgscorebytrans <- split(as.data.frame(res),
+                    factor(names(allwindowsgr)[idxanno]))
+
+                ## For each transcript, retrieve the information and the
+                ## bedgraph coordinates, strand and scores, applying a weighted
+                ## mean
+                message("\t Weighted mean on duplicated frames for each ",
+                    "transcript")
+                start_time <- Sys.time()
+                dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans,
+                    allwindowsgr, currentgr, currentstrand, currentname,
+                    windsize, nbcputrans)
+                end_time <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time - start_time)
+
+                if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)),
+                    windsize)))
+                    stop("Problem in replacing scores by weighted mean",
+                        " on the data")
+
+                message("\t Combining transcripts")
+                dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+
+                return(dfwmeanbytrans)
+
+        }, bedgraphgrlist, exptab$strand, expnamevec,
+            MoreArgs = list(allwindowsgr, windsize, nbcputrans),
+            SIMPLIFY = FALSE)
+        return(bedgraphwmeanlist)
+}
+
+
+
+
 ##################
 # MAIN
 ##################
@@ -455,44 +505,8 @@ saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
 ## weighted mean for each bedgraph
 message("Retrieving values according to annotations and calculate an ",
     "arithmetic weighted mean for each bedgraph")
-
-# currentgr=bedgraphgrlist[[1]]
-# currentstrand=exptab$strand[1]
-# currentname=expnamevec[1]
-bedgraphwmeanlist <- mapply(function(currentgr, currentstrand, currentname,
-    allwindowsgr, windsize, nbcputrans) {
-
-    message("Overlapping ", currentname, " with annotations on strand ",
-        currentstrand)
-    BiocGenerics::strand(currentgr) <- currentstrand
-    res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
-        ignore.strand = FALSE)
-
-    message("\t Building scoring results by transcript")
-    ## Separating the bedgraph score indexes by transcript names
-    idxanno <- S4Vectors::subjectHits(res)
-    idxbgscorebytrans <- split(as.data.frame(res),
-        factor(names(allwindowsgr)[idxanno]))
-
-    ## For each transcript, retrieve the information and the bedgraph
-    ## coordinates, strand and scores, applying a weighted mean
-    message("\t Weighted mean on duplicated frames for each transcript")
-    start_time <- Sys.time()
-    dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans, allwindowsgr,
-        currentgr, currentstrand, currentname, windsize, nbcputrans)
-    end_time <- Sys.time()
-    message("\t\t ## Analysis performed in: ", end_time - start_time)
-
-    if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)), windsize)))
-        stop("Problem in replacing scores by weighted mean on the data")
-
-    message("\t Combining transcripts")
-    dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
-
-    return(dfwmeanbytrans)
-
-}, bedgraphgrlist, exptab$strand, expnamevec,
-    MoreArgs = list(allwindowsgr, windsize, nbcputrans), SIMPLIFY = FALSE)
+bedgraphwmeanlist <- bedgraphwmeanreplace(bedgraphgrlist, exptab$strand,
+    expnamevec, allwindowsgr, windsize, nbcputrans)
 
 #saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 bedgraphwmeanlist <- readRDS("/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
