@@ -460,6 +460,7 @@ saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
 
 message("Computing the differences (d or delta) of AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
+saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 
 # Calculate the Area Under Curve (AUC), All conditions vs y=x
 # Calculate Mean Value over the full gene body in All conditions.
