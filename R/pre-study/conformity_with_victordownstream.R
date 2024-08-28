@@ -17,7 +17,7 @@ library("ggplot2")
 ecdfvicpath <- "/g/romebioinfo/Projects/tepr/downloads/Ecdf_victor.tsv"
 
 ## Objects or files generated with downstream.R
-ecdfnicpath <- "/g/romebioinfo/tmp/downstream/resultsecdf.rds"
+ecdfnicpath <- "/g/romebioinfo/tmp/downstream/dfmeandiff.rds"
 
 outputfolder <- "/g/romebioinfo/tmp/downstream"
 
