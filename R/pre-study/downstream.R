@@ -398,8 +398,6 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
   condvec <- unique(expdf$condition)
 
   resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative) {
-            ## Sorting table according to strand
-            #transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
             ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
