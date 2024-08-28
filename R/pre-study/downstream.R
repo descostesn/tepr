@@ -462,6 +462,7 @@ saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
 
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
+saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
 
 message("Computing the differences (d or delta) of AUC")
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
