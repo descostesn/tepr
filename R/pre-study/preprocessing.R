@@ -505,8 +505,8 @@ saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
 ## weighted mean for each bedgraph
 message("Retrieving values according to annotations and calculate an ",
     "arithmetic weighted mean for each bedgraph")
-bedgraphwmeanlist <- bedgraphwmeanreplace(bedgraphgrlist, exptab$strand,
-    expnamevec, allwindowsgr, windsize, nbcputrans)
+bedgraphwmeanlist <- bedgraphwmeanreplace(bedgraphgrlist, exptab, expnamevec,
+    allwindowsgr, windsize, nbcputrans)
 
 #saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 bedgraphwmeanlist <- readRDS("/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
