@@ -520,6 +520,7 @@ bedgraphwmeanlist <- bedgraphwmeanreplace(bedgraphgrlist, exptab, expnamevec,
     allwindowsgr, windsize, nbcputrans)
 
 saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
+saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist-blacklistfile.rds") # nolint`
 # bedgraphwmeanlist <- readRDS("/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
 
 ## Creating a rowid that will be used for merging
