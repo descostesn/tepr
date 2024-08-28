@@ -81,20 +81,29 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) {
 
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$trs_strand))
+        str <- as.character(unique(transtable$strand))
         .checkunique(str, "str")
         colnamestr <- colnamevec[which(expdf$strand == str)]
+
+        ## If the strand is negative, re-order by coordinates
+        if (isTRUE(all.equal(str, "-"))) {
+          transtable <- transtable[order(transtable$coord), ]
+          directionfill <- "updown"
+        } else {
+          directionfill <- "downup"
+        }
 
         ## Building a matrix containing only the scores in the right direction
         ## for each experiment. Ordering the scores according to the
         ## coordinates but using dplyr::arrange because of the way it handles
         ## NA. Filling the NA values with tidyr::fill.
         scoremat <- transtable[, colnamestr]
-        scoremat <- dplyr::arrange(scoremat, transtable$coord)
+        #scoremat <- dplyr::arrange(scoremat, transtable$coord)
         scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
-          .direction = "downup")
+          .direction = directionfill)
 
-        !!!!!!!!!!!!!!!! replace the scores of transtable with the filled one
+        ## Replace the scores of transtable with the filled one
+        transtable[, colnamestr] <- scoremat
 
         ## Retrieving the direction (fwd or rev) according to the transcript
         ## strand. It will be used to change the column names of scoremat and
