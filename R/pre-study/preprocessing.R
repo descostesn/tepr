@@ -342,8 +342,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
         if (!isTRUE(all.equal(nrow(df), windsize)))
             stop("The number of frames should be equal to windsize: ",
                 windsize, " for transcript ", nametrs)
-        idxscorereplace <- match(dupframenbvec, df$frame)
-        if (!isTRUE(all.equal(dupframenbvec, df$frame[idxscorereplace])))
+        idxscorereplace <- match(dupframenbvec, df$window)
+        if (!isTRUE(all.equal(dupframenbvec, df$window[idxscorereplace])))
             stop("Problem in replacing scores by wmean, contact the developer.")
         df[idxscorereplace, colscore] <- wmeanvec
 
