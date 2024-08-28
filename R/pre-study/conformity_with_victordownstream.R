@@ -65,12 +65,12 @@ invisible(sapply(genenamevec, function(currentgene, ecdfnic, ecdfvic) {
   ylab("mean_fx") + theme_classic() + ggtitle(currentgene)
 
   ## Comparing diff values
-  gdiffval <- ggplot() +
-  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_HS_ctrl), color="red", linetype=2) +
-  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_HS_ctrl), color="red") +
-  geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_ctrl_HS), color="blue", linetype=2) +
-  geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_ctrl_HS), color="blue") +
-  ylab("diff_value") + theme_classic() + ggtitle(currentgene)
+  # gdiffval <- ggplot() +
+  # geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_HS_ctrl), color="red", linetype=2) +
+  # geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_HS_ctrl), color="red") +
+  # geom_line(data=ecdfnic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_ctrl_HS), color="blue", linetype=2) +
+  # geom_line(data=ecdfvic %>% filter(gene==currentgene), aes(coord,Diff_meanvalue_ctrl_HS), color="blue") +
+  # ylab("diff_value") + theme_classic() + ggtitle(currentgene)
 
   ## Comparing diff Fx
   gdifffx <- ggplot() +
@@ -86,8 +86,8 @@ invisible(sapply(genenamevec, function(currentgene, ecdfnic, ecdfvic) {
     plot = gmeanval, device = "png", path = outputfolder)
   ggplot2::ggsave(filename = paste0(currentgene, "_meanfx.png"),
     plot = gmeanfx, device = "png", path = outputfolder)
-  ggplot2::ggsave(filename = paste0(currentgene, "_diffval.png"),
-    plot = gdiffval, device = "png", path = outputfolder)
+  # ggplot2::ggsave(filename = paste0(currentgene, "_diffval.png"),
+  #   plot = gdiffval, device = "png", path = outputfolder)
   ggplot2::ggsave(filename = paste0(currentgene, "_difffx.png"),
     plot = gdifffx, device = "png", path = outputfolder)
 
