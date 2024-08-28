@@ -428,6 +428,9 @@ bedgraphwmeanreplace <- function(bedgraphgrlist, exptab, expnamevec,
 
                 message("\t Combining transcripts")
                 dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+                end_time2 <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time2 - start_time)
 
                 return(dfwmeanbytrans)
 
@@ -545,5 +548,6 @@ completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
     "coord", "transcript", "rowid"))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time)
+saveRDS(completeframedf, file = "/g/romebioinfo/tmp/preprocessing/completeframedf-blacklistfile.rds") # nolint
 
 saveRDS(completeframedf, file = "/g/romebioinfo/tmp/preprocessing/completeframedf.rds") # nolint
