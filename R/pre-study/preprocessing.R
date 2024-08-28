@@ -490,7 +490,14 @@ allwindowsgr <- bedtogr(allwindowsbed, allwindows = TRUE)
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## high mappability scores
 message("Removing the black list and keeping scores with high mappability")
-blacklistgr <- createblacklist(blacklistname, outputfolder)
+if (is.null(blacklistshpath)) {
+    message("Retrieving the black list online")
+    blacklistgr <- createblacklist(blacklistname, outputfolder)
+} else {
+    blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+    blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
+}
+
 maptrack <- read.delim(maptrackpath, header = FALSE)
 maptrackgr <- bedtogr(maptrack, strand = FALSE)
 
