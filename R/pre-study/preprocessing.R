@@ -529,8 +529,8 @@ bedgraphwmeanlist <- mclapply(bedgraphwmeanlist, function(tab) {
 message("Joining the elements of each bedgraph")
 start_time <- Sys.time()
 completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
-    by = c("trs_seqnames", "trs_start", "trs_end", "trs_width", "trs_strand",
-    "trs_symbol", "transcript", "frame", "coord", "rowid"))
+    by = c("seqnames", "start", "end", "strand", "gene", "biotype", "window",
+    "coord", "transcript", "rowid"))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time)
 
