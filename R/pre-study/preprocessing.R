@@ -288,20 +288,20 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
     wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
 
         ## Selecting all rows having a duplicated frame found at index idx
-        allframedf <- df[which(df$frame == namedup), ]
+        allframedf <- df[which(df$window == namedup), ]
         if (isTRUE(all.equal(nrow(allframedf), 1)))
             stop("There should be more than one frame selected")
 
         ## Testing that the coord of the window is the same for all scores
         ## selected (this should not give an error)
-        if (!isTRUE(all.equal(length(unique(allframedf[, "trs_start"])), 1)) ||
-            !isTRUE(all.equal(length(unique(allframedf[, "trs_end"])), 1)))
+        if (!isTRUE(all.equal(length(unique(allframedf[, "start"])), 1)) ||
+            !isTRUE(all.equal(length(unique(allframedf[, "end"])), 1)))
                 stop("The size of the window is not unique for the frame rows ",
                     "selected, this should not happen, contact the developper.")
 
         ## Retrieving the coordinates and the size of the transcript
-        windowstart <- allframedf[1, "trs_start"]
-        windowend <- allframedf[1, "trs_end"]
+        windowstart <- allframedf[1, "start"]
+        windowend <- allframedf[1, "end"]
 
         ## Retrieve the nb of overlapping nt for each score
         overntvec <- apply(allframedf, 1,
@@ -361,12 +361,12 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
             ## Building the complete data.frame and identifying duplicated
             ## frames
-            !!!!!! CURRENT df <- .buildtransinfotable(annogr, tab, bggr, expname)
-            dupidx <- which(duplicated(df$frame))
+            df <- .buildtransinfotable(annogr, tab, bggr, expname)
+            dupidx <- which(duplicated(df$window))
             colscore <- paste0(expname, "score")
 
             if (!isTRUE(all.equal(length(dupidx), 0))) {
-                dupframenbvec <- unique(df$frame[dupidx])
+                dupframenbvec <- unique(df$window[dupidx])
                 ## For each duplicated frame
                 wmeanvec <- .computewmeanvec(dupframenbvec, df, expname,
                     colscore)
