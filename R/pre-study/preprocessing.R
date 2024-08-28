@@ -377,15 +377,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
                     dupframenbvec, colscore, strd, wmeanvec)
             }
 
-            ## Adding the coord column
-            coord <- seq_len(windsize)
-            if (isTRUE(all.equal(strd, "-")))
-                coord <- rev(coord)
-            res <- cbind(df[, c("trs_seqnames", "trs_start", "trs_end",
-                "trs_width", "trs_strand", "trs_symbol", colscore,
-                "transcript", "frame")], coord)
-
-            return(res)
+            return(df)
         }, idxbgscorebytrans, names(idxbgscorebytrans),
         MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
         windsize), SIMPLIFY = FALSE, mc.cores = nbcputrans)
