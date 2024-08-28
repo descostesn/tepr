@@ -78,7 +78,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
                 " should be unique, contact the developer.") # nolint
 }
 
-.computeecdf <- function(transtable, expdf, rounding, colnamevec) {
+.computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
@@ -94,11 +94,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         }
 
         ## Building a matrix containing only the scores in the right direction
-        ## for each experiment. Ordering the scores according to the
-        ## coordinates but using dplyr::arrange because of the way it handles
-        ## NA. Filling the NA values with tidyr::fill.
+        ## for each experiment. Filling the NA values with tidyr::fill.
         scoremat <- transtable[, colnamestr]
-        #scoremat <- dplyr::arrange(scoremat, transtable$coord)
         scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
           .direction = directionfill)
 
