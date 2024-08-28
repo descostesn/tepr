@@ -514,10 +514,16 @@ saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmea
 ## Creating a rowid that will be used for merging
 message("Adding rowid for each bedgraph")
 bedgraphwmeanlist <- mclapply(bedgraphwmeanlist, function(tab) {
-    rowid <- paste(tab$trs_seqnames, tab$trs_start, tab$trs_end, tab$trs_strand,
-        tab$trs_symbol, paste0("frame", tab$frame), paste0("coord", tab$coord),
-        sep = "_")
-    return(cbind(tab, rowid))
+    rowidvec <- paste(tab$biotype, tab$seqnames, tab$start, tab$end, tab$strand,
+        tab$gene, tab$transcript, paste0("frame", tab$window),
+        paste0("coord", tab$coord), sep = "_")
+    ## Inserting rowid col after transcript
+    res <- data.frame(seqnames = tab$seqnames, start = tab$start, end = tab$end,
+        strand = tab$strand, gene = tab$gene, biotype = tab$biotype,
+        window = tab$window, coord = tab$coord, transcript = tab$transcript,
+        rowid = rowidvec, tab[, grep("score", colnames(tab))])
+    colnames(res)[ncol(res)] <- colnames(tab)[grep("score", colnames(tab))]
+    return(res)
 }, mc.cores = nbcpubg)
 
 message("Joining the elements of each bedgraph")
