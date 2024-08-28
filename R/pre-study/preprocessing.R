@@ -387,7 +387,7 @@ summarizebywmean <- function(idxbgscorebytrans, allwindowsgr, currentgr,
 
 
 
-bedgraphwmeanreplace <- function(bedgraphgrlist, exptab$strand, expnamevec,
+bedgraphwmeanreplace <- function(bedgraphgrlist, exptab, expnamevec,
     allwindowsgr, windsize, nbcputrans) {
 
         bedgraphwmeanlist <- mapply(function(currentgr, currentstrand,
