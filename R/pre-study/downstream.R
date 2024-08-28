@@ -117,7 +117,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
             return(fx)
         }, rounding, transtable$coord, simplify = TRUE)
         colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
-        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_")
+        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_") # nolint
 
         ## Remove opposite strand from transtable and erase strand substring
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
@@ -322,7 +322,7 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
                 windsize <- floor(
                     (transtab$end[nbwindows] - transtab$start[1]) / nbwindows)
             } else {
-                transtab <- transtab[order(as.numeric(transtab$coord)), ]
+                #transtab <- transtab[order(as.numeric(transtab$coord)), ]
                 windsize <- floor(
                     (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
             }
@@ -338,9 +338,6 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     bytranslist <- split(df, factor(df$transcript))
     condvec <- unique(expdf$condition)
     resdflist <- mclapply(bytranslist, function(transtab, condvec) {
-
-        ## Sorting table according to strand
-        #transtab <- transtab[order(as.numeric(transtab$coord)), ]
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
