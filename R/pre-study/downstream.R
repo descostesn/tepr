@@ -247,6 +247,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
+!!!!!!!!!!!!!!!!!!!!!!!! FIND WHAT IS HAPPENING ON THE FOLLOWING LINE FOR M6PR
                 diffres <- meandf - df$coord / nbwindows
                 colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
@@ -375,6 +376,29 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     return(resdf)
 }
 
+!!!!!!!!!!!!!!!!!!!!
+> head(AUC_allcondi_res,2)
+          transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
+1 ENST00000000233.10 ARF5      +          16 -16.1578100 0.01195204      0.160
+2  ENST00000000412.8 M6PR      -          46   0.4324419 0.99999997      0.025
+  MeanValueFull_ctrl    AUC_HS  p_AUC_HS D_AUC_HS MeanValueFull_HS
+1           4.877027 -8.839419 0.3274975    0.095         4.564402
+2           9.180490 -0.202357 0.9996971    0.035         9.789388
+  adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
+1        0.04014826       0.4433998
+2        1.00000000       1.0000000
+
+> me
+                           transcript gene strand   auc_ctrl pvalaucks_ctrl
+ENST00000000233.10 ENST00000000233.10 ARF5      + -16.084911     0.01195204
+ENST00000000412.8   ENST00000000412.8 M6PR      -  -1.696896     0.99719233
+                   stataucks_ctrl meanvaluefull_ctrl         transcript gene
+ENST00000000233.10           0.16           4.904205 ENST00000000233.10 ARF5
+ENST00000000412.8            0.04           9.388497  ENST00000000412.8 M6PR
+                   strand    auc_HS pvalaucks_HS stataucks_HS meanvaluefull_HS
+ENST00000000233.10      + -8.578784    0.3274975        0.095         4.516663
+ENST00000000412.8       -  1.905293    0.9999907        0.030         9.681324
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
   currentcond) {
@@ -397,7 +421,8 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
   bytranslist <- split(df, factor(df$transcript))
   condvec <- unique(expdf$condition)
 
-  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative) {
+  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative,
+    nbwindows) {
 
             ## Computing AUC, pval, and stat for each condition
             resauclist <- lapply(condvec, function(currentcond, transtab,
@@ -421,10 +446,10 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
                 }, transtab, cumulative)
                 aucdf <- do.call("cbind", resauclist)
                 return(aucdf)
-    }, condvec, cumulative, mc.cores = nbcpu)
+      }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
 
-    aucallconditions <- do.call("rbind", resdflist)
-    return(aucallconditions)
+  aucallconditions <- do.call("rbind", resdflist)
+  return(aucallconditions)
 }
 
 
@@ -466,58 +491,47 @@ aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu = nbcpu)
 
 !!!!!!!!!!!!!!!!!!!!
 
-df = dfmeandiff
-KneeID_fun <- function(df, expdf) {
+countNA_fun <- function(main_table, extension, working_directory) {
 
-  bytranslist <- split(df, factor(df$transcript))
-  condvec <- unique(expdf$condition)
-
-  lapply(bytranslist, function(transtab, condvec) {
-    rescond <- lapply(condvec, function(currentcond){
-      diff_Fx_condi_name <- paste0("diff_Fx_", cond)
-      df_name <- paste0("gene_summary_AUC_", cond)
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!! CURRENT  TO DO  
-    })
-  }, condvec)
-!!
-  gene_summary_allcondi <- df %>% select("transcript") %>% distinct()
   res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
-  Conditions <- res$Conditions
+  col_names <- res$col_names
+  score_columns <- grep("score$", col_names, value = TRUE)  
 
-  for (cond in Conditions) {
-    diff_Fx_condi_name <- paste0("diff_Fx_", cond)
-    df_name <- paste0("gene_summary_AUC_", cond)
-    assign(df_name,data.frame())
+  ## Adding NA count
+  Count_NA <- main_table %>% group_by(transcript) %>%
+  dplyr::reframe(gene=gene[1], strand = strand[1], across(all_of(score_columns),
+    ~ mean(., na.rm = TRUE), .names = "{.col}_mean"), #score_columns obtained in the first chunk creating densities # nolint
+    across(contains("score"), ~ sum(is.na(.)), .names = "{.col}_NA")) %>%
+    select(-contains("_mean_NA")) %>%
+    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "score") &&
+      str_detect(.x, "_NA"), str_replace(.x, "_score", "_count"), .x)))
 
-    # Get the data frame using the dynamically generated name
-    gene_summary_condi_df <- data.frame()
-    gene_summary_condi_df <- get(df_name)
+  NA_plus <- Count_NA %>%
+    filter(strand=="+") %>%
+    select(gene, transcript, strand, contains("plus")) %>%
+    select(gene, transcript, strand, contains("NA")) %>%
+    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "plus") &&
+      str_detect(.x, "_NA"), str_replace(.x, ".plus_", "_strand_"), .x)))
+  NA_minus <- Count_NA %>%
+    filter(strand=="-") %>%
+    select(gene, transcript,strand, contains("minus")) %>%
+    select(gene, transcript,strand, contains("NA")) %>%
+    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "minus") &&
+      str_detect(.x, "_NA"), str_replace(.x, ".minus_", "_strand_"), .x)))
 
-    # Perform operations on the data frame
-    # For example, add columns or rows to the data frame
-    max_column_name <- paste0("max_", diff_Fx_condi_name)
-    knee_column_name <- paste0("knee_AUC_", cond)
+  rm(Count_NA)
 
-    gene_summary_condi_df <- df %>%
-      dplyr::group_by(transcript)  %>%
-      dplyr::filter(!!sym(diff_Fx_condi_name) == max(!!sym(diff_Fx_condi_name)))  %>% # !!sym() inside the filter() to convert the variable name to a symbol and then access the column using the !! operator. # nolint
-      slice_min(coord, n = 1)  %>% #if equality of difference within the same gene it takes the closest knee from the TSS # nolint
-      select(transcript, coord, diff_Fx_condi_name)  %>%
-      dplyr::rename(!!max_column_name := !!sym(diff_Fx_condi_name)) %>%
-      dplyr::rename(!!knee_column_name := coord) ## the knee position is defined as the max difference between the ecdf and y=x curve # nolint
+  NA_test <- bind_rows(NA_plus, NA_minus) %>% 
+    select(gene, transcript, strand, matches("_count_NA")) %>%
+    select(1:4)  %>%
+    dplyr::rename(Count_NA = matches("count_NA")) # I drop the other NA columns because it is the same value for all the conditions (NA depends on blacklist and unmmapable region) # nolint
 
-    # Assign the modified data frame back to the dynamically generated name
-    assign(df_name, gene_summary_condi_df)
-
-    gene_summary_allcondi <- left_join(gene_summary_allcondi, gene_summary_condi_df, by = "transcript") # nolint
-  }
-  return(gene_summary_allcondi)
+  return(NA_test)
 }
 
-
-
 !!!!!!!!!!!!!!!!!!!
+
+
 Time difference of 1.000898 mins
 > head(AUC_allcondi_res,2)
           transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
@@ -529,6 +543,7 @@ Time difference of 1.000898 mins
   adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
 1        0.04014826       0.4433998
 2        1.00000000       1.0000000
+
 
 Time difference of 5.873777 secs
 > head(count_NA_res,2)
