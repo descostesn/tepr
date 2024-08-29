@@ -509,6 +509,65 @@ saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
 !!!!!!!!!!!!!!!!!!!!
 
 
+kneeid <- function(dfmeandiff, expdf, nbcputrans, verbose = FALSE) {
+
+  condvec <- unique(expdf$condition)
+
+  ## Splitting the table by each transcript
+  if (verbose) message("\t Splitting the table by each transcript") # nolint
+  transdflist <- split(dfmeandiff, factor(dfmeandiff$transcript))
+
+  parallel::mclapply(transdflist, function(transtable, condvec) {
+
+      bycondreslist <- lapply(condvec, function(cond, transtable) {
+        difffxname <- paste0("diff_Fx_", cond)
+        difffxvec <- transtable[, difffxname]
+        ## If equality of difference within the same gene it takes the closest
+        ## knee from the TSS # nolint
+        resrow <- transtable[which(difffxvec == max(difffxvec)),] %>%
+          slice_min(coord, n = 1)
+        res <- data.frame(resrow$coord, resrow[, difffxname])
+        colnames(res) <- c(paste0("knee_AUC_", cond),
+          paste0("max_", difffxname))
+        return(res) }, transtable)
+        
+       return(cbind(transcript = transtable$transcript[1],
+        do.call("cbind", bycondreslist)))
+    }, condvec, mc.cores = nbcputrans)
+
+  !!
+
+  for (cond in Conditions) {
+    diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+    df_name <- paste0("gene_summary_AUC_", cond)
+    assign(df_name,data.frame())
+
+    # Get the data frame using the dynamically generated name
+    gene_summary_condi_df <- data.frame()
+    gene_summary_condi_df <- get(df_name)
+
+    # Perform operations on the data frame
+    # For example, add columns or rows to the data frame
+    max_column_name <- paste0("max_", diff_Fx_condi_name)
+    knee_column_name <- paste0("knee_AUC_", cond)
+
+    gene_summary_condi_df <- concat_df %>%
+      dplyr::group_by(transcript)  %>%
+      dplyr::filter(!!sym(diff_Fx_condi_name) == max(!!sym(diff_Fx_condi_name)))  %>% # !!sym() inside the filter() to convert the variable name to a symbol and then access the column using the !! operator. # nolint
+      slice_min(coord, n = 1)  %>% #if equality of difference within the same gene it takes the closest knee from the TSS # nolint
+      select(transcript, coord, diff_Fx_condi_name)  %>%
+      dplyr::rename(!!max_column_name := !!sym(diff_Fx_condi_name)) %>%
+      dplyr::rename(!!knee_column_name := coord) ## the knee position is defined as the max difference between the ecdf and y=x curve # nolint
+
+    # Assign the modified data frame back to the dynamically generated name
+    assign(df_name, gene_summary_condi_df)
+
+    gene_summary_allcondi <- left_join(gene_summary_allcondi, gene_summary_condi_df, by = "transcript") # nolint
+  }
+  return(gene_summary_allcondi)
+}
+
+
 !!!!!!!!!!!!!!!!!!!
 
 
