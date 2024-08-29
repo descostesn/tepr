@@ -92,6 +92,17 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
   return(ecdfmat)
 }
 
+.checkdirection <- function(str, transtable) {
+
+  if (isTRUE(all.equal(str, "-"))) {
+    transtable <- transtable[order(transtable$coord), ]
+    directionfill <- "updown"
+  } else {
+    directionfill <- "downup"
+  }
+  return(list(transtable, directionfill))
+}
+
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
@@ -100,12 +111,9 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         colnamestr <- colnamevec[which(expdf$strand == str)]
 
         ## If the strand is negative, re-order by coordinates
-        if (isTRUE(all.equal(str, "-"))) {
-          transtable <- transtable[order(transtable$coord), ]
-          directionfill <- "updown"
-        } else {
-          directionfill <- "downup"
-        }
+        direclist <- .checkdirection(str, transtable)
+        transtable <- direclist[[1]]
+        directionfill <- direclist[[2]]
 
         ## Building a matrix containing only the scores in the right direction
         ## for each experiment. Filling the NA values with tidyr::fill.
@@ -128,7 +136,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
 
         ## Remove opposite strand from transtable and erase strand substring
-        transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
+        transtable <- transtable[, -grep(opposedirect, colnames(transtable))]
         colnames(transtable) <- gsub(direction, "", colnames(transtable))
 
         res <- cbind(transtable, ecdfmat)
