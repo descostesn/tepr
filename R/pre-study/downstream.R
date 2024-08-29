@@ -420,6 +420,41 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
 }
 
 
+
+countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
+
+  maintable <- allexprsdfs[[1]]
+  scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
+    "score")
+  condvec <- unique(expdf$condition)
+
+  ## Splitting the table by each transcript
+  if (verbose) message("\t Splitting the table by each transcript") # nolint
+  transdflist <- split(maintable, factor(maintable$transcript))
+
+  ## For each transcript
+  nabytranslist <- parallel::mclapply(transdflist,
+    function(transtable, scorecolvec, condvec) {
+        ## Filters the score columns according to the strand of the transcript
+        str <- as.character(unique(transtable$strand))
+        colnamestr <- scorecolvec[which(expdf$strand == str)]
+        scoremat <- transtable[, colnamestr]
+
+        ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
+        res <- lapply(condvec, function(c, m, n) {
+          length(which(apply(m[, grep(c, n)], 1, function(x) all(is.na(x)))))
+        }, scoremat, colnamestr)
+        res <- do.call("cbind", res)
+        colnames(res) <- paste0(condvec, "_NA")
+        info <- data.frame(gene = unique(transtable$gene),
+          transcript = unique(transtable$transcript), strand = str)
+        return(cbind(info, res))
+    }, scorecolvec, condvec, mc.cores = nbcpu)
+  return(do.call("rbind", nabytranslist))
+}
+
+
+
 ##################
 # MAIN
 ##################
@@ -463,45 +498,16 @@ end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds")
 
+message("Calculating number of missing values for each transcript and for",
+  " each condition")
+start_time <- Sys.time()
+matnatrans <- countna(allexprsdfs, expdf, nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+
 !!!!!!!!!!!!!!!!!!!!
 
-countNA_fun <- function(main_table, extension, working_directory) {
-
-  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
-  col_names <- res$col_names
-  score_columns <- grep("score$", col_names, value = TRUE)  
-
-  ## Adding NA count
-  Count_NA <- main_table %>% group_by(transcript) %>%
-  dplyr::reframe(gene=gene[1], strand = strand[1], across(all_of(score_columns),
-    ~ mean(., na.rm = TRUE), .names = "{.col}_mean"), #score_columns obtained in the first chunk creating densities # nolint
-    across(contains("score"), ~ sum(is.na(.)), .names = "{.col}_NA")) %>%
-    select(-contains("_mean_NA")) %>%
-    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "score") &&
-      str_detect(.x, "_NA"), str_replace(.x, "_score", "_count"), .x)))
-
-  NA_plus <- Count_NA %>%
-    filter(strand=="+") %>%
-    select(gene, transcript, strand, contains("plus")) %>%
-    select(gene, transcript, strand, contains("NA")) %>%
-    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "plus") &&
-      str_detect(.x, "_NA"), str_replace(.x, ".plus_", "_strand_"), .x)))
-  NA_minus <- Count_NA %>%
-    filter(strand=="-") %>%
-    select(gene, transcript,strand, contains("minus")) %>%
-    select(gene, transcript,strand, contains("NA")) %>%
-    set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "minus") &&
-      str_detect(.x, "_NA"), str_replace(.x, ".minus_", "_strand_"), .x)))
-
-  rm(Count_NA)
-
-  NA_test <- bind_rows(NA_plus, NA_minus) %>% 
-    select(gene, transcript, strand, matches("_count_NA")) %>%
-    select(1:4)  %>%
-    dplyr::rename(Count_NA = matches("count_NA")) # I drop the other NA columns because it is the same value for all the conditions (NA depends on blacklist and unmmapable region) # nolint
-
-  return(NA_test)
-}
 
 !!!!!!!!!!!!!!!!!!!
 
