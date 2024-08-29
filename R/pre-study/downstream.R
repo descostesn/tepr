@@ -5,6 +5,12 @@
 # Descostes - R-4.4.1 - July 2024
 ####################################
 
+!!!!!!!!!!!!!!!!!!!!!!!
+THE SPLIT BY TRANSCRIPT IS REDUNDANT, MODIFY TO SPEED UP THE ANALYSIS
+!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 library("tidyr")
 library("dplyr")
 library("tidyselect")
@@ -576,12 +582,6 @@ Time difference of 5.873777 secs
 
 
 Time difference of 6.39923 secs
-> head(KneeID_res,2)
-          transcript knee_AUC_ctrl max_diff_Fx_ctrl knee_AUC_HS max_diff_Fx_HS
-1 ENST00000000233.10           200       0.00000000         115     0.01909246
-2  ENST00000000412.8            29       0.02321981          29     0.02434586
-
-
 
 
 > AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
