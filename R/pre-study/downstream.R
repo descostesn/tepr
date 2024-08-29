@@ -551,9 +551,7 @@ end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
 
-!!!!!!!!!!!!!!!!!!!!
-
-
+message("Retrieving knee and max")
 start_time <- Sys.time()
 kneedf <- kneeid(dfmeandiff, expdf, nbcputrans)
 end_time <- Sys.time()
@@ -562,40 +560,6 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 !!!!!!!!!!!!!!!!!!!
 
-
-Time difference of 1.000898 mins
-> head(AUC_allcondi_res,2)
-          transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
-1 ENST00000000233.10 ARF5      +          16 -16.1578100 0.01195204      0.160
-2  ENST00000000412.8 M6PR      -          46   0.4324419 0.99999997      0.025
-  MeanValueFull_ctrl    AUC_HS  p_AUC_HS D_AUC_HS MeanValueFull_HS
-1           4.877027 -8.839419 0.3274975    0.095         4.564402
-2           9.180490 -0.202357 0.9996971    0.035         9.789388
-  adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
-1        0.04014826       0.4433998
-2        1.00000000       1.0000000
-
-
-Time difference of 5.873777 secs
-> head(count_NA_res,2)
-# A tibble: 2 × 4
-  gene  transcript         strand Count_NA
-  <chr> <chr>              <chr>     <int>
-1 ARF5  ENST00000000233.10 +             0
-2 ESRRA ENST00000000442.11 +             0
-
-
-Time difference of 6.39923 secs
-
-
-> AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
-  by = c("transcript", "gene", "strand", "window_size"))  %>%
-  left_join(., KneeID_res, by = c("transcript"))  %>%
-  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
-> AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
-  summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
-  gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
-  left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
 > head(AUC_KS_Knee_NA.df,2)
 # A tibble: 2 × 27
   transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
@@ -624,8 +588,6 @@ Time difference of 6.39923 secs
 #   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
 #   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
 #   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
-
-
 
 
 > mean_value_control_full <- "MeanValueFull_ctrl"
