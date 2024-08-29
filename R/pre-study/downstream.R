@@ -80,6 +80,18 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
                 " should be unique, contact the developer.") # nolint
 }
 
+.createecdfmat <- function(scoremat, rounding, transtable, direction) {
+
+  ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
+    extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
+    fx <- ecdf(extendedcoordvec)(coordvec)
+    return(fx)
+  }, rounding, transtable$coord, simplify = TRUE)
+  colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
+  colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_") # nolint
+  return(ecdfmat)
+}
+
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
@@ -113,13 +125,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
         .checkunique(opposedirect, "opposite direction") # nolint
 
         ## For each column of the scoremat, compute ecdf
-        ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
-            extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
-            fx <- ecdf(extendedcoordvec)(coordvec)
-            return(fx)
-        }, rounding, transtable$coord, simplify = TRUE)
-        colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
-        colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_") # nolint
+        ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
 
         ## Remove opposite strand from transtable and erase strand substring
         transtable <- transtable[,-grep(opposedirect, colnames(transtable))]
