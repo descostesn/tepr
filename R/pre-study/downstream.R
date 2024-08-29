@@ -247,7 +247,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
-!!!!!!!!!!!!!!!!!!!!!!!! FIND WHAT IS HAPPENING ON THE FOLLOWING LINE FOR M6PR
                 diffres <- meandf - df$coord / nbwindows
                 colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
                 res <- cbind(meandf, diffres)
@@ -377,27 +376,50 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
 }
 
 !!!!!!!!!!!!!!!!!!!!
-> head(AUC_allcondi_res,2)
-          transcript gene strand window_size    AUC_ctrl p_AUC_ctrl D_AUC_ctrl
-1 ENST00000000233.10 ARF5      +          16 -16.1578100 0.01195204      0.160
-2  ENST00000000412.8 M6PR      -          46   0.4324419 0.99999997      0.025
-  MeanValueFull_ctrl    AUC_HS  p_AUC_HS D_AUC_HS MeanValueFull_HS
-1           4.877027 -8.839419 0.3274975    0.095         4.564402
-2           9.180490 -0.202357 0.9996971    0.035         9.789388
+> head(AUC_allcondi_res)
+          transcript    gene strand window_size    AUC_ctrl p_AUC_ctrl
+1 ENST00000000233.10    ARF5      +          16 -16.1578100 0.01195204
+2  ENST00000000412.8    M6PR      -          46   0.4324419 0.99999997
+3 ENST00000000442.11   ESRRA      +          56   5.1660784 0.46531984
+4  ENST00000001008.6   FKBP4      +          52  -0.1766325 0.14195987
+5  ENST00000001146.7 CYP26B1      -          93  -3.0554547 0.01637739
+6  ENST00000002125.9 NDUFAF7      +          87   3.6587823 0.92281679
+  D_AUC_ctrl MeanValueFull_ctrl    AUC_HS   p_AUC_HS D_AUC_HS MeanValueFull_HS
+1      0.160           4.877027 -8.839419 0.32749746    0.095        4.5644025
+2      0.025           9.180490 -0.202357 0.99969715    0.035        9.7893877
+3      0.085           3.896399  9.717586 0.14195987    0.115        2.8989286
+4      0.115           7.615390  2.618716 0.32749746    0.095       22.4691040
+5      0.155           0.170454 -9.178374 0.02984147    0.145        0.1724797
+6      0.055           3.684554  4.015115 0.92281679    0.055        4.0567575
   adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
-1        0.04014826       0.4433998
-2        1.00000000       1.0000000
-
+1        0.04014826      0.44339984
+2        1.00000000      1.00000000
+3        0.75024939      0.22618486
+4        0.31219088      0.44339984
+5        0.05270946      0.06157732
+6        1.00000000      0.97872529
 > me
-                           transcript gene strand   auc_ctrl pvalaucks_ctrl
-ENST00000000233.10 ENST00000000233.10 ARF5      + -16.084911     0.01195204
-ENST00000000412.8   ENST00000000412.8 M6PR      -  -1.696896     0.99719233
-                   stataucks_ctrl meanvaluefull_ctrl         transcript gene
-ENST00000000233.10           0.16           4.904205 ENST00000000233.10 ARF5
-ENST00000000412.8            0.04           9.388497  ENST00000000412.8 M6PR
+                           transcript    gene strand   auc_ctrl pvalaucks_ctrl
+ENST00000000233.10 ENST00000000233.10    ARF5      + -16.084911     0.01195204
+ENST00000000412.8   ENST00000000412.8    M6PR      -  -1.696896     0.99719233
+ENST00000000442.11 ENST00000000442.11   ESRRA      +   6.404168     0.22020556
+ENST00000001008.6   ENST00000001008.6   FKBP4      +  -1.528166     0.14195987
+ENST00000001146.7   ENST00000001146.7 CYP26B1      -  -3.599391     0.01637739
+ENST00000002125.9   ENST00000002125.9 NDUFAF7      +   4.056532     0.92281679
+                   stataucks_ctrl meanvaluefull_ctrl         transcript    gene
+ENST00000000233.10          0.160          4.9042046 ENST00000000233.10    ARF5
+ENST00000000412.8           0.040          9.3884972  ENST00000000412.8    M6PR
+ENST00000000442.11          0.105          4.2184169 ENST00000000442.11   ESRRA
+ENST00000001008.6           0.115          7.8080542  ENST00000001008.6   FKBP4
+ENST00000001146.7           0.155          0.1704871  ENST00000001146.7 CYP26B1
+ENST00000002125.9           0.055          3.7620525  ENST00000002125.9 NDUFAF7
                    strand    auc_HS pvalaucks_HS stataucks_HS meanvaluefull_HS
-ENST00000000233.10      + -8.578784    0.3274975        0.095         4.516663
-ENST00000000412.8       -  1.905293    0.9999907        0.030         9.681324
+ENST00000000233.10      + -8.578784   0.32749746        0.095        4.5166634
+ENST00000000412.8       -  1.905293   0.99999069        0.030        9.6813239
+ENST00000000442.11      +  9.541289   0.08786641        0.125        3.0152229
+ENST00000001008.6       +  1.957792   0.32749746        0.095       22.6997906
+ENST00000001146.7       - -8.725506   0.03968188        0.140        0.1724514
+ENST00000002125.9       +  4.842494   0.86428278        0.060        4.2083267
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
