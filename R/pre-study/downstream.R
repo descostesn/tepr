@@ -237,7 +237,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   return(matdiff)
 }
 
-
 .meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
     colnamevec, verbose) {
 
@@ -281,7 +280,6 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         if (verbose) message("Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
         idxcond <- .condcolidx(currentcond, df)
-
         ## Separating idx of column names by scores and Fx
         idxcondlist <- .idxscorefx(df, idxcond)
 
@@ -290,24 +288,15 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
             currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
-
         meandiffres <- do.call("cbind", meandifflist)
-
         return(meandiffres)
     }, resultsecdf, nbwindows, verbose)
-
     resmean <- do.call("cbind", rescondlist)
-
     ## Computing all differences on mean columns
-    ##   - "Diff_meanValue_ctrl_HS", "Diff_meanValue_HS_ctrl"
-    ##   - "Diff_meanFx_ctrl_HS", "Diff_meanFx_HS_ctrl"
     if (verbose) message("Commputing all differences on mean columns")
     matdiff <- .creatematdiff(condvec, resmean)
 
-    ## Combining the matrices with mean columns and differences of the mean
-    ## columns
     res <- cbind(resmean, matdiff)
-
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
