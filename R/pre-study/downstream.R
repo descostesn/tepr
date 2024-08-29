@@ -447,14 +447,20 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
 
 message("Computing the differences (d or delta) of AUC")
+start_time <- Sys.time()
 dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 
 # Calculate the Area Under Curve (AUC), All conditions vs y=x
 # Calculate Mean Value over the full gene body in All conditions.
 message("Computing the Area Under Curve (AUC)")
+start_time <- Sys.time()
 aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows,
   nbcpu = nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
 !!!!!!!!!!!!!!!!!!!!
 
