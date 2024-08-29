@@ -452,6 +452,7 @@ saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 
 # Calculate the Area Under Curve (AUC), All conditions vs y=x
 # Calculate Mean Value over the full gene body in All conditions.
+message("Computing the Area Under Curve (AUC)")
 aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows,
   nbcpu = nbcputrans)
 
