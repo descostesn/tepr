@@ -420,8 +420,6 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
 }
 
 
-
-
 ##################
 # MAIN
 ##################
@@ -437,7 +435,7 @@ message("Filtering transcripts based on expression") # nolint
 allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
 message("Calculating ECDF") # nolint
 start_time <- Sys.time()
-resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcpu)
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 resultsecdf <- resecdf[[1]]
@@ -449,12 +447,13 @@ dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
 
 message("Computing the differences (d or delta) of AUC")
-dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu)
+dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcputrans)
 saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 
 # Calculate the Area Under Curve (AUC), All conditions vs y=x
 # Calculate Mean Value over the full gene body in All conditions.
-aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows, nbcpu = nbcpu)
+aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows,
+  nbcpu = nbcputrans)
 
 !!!!!!!!!!!!!!!!!!!!
 
