@@ -21,7 +21,10 @@ library("pracma")
 alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 expthres <- 0.1
-nbcpu <- 20
+## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
+nbcpubg <- 8
+## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
+nbcputrans <- 20
 
 
 ##################
