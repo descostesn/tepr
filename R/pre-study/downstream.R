@@ -396,30 +396,24 @@ auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
 
   resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative,
     nbwindows) {
+      ## Computing AUC, pval, and stat for each condition
+      resauclist <- lapply(condvec, function(currentcond, transtab,
+        cumulative) {
+          ## Definition of column names
+          difffxname <- paste0("diff_Fx_", currentcond)
+          meanvalname <- paste0("mean_value_", currentcond)
+          meanfxname <- paste0("mean_Fx_", currentcond)
 
-            ## Computing AUC, pval, and stat for each condition
-            resauclist <- lapply(condvec, function(currentcond, transtab,
-                cumulative) {
-
-                  ## Definition of column names
-                  difffxname <- paste0("diff_Fx_", currentcond)
-                  meanvalname <- paste0("mean_value_", currentcond)
-                  meanfxname <- paste0("mean_Fx_", currentcond)
-
-                  ## Perform a kolmogorov-smirnoff test between the mean_Fx
-                  ## and the cumulative density
-                  resks <- suppressWarnings(ks.test(transtab[, meanfxname],
-                    cumulative))
-
-                  ## Build data.frame with auc information for the current
-                  ## transcript
-                  aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
-                    currentcond)
-                  return(aucdf)
-                }, transtab, cumulative)
-                aucdf <- do.call("cbind", resauclist)
-                return(aucdf)
-      }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
+          ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
+          resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
+          ## Build data.frame with auc information for the current transcript
+          aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
+            currentcond)
+          return(aucdf)
+      }, transtab, cumulative)
+      aucdf <- do.call("cbind", resauclist)
+      return(aucdf)
+  }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
 
   aucallconditions <- do.call("rbind", resdflist)
   return(aucallconditions)
