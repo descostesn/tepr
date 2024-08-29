@@ -87,7 +87,7 @@ do
     bedtools intersect -a bedgraphs/${filename}.$ext -b <( awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | \
     bedtools intersect -a stdin -b $blacklist -v) | sort -k1,1 -k2,2n > bedgraphs/withzeros/${filename}.nonzeros.$ext
 
-    echo "removing low mappability region"
+    echo "removing low mappability region (keeping high mappability)"
     bedtools intersect -a bedgraphs/withzeros/${filename}.nonzeros.${ext} -b $umapk50 -sorted | \
     awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > bedgraphs/mapHigh/${filename}.0.8.$ext
 
