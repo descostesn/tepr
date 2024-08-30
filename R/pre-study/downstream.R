@@ -5,11 +5,6 @@
 # Descostes - R-4.4.1 - July 2024
 ####################################
 
-!!!!!!!!!!!!!!!!!!!!!!!
-THE SPLIT BY TRANSCRIPT IS REDUNDANT, MODIFY TO SPEED UP THE ANALYSIS
-!!!!!!!!!!!!!!!!!!!!!!!
-
-
 
 library("tidyr")
 library("dplyr")
@@ -334,10 +329,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         return(infodf)
 }
 
-dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
+dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     dontcompare = NULL) {
 
-    bytranslist <- split(df, factor(df$transcript))
     condvec <- unique(expdf$condition)
     resdflist <- mclapply(bytranslist, function(transtab, condvec) {
 
@@ -394,10 +388,9 @@ dauc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1,
     return(aucdf)
 }
 
-auc_allconditions <- function(df, expdf, nbwindows, nbcpu = 1) {
+auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
 
   cumulative <- seq(1, nbwindows) / nbwindows
-  bytranslist <- split(df, factor(df$transcript))
   condvec <- unique(expdf$condition)
 
   resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative,
@@ -480,13 +473,9 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
     return(reslist)
 }
 
-kneeid <- function(dfmeandiff, expdf, nbcputrans, verbose = FALSE) {
+kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
 
   condvec <- unique(expdf$condition)
-
-  ## Splitting the table by each transcript
-  if (verbose) message("\t Splitting the table by each transcript") # nolint
-  transdflist <- split(dfmeandiff, factor(dfmeandiff$transcript))
 
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
       bycondreslist <- .retrievekneeandmax(condvec, transtable)
@@ -526,9 +515,12 @@ message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
 
+## Splitting result by transcripts
+bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
+
 message("Computing the differences (d or delta) of AUC")
 start_time <- Sys.time()
-dfaucallcond <- dauc_allconditions(dfmeandiff, expdf, nbwindows, nbcputrans)
+dfaucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
@@ -537,7 +529,7 @@ saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 # Calculate Mean Value over the full gene body in All conditions.
 message("Computing the Area Under Curve (AUC)")
 start_time <- Sys.time()
-aucallcond <- auc_allconditions(dfmeandiff, expdf, nbwindows,
+aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
   nbcpu = nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
@@ -553,7 +545,7 @@ saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
 
 message("Retrieving knee and max")
 start_time <- Sys.time()
-kneedf <- kneeid(dfmeandiff, expdf, nbcputrans)
+kneedf <- kneeid(bytranslistmean, expdf, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
