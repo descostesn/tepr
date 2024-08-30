@@ -511,12 +511,15 @@ resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
 saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
 
+start_time <- Sys.time()
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
 saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
-
 ## Splitting result by transcripts
+message("\t Splitting results by transcripts")
 bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
 message("Computing the differences (d or delta) of AUC")
 start_time <- Sys.time()
