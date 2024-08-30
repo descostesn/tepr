@@ -566,7 +566,7 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 #   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
 #   max_diff_Fx_HS <dbl>, Count_NA <int>
 
-
+!!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
 > head(tst_df,2)
 # A tibble: 2 × 33
   transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
@@ -581,7 +581,8 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 #   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
 #   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
 
-
+!!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
+!!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 > mean_value_control_full <- "MeanValueFull_ctrl"
 mean_value_stress <- "MeanValueFull_HS"
 AUC_ctrl <- "AUC_ctrl"
