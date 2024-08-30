@@ -523,7 +523,8 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
 message("Computing the differences (d or delta) of AUC")
 start_time <- Sys.time()
-dfaucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows, nbcputrans)
+dfaucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
+  nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
