@@ -605,9 +605,9 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       condvec <- unique(expdf$condition)
 
       ## For each transcript
-      mclapply(completbytrans, function(trans, condvec) {
+      updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
         ## For each condition
-        lapply(condvec, function(cond, trans) {
+        updownlist <- lapply(condvec, function(cond, trans) {
           kneecolname <- paste0("knee_AUC_", cond)
           meancolname <- paste0("mean_value_", cond)
 
@@ -617,12 +617,16 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
           upmean <- mean(trans[idxup, meancolname])
 
           idxdown <- which(trans$coord >= trans[, kneecolname] &
-                            trans$coord <= max(transcoord))
+                            trans$coord <= max(trans$coord))
           if (isTRUE(all.equal(length(idxdown), 0)))
             stop("Problem in retrieving idxdown, contact the developer.")
           downmean <- mean(trans[idxdown, meancolname])
-
+          res <- data.frame(trans$transcript[1], upmean, downmean)
+          colnames(res) <- c("transcript", paste0("upmean", cond),
+            paste0("downmean", cond))
+          return(res)
         }, trans)
+        return(do.call("cbind", updownlist))
       }, condvec, mc.cores = nbcpu)
  
 }
