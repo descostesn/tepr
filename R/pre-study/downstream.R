@@ -480,6 +480,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
           transcript = unique(transtable$transcript), strand = str)
         return(cbind(info, res))
     }, scorecolvec, condvec, mc.cores = nbcpu)
+
   return(do.call("rbind", nabytranslist))
 }
 
@@ -590,10 +591,14 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 [21] "knee_AUC_HS"                       "max_diff_Fx_HS"
 [23] "Count_NA"
 
-attenuation <- function(allaucdf, matnatrans, kneedf) {}
-allaucres <- allauc  %>% #nolint !!
-  left_join(., KneeID_res, by = c("transcript"))  %>% 
-  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
+attenuation <- function(allaucdf, kneedf, matnatrans, verbose = TRUE) {
+
+      if (verbose) message("\t Merging tables")
+      allaucknee <- merge(allaucdf, kneedf, by = "transcript")
+      mergecolnames <- c("gene", "transcript", "strand")
+      allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
+
+}
 
 AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
