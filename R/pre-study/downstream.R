@@ -488,20 +488,18 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 .retrievekneeandmax <- function(condvec, transtable) { # nolint
 
   reslist <- lapply(condvec, function(cond, transtable) {
-
     difffxname <- paste0("diff_Fx_", cond)
     difffxvec <- transtable[, difffxname]
-
     ## If equality of difference within the same gene it takes the closest
     ## knee from the TSS # nolint
     resrow <- transtable[which(difffxvec == max(difffxvec)), ] %>% # nolint
           dplyr::slice_min(coord, n = 1) # nolint
     res <- data.frame(resrow$coord, resrow[, difffxname])
     colnames(res) <- c(paste0("knee_AUC_", cond), paste0("max_", difffxname))
-
     return(res)
-      }, transtable)
-    return(reslist)
+  }, transtable)
+
+  return(reslist)
 }
 
 kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
@@ -556,7 +554,7 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 ## Curve (AUC), All conditions vs y=x
 ## Calculate Mean Value over the full gene body in All conditions.
 message("AUC and differences")
-allauc <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -592,8 +590,8 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 [21] "knee_AUC_HS"                       "max_diff_Fx_HS"
 [23] "Count_NA"
 
-allaucres <- dplyr::(aucallcond, daucallcond, !!
-      by = c("transcript", "gene", "strand"))  %>% #nolint !!
+attenuation <- function(allaucdf, matnatrans, kneedf) {}
+allaucres <- allauc  %>% #nolint !!
   left_join(., KneeID_res, by = c("transcript"))  %>% 
   left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
 
