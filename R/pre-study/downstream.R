@@ -622,15 +622,22 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
           if (isTRUE(all.equal(length(idxdown), 0)))
             stop("Problem in retrieving idxdown, contact the developer.")
           downmean <- mean(trans[idxdown, meancolname])
-          res <- data.frame(trans$transcript[1], upmean, downmean)
-          colnames(res) <- c("transcript", paste0("upmean", cond),
-            paste0("downmean", cond))
+
+          ## Calculating attenuation
+          att <- 100 - downmean/upmean*100
+
+          res <- data.frame(trans$transcript[1], upmean, downmean, att)
+          colnames(res) <- c("transcript", paste0("upmean-", cond),
+            paste0("downmean-", cond), paste0("attenuation-", cond))
           return(res)
         }, trans)
         return(do.call("cbind", updownlist))
       }, condvec, mc.cores = nbcpu)
       updowndf <- do.call("rbind", updownbytranslist)
       updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+
+      ## Merging attenuation to the complete table
+      auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
  
 }
 
