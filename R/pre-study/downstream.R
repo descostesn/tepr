@@ -329,7 +329,7 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         return(infodf)
 }
 
-dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
+.dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     dontcompare = NULL) {
 
     condvec <- unique(expdf$condition)
@@ -388,7 +388,7 @@ dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     return(aucdf)
 }
 
-auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
+.auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
 
   cumulative <- seq(1, nbwindows) / nbwindows
   condvec <- unique(expdf$condition)
@@ -425,7 +425,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
 
     if (verbose) message("\t Computing the differences (d or delta) of AUC")
     start_time <- Sys.time()
-    daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
+    daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
       nbcputrans)
     end_time <- Sys.time()
     if (verbose) message("\t\t ## Analysis performed in: ",
@@ -436,7 +436,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     ## Calculate Mean Value over the full gene body in All conditions.
     if (verbose) message("\t Computing the Area Under Curve (AUC)")
     start_time <- Sys.time()
-    aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
+    aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
       nbcpu = nbcputrans)
     end_time <- Sys.time()
     if (verbose) message("\t\t ## Analysis performed in: ",
