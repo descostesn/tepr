@@ -577,30 +577,23 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 !!!!!!!!!!!!!!!!!
 
 
-> colnames(AUC_KS_Knee_NA.df)
- [1] "transcript"                        "gene"
- [3] "strand"                            "window_size"
- [5] "AUC_ctrl"                          "p_AUC_ctrl"
- [7] "D_AUC_ctrl"                        "MeanValueFull_ctrl"
- [9] "AUC_HS"                            "p_AUC_HS"
-[11] "D_AUC_HS"                          "MeanValueFull_HS"
-[13] "adjFDR_p_AUC_ctrl"                 "adjFDR_p_AUC_HS"
-[15] "dAUC_Diff_meanFx_HS_ctrl"          "p_dAUC_Diff_meanFx_HS_ctrl"
-[17] "D_dAUC_Diff_meanFx_HS_ctrl"        "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
-[19] "knee_AUC_ctrl"                     "max_diff_Fx_ctrl"
-[21] "knee_AUC_HS"                       "max_diff_Fx_HS"
-[23] "Count_NA"
 
-attenuation <- function(allaucdf, kneedf, matnatrans, verbose = TRUE) {
+attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean,
+  verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
       allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
-
+  #     bytranslistmean %%
+  #       summarise( chr=seqnames[1], coor1=min(start), coor2=max(end), strand=strand[1],
+  # gene=gene[1], transcript=transcript[1], size=coor2-coor1+1)
 }
 
-AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
+
+
+
+AUC_KS_Knee_NA.df <- bytranslistmean %>% group_by(transcript) %>%
   summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
   gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
   left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
@@ -682,6 +675,20 @@ Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 #   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
 #   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
 #   max_diff_Fx_HS <dbl>, Count_NA <int>
+
+
+ [1] "gene"                       "transcript"
+ [3] "strand"                     "auc_ctrl"
+ [5] "pvalaucks_ctrl"             "stataucks_ctrl"
+ [7] "meanvaluefull_ctrl"         "auc_HS"
+ [9] "pvalaucks_HS"               "stataucks_HS"
+[11] "meanvaluefull_HS"           "windsize"
+[13] "deltadauc_mean_Fx_HS"       "pvaldeltadaucks_mean_Fx_HS"
+[15] "statdeltadaucks_mean_Fx_HS" "knee_AUC_ctrl"
+[17] "max_diff_Fx_ctrl"           "knee_AUC_HS"
+[19] "max_diff_Fx_HS"             "ctrl_NA"
+[21] "HS_NA"
+
 
 !!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
 > head(tst_df,2)
