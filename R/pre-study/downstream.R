@@ -600,7 +600,30 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
 
       ## Splitting the previous table by transcript
+      if (verbose) message("Splitting the previous table by transcript")
       completbytrans <- split(complet, factor(complet$transcript))
+      condvec <- unique(expdf$condition)
+
+      ## For each transcript
+      mclapply(completbytrans, function(trans, condvec) {
+        ## For each condition
+        lapply(condvec, function(cond, trans) {
+          kneecolname <- paste0("knee_AUC_", cond)
+          meancolname <- paste0("mean_value_", cond)
+
+          idxup <- which(trans$coord <= trans[, kneecolname])
+          if (isTRUE(all.equal(length(idxup), 0)))
+            stop("Problem in retrieving idxup, contact the developer.")
+          upmean <- mean(trans[idxup, meancolname])
+
+          idxdown <- which(trans$coord >= trans[, kneecolname] &
+                            trans$coord <= max(transcoord))
+          if (isTRUE(all.equal(length(idxdown), 0)))
+            stop("Problem in retrieving idxdown, contact the developer.")
+          downmean <- mean(trans[idxdown, meancolname])
+
+        }, trans)
+      }, condvec, mc.cores = nbcpu)
  
 }
 
