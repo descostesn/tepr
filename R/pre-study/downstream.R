@@ -605,6 +605,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       condvec <- unique(expdf$condition)
 
       ## For each transcript
+      if (verbose) message("Computing up and down mean")
       updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
         ## For each condition
         updownlist <- lapply(condvec, function(cond, trans) {
@@ -628,6 +629,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
         }, trans)
         return(do.call("cbind", updownlist))
       }, condvec, mc.cores = nbcpu)
+      updowndf <- do.call("rbind", updownbytranslist)
+      updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
  
 }
 
