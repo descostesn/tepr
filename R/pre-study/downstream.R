@@ -415,6 +415,8 @@ auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
   }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
 
   aucallconditions <- do.call("rbind", resdflist)
+  idxdup <- which(duplicated(colnames(aucallconditions)))
+  aucallconditions <- aucallconditions[, -idxdup]
   return(aucallconditions)
 }
 
@@ -521,23 +523,7 @@ bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
-message("Computing the differences (d or delta) of AUC")
-start_time <- Sys.time()
-daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
-  nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
 
-# Calculate the Area Under Curve (AUC), All conditions vs y=x
-# Calculate Mean Value over the full gene body in All conditions.
-message("Computing the Area Under Curve (AUC)")
-start_time <- Sys.time()
-aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
-  nbcpu = nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds")
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -557,12 +543,42 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 
 !!!!!!!!!!!!!!!!!
-aucallcond
-dfaucallcond
-AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
-  by = c("transcript", "gene", "strand", "window_size"))  %>% 
+
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+  dontcompare = NULL, verbose = TRUE) {
+
+    if (verbose) message("\t Computing the differences (d or delta) of AUC")
+    start_time <- Sys.time()
+    daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
+
+    ## Calculate the Area Under Curve (AUC), All conditions vs y=x
+    ## Calculate Mean Value over the full gene body in All conditions.
+    if (verbose) message("\t Computing the Area Under Curve (AUC)")
+    start_time <- Sys.time()
+    aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcpu = nbcputrans)
+    end_time <- Sys.time()
+    message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds")
+
+    ## Merging the two tables by transcript
+    merge(aucallcond, daucallcond, by = c("gene", "transcript", "strand"))
+    if (verbose) message("\t Merging tables")
+    allaucres <- dplyr::left_join(aucallcond, daucallcond,
+      by = c("transcript", "gene", "strand"))  %>% #nolint
   left_join(., KneeID_res, by = c("transcript"))  %>% 
   left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
+
+}
+
+
+
+
 
 > colnames(aucallcond)
  [1] "transcript"         "gene"               "strand"
@@ -591,6 +607,10 @@ AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
 [21] "knee_AUC_HS"                       "max_diff_Fx_HS"
 [23] "Count_NA"
 
+allaucres <- dplyr::(aucallcond, daucallcond, !!
+      by = c("transcript", "gene", "strand"))  %>% #nolint !!
+  left_join(., KneeID_res, by = c("transcript"))  %>% 
+  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
 
 AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
