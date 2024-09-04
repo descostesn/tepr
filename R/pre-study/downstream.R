@@ -523,7 +523,7 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
 message("Computing the differences (d or delta) of AUC")
 start_time <- Sys.time()
-dfaucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
+daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
   nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
@@ -557,6 +557,54 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 
 !!!!!!!!!!!!!!!!!
+aucallcond
+dfaucallcond
+AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
+  by = c("transcript", "gene", "strand", "window_size"))  %>% 
+  left_join(., KneeID_res, by = c("transcript"))  %>% 
+  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
+
+> colnames(aucallcond)
+ [1] "transcript"         "gene"               "strand"
+ [4] "auc_ctrl"           "pvalaucks_ctrl"     "stataucks_ctrl"
+ [7] "meanvaluefull_ctrl" "transcript"         "gene"
+[10] "strand"             "auc_HS"             "pvalaucks_HS"
+[13] "stataucks_HS"       "meanvaluefull_HS"
+> daucallcond <- dfaucallcond
+> colnames(daucallcond)
+[1] "transcript"                 "gene"
+[3] "strand"                     "windsize"
+[5] "deltadauc_mean_Fx_HS"       "pvaldeltadaucks_mean_Fx_HS"
+[7] "statdeltadaucks_mean_Fx_HS"
+
+> colnames(AUC_KS_Knee_NA.df)
+ [1] "transcript"                        "gene"
+ [3] "strand"                            "window_size"
+ [5] "AUC_ctrl"                          "p_AUC_ctrl"
+ [7] "D_AUC_ctrl"                        "MeanValueFull_ctrl"
+ [9] "AUC_HS"                            "p_AUC_HS"
+[11] "D_AUC_HS"                          "MeanValueFull_HS"
+[13] "adjFDR_p_AUC_ctrl"                 "adjFDR_p_AUC_HS"
+[15] "dAUC_Diff_meanFx_HS_ctrl"          "p_dAUC_Diff_meanFx_HS_ctrl"
+[17] "D_dAUC_Diff_meanFx_HS_ctrl"        "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+[19] "knee_AUC_ctrl"                     "max_diff_Fx_ctrl"
+[21] "knee_AUC_HS"                       "max_diff_Fx_HS"
+[23] "Count_NA"
+
+
+AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
+  summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
+  gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
+  left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
+tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
+
+
+
+
+AUC_KS_Knee_NA_DF=!!
+concat_df=dfmeandiff
+pval=0.1
+Replaced="NOT"
 Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 
   res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
