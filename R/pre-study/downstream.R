@@ -420,6 +420,35 @@ auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
   return(aucallconditions)
 }
 
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+  dontcompare = NULL, verbose = TRUE) {
+
+    if (verbose) message("\t Computing the differences (d or delta) of AUC")
+    start_time <- Sys.time()
+    daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds") # nolint
+
+    ## Calculate the Area Under Curve (AUC), All conditions vs y=x
+    ## Calculate Mean Value over the full gene body in All conditions.
+    if (verbose) message("\t Computing the Area Under Curve (AUC)")
+    start_time <- Sys.time()
+    aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcpu = nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds") # nolint
+
+    ## Merging the two tables by transcript
+    if (verbose) message("Merging results")
+    allauc <- merge(aucallcond, daucallcond,
+      by = c("gene", "transcript", "strand"))
+    return(allauc)
+}
 
 
 countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
@@ -523,7 +552,11 @@ bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
-
+## Computing the differences (d or delta) of AUC and calculate the Area Under
+## Curve (AUC), All conditions vs y=x
+## Calculate Mean Value over the full gene body in All conditions.
+message("AUC and differences")
+allauc <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -544,54 +577,6 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 !!!!!!!!!!!!!!!!!
 
-allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
-  dontcompare = NULL, verbose = TRUE) {
-
-    if (verbose) message("\t Computing the differences (d or delta) of AUC")
-    start_time <- Sys.time()
-    daucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcputrans)
-    end_time <- Sys.time()
-    if (verbose) message("\t\t ## Analysis performed in: ",
-      end_time - start_time) # nolint
-    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
-
-    ## Calculate the Area Under Curve (AUC), All conditions vs y=x
-    ## Calculate Mean Value over the full gene body in All conditions.
-    if (verbose) message("\t Computing the Area Under Curve (AUC)")
-    start_time <- Sys.time()
-    aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcpu = nbcputrans)
-    end_time <- Sys.time()
-    message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-    #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds")
-
-    ## Merging the two tables by transcript
-    merge(aucallcond, daucallcond, by = c("gene", "transcript", "strand"))
-    if (verbose) message("\t Merging tables")
-    allaucres <- dplyr::left_join(aucallcond, daucallcond,
-      by = c("transcript", "gene", "strand"))  %>% #nolint
-  left_join(., KneeID_res, by = c("transcript"))  %>% 
-  left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
-
-}
-
-
-
-
-
-> colnames(aucallcond)
- [1] "transcript"         "gene"               "strand"
- [4] "auc_ctrl"           "pvalaucks_ctrl"     "stataucks_ctrl"
- [7] "meanvaluefull_ctrl" "transcript"         "gene"
-[10] "strand"             "auc_HS"             "pvalaucks_HS"
-[13] "stataucks_HS"       "meanvaluefull_HS"
-> daucallcond <- dfaucallcond
-> colnames(daucallcond)
-[1] "transcript"                 "gene"
-[3] "strand"                     "windsize"
-[5] "deltadauc_mean_Fx_HS"       "pvaldeltadaucks_mean_Fx_HS"
-[7] "statdeltadaucks_mean_Fx_HS"
 
 > colnames(AUC_KS_Knee_NA.df)
  [1] "transcript"                        "gene"
