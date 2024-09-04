@@ -579,12 +579,23 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean,
-  verbose = TRUE) {
+  nbcpu = 1, verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
       allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
+      summarydflist <- mclapply(bytranslistmean, function(trans) {
+        coor1 <- min(trans$start)
+        coor2 <- max(trans$end)
+        return(data.frame(chr=trans$seqnames[1], coor1, coor2,
+          strand=trans$strand[1], gene=trans$gene[1],
+          transcript=trans$transcript[1], size=coor2-coor1+1))
+      }, mc.cores = nbcpu)
+      summarydf <- do.call("rbind", summarydflist)
+      auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
+ 
+ 
   #     bytranslistmean %%
   #       summarise( chr=seqnames[1], coor1=min(start), coor2=max(end), strand=strand[1],
   # gene=gene[1], transcript=transcript[1], size=coor2-coor1+1)
