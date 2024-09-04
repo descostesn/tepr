@@ -578,8 +578,8 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 
 
-attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean,
-  nbcpu = 1, verbose = TRUE) {
+attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = 1, verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
@@ -594,25 +594,17 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean,
       }, mc.cores = nbcpu)
       summarydf <- do.call("rbind", summarydflist)
       auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
+
+      ## Merging the mean table with the previous one
+      if (verbose) message("Merging detailed mean table with summary")
+      complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
  
- 
-  #     bytranslistmean %%
-  #       summarise( chr=seqnames[1], coor1=min(start), coor2=max(end), strand=strand[1],
-  # gene=gene[1], transcript=transcript[1], size=coor2-coor1+1)
 }
 
 
 
 
-AUC_KS_Knee_NA.df <- bytranslistmean %>% group_by(transcript) %>%
-  summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
-  gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
-  left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
 tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
-
-
-
-
 AUC_KS_Knee_NA_DF=!!
 concat_df=dfmeandiff
 pval=0.1
