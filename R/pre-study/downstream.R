@@ -598,6 +598,9 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       ## Merging the mean table with the previous one
       if (verbose) message("Merging detailed mean table with summary")
       complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
+
+      ## Splitting the previous table by transcript
+      completbytrans <- split(complet, factor(complet$transcript))
  
 }
 
