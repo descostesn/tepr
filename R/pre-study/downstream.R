@@ -591,6 +591,42 @@ completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   return(summarydf)
 }
 
+.computeupdown <- function(completbytrans, condvec, nbcpu) {
+
+  updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+    ## For each condition
+    updownlist <- lapply(condvec, function(cond, trans) {
+      kneecolname <- paste0("knee_AUC_", cond)
+      meancolname <- paste0("mean_value_", cond)
+
+      idxup <- which(trans$coord <= trans[, kneecolname])
+      if (isTRUE(all.equal(length(idxup), 0)))
+        stop("Problem in retrieving idxup, contact the developer.")
+      upmean <- mean(trans[idxup, meancolname])
+
+      idxdown <- which(trans$coord >= trans[, kneecolname] &
+                          trans$coord <= max(trans$coord))
+      if (isTRUE(all.equal(length(idxdown), 0)))
+        stop("Problem in retrieving idxdown, contact the developer.")
+      downmean <- mean(trans[idxdown, meancolname])
+
+      ## Calculating attenuation
+      att <- 100 - downmean / upmean * 100
+
+      res <- data.frame(trans$transcript[1], upmean, downmean, att)
+      colnames(res) <- c("transcript", paste0("upmean-", cond),
+              paste0("downmean-", cond), paste0("attenuation-", cond))
+      return(res)
+    }, trans)
+
+    return(do.call("cbind", updownlist))
+  }, condvec, mc.cores = nbcpu)
+  
+  updowndf <- do.call("rbind", updownbytranslist)
+  updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+  return(updowndf)
+}
+
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, verbose = TRUE) {
 
@@ -615,35 +651,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
       ## For each transcript
       if (verbose) message("Computing up and down mean")
-      updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
-        ## For each condition
-        updownlist <- lapply(condvec, function(cond, trans) {
-          kneecolname <- paste0("knee_AUC_", cond)
-          meancolname <- paste0("mean_value_", cond)
-
-          idxup <- which(trans$coord <= trans[, kneecolname])
-          if (isTRUE(all.equal(length(idxup), 0)))
-            stop("Problem in retrieving idxup, contact the developer.")
-          upmean <- mean(trans[idxup, meancolname])
-
-          idxdown <- which(trans$coord >= trans[, kneecolname] &
-                            trans$coord <= max(trans$coord))
-          if (isTRUE(all.equal(length(idxdown), 0)))
-            stop("Problem in retrieving idxdown, contact the developer.")
-          downmean <- mean(trans[idxdown, meancolname])
-
-          ## Calculating attenuation
-          att <- 100 - downmean/upmean*100
-
-          res <- data.frame(trans$transcript[1], upmean, downmean, att)
-          colnames(res) <- c("transcript", paste0("upmean-", cond),
-            paste0("downmean-", cond), paste0("attenuation-", cond))
-          return(res)
-        }, trans)
-        return(do.call("cbind", updownlist))
-      }, condvec, mc.cores = nbcpu)
-      updowndf <- do.call("rbind", updownbytranslist)
-      updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+      updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
 
       ## Merging attenuation to the complete table
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
