@@ -693,6 +693,28 @@ filterauc = TRUE; pval = 0.05;
   filterwindows = TRUE; winthres = 50; filternbna = TRUE; nathres = 20;
   filterfullmean = TRUE; fullthres = 0.5
 
+.filterauc <- function(colnamevec, completedf, pval, verbose) {
+
+  ## Retrieving indexes of columns with pval auc and attenuation
+  idxpaucvec <- grep("pvalaucks", colnamevec)
+  idxattvec <- grep("attenuation", colnamevec)
+  ## Replace the attenuation values if pval auc > pval
+  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
+    idxna <- which(tab[, idxpauc] > pval)
+    lna <- length(idxna)
+
+    if (!isTRUE(all.equal(lna, 0))) {
+      if (verbose) message("\t\t ", lna, "/", nrow(tab))
+      tab[idxna, idxatt] <- NA
+    }
+    return(tab[, idxatt])
+  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
+      SIMPLIFY = FALSE)
+  replacedf <- do.call("cbind", colattlist)
+  completedf[, idxattvec] <- replacedf
+  return(completedf)
+}
+
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5) {
@@ -702,26 +724,8 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
 
   ## Filter attenuation values based on pval AUC
   if (filterauc) {
-
     message("\t Replacing non-significant auc by NA")
-
-    ## Retrieving indexes of columns with pval auc and attenuation
-    idxpaucvec <- grep("pvalaucks", colnamevec)
-    idxattvec <- grep("attenuation", colnamevec)
-
-    ## Replace the attenuation values if pval auc > pval
-    colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-      idxna <- which(tab[, idxpauc] > pval)
-      lna <- length(idxna)
-      if (!isTRUE(all.equal(lna, 0))) {
-        if (verbose) message("\t\t ", lna, "/", nrow(tab))
-        tab[idxna, idxatt] <- NA
-      }
-      return(tab[, idxatt])
-    }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
-      SIMPLIFY = FALSE)
-    replacedf <- do.call("cbind", colattlist)
-    completedf[, idxattvec] <- replacedf
+    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
   }
 
   ## Keeping rows with a window size > winthres
