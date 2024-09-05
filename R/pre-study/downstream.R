@@ -623,7 +623,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   idxattvec <- grep("attenuation", colnamevec)
   ## Replace the attenuation values if pval auc > pval
   colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-    idxna <- which(tab[, idxpauc] > pval)
+    idxna <- which(tab[, idxpauc] < pval)
     lna <- length(idxna)
 
     if (!isTRUE(all.equal(lna, 0))) {
@@ -668,7 +668,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
-  filterfullmean = TRUE, fullthres = 0.5, verbose = TRUE) {
+  filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
+  daucfdrthres = 0.05, verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -703,8 +704,20 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
 
+  ## Keeping the lines having a fdr auc < aucfdrthres
+  if (filterdaucfdr) {
+    if (verbose) message("\t Keeping rows with fdr auc higher than ",
+      daucfdrthres)
+    idxcol <- grep("adjFDR_pvaldeltadaucks", colnames(completedf))
+    idxkeep <- which(completedf[, idxcol] < daucfdrthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had a delta auc fdr lower than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+  }
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-ADD FILTERING ON FDR
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
+    !!sym(p_value_theoritical)> 0.1
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   return(completedf)
 }
@@ -782,6 +795,4 @@ saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
 
 !!!!!!!!!!!!!!!!!
 
-p_value_theoritical<- "adjFDR_p_AUC_ctrl"
-    !!sym(p_value_theoritical)> 0.1
     
