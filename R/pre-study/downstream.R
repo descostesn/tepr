@@ -703,6 +703,10 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
       "fullmeanthres")
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ADD FILTERING ON FDR
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   return(completedf)
 }
 
