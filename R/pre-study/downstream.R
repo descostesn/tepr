@@ -597,6 +597,96 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
+.filterauc <- function(colnamevec, completedf, pval, verbose) {
+
+  ## Retrieving indexes of columns with pval auc and attenuation
+  idxpaucvec <- grep("pvalaucks", colnamevec)
+  idxattvec <- grep("attenuation", colnamevec)
+  ## Replace the attenuation values if pval auc > pval
+  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
+    idxna <- which(tab[, idxpauc] > pval)
+    lna <- length(idxna)
+
+    if (!isTRUE(all.equal(lna, 0))) {
+      if (verbose) message("\t\t ", lna, "/", nrow(tab))
+      tab[idxna, idxatt] <- NA
+    }
+    return(tab[, idxatt])
+  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
+      SIMPLIFY = FALSE)
+  replacedf <- do.call("cbind", colattlist)
+  completedf[, idxattvec] <- replacedf
+  return(completedf)
+}
+
+.filternbna <- function(colnamevec, completedf, nathres) {
+
+  idxnavec <- grep("_NA", colnamevec)
+  matna <- completedf[, idxnavec]
+  if (length(idxnavec) < 2)
+    matna <- as.matrix(matna)
+  idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
+  if (isTRUE(all.equal(length(idxkeep), 0)))
+    stop("No rows had a number of NA lower or equal to ", nathres, ". You",
+        " might want to increase the threshold.")
+  completedf <- completedf[idxkeep, ]
+  return(completedf)
+}
+
+.filterfullmean <- function(colnamevec, completedf, fullthres) {
+
+    idxfull <- grep("meanvaluefull", colnamevec)
+    matmean <- completedf[, idxfull]
+    if (idxfull < 2)
+      matmean <- as.matrix(matmean)
+    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had all full mean higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+    return(completedf)
+}
+
+resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
+  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
+  filterfullmean = TRUE, fullthres = 0.5, verbose = TRUE) {
+
+  ## Retrieve column names of completedf
+  colnamevec <- colnames(completedf)
+
+  ## Filter attenuation values based on pval AUC
+  if (filterauc) {
+    message("\t Replacing non-significant auc by NA")
+    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
+  }
+
+  ## Keeping rows with a window size > winthres
+  if (filterwindows) {
+    if (verbose) message("\t Keeping rows with a window size > ", winthres)
+    idxkeep <- which(completedf$size > winthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows have a window size higher than ", winthres, ". you might ",
+        "want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+  }
+
+  ## Keeping rows if at least one condition has cond_NA < nathres
+  if (filternbna) {
+    if (verbose) message("Keeping rows if at least one condition has cond_NA",
+      "< nathres")
+    completedf <- .filternbna(colnamevec, completedf, nathres)
+  }
+
+  ## Keeping rows if full means higher than fullmeanthres
+  if (filterfullmean) {
+    if (verbose) message("Keeping rows if full means higher than fullmeanthres")
+    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
+  }
+  return(completedf)
+}
+
+
+
 
 ##################
 # MAIN
@@ -689,97 +779,7 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
-filterauc = TRUE; pval = 0.05;
-  filterwindows = TRUE; winthres = 50; filternbna = TRUE; nathres = 20;
-  filterfullmean = TRUE; fullthres = 0.5
 
-.filterauc <- function(colnamevec, completedf, pval, verbose) {
-
-  ## Retrieving indexes of columns with pval auc and attenuation
-  idxpaucvec <- grep("pvalaucks", colnamevec)
-  idxattvec <- grep("attenuation", colnamevec)
-  ## Replace the attenuation values if pval auc > pval
-  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-    idxna <- which(tab[, idxpauc] > pval)
-    lna <- length(idxna)
-
-    if (!isTRUE(all.equal(lna, 0))) {
-      if (verbose) message("\t\t ", lna, "/", nrow(tab))
-      tab[idxna, idxatt] <- NA
-    }
-    return(tab[, idxatt])
-  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
-      SIMPLIFY = FALSE)
-  replacedf <- do.call("cbind", colattlist)
-  completedf[, idxattvec] <- replacedf
-  return(completedf)
-}
-
-.filternbna <- function(colnamevec, completedf, nathres) {
-
-  idxnavec <- grep("_NA", colnamevec)
-  matna <- completedf[, idxnavec]
-  if (length(idxnavec) < 2)
-    matna <- as.matrix(matna)
-  idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
-  if (isTRUE(all.equal(length(idxkeep), 0)))
-    stop("No rows had a number of NA lower or equal to ", nathres, ". You",
-        " might want to increase the threshold.")
-  completedf <- completedf[idxkeep, ]
-  return(completedf)
-}
-
-.filterfullmean <- function(colnamevec, completedf, fullthres) {
-      
-    idxfull <- grep("meanvaluefull", colnamevec)
-    matmean <- completedf[, idxfull]
-    if (idxfull < 2)
-      matmean <- as.matrix(matmean)
-    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had all full mean higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-    return(completedf)
-}
-
-resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
-  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
-  filterfullmean = TRUE, fullthres = 0.5) {
-
-  ## Retrieve column names of completedf
-  colnamevec <- colnames(completedf)
-
-  ## Filter attenuation values based on pval AUC
-  if (filterauc) {
-    message("\t Replacing non-significant auc by NA")
-    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
-  }
-
-  ## Keeping rows with a window size > winthres
-  if (filterwindows) {
-    if (verbose) message("\t Keeping rows with a window size > ", winthres)
-    idxkeep <- which(completedf$size > winthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows have a window size higher than ", winthres, ". you might ",
-        "want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-  }
-
-  ## Keeping rows if at least one condition has cond_NA < nathres
-  if (filternbna) {
-    if (verbose) message("Keeping rows if at least one condition has cond_NA",
-      "< nathres")
-    completedf <- .filternbna(colnamevec, completedf, nathres)
-  }
-
-  ## Keeping rows if full means higher than fullmeanthres
-  if (filterfullmean) {
-    if (verbose) message("Keeping rows if full means higher than fullmeanthres")
-    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
-  }
-  return(completedf)
-}
 
 
 
