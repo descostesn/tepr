@@ -758,67 +758,6 @@ saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
 
 !!!!!!!!!!!!!!!!!
 
-
-
-
-
-
-
-!!!!!!!!!!!!!!!!!!!
-
-
-
-!!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
-> head(tst_df,2)
-# A tibble: 2 × 33
-  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
-# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
-
-!!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
-!!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
-
-
-
-
-
-> mean_value_control_full <- "MeanValueFull_ctrl"
-mean_value_stress <- "MeanValueFull_HS"
-AUC_ctrl <- "AUC_ctrl"
-AUC_stress <- "AUC_HS"
-p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 p_value_theoritical<- "adjFDR_p_AUC_ctrl"
-tst_df <- tst_df %>%
-  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
-    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
-    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
-  relocate(Universe, .before = 1)
-tst_df <- tst_df %>% mutate(
-    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
-    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
-  ) %>% relocate(Group, .before = 2)
-> head(tst_df)
-# A tibble: 6 × 35
-  Universe Group   transcript chr    coor1  coor2 strand gene   size window_size
-  <lgl>    <chr>   <chr>      <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>
-1 FALSE    NA      ENST00000… chr7  1.28e8 1.28e8 +      ARF5   3290          16
-2 FALSE    NA      ENST00000… chr12 8.94e6 8.95e6 -      M6PR   9285          46
-3 TRUE     Outgro… ENST00000… chr11 6.43e7 6.43e7 +      ESRRA 11220          56
-4 TRUE     Outgro… ENST00000… chr12 2.79e6 2.81e6 +      FKBP4 10454          52
-5 FALSE    NA      ENST00000… chr2  7.21e7 7.21e7 -      CYP2… 18625          93
-6 TRUE     Outgro… ENST00000… chr2  3.72e7 3.72e7 +      NDUF… 17503          87
-# ℹ 25 more variables: AUC_ctrl <dbl>, p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
+    !!sym(p_value_theoritical)> 0.1
+    
