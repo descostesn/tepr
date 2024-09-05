@@ -689,18 +689,38 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
-resfilter <- function(completedf, filterauc = TRUE) {
+resfilter <- function(completedf, filterauc = TRUE, pval = 0.05) {
+
+  ## Retrieve column names of completedf
+  colnamevec <- colnames(completedf)
 
   ## Filter attenuation values based on pval AUC
   if (filterauc) {
+
     message("\t Replacing non-significant auc by NA")
-    idxpauc <- grep("pvalaucks", colnames(completedf))
-    if (!isTRUE(all.equal(length(idxpauc), 2)))
-      stop("The pval auc should be in two columns. Contact the developer.")
-    idxnalist <- lapply(idxpauc, function(idx, tab) {}, completedf)
-    
+
+    ## Retrieving indexes of columns with pval auc and attenuation
+    idxpaucvec <- grep("pvalaucks", colnamevec)
+    idxattvec <- grep("attenuation", colnamevec)
+
+    ## Verify the number of columns
+    if (!isTRUE(all.equal(length(idxpaucvec), 2)) ||
+      !isTRUE(all.equal(length(idxattvec), 2)))
+      stop("The pval auc and attenuation should be in two columns. Contact ",
+        "the developer.")
+
+    ## Replace the attenuation values if pval auc > pval
+    colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
+      idxna <- which(tab[, idxpauc] > pval)
+      if (!isTRUE(all.equal(length(idxna), 0)))
+        tab[idxna, idxatt] <- NA
+      return(tab[, idxatt])
+    }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval))
+    replacedf <- do.call("cbind", colattlist)
+    completedf[, idxattvec] <- replacedf
+
   }
-  
+
 }
 
 
