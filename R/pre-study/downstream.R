@@ -704,7 +704,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
 
-  ## Keeping the lines having a fdr auc < aucfdrthres
+  ## Keeping the lines having a fdr dauc < daucfdrthres
   if (filterdaucfdr) {
     if (verbose) message("\t Keeping rows with fdr auc higher than ",
       daucfdrthres)
