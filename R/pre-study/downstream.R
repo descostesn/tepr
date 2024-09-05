@@ -726,7 +726,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     completedf <- completedf[idxkeep, ]
   }
 
-  ## Keeping rows if no condition has cond_NA > nathres
+  ## Keeping rows if at least one condition has cond_NA < nathres
   if (filternbna) {
     idxnavec <- grep("_NA", colnamevec)
     matna <- completedf[, idxnavec]
