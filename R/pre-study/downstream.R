@@ -689,6 +689,10 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
+filterauc = TRUE; pval = 0.05;
+  filterwindows = TRUE; winthres = 50; filternbna = TRUE; nathres = 20;
+  filterfullmean = TRUE; fullthres = 0.5
+
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5) {
@@ -708,8 +712,11 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     ## Replace the attenuation values if pval auc > pval
     colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
       idxna <- which(tab[, idxpauc] > pval)
-      if (!isTRUE(all.equal(length(idxna), 0)))
+      lna <- length(idxna)
+      if (!isTRUE(all.equal(lna, 0))) {
+        if (verbose) message("\t\t ", lna, "/", nrow(tab))
         tab[idxna, idxatt] <- NA
+      }
       return(tab[, idxatt])
     }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
       SIMPLIFY = FALSE)
