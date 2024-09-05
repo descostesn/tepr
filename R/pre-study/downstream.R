@@ -715,10 +715,10 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05) {
       if (!isTRUE(all.equal(length(idxna), 0)))
         tab[idxna, idxatt] <- NA
       return(tab[, idxatt])
-    }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval))
+    }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
+      SIMPLIFY = FALSE)
     replacedf <- do.call("cbind", colattlist)
     completedf[, idxattvec] <- replacedf
-
   }
 
 }
