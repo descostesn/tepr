@@ -350,16 +350,6 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         deltadauc <- pracma::trapz(transtab[, "coord"], transtab[, diffname])
         ## Retrieve the p-value
         pvaldeltadaucks <- resks$p.value
-        ## Correct p-values using FDR
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # Loop through each column, calculate adjusted p-values, and create new columns
-  for (col_name in p_dAUC_columns) {
-    print(col_name)
-    adjusted_col_name <- paste0("adjFDR_", col_name)
-    dAUC_allcondi[[adjusted_col_name]] <- p.adjust(dAUC_allcondi[[col_name]], method = "fdr")
-  }
-
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ## The KS test statistic is defined as the maximum value of the
         ## difference between A and B’s cumulative distribution functions (CDF)
         statdeltadaucks <- resks$statistic
@@ -378,6 +368,15 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     }, condvec, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
+
+    ## Correct p-values using FDR
+    idx <- grep("pvaldeltadaucks", colnames(resdf))
+    fdrvec <- p.adjust(resdf[, idx], method = "fdr")
+
+    resdf <- cbind(resdf, fdrvec)
+    colnamevec <- colnames(resdf)
+    idxfdr <- which(colnamevec == "fdrvec")
+    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])
     return(resdf)
 }
 
