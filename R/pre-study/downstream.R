@@ -690,7 +690,7 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
-  filterwindows = TRUE, winthres = 50) {
+  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -703,12 +703,6 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     ## Retrieving indexes of columns with pval auc and attenuation
     idxpaucvec <- grep("pvalaucks", colnamevec)
     idxattvec <- grep("attenuation", colnamevec)
-
-    ## Verify the number of columns
-    if (!isTRUE(all.equal(length(idxpaucvec), 2)) ||
-      !isTRUE(all.equal(length(idxattvec), 2)))
-      stop("The pval auc and attenuation should be in two columns. Contact ",
-        "the developer.")
 
     ## Replace the attenuation values if pval auc > pval
     colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
@@ -730,6 +724,11 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
       stop("No rows have a window size higher than ", winthres, ". you might ",
         "want to decrease the threshold.")
     completedf <- completedf[idxkeep, ]
+  }
+
+  ## Keeping rows if no condition has cond_NA > nathres
+  if (filternbna) {
+    idxnavec <- grep
   }
 
 }
