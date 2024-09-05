@@ -583,12 +583,12 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
 
       ## Splitting the previous table by transcript
-      if (verbose) message("Splitting the previous table by transcript")
+      if (verbose) message("\t Splitting the previous table by transcript")
       completbytrans <- split(complet, factor(complet$transcript))
       condvec <- unique(expdf$condition)
 
       ## For each transcript
-      if (verbose) message("Computing up and down mean")
+      if (verbose) message("\t Computing up and down mean")
       updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
 
       ## Merging attenuation to the complete table
