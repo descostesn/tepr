@@ -732,7 +732,11 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     matna <- completedf[, idxnavec]
     if (length(idxnavec) < 2)
       matna <- as.matrix(completedf[, idxnavec])
-    
+    idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had a number of NA lower or equal to ", nathres, ". You",
+        " might want to increase the threshold.")
+    completedf <- completedf[idxkeep, ]
   }
 
 }
