@@ -429,14 +429,14 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
   aucallconditions <- aucallconditions[, -idxdup]
 
   ## Correcting p-val with FDR
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  # Loop through each column, calculate adjusted p-values, and create new columns
-  for (col_name in p_AUC_columns) {
-    print(col_name)
-    adjusted_col_name <- paste0("adjFDR_", col_name)
-    AUC_allcondi[[adjusted_col_name]] <- p.adjust(AUC_allcondi[[col_name]], method = "fdr") # nolint
-  }
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  idxpvalvec <- grep("pvalaucks", colnames(aucallconditions))
+  fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
+    return(p.adjust(tab[, idxpval], method = "fdr"))
+  }, aucallconditions)
+  fdrdf <- do.call("cbind", fdrlist)
+  colnames(fdrdf) <- paste0("adjFDR_", colnames(aucallconditions)[idxpvalvec]) # nolint
+
+  aucallconditions <- cbind(aucallconditions, fdrdf)
   return(aucallconditions)
 }
 
