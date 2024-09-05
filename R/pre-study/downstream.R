@@ -729,6 +729,20 @@ filterauc = TRUE; pval = 0.05;
   return(completedf)
 }
 
+.filterfullmean <- function(colnamevec, completedf, fullthres) {
+      
+    idxfull <- grep("meanvaluefull", colnamevec)
+    matmean <- completedf[, idxfull]
+    if (idxfull < 2)
+      matmean <- as.matrix(matmean)
+    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had all full mean higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+    return(completedf)
+}
+
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5) {
@@ -761,16 +775,10 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
 
   ## Keeping rows if full means higher than fullmeanthres
   if (filterfullmean) {
-    idxfull <- grep("meanvaluefull", colnamevec)
-    matmean <- completedf[, idxfull]
-    if (idxfull < 2)
-      matmean <- as.matrix(matmean)
-    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had all full mean higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
+    if (verbose) message("Keeping rows if full means higher than fullmeanthres")
+    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
+  return(completedf)
 }
 
 
