@@ -715,6 +715,20 @@ filterauc = TRUE; pval = 0.05;
   return(completedf)
 }
 
+.filternbna <- function(colnamevec, completedf, nathres) {
+
+  idxnavec <- grep("_NA", colnamevec)
+  matna <- completedf[, idxnavec]
+  if (length(idxnavec) < 2)
+    matna <- as.matrix(matna)
+  idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
+  if (isTRUE(all.equal(length(idxkeep), 0)))
+    stop("No rows had a number of NA lower or equal to ", nathres, ". You",
+        " might want to increase the threshold.")
+  completedf <- completedf[idxkeep, ]
+  return(completedf)
+}
+
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5) {
@@ -740,15 +754,9 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
 
   ## Keeping rows if at least one condition has cond_NA < nathres
   if (filternbna) {
-    idxnavec <- grep("_NA", colnamevec)
-    matna <- completedf[, idxnavec]
-    if (length(idxnavec) < 2)
-      matna <- as.matrix(matna)
-    idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a number of NA lower or equal to ", nathres, ". You",
-        " might want to increase the threshold.")
-    completedf <- completedf[idxkeep, ]
+    if (verbose) message("Keeping rows if at least one condition has cond_NA",
+      "< nathres")
+    completedf <- .filternbna(colnamevec, completedf, nathres)
   }
 
   ## Keeping rows if full means higher than fullmeanthres
@@ -763,9 +771,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
         " might want to decrease the threshold.")
     completedf <- completedf[idxkeep, ]
   }
-
 }
-
 
 
 
