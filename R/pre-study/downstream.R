@@ -586,6 +586,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
       allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
+
+      if (verbose) message("\t Building summary")
       summarydflist <- mclapply(bytranslistmean, function(trans) {
         coor1 <- min(trans$start)
         coor2 <- max(trans$end)
