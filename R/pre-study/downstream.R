@@ -637,7 +637,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
     idxfull <- grep("meanvaluefull", colnamevec)
     matmean <- completedf[, idxfull]
-    if (idxfull < 2)
+    if (length(idxfull) < 2)
       matmean <- as.matrix(matmean)
     idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
     if (isTRUE(all.equal(length(idxkeep), 0)))
