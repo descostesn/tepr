@@ -757,8 +757,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     matmean <- completedf[, idxfull]
     if (idxfull < 2)
       matmean <- as.matrix(matmean)
-      idxkeep <- which(apply(matmean, 1,
-        function(x) return(all(x > fullthres))))
+    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
     if (isTRUE(all.equal(length(idxkeep), 0)))
       stop("No rows had all full mean higher than ", fullthres, ". You",
         " might want to decrease the threshold.")
