@@ -621,7 +621,7 @@ completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
     return(do.call("cbind", updownlist))
   }, condvec, mc.cores = nbcpu)
-  
+
   updowndf <- do.call("rbind", updownbytranslist)
   updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
   return(updowndf)
@@ -636,12 +636,12 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
 
       if (verbose) message("\t Building summary")
-      summarydf <- .summarytrans(bytransmeanlist, nbcpu)
+      summarydf <- .summarytrans(bytranslistmean, nbcpu)
       if (verbose) message("\t Merging summary")
       auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
 
       ## Merging the mean table with the previous one
-      if (verbose) message("Merging detailed mean table with summary")
+      if (verbose) message("\t Merging detailed mean table with summary")
       complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
 
       ## Splitting the previous table by transcript
