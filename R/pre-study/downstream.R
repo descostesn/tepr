@@ -517,68 +517,6 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
 }
 
 
-
-
-##################
-# MAIN
-##################
-
-## Reading alldf and info tab
-alldf <- readRDS(alldfpath)
-expdf <- read.csv(exptabpath, header = TRUE)
-
-## Filtering out non expressed transcripts:
-## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
-## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
-message("Filtering transcripts based on expression") # nolint
-allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
-message("Calculating ECDF") # nolint
-start_time <- Sys.time()
-resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-resultsecdf <- resecdf[[1]]
-nbwindows <- resecdf[[2]]
-saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
-
-start_time <- Sys.time()
-message("Calculating means and differences")
-dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
-saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
-## Splitting result by transcripts
-message("\t Splitting results by transcripts")
-bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-
-## Computing the differences (d or delta) of AUC and calculate the Area Under
-## Curve (AUC), All conditions vs y=x
-## Calculate Mean Value over the full gene body in All conditions.
-message("AUC and differences")
-allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
-
-message("Calculating number of missing values for each transcript and for",
-  " each condition")
-start_time <- Sys.time()
-matnatrans <- countna(allexprsdfs, expdf, nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
-
-message("Retrieving knee and max")
-start_time <- Sys.time()
-kneedf <- kneeid(bytranslistmean, expdf, nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
-
-
-
-!!!!!!!!!!!!!!!!!
-
-completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
-  dfmeandiff, nbcpu = nbcputrans)
-
 .summarytrans <- function(bytransmeanlist, nbcpu) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
     coor1 <- min(trans$start)
@@ -657,6 +595,73 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
       return(auckneenasumatt)
 }
+
+
+
+##################
+# MAIN
+##################
+
+## Reading alldf and info tab
+alldf <- readRDS(alldfpath)
+expdf <- read.csv(exptabpath, header = TRUE)
+
+## Filtering out non expressed transcripts:
+## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
+## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
+message("Filtering transcripts based on expression") # nolint
+allexprsdfs <- averageandfilterexprs(expdf, alldf, expthres)
+message("Calculating ECDF") # nolint
+start_time <- Sys.time()
+resecdf <- genesECDF(allexprsdfs, expdf, nbcpu = nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+resultsecdf <- resecdf[[1]]
+nbwindows <- resecdf[[2]]
+saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
+
+start_time <- Sys.time()
+message("Calculating means and differences")
+dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
+saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
+## Splitting result by transcripts
+message("\t Splitting results by transcripts")
+bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+
+## Computing the differences (d or delta) of AUC and calculate the Area Under
+## Curve (AUC), All conditions vs y=x
+## Calculate Mean Value over the full gene body in All conditions.
+message("AUC and differences")
+allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+
+message("Calculating number of missing values for each transcript and for",
+  " each condition")
+start_time <- Sys.time()
+matnatrans <- countna(allexprsdfs, expdf, nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+
+message("Retrieving knee and max")
+start_time <- Sys.time()
+kneedf <- kneeid(bytranslistmean, expdf, nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
+
+message("Calculating attenuation values")
+start_time <- Sys.time()
+completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
+
+!!!!!!!!!!!!!!!!!
+
+
 
 
 
