@@ -863,6 +863,7 @@ AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
   by = c("transcript", "gene", "strand", "window_size"))  %>% 
   left_join(., KneeID_res, by = c("transcript"))  %>% 
   left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
+
 AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
   gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%

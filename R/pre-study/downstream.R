@@ -329,7 +329,7 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         return(infodf)
 }
 
-dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
+.dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     dontcompare = NULL) {
 
     condvec <- unique(expdf$condition)
@@ -388,7 +388,7 @@ dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     return(aucdf)
 }
 
-auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
+.auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
 
   cumulative <- seq(1, nbwindows) / nbwindows
   condvec <- unique(expdf$condition)
@@ -415,9 +415,40 @@ auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
   }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
 
   aucallconditions <- do.call("rbind", resdflist)
+  idxdup <- which(duplicated(colnames(aucallconditions)))
+  aucallconditions <- aucallconditions[, -idxdup]
   return(aucallconditions)
 }
 
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+  dontcompare = NULL, verbose = TRUE) {
+
+    if (verbose) message("\t Computing the differences (d or delta) of AUC")
+    start_time <- Sys.time()
+    daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds") # nolint
+
+    ## Calculate the Area Under Curve (AUC), All conditions vs y=x
+    ## Calculate Mean Value over the full gene body in All conditions.
+    if (verbose) message("\t Computing the Area Under Curve (AUC)")
+    start_time <- Sys.time()
+    aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcpu = nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds") # nolint
+
+    ## Merging the two tables by transcript
+    if (verbose) message("Merging results")
+    allauc <- merge(aucallcond, daucallcond,
+      by = c("gene", "transcript", "strand"))
+    return(allauc)
+}
 
 
 countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
@@ -449,6 +480,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
           transcript = unique(transtable$transcript), strand = str)
         return(cbind(info, res))
     }, scorecolvec, condvec, mc.cores = nbcpu)
+
   return(do.call("rbind", nabytranslist))
 }
 
@@ -457,20 +489,18 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 .retrievekneeandmax <- function(condvec, transtable) { # nolint
 
   reslist <- lapply(condvec, function(cond, transtable) {
-
     difffxname <- paste0("diff_Fx_", cond)
     difffxvec <- transtable[, difffxname]
-
     ## If equality of difference within the same gene it takes the closest
     ## knee from the TSS # nolint
     resrow <- transtable[which(difffxvec == max(difffxvec)), ] %>% # nolint
           dplyr::slice_min(coord, n = 1) # nolint
     res <- data.frame(resrow$coord, resrow[, difffxname])
     colnames(res) <- c(paste0("knee_AUC_", cond), paste0("max_", difffxname))
-
     return(res)
-      }, transtable)
-    return(reslist)
+  }, transtable)
+
+  return(reslist)
 }
 
 kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
@@ -486,6 +516,85 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
   return(res)
 }
 
+
+.summarytrans <- function(bytransmeanlist, nbcpu) {
+  summarydflist <- mclapply(bytranslistmean, function(trans) {
+    coor1 <- min(trans$start)
+    coor2 <- max(trans$end)
+    return(data.frame(chr=trans$seqnames[1], coor1, coor2,
+          strand=trans$strand[1], gene=trans$gene[1],
+          transcript=trans$transcript[1], size=coor2-coor1+1))
+  }, mc.cores = nbcpu)
+  summarydf <- do.call("rbind", summarydflist)
+  return(summarydf)
+}
+
+.computeupdown <- function(completbytrans, condvec, nbcpu) {
+
+  updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+    ## For each condition
+    updownlist <- lapply(condvec, function(cond, trans) {
+      kneecolname <- paste0("knee_AUC_", cond)
+      meancolname <- paste0("mean_value_", cond)
+
+      idxup <- which(trans$coord <= trans[, kneecolname])
+      if (isTRUE(all.equal(length(idxup), 0)))
+        stop("Problem in retrieving idxup, contact the developer.")
+      upmean <- mean(trans[idxup, meancolname])
+
+      idxdown <- which(trans$coord >= trans[, kneecolname] &
+                          trans$coord <= max(trans$coord))
+      if (isTRUE(all.equal(length(idxdown), 0)))
+        stop("Problem in retrieving idxdown, contact the developer.")
+      downmean <- mean(trans[idxdown, meancolname])
+
+      ## Calculating attenuation
+      att <- 100 - downmean / upmean * 100
+
+      res <- data.frame(trans$transcript[1], upmean, downmean, att)
+      colnames(res) <- c("transcript", paste0("upmean-", cond),
+              paste0("downmean-", cond), paste0("attenuation-", cond))
+      return(res)
+    }, trans)
+
+    return(do.call("cbind", updownlist))
+  }, condvec, mc.cores = nbcpu)
+
+  updowndf <- do.call("rbind", updownbytranslist)
+  updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+  return(updowndf)
+}
+
+attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = 1, verbose = TRUE) {
+
+      if (verbose) message("\t Merging tables")
+      allaucknee <- merge(allaucdf, kneedf, by = "transcript")
+      mergecolnames <- c("gene", "transcript", "strand")
+      allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
+
+      if (verbose) message("\t Building summary")
+      summarydf <- .summarytrans(bytranslistmean, nbcpu)
+      if (verbose) message("\t Merging summary")
+      auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
+
+      ## Merging the mean table with the previous one
+      if (verbose) message("\t Merging detailed mean table with summary")
+      complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
+
+      ## Splitting the previous table by transcript
+      if (verbose) message("\t Splitting the previous table by transcript")
+      completbytrans <- split(complet, factor(complet$transcript))
+      condvec <- unique(expdf$condition)
+
+      ## For each transcript
+      if (verbose) message("\t Computing up and down mean")
+      updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
+
+      ## Merging attenuation to the complete table
+      auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
+      return(auckneenasumatt)
+}
 
 
 
@@ -521,23 +630,11 @@ bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 
-message("Computing the differences (d or delta) of AUC")
-start_time <- Sys.time()
-dfaucallcond <- dauc_allconditions(bytranslistmean, expdf, nbwindows,
-  nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds")
-
-# Calculate the Area Under Curve (AUC), All conditions vs y=x
-# Calculate Mean Value over the full gene body in All conditions.
-message("Computing the Area Under Curve (AUC)")
-start_time <- Sys.time()
-aucallcond <- auc_allconditions(bytranslistmean, expdf, nbwindows,
-  nbcpu = nbcputrans)
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds")
+## Computing the differences (d or delta) of AUC and calculate the Area Under
+## Curve (AUC), All conditions vs y=x
+## Calculate Mean Value over the full gene body in All conditions.
+message("AUC and differences")
+allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -554,35 +651,50 @@ end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
-
+message("Calculating attenuation values")
+start_time <- Sys.time()
+completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = nbcputrans)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 
 !!!!!!!!!!!!!!!!!
-Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
 
-  res <- getting_var_names(extension, file.path(working_directory, "bedgraphs"))
-  Conditions <- res$Conditions
 
-  Complete_summary <-  left_join(concat_df, AUC_KS_Knee_NA_DF,
-    by = c("gene","transcript","strand"))
 
-  for (cond in Conditions) {
-    mean_value_condi_name <- paste0("mean_value_", cond)
-    print(mean_value_condi_name)
-    knee_column_name <- paste0("knee_AUC_", cond)
-    Attenuation_cond <- paste0("Attenuation_", cond)
-    UPmean_cond <- paste0("UP_mean_", cond)
-    DOWNmean_cond <- paste0("DOWN_mean_", cond)
-    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- NA
 
-    result <- Complete_summary %>% group_by(transcript) %>% arrange(coord) %>%
-      dplyr::reframe(transcript=transcript[1],
-        !!sym(UPmean_cond) := mean((!!sym(mean_value_condi_name))[coord <= !!sym(knee_column_name)]), # nolint
-        !!sym(DOWNmean_cond) := mean((!!sym(mean_value_condi_name))[coord >= !!sym(knee_column_name) & coord <= max(coord)])) %>% # nolint
-        select(transcript,!!sym(UPmean_cond),!!sym(DOWNmean_cond), !!sym(DOWNmean_cond)) %>% distinct() # nolint
 
-    AUC_KS_Knee_NA_DF <- left_join(AUC_KS_Knee_NA_DF,result, by=c("transcript"))
-    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- 100 - AUC_KS_Knee_NA_DF[[DOWNmean_cond]]/AUC_KS_Knee_NA_DF[[UPmean_cond]]*100 # nolint
-  }
+
+
+!!!!!!!!!!!!!!!!!!!
+
+
+
+!!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
+> head(tst_df,2)
+# A tibble: 2 × 33
+  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
+# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
+
+!!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
+!!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
+
+resfilter <- function()
+
+
+
+
+
 
   if (exists("Replaced") && !is.na(Replaced)) {
     if (Replaced != "NOT") {
@@ -608,42 +720,7 @@ Attenuation_fun <- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced) {
         .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA if KS test > at threshold # nolint
     }
   }
-  return(AUC_KS_Knee_NA_DF)
-}
 
-!!!!!!!!!!!!!!!!!!!
-
-> head(AUC_KS_Knee_NA.df,2)
-# A tibble: 2 × 27
-  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
-# ℹ 18 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>
-
-!!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
-> head(tst_df,2)
-# A tibble: 2 × 33
-  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
-# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
-
-!!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
-!!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 > mean_value_control_full <- "MeanValueFull_ctrl"
 mean_value_stress <- "MeanValueFull_HS"
 AUC_ctrl <- "AUC_ctrl"
