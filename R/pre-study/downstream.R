@@ -576,8 +576,9 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 
 !!!!!!!!!!!!!!!!!
 
+completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = nbcputrans)
 
-!!  
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, verbose = TRUE) {
 
