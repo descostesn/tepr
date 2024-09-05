@@ -690,7 +690,8 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
-  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20) {
+  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
+  filterfullmean = TRUE, fullthres = 0.5) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -731,11 +732,25 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     idxnavec <- grep("_NA", colnamevec)
     matna <- completedf[, idxnavec]
     if (length(idxnavec) < 2)
-      matna <- as.matrix(completedf[, idxnavec])
+      matna <- as.matrix(matna)
     idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
     if (isTRUE(all.equal(length(idxkeep), 0)))
       stop("No rows had a number of NA lower or equal to ", nathres, ". You",
         " might want to increase the threshold.")
+    completedf <- completedf[idxkeep, ]
+  }
+
+  ## Keeping rows if full means higher than fullmeanthres
+  if (filterfullmean) {
+    idxfull <- grep("meanvaluefull", colnamevec)
+    matmean <- completedf[, idxfull]
+    if (idxfull < 2)
+      matmean <- as.matrix(matmean)
+      idxkeep <- which(apply(matmean, 1,
+        function(x) return(all(x > fullthres))))
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had all full mean higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
     completedf <- completedf[idxkeep, ]
   }
 
