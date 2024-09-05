@@ -689,7 +689,8 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
-resfilter <- function(completedf, filterauc = TRUE, pval = 0.05) {
+resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
+  filterwindows = TRUE, winthres = 50) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -721,37 +722,20 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05) {
     completedf[, idxattvec] <- replacedf
   }
 
+  ## Keeping rows with a window size > winthres
+  if (filterwindows) {
+    if (verbose) message("\t Keeping rows with a window size > ", winthres)
+    idxkeep <- which(completedf$size > winthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows have a window size higher than ", winthres, ". you might ",
+        "want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+  }
+
 }
 
 
 
-
-
-
-  if (exists("Replaced") && !is.na(Replaced)) {
-    if (Replaced != "NOT") {
-      for (cond in Conditions) {
-        p_AUC_cond <- paste0("p_AUC_", cond)
-        print(p_AUC_cond)
-        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-          mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, # nolint
-          Replaced, .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an inout value is KS test > at threshold # nolint
-        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-          mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold # nolint
-      }
-    }
-  } else {
-    for (cond in Conditions) {
-      p_AUC_cond <- paste0("p_AUC_", cond)
-      print(p_AUC_cond)
-      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-        mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
-        .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an input value if KS test > at threshold # nolint
-      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-        mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
-        .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA if KS test > at threshold # nolint
-    }
-  }
 
 > mean_value_control_full <- "MeanValueFull_ctrl"
 mean_value_stress <- "MeanValueFull_HS"
