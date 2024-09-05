@@ -386,17 +386,7 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
   currentcond) {
     auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
-    ## Retrieving p-val
     pvalaucks <- resks$p.value
-    ## Correcting p-val with FDR
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  # Loop through each column, calculate adjusted p-values, and create new columns
-  for (col_name in p_AUC_columns) {
-    print(col_name)
-    adjusted_col_name <- paste0("adjFDR_", col_name)
-    AUC_allcondi[[adjusted_col_name]] <- p.adjust(AUC_allcondi[[col_name]], method = "fdr") # nolint
-  }
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     stataucks <- resks$statistic
     meanvaluefull <- mean(transtab[, meanvalname])
     aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
@@ -437,6 +427,16 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
   aucallconditions <- do.call("rbind", resdflist)
   idxdup <- which(duplicated(colnames(aucallconditions)))
   aucallconditions <- aucallconditions[, -idxdup]
+
+  ## Correcting p-val with FDR
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # Loop through each column, calculate adjusted p-values, and create new columns
+  for (col_name in p_AUC_columns) {
+    print(col_name)
+    adjusted_col_name <- paste0("adjFDR_", col_name)
+    AUC_allcondi[[adjusted_col_name]] <- p.adjust(AUC_allcondi[[col_name]], method = "fdr") # nolint
+  }
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   return(aucallconditions)
 }
 
