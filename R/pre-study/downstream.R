@@ -712,7 +712,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     idxkeep <- which(completedf[, idxcol] < daucfdrthres)
     if (isTRUE(all.equal(length(idxkeep), 0)))
       stop("No rows had a delta auc fdr lower than ", fullthres, ". You",
-        " might want to decrease the threshold.")
+        " might want to increase the threshold.")
   }
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 p_value_theoritical<- "adjFDR_p_AUC_ctrl"
