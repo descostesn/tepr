@@ -672,14 +672,15 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
 
   ## Keeping rows if at least one condition has cond_NA < nathres
   if (filternbna) {
-    if (verbose) message("Keeping rows if at least one condition has cond_NA",
-      "< nathres")
+    if (verbose) message("\t Keeping rows if at least one condition has ",
+      "cond_NA < nathres")
     completedf <- .filternbna(colnamevec, completedf, nathres)
   }
 
   ## Keeping rows if full means higher than fullmeanthres
   if (filterfullmean) {
-    if (verbose) message("Keeping rows if full means higher than fullmeanthres")
+    if (verbose) message("\t Keeping rows if full means higher than ",
+      "fullmeanthres")
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
   return(completedf)
