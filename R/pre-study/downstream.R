@@ -669,32 +669,6 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 
 !!!!!!!!!!!!!!!!!!!
 
-> head(AUC_KS_Knee_NA.df,2)
-# A tibble: 2 × 27
-  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
-# ℹ 18 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>
-
-
- [1] "gene"                       "transcript"
- [3] "strand"                     "auc_ctrl"
- [5] "pvalaucks_ctrl"             "stataucks_ctrl"
- [7] "meanvaluefull_ctrl"         "auc_HS"
- [9] "pvalaucks_HS"               "stataucks_HS"
-[11] "meanvaluefull_HS"           "windsize"
-[13] "deltadauc_mean_Fx_HS"       "pvaldeltadaucks_mean_Fx_HS"
-[15] "statdeltadaucks_mean_Fx_HS" "knee_AUC_ctrl"
-[17] "max_diff_Fx_ctrl"           "knee_AUC_HS"
-[19] "max_diff_Fx_HS"             "ctrl_NA"
-[21] "HS_NA"
 
 
 !!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
