@@ -579,6 +579,18 @@ saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
 completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = nbcputrans)
 
+.summarytrans <- function(bytransmeanlist, nbcpu) {
+  summarydflist <- mclapply(bytranslistmean, function(trans) {
+    coor1 <- min(trans$start)
+    coor2 <- max(trans$end)
+    return(data.frame(chr=trans$seqnames[1], coor1, coor2,
+          strand=trans$strand[1], gene=trans$gene[1],
+          transcript=trans$transcript[1], size=coor2-coor1+1))
+  }, mc.cores = nbcpu)
+  summarydf <- do.call("rbind", summarydflist)
+  return(summarydf)
+}
+
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, verbose = TRUE) {
 
@@ -588,14 +600,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
 
       if (verbose) message("\t Building summary")
-      summarydflist <- mclapply(bytranslistmean, function(trans) {
-        coor1 <- min(trans$start)
-        coor2 <- max(trans$end)
-        return(data.frame(chr=trans$seqnames[1], coor1, coor2,
-          strand=trans$strand[1], gene=trans$gene[1],
-          transcript=trans$transcript[1], size=coor2-coor1+1))
-      }, mc.cores = nbcpu)
-      summarydf <- do.call("rbind", summarydflist)
+      summarydf <- .summarytrans(bytransmeanlist, nbcpu)
+      if (verbose) message("\t Merging summary")
       auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
 
       ## Merging the mean table with the previous one
@@ -695,6 +701,12 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
+
+resfilter <- function()
+
+
+
+
 
 
   if (exists("Replaced") && !is.na(Replaced)) {
