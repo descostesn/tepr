@@ -689,7 +689,19 @@ saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 !!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
 !!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
 
-resfilter <- function()
+resfilter <- function(completedf, filterauc = TRUE) {
+
+  ## Filter attenuation values based on pval AUC
+  if (filterauc) {
+    message("\t Replacing non-significant auc by NA")
+    idxpauc <- grep("pvalaucks", colnames(completedf))
+    if (!isTRUE(all.equal(length(idxpauc), 2)))
+      stop("The pval auc should be in two columns. Contact the developer.")
+    idxnalist <- lapply(idxpauc, function(idx, tab) {}, completedf)
+    
+  }
+  
+}
 
 
 
