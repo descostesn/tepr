@@ -728,7 +728,11 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
 
   ## Keeping rows if no condition has cond_NA > nathres
   if (filternbna) {
-    idxnavec <- grep
+    idxnavec <- grep("_NA", colnamevec)
+    matna <- completedf[, idxnavec]
+    if (length(idxnavec) < 2)
+      matna <- as.matrix(completedf[, idxnavec])
+    
   }
 
 }
