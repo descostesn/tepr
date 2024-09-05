@@ -597,6 +597,97 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
+.filterauc <- function(colnamevec, completedf, pval, verbose) {
+
+  ## Retrieving indexes of columns with pval auc and attenuation
+  idxpaucvec <- grep("pvalaucks", colnamevec)
+  idxattvec <- grep("attenuation", colnamevec)
+  ## Replace the attenuation values if pval auc > pval
+  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
+    idxna <- which(tab[, idxpauc] > pval)
+    lna <- length(idxna)
+
+    if (!isTRUE(all.equal(lna, 0))) {
+      if (verbose) message("\t\t ", lna, "/", nrow(tab))
+      tab[idxna, idxatt] <- NA
+    }
+    return(tab[, idxatt])
+  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
+      SIMPLIFY = FALSE)
+  replacedf <- do.call("cbind", colattlist)
+  completedf[, idxattvec] <- replacedf
+  return(completedf)
+}
+
+.filternbna <- function(colnamevec, completedf, nathres) {
+
+  idxnavec <- grep("_NA", colnamevec)
+  matna <- completedf[, idxnavec]
+  if (length(idxnavec) < 2)
+    matna <- as.matrix(matna)
+  idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
+  if (isTRUE(all.equal(length(idxkeep), 0)))
+    stop("No rows had a number of NA lower or equal to ", nathres, ". You",
+        " might want to increase the threshold.")
+  completedf <- completedf[idxkeep, ]
+  return(completedf)
+}
+
+.filterfullmean <- function(colnamevec, completedf, fullthres) {
+
+    idxfull <- grep("meanvaluefull", colnamevec)
+    matmean <- completedf[, idxfull]
+    if (length(idxfull) < 2)
+      matmean <- as.matrix(matmean)
+    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had all full mean higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+    return(completedf)
+}
+
+resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
+  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
+  filterfullmean = TRUE, fullthres = 0.5, verbose = TRUE) {
+
+  ## Retrieve column names of completedf
+  colnamevec <- colnames(completedf)
+
+  ## Filter attenuation values based on pval AUC
+  if (filterauc) {
+    message("\t Replacing non-significant auc by NA")
+    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
+  }
+
+  ## Keeping rows with a window size > winthres
+  if (filterwindows) {
+    if (verbose) message("\t Keeping rows with a window size > ", winthres)
+    idxkeep <- which(completedf$size > winthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows have a window size higher than ", winthres, ". you might ",
+        "want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+  }
+
+  ## Keeping rows if at least one condition has cond_NA < nathres
+  if (filternbna) {
+    if (verbose) message("\t Keeping rows if at least one condition has ",
+      "cond_NA < nathres")
+    completedf <- .filternbna(colnamevec, completedf, nathres)
+  }
+
+  ## Keeping rows if full means higher than fullmeanthres
+  if (filterfullmean) {
+    if (verbose) message("\t Keeping rows if full means higher than ",
+      "fullmeanthres")
+    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
+  }
+  return(completedf)
+}
+
+
+
 
 ##################
 # MAIN
@@ -659,97 +750,15 @@ end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
 
+message("Filtering results")
+start_time <- Sys.time()
+filtereddf <- resfilter(completedf)
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+
 !!!!!!!!!!!!!!!!!
 
-
-
-
-
-
-
-!!!!!!!!!!!!!!!!!!!
-
-
-
-!!!!!!!!!!! SUMMARY IN ONE TABLE OF ALL THE VALUES COMPUTED ABOVE
-> head(tst_df,2)
-# A tibble: 2 × 33
-  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
-  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
-1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.2
-2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46    0.432
-# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
-
-!!!!!!!!!!!!!!! THIS ENABLES A FILTERING ON NA, WINDOWSIZE, ETC
-!!!!!!!!!!!!!!!!!! SEE IF CAN BE INTEGRATED SOMEWHERE
-
-resfilter <- function()
-
-
-
-
-
-
-  if (exists("Replaced") && !is.na(Replaced)) {
-    if (Replaced != "NOT") {
-      for (cond in Conditions) {
-        p_AUC_cond <- paste0("p_AUC_", cond)
-        print(p_AUC_cond)
-        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-          mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, # nolint
-          Replaced, .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an inout value is KS test > at threshold # nolint
-        AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-          mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold # nolint
-      }
-    }
-  } else {
-    for (cond in Conditions) {
-      p_AUC_cond <- paste0("p_AUC_", cond)
-      print(p_AUC_cond)
-      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-        mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
-        .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an input value if KS test > at threshold # nolint
-      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-        mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, # nolint
-        .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA if KS test > at threshold # nolint
-    }
-  }
-
-> mean_value_control_full <- "MeanValueFull_ctrl"
-mean_value_stress <- "MeanValueFull_HS"
-AUC_ctrl <- "AUC_ctrl"
-AUC_stress <- "AUC_HS"
-p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 p_value_theoritical<- "adjFDR_p_AUC_ctrl"
-tst_df <- tst_df %>%
-  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
-    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
-    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
-  relocate(Universe, .before = 1)
-tst_df <- tst_df %>% mutate(
-    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
-    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
-  ) %>% relocate(Group, .before = 2)
-> head(tst_df)
-# A tibble: 6 × 35
-  Universe Group   transcript chr    coor1  coor2 strand gene   size window_size
-  <lgl>    <chr>   <chr>      <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>
-1 FALSE    NA      ENST00000… chr7  1.28e8 1.28e8 +      ARF5   3290          16
-2 FALSE    NA      ENST00000… chr12 8.94e6 8.95e6 -      M6PR   9285          46
-3 TRUE     Outgro… ENST00000… chr11 6.43e7 6.43e7 +      ESRRA 11220          56
-4 TRUE     Outgro… ENST00000… chr12 2.79e6 2.81e6 +      FKBP4 10454          52
-5 FALSE    NA      ENST00000… chr2  7.21e7 7.21e7 -      CYP2… 18625          93
-6 TRUE     Outgro… ENST00000… chr2  3.72e7 3.72e7 +      NDUF… 17503          87
-# ℹ 25 more variables: AUC_ctrl <dbl>, p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
-#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
-#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
-#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
-#   knee_AUC_ctrl <dbl>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <dbl>,
-#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
+    !!sym(p_value_theoritical)> 0.1
+    
