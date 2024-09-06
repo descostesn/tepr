@@ -676,6 +676,16 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   return(completedf)
 }
 
+.filterctrlfdr <- function(colnamevec, completedf, ctrlfdrthres) {
+    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnamevec)
+    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
+        " might want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+    return(completedf)
+}
+
 resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
@@ -725,12 +735,7 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   if (filterctrlfdr) {
     if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
       ctrlfdrthres)
-    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnames(completedf))
-    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
+    completedf <- .filterctrlfdr(colnamevec, completedf, ctrlfdrthres)
   }
 
   return(completedf)
