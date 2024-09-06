@@ -540,9 +540,9 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
     coor1 <- min(trans$start)
     coor2 <- max(trans$end)
-    return(data.frame(chr=trans$seqnames[1], coor1, coor2,
-          strand=trans$strand[1], gene=trans$gene[1],
-          transcript=trans$transcript[1], size=coor2-coor1+1))
+    return(data.frame(chr = trans$seqnames[1], coor1, coor2,
+          strand = trans$strand[1], gene = trans$gene[1],
+          transcript = trans$transcript[1], size = coor2 - coor1 + 1))
   }, mc.cores = nbcpu)
   summarydf <- do.call("rbind", summarydflist)
   return(summarydf)
@@ -714,12 +714,18 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
       stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
         " might want to decrease the threshold.")
   }
+  completedf <- completedf[, idxkeep]
 
   ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
   if (filterctrlfdr) {
     if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
       ctrlfdrthres)
-    idx <- grep("")
+    idxcol <- grep("adjFDR", colnames(completedf))
+    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
+        " might want to decrease the threshold.")
+  
   }
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                              !!sym(p_value_theoritical)> 0.1
