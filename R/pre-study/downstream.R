@@ -672,7 +672,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   if (isTRUE(all.equal(length(idxkeep), 0)))
     stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
         " might want to decrease the threshold.")
-  completedf <- completedf[, idxkeep]
+  completedf <- completedf[idxkeep, ]
   return(completedf)
 }
 
