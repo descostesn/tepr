@@ -666,6 +666,16 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
     return(completedf)
 }
 
+.filterdaucfdr <- function(colnamevec, completedf, daucfdrthres) {
+  idxcol <- grep("adjFDR_pvaldeltadaucks", colnamevec)
+  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrthres)
+  if (isTRUE(all.equal(length(idxkeep), 0)))
+    stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+  completedf <- completedf[, idxkeep]
+  return(completedf)
+}
+
 resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
@@ -708,13 +718,8 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   if (filterdaucfdr) {
     if (verbose) message("\t Keeping rows with fdr auc higher than ",
       daucfdrthres)
-    idxcol <- grep("adjFDR_pvaldeltadaucks", colnames(completedf))
-    idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
+    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrthres)
   }
-  completedf <- completedf[, idxkeep]
 
   ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
   if (filterctrlfdr) {
