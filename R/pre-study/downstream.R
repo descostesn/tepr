@@ -368,6 +368,15 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     }, condvec, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
+
+    ## Correct p-values using FDR
+    idx <- grep("pvaldeltadaucks", colnames(resdf))
+    fdrvec <- p.adjust(resdf[, idx], method = "fdr")
+
+    resdf <- cbind(resdf, fdrvec)
+    colnamevec <- colnames(resdf)
+    idxfdr <- which(colnamevec == "fdrvec")
+    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])
     return(resdf)
 }
 
@@ -417,6 +426,16 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
   aucallconditions <- do.call("rbind", resdflist)
   idxdup <- which(duplicated(colnames(aucallconditions)))
   aucallconditions <- aucallconditions[, -idxdup]
+
+  ## Correcting p-val with FDR
+  idxpvalvec <- grep("pvalaucks", colnames(aucallconditions))
+  fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
+    return(p.adjust(tab[, idxpval], method = "fdr"))
+  }, aucallconditions)
+  fdrdf <- do.call("cbind", fdrlist)
+  colnames(fdrdf) <- paste0("adjFDR_", colnames(aucallconditions)[idxpvalvec]) # nolint
+
+  aucallconditions <- cbind(aucallconditions, fdrdf)
   return(aucallconditions)
 }
 
@@ -521,9 +540,9 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
     coor1 <- min(trans$start)
     coor2 <- max(trans$end)
-    return(data.frame(chr=trans$seqnames[1], coor1, coor2,
-          strand=trans$strand[1], gene=trans$gene[1],
-          transcript=trans$transcript[1], size=coor2-coor1+1))
+    return(data.frame(chr = trans$seqnames[1], coor1, coor2,
+          strand = trans$strand[1], gene = trans$gene[1],
+          transcript = trans$transcript[1], size = coor2 - coor1 + 1))
   }, mc.cores = nbcpu)
   summarydf <- do.call("rbind", summarydflist)
   return(summarydf)
@@ -600,11 +619,11 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 .filterauc <- function(colnamevec, completedf, pval, verbose) {
 
   ## Retrieving indexes of columns with pval auc and attenuation
-  idxpaucvec <- grep("pvalaucks", colnamevec)
+  idxpaucvec <- grep("^pvalaucks", colnamevec)
   idxattvec <- grep("attenuation", colnamevec)
   ## Replace the attenuation values if pval auc > pval
   colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-    idxna <- which(tab[, idxpauc] > pval)
+    idxna <- which(tab[, idxpauc] < pval)
     lna <- length(idxna)
 
     if (!isTRUE(all.equal(lna, 0))) {
@@ -647,9 +666,30 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
     return(completedf)
 }
 
-resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
+.filterdaucfdr <- function(colnamevec, completedf, daucfdrthres) {
+  idxcol <- grep("adjFDR_pvaldeltadaucks", colnamevec)
+  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrthres)
+  if (isTRUE(all.equal(length(idxkeep), 0)))
+    stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
+  completedf <- completedf[idxkeep, ]
+  return(completedf)
+}
+
+.filterctrlfdr <- function(colnamevec, completedf, ctrlfdrthres) {
+    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnamevec)
+    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
+    if (isTRUE(all.equal(length(idxkeep), 0)))
+      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
+        " might want to decrease the threshold.")
+    completedf <- completedf[idxkeep, ]
+    return(completedf)
+}
+
+resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
-  filterfullmean = TRUE, fullthres = 0.5, verbose = TRUE) {
+  filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
+  daucfdrthres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1, verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -683,6 +723,21 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
       "fullmeanthres")
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
+
+  ## Keeping the lines having a fdr dauc > daucfdrthres
+  if (filterdaucfdr) {
+    if (verbose) message("\t Keeping rows with fdr auc higher than ",
+      daucfdrthres)
+    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrthres)
+  }
+
+  ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
+  if (filterctrlfdr) {
+    if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
+      ctrlfdrthres)
+    completedf <- .filterctrlfdr(colnamevec, completedf, ctrlfdrthres)
+  }
+
   return(completedf)
 }
 
@@ -726,6 +781,7 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 ## Calculate Mean Value over the full gene body in All conditions.
 message("AUC and differences")
 allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -756,9 +812,3 @@ filtereddf <- resfilter(completedf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
-
-!!!!!!!!!!!!!!!!!
-
-p_value_theoritical<- "adjFDR_p_AUC_ctrl"
-    !!sym(p_value_theoritical)> 0.1
-    
