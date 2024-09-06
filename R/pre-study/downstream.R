@@ -26,6 +26,7 @@ expthres <- 0.1
 nbcpubg <- 8
 ## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
 nbcputrans <- 20
+testonerep <- TRUE
 
 
 ##################
@@ -751,6 +752,14 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 ## Reading alldf and info tab
 alldf <- readRDS(alldfpath)
 expdf <- read.csv(exptabpath, header = TRUE)
+
+if (testonerep) {
+  ## Removing the second replicate
+  idxrep2 <- grep("ctrl2|HS2", colnames(alldf))
+  alldf <- alldf[, -idxrep2]
+  idxrep2 <- which(expdf$replicate == 2)
+  expdf <- expdf[-idxrep2, ]
+}
 
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
