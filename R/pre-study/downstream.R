@@ -619,7 +619,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 .filterauc <- function(colnamevec, completedf, pval, verbose) {
 
   ## Retrieving indexes of columns with pval auc and attenuation
-  idxpaucvec <- grep("pvalaucks", colnamevec)
+  idxpaucvec <- grep("^pvalaucks", colnamevec)
   idxattvec <- grep("attenuation", colnamevec)
   ## Replace the attenuation values if pval auc > pval
   colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
