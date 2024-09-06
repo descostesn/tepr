@@ -666,10 +666,10 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
     return(completedf)
 }
 
-resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
+resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrthres = 2, verbose = TRUE) {
+  daucfdrthres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1, verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -704,7 +704,7 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
 
-  ## Keeping the lines having a fdr dauc < daucfdrthres
+  ## Keeping the lines having a fdr dauc > daucfdrthres
   if (filterdaucfdr) {
     if (verbose) message("\t Keeping rows with fdr auc higher than ",
       daucfdrthres)
@@ -714,8 +714,15 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
       stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
         " might want to decrease the threshold.")
   }
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
+  if (filterctrlfdr) {
+    if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
+      ctrlfdrthres)
+    idx <- grep("")
+  }
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                             !!sym(p_value_theoritical)> 0.1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   return(completedf)
 }
@@ -760,6 +767,7 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 ## Calculate Mean Value over the full gene body in All conditions.
 message("AUC and differences")
 allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
