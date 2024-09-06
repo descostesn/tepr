@@ -669,7 +669,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrthres = 0.05, verbose = TRUE) {
+  daucfdrthres = 2, verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -709,14 +709,12 @@ resfilter <- function(completedf, filterauc = TRUE, pval = 0.05,
     if (verbose) message("\t Keeping rows with fdr auc higher than ",
       daucfdrthres)
     idxcol <- grep("adjFDR_pvaldeltadaucks", colnames(completedf))
-    idxkeep <- which(completedf[, idxcol] < daucfdrthres)
+    idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrthres)
     if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a delta auc fdr lower than ", fullthres, ". You",
-        " might want to increase the threshold.")
+      stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
+        " might want to decrease the threshold.")
   }
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-p_value_theoritical<- "adjFDR_p_AUC_ctrl"
-    !!sym(p_value_theoritical)> 0.1
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   return(completedf)
