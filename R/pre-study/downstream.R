@@ -720,16 +720,14 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   if (filterctrlfdr) {
     if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
       ctrlfdrthres)
-    idxcol <- grep("adjFDR", colnames(completedf))
+    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnames(completedf))
     idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
     if (isTRUE(all.equal(length(idxkeep), 0)))
       stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
         " might want to decrease the threshold.")
-  
+    completedf <- completedf[idxkeep, ]
   }
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                             !!sym(p_value_theoritical)> 0.1
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   return(completedf)
 }
 
