@@ -26,7 +26,7 @@ expthres <- 0.1
 nbcpubg <- 8
 ## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
 nbcputrans <- 20
-testonerep <- TRUE
+testonerep <- FALSE
 
 
 ##################
