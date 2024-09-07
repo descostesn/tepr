@@ -33,7 +33,7 @@ expdf <- read.csv(exptabpath, header = TRUE)
 
 !!!!!!!!!!!!
 
-.subtext <- function(condvec, geneinfo, digits) {
+\.subtextvline <- function(condvec, geneinfo, digits) {
 
     reslist <- lapply(condvec, function(cond, geneinfo, digits) {
 
@@ -79,7 +79,7 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold,
     windsizefact <- (df100$end - df100$start) / 1000
     ## Retrieving auc, ks, and knee
     condvec <- unique(expdf$condition)
-    subtext <- .subtext(condvec, geneinfo, digits)
+    subtext <- \.subtextvline(condvec, geneinfo, digits)
 
     ## Building data.frame for plotting with fx and value
     if (verbose) message("\t Building df for plotting with fx and value")
