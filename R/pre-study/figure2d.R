@@ -130,5 +130,6 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold,
         g2 <- g2 + geom_vline(data = vlinedf, aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
 
-
+    ggplot2::ggsave(filename = file.path(outfold, paste0(genename, ".pdf")),
+        plot = g2, device = "pdf", path = outfold)
 }
