@@ -6,7 +6,6 @@
 ########################
 
 library("ggplot2")
-options(digits = 2)
 
 
 ##################
@@ -30,44 +29,42 @@ completedf <- readRDS(completedfpath)
 dfmeandiff <- readRDS(dfmeandiffpath)
 expdf <- read.csv(exptabpath, header = TRUE)
 
-plotecdf <- function(dfmeandiff, completedf, genename, verbose = TRUE) {
+!!!!!!!!!!!!
+
+.subtext <- function(expdf, geneinfo, digits) {
+
+    subtext <- sapply(unique(expdf$condition),
+        function(cond, geneinfo, digits) {
+
+            ksname <- paste0("adjFDR_pvalaucks_", cond)
+            ksval <- round(geneinfo[, ksname], digits)
+            aucval <- round(geneinfo[, paste0("auc_", cond)], digits)
+
+            if (ksval < 0.01) {
+                kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
+                kneeval <- round(kneeaucval * geneinfo$windsize / 1000, digits)
+            } else {
+                kneeval <- "NA"
+            }
+            return(paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
+                ", Knee (kb) = ", kneeval))
+        }, geneinfo, digits)
+
+    return(subtext)
+}
+
+plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
+    verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
     df <- dfmeandiff[which(dfmeandiff$gene == genename), ]
-
-    ## Retrieving gene info
     geneinfo <- completedf[which(completedf$gene == genename), ]
 
+    if (verbose) message("\t Gathering statistics about each condition")
     ## Computing the window size factor
     df100 <- df[which(df$coord == 100), ]
     windsizefact <- (df100$end - df100$start) / 1000
-
-
-    !!!!!!!!!!
-
-    AUC_cond_name <- paste0("AUC_", cond)
-    AUC_cond <- round(gene_stat %>% pull(AUC_cond_name), decimal_places)  # Round AUC value
-    KS_cond_name <-  paste0("adjFDR_p_AUC_", cond)
-    KS_cond <- formatC(gene_stat %>% pull(KS_cond_name), format = "e", digits = decimal_places)
-    knee_cond_name <- paste0("knee_AUC_", cond)
-    knee_cond <- round(gene_stat %>% mutate(knee_kb=!!sym(knee_cond_name)*window_size/1000) %>% pull(knee_kb))  # Round Knee value
-    
-
-    # If KS test value is less than 0.01, store the knee_cond value for the vertical line
-    
-    if (as.numeric(KS_cond) < 0.01) {
-      vline_data <- rbind(vline_data, data.frame(Condition = cond, Knee_Value = knee_cond))
-      
-    } else {
-      knee_cond <- NA
-    }
-    
-    sapply(unique(expdf$condition), function(cond) {
-        return(paste0(geneinfo[,paste0("auc_", cond)], geneinfo[,paste0("adjFDR_", cond)]))
-    })
-    conditiontext <- paste0(cond, ": AUC = ", AUC_cond, ", KS = ", KS_cond, ", Knee (kb) = ", knee_cond)
-    subtitle_text <- paste(subtitle_text, condition_text, sep = "\n")
-
-    !!!!!!!!!!!!
+    ## Retrieving auc, ks, and knee
+    subtext <- .subtext(expdf, geneinfo, digits)
 }
