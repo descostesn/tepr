@@ -58,7 +58,8 @@ outfold <- "/g/romebioinfo/tmp/figures"
             paste0(cond, rep, "score") })})))
 }
 
-.callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext) {
+.callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
+    outfold) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -89,7 +90,7 @@ outfold <- "/g/romebioinfo/tmp/figures"
             aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
 
-    ggplot2::ggsave(filename = file.path(outfold, paste0(genename, ".pdf")),
+    ggplot2::ggsave(filename = paste0(genename, ".pdf"),
         plot = g2, device = "pdf", path = outfold)
 }
 
@@ -132,7 +133,7 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold, # nolint
 
     ## Plotting
     if (verbose) message("\t Generating result to ", outfold)
-    .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext)
+    .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold)
 }
 
 
