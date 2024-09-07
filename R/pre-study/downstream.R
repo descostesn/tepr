@@ -817,7 +817,12 @@ start_time <- Sys.time()
 matnatrans <- countna(allexprsdfs, expdf, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+if (!testonerep) {
+  saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+} else {
+  saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans-onerep.rds")
+}
+
 
 message("Retrieving knee and max")
 start_time <- Sys.time()
