@@ -172,7 +172,7 @@ plot_gene_ECDF <- function(gene_name, resultsECDF, tst_df, extension, working_di
 # Usage
 pattern_colors <- ask_for_colors( extension, working_directory )
 #pattern_colors <- c("#90AFBB","#FF9A04","#10AFBB", "#FC4E07")
-gene_name <- "M6PR"  # Example gene
+gene_name <- "EGFR"  # Example gene
  
  my_plot <- 
   plot_gene_ECDF(gene_name, concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2) ##last parameter is rounding
