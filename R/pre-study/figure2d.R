@@ -20,7 +20,7 @@ dfmeandiffpath <- "/g/romebioinfo/tmp/downstream/dfmeandiff.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 colvec <- c("#90AFBB", "#FF9A04", "#10AFBB", "#FC4E07")
 genename <- "EGFR"
-
+outfold <- "/g/romebioinfo/tmp/figures"
 
 ##################
 # MAIN
@@ -44,13 +44,15 @@ expdf <- read.csv(exptabpath, header = TRUE)
             if (ksval < 0.01) {
                 kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
                 kneeval <- round(kneeaucval * geneinfo$windsize / 1000, digits)
+                vlinedf <- data.frame(condition = cond, kneeval = kneeval)
             } else {
                 kneeval <- "NA"
+                vlinedf <- data.frame(condition = cond, kneeval = kneeval)
             }
             return(paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
                 ", Knee (kb) = ", kneeval))
         }, geneinfo, digits)
-
+    subtext <- paste(subtext, collapse = "\n")
     return(subtext)
 }
 
@@ -60,8 +62,8 @@ expdf <- read.csv(exptabpath, header = TRUE)
             paste0(cond, rep, "score") })})))
 }
 
-plotecdf <- function(dfmeandiff, completedf, genename, colvec, digits = 2,
-    verbose = TRUE) {
+plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold,
+    digits = 2, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
@@ -95,8 +97,33 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, digits = 2,
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
 
-    ## Vector of colors
+    ## Plotting
+    if (verbose) message("\t Generating result to ", outfold)
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
+    ylimval <- 2 * max(dflongecdf$value)
+    linexvals <- dflongecdf$coord * windsizefact
+    lineyvals <- dflongecdf$coord / max(dflongecdf$coord)
+    areayvals <- dflongecdf$value / ylimval
+
+    g <- ggplot(dflongecdf, aes(x = coord, y = Fx, color = conditions)) +
+        geom_line(aes(x = linexvals, y = lineyvals),
+            linetype = "dashed", color = "red")
+
+    g1 <- g + geom_area(aes(x = linexvals, y = areayvals, fill = conditions),
+        alpha = 0.1,linewidth=0.2, position = 'identity') +
+        scale_fill_manual(values = colvec) +
+        geom_line(linewidth = 1, aes(x = linexvals)) +
+        scale_color_manual(values = colvec)
+
+    g2 <- g1 + scale_y_continuous(sec.axis = sec_axis(~ . * ylimval,
+        name = "Transcription level")) +
+        labs(x = "Distance from TSS (kb)",
+             y = "Cumulative transcription density", title = genename,
+             subtitle = subtext) + theme_classic()
+
+
+
+        geom_vline(data = vline_data, aes(xintercept = Knee_Value), linetype = "dashed", color = "darkgrey") + 
     
 
 
