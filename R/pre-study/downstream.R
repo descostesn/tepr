@@ -702,7 +702,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrlog10thres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1, verbose = TRUE) {
+  daucfdrlog10thres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1,
+  verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -848,7 +849,12 @@ completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
+if (!testonerep) {
+  saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
+} else {
+  saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf-onerep.rds")
+}
+
 
 message("Filtering results")
 start_time <- Sys.time()
