@@ -14,7 +14,6 @@ library("tidyselect")
 # PARAMETERS
 ##################
 
-
 completedfpath <- "/g/romebioinfo/tmp/downstream/completedf.rds"
 dfmeandiffpath <- "/g/romebioinfo/tmp/downstream/dfmeandiff.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
@@ -22,16 +21,10 @@ colvec <- c("#90AFBB", "#FF9A04", "#10AFBB", "#FC4E07")
 genename <- "EGFR"
 outfold <- "/g/romebioinfo/tmp/figures"
 
-##################
-# MAIN
-##################
 
-## Reading inputs
-completedf <- readRDS(completedfpath)
-dfmeandiff <- readRDS(dfmeandiffpath)
-expdf <- read.csv(exptabpath, header = TRUE)
-
-!!!!!!!!!!!!
+##################
+#FUNCTIONS
+##################
 
 .subtextvline <- function(condvec, geneinfo, digits) {
 
@@ -141,3 +134,17 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold, # nolint
     if (verbose) message("\t Generating result to ", outfold)
     .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext)
 }
+
+
+
+##################
+# MAIN
+##################
+
+## Reading inputs
+completedf <- readRDS(completedfpath)
+dfmeandiff <- readRDS(dfmeandiffpath)
+expdf <- read.csv(exptabpath, header = TRUE)
+
+## Plot
+plotecdf(dfmeandiff, completedf, genename, colvec, outfold)
