@@ -77,6 +77,7 @@ plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
     subtext <- .subtext(condvec, geneinfo, digits)
 
     ## Building data.frame for plotting with fx and value
+    if (verbose) message("\t Building df for plotting with fx and value")
     repvec <- unique(expdf$replicate)
     colnamedfvec <- colnames(df)
     fxcolvec <- colnamedfvec[grep("^Fx_", colnamedfvec)]
