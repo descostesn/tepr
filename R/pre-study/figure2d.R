@@ -90,5 +90,9 @@ plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
         cols = tidyselect::all_of(valcolvec), names_to = "conditions",
         values_to = "value") %>%
         dplyr::mutate(conditions = gsub("value_|_score", "", conditions)) # nolint
+    ## merging
+    commoncols <- intersect(names(dflongfx), names(dflongval))
+    dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
+
 
 }
