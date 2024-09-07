@@ -498,7 +498,13 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
         res <- lapply(condvec, function(c, m, n) {
-          length(which(apply(m[, grep(c, n)], 1, function(x) all(is.na(x)))))
+          idxcol <- grep(c, n)
+          if (!isTRUE(all.equal(length(idxcol), 1))) {
+            return(length(which(apply(m[, idxcol], 1,
+              function(x) all(is.na(x))))))
+          } else { ## Only one replicate
+            return(length(which(is.na(m[, idxcol]))))
+          }
         }, scoremat, colnamestr)
         res <- do.call("cbind", res)
         colnames(res) <- paste0(condvec, "_NA")
