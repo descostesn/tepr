@@ -60,7 +60,7 @@ expdf <- read.csv(exptabpath, header = TRUE)
             paste0(cond, rep, "score") })})))
 }
 
-plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
+plotecdf <- function(dfmeandiff, completedf, genename, colvec, digits = 2,
     verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
@@ -94,6 +94,10 @@ plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
     ## merging
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
+
+    ## Vector of colors
+    colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
+    
 
 
 }
