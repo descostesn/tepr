@@ -26,6 +26,7 @@ expthres <- 0.1
 nbcpubg <- 8
 ## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
 nbcputrans <- 20
+testonerep <- TRUE
 
 
 ##################
@@ -243,16 +244,21 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 
         meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
             currentcond, colnamevec, verbose) {
-            if (verbose)
+            if (verbose) {
               message("\t Calculating average and difference between ",
                 "replicates for columns '", idxname, "' of ", currentcond)
+              if (isTRUE(all.equal(length(idxvalvec), 1)))
+                warning("Only one replicate, copy scores to mean columns",
+                  immediate. = TRUE)
+            }
 
             ## Calculating the column of mean scores for currentcond
             ## The result is a data.frame made of a single column
-            if (length(idxvalvec) >= 2)
+            if (length(idxvalvec) >= 2) {
                 meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
-            else
-                meandf <- df[, idxvalvec]
+            } else {
+                meandf <- as.data.frame(df[, idxvalvec])
+            }
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
@@ -287,8 +293,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         ## The difference is used to calculate the AUC later on
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
-            currentcond, colnamevec, verbose)
+          currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
+
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
     }, resultsecdf, nbwindows, verbose)
@@ -491,7 +498,13 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
         res <- lapply(condvec, function(c, m, n) {
-          length(which(apply(m[, grep(c, n)], 1, function(x) all(is.na(x)))))
+          idxcol <- grep(c, n)
+          if (!isTRUE(all.equal(length(idxcol), 1))) {
+            return(length(which(apply(m[, idxcol], 1,
+              function(x) all(is.na(x))))))
+          } else { ## Only one replicate
+            return(length(which(is.na(m[, idxcol]))))
+          }
         }, scoremat, colnamestr)
         res <- do.call("cbind", res)
         colnames(res) <- paste0(condvec, "_NA")
@@ -666,9 +679,9 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
     return(completedf)
 }
 
-.filterdaucfdr <- function(colnamevec, completedf, daucfdrthres) {
+.filterdaucfdr <- function(colnamevec, completedf, daucfdrlog10thres) {
   idxcol <- grep("adjFDR_pvaldeltadaucks", colnamevec)
-  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrthres)
+  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrlog10thres)
   if (isTRUE(all.equal(length(idxkeep), 0)))
     stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
         " might want to decrease the threshold.")
@@ -689,7 +702,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrthres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1, verbose = TRUE) {
+  daucfdrlog10thres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1,
+  verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -724,11 +738,11 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
     completedf <- .filterfullmean(colnamevec, completedf, fullthres)
   }
 
-  ## Keeping the lines having a fdr dauc > daucfdrthres
+  ## Keeping the lines having a fdr dauc > daucfdrlog10thres
   if (filterdaucfdr) {
     if (verbose) message("\t Keeping rows with fdr auc higher than ",
-      daucfdrthres)
-    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrthres)
+      daucfdrlog10thres)
+    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrlog10thres)
   }
 
   ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
@@ -752,6 +766,14 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 alldf <- readRDS(alldfpath)
 expdf <- read.csv(exptabpath, header = TRUE)
 
+if (testonerep) {
+  ## Removing the second replicate
+  idxrep2 <- grep("ctrl2|HS2", colnames(alldf))
+  alldf <- alldf[, -idxrep2]
+  idxrep2 <- which(expdf$replicate == 2)
+  expdf <- expdf[-idxrep2, ]
+}
+
 ## Filtering out non expressed transcripts:
 ## 1) for each column, calculate the average expression per transcript (over each frame) # nolint
 ## 2) For each column, remove a line if it contains only values < expthres separating strands # nolint
@@ -764,12 +786,21 @@ end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 resultsecdf <- resecdf[[1]]
 nbwindows <- resecdf[[2]]
-saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
+if (!testonerep) {
+  saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf.rds")
+} else {
+  saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf-onerep.rds")
+}
 
+## Calculating means and differences
 start_time <- Sys.time()
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
-saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
+if (!testonerep) {
+  saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
+} else {
+  saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff-onerep.rds")
+}
 ## Splitting result by transcripts
 message("\t Splitting results by transcripts")
 bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
@@ -781,7 +812,11 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 ## Calculate Mean Value over the full gene body in All conditions.
 message("AUC and differences")
 allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
-saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
+if (!testonerep) {
+  saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
+} else {
+  saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf-onerep.rds")
+}
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
@@ -789,14 +824,24 @@ start_time <- Sys.time()
 matnatrans <- countna(allexprsdfs, expdf, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+if (!testonerep) {
+  saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans.rds")
+} else {
+  saveRDS(matnatrans, "/g/romebioinfo/tmp/downstream/matnatrans-onerep.rds")
+}
+
 
 message("Retrieving knee and max")
 start_time <- Sys.time()
 kneedf <- kneeid(bytranslistmean, expdf, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
+if (!testonerep) {
+  saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
+} else {
+  saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf-onerep.rds")
+}
+
 
 message("Calculating attenuation values")
 start_time <- Sys.time()
@@ -804,11 +849,20 @@ completedf <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
+if (!testonerep) {
+  saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf.rds")
+} else {
+  saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf-onerep.rds")
+}
+
 
 message("Filtering results")
 start_time <- Sys.time()
 filtereddf <- resfilter(completedf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+if (!testonerep) {
+  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+} else {
+  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf-onerep.rds")
+}
