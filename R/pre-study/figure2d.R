@@ -126,10 +126,9 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold,
              y = "Cumulative transcription density", title = genename,
              subtitle = subtext) + theme_classic()
 
-
-
-        geom_vline(data = vline_data, aes(xintercept = Knee_Value), linetype = "dashed", color = "darkgrey") + 
-    
+    if (!isTRUE(all.equal(nrow(vlinedf), 0)))
+        g2 <- g2 + geom_vline(data = vlinedf, aes(xintercept = kneeval),
+            linetype = "dashed", color = "darkgrey")
 
 
 }
