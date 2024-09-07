@@ -244,16 +244,21 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 
         meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
             currentcond, colnamevec, verbose) {
-            if (verbose)
+            if (verbose) {
               message("\t Calculating average and difference between ",
                 "replicates for columns '", idxname, "' of ", currentcond)
+              if (isTRUE(all.equal(length(idxvalvec), 1)))
+                warning("Only one replicate, copy scores to mean columns",
+                  immediate. = TRUE)
+            }
 
             ## Calculating the column of mean scores for currentcond
             ## The result is a data.frame made of a single column
-            if (length(idxvalvec) >= 2)
+            if (length(idxvalvec) >= 2) {
                 meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
-            else
-                meandf <- df[, idxvalvec]
+            } else {
+                meandf <- as.data.frame(df[, idxvalvec])
+            }
             colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
 
             if (isTRUE(all.equal(idxname, "Fx"))) {
@@ -288,8 +293,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         ## The difference is used to calculate the AUC later on
         colnamevec <- colnames(df)
         meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
-            currentcond, colnamevec, verbose)
+          currentcond, colnamevec, verbose)
         names(meandifflist) <- NULL
+
         meandiffres <- do.call("cbind", meandifflist)
         return(meandiffres)
     }, resultsecdf, nbwindows, verbose)
