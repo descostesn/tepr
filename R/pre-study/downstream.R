@@ -785,10 +785,15 @@ if (!testonerep) {
   saveRDS(resultsecdf, "/g/romebioinfo/tmp/downstream/resultsecdf-onerep.rds")
 }
 
+## Calculating means and differences
 start_time <- Sys.time()
 message("Calculating means and differences")
 dfmeandiff <- createmeandiff(resultsecdf, expdf, nbwindows)
-saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
+if (!testonerep) {
+  saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff.rds")
+} else {
+  saveRDS(dfmeandiff, "/g/romebioinfo/tmp/downstream/dfmeandiff-onerep.rds")
+}
 ## Splitting result by transcripts
 message("\t Splitting results by transcripts")
 bytranslistmean <- split(dfmeandiff, factor(dfmeandiff$transcript))
@@ -800,7 +805,11 @@ message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 ## Calculate Mean Value over the full gene body in All conditions.
 message("AUC and differences")
 allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
-saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
+if (!testonerep) {
+  saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf.rds")
+} else {
+  saveRDS(allaucdf, "/g/romebioinfo/tmp/downstream/allaucdf-onerep.rds")
+}
 
 message("Calculating number of missing values for each transcript and for",
   " each condition")
