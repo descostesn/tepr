@@ -170,8 +170,8 @@ plot_gene_ECDF <- function(gene_name, resultsECDF, tst_df, extension, working_di
 }
 
 # Usage
-pattern_colors <- ask_for_colors( extension, working_directory )
-#pattern_colors <- c("#90AFBB","#FF9A04","#10AFBB", "#FC4E07")
+# pattern_colors <- ask_for_colors( extension, working_directory )
+pattern_colors <- c("#90AFBB","#FF9A04","#10AFBB", "#FC4E07")
 gene_name <- "EGFR"  # Example gene
  
  my_plot <- 
