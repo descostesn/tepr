@@ -861,4 +861,8 @@ start_time <- Sys.time()
 filtereddf <- resfilter(completedf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+if (!testonerep) {
+  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+} else {
+  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf-onerep.rds")
+}
