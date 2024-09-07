@@ -31,10 +31,9 @@ expdf <- read.csv(exptabpath, header = TRUE)
 
 !!!!!!!!!!!!
 
-.subtext <- function(expdf, geneinfo, digits) {
+.subtext <- function(condvec, geneinfo, digits) {
 
-    subtext <- sapply(unique(expdf$condition),
-        function(cond, geneinfo, digits) {
+    subtext <- sapply(condvec, function(cond, geneinfo, digits) {
 
             ksname <- paste0("adjFDR_pvalaucks_", cond)
             ksval <- round(geneinfo[, ksname], digits)
@@ -67,4 +66,13 @@ plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
     windsizefact <- (df100$end - df100$start) / 1000
     ## Retrieving auc, ks, and knee
     subtext <- .subtext(expdf, geneinfo, digits)
+
+    ## Building data.frame for plot with fx and value
+    colnamedfvec <- colnames(df)
+    fxcolvec <- colnamedfvec[grep("^Fx_", colnamedfvec)]
+    valcolvec <- paste0(condvec, unique(expdf$replicate), "score")
+    df_long_Fx <- df %>%
+    pivot_longer(cols = all_of(column_vector_Fx),
+                 names_to = "Conditions", values_to = "Fx") %>%
+    mutate(Conditions = gsub("Fx_|_score", "", Conditions))
 }
