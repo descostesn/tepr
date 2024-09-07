@@ -835,7 +835,12 @@ start_time <- Sys.time()
 kneedf <- kneeid(bytranslistmean, expdf, nbcputrans)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
-saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
+if (!testonerep) {
+  saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf.rds")
+} else {
+  saveRDS(kneedf, "/g/romebioinfo/tmp/downstream/kneedf-onerep.rds")
+}
+
 
 message("Calculating attenuation values")
 start_time <- Sys.time()
