@@ -6,6 +6,8 @@
 ########################
 
 library("ggplot2")
+library("tidyr")
+library("tidyselect")
 
 
 ##################
@@ -52,6 +54,12 @@ expdf <- read.csv(exptabpath, header = TRUE)
     return(subtext)
 }
 
+.valcolbuild <- function(condvec, repvec) {
+    return(as.vector(sapply(condvec,
+        function(cond) { sapply(repvec, function(rep) {
+            paste0(cond, rep, "score") })})))
+}
+
 plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
     verbose = TRUE) {
 
@@ -65,14 +73,22 @@ plotecdf <- function(dfmeandiff, completedf, genename, digits = 2,
     df100 <- df[which(df$coord == 100), ]
     windsizefact <- (df100$end - df100$start) / 1000
     ## Retrieving auc, ks, and knee
-    subtext <- .subtext(expdf, geneinfo, digits)
+    condvec <- unique(expdf$condition)
+    subtext <- .subtext(condvec, geneinfo, digits)
 
-    ## Building data.frame for plot with fx and value
+    ## Building data.frame for plotting with fx and value
+    repvec <- unique(expdf$replicate)
     colnamedfvec <- colnames(df)
     fxcolvec <- colnamedfvec[grep("^Fx_", colnamedfvec)]
-    valcolvec <- paste0(condvec, unique(expdf$replicate), "score")
-    df_long_Fx <- df %>%
-    pivot_longer(cols = all_of(column_vector_Fx),
-                 names_to = "Conditions", values_to = "Fx") %>%
-    mutate(Conditions = gsub("Fx_|_score", "", Conditions))
+    valcolvec <- .valcolbuild(condvec, repvec)
+    ## Apply pivot
+    dflongfx <- df %>% tidyr::pivot_longer(
+        cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
+        values_to = "Fx") %>%
+        dplyr::mutate(conditions = gsub("Fx_|_score", "", conditions)) # nolint
+    dflongval <- df %>% tidyr::pivot_longer(
+        cols = tidyselect::all_of(valcolvec), names_to = "conditions",
+        values_to = "value") %>%
+        dplyr::mutate(conditions = gsub("value_|_score", "", conditions)) # nolint
+
 }
