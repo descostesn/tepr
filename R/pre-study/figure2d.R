@@ -35,7 +35,7 @@ expdf <- read.csv(exptabpath, header = TRUE)
 
 .subtext <- function(condvec, geneinfo, digits) {
 
-    subtext <- sapply(condvec, function(cond, geneinfo, digits) {
+    reslist <- lapply(condvec, function(cond, geneinfo, digits) {
 
             ksname <- paste0("adjFDR_pvalaucks_", cond)
             ksval <- round(geneinfo[, ksname], digits)
@@ -44,16 +44,19 @@ expdf <- read.csv(exptabpath, header = TRUE)
             if (ksval < 0.01) {
                 kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
                 kneeval <- round(kneeaucval * geneinfo$windsize / 1000, digits)
-                vlinedf <- data.frame(condition = cond, kneeval = kneeval)
+                vlinecond <- data.frame(condition = cond, kneeval = kneeval)
             } else {
                 kneeval <- "NA"
-                vlinedf <- data.frame(condition = cond, kneeval = kneeval)
+                vlinecond <- data.frame(condition = character(),
+                    kneeval = numeric())
             }
-            return(paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
-                ", Knee (kb) = ", kneeval))
+            condtext <- paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
+                ", Knee (kb) = ", kneeval)
+            return(list(condtext, vlinecond))
         }, geneinfo, digits)
-    subtext <- paste(subtext, collapse = "\n")
-    return(subtext)
+    subtext <- paste(sapply(reslist, "[", 1), collapse = "\n")
+    vlinedf <- do.call("rbind", sapply(reslist, "[", 2))
+    return(list(subtext, vlinedf))
 }
 
 .valcolbuild <- function(condvec, repvec) {
