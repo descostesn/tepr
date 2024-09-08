@@ -432,5 +432,5 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 
 1) Modify the function resfilter to handle Universe and Group
   - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal. See downstream.R
-  - add a checkfilter function that verify the validity of the condition column, and that the filter, universe, and group column do not only contain false.
+  - add a checkfilter function that verify the validity of the condition column, and that the universe and group column do not only contain false.
 2) Modify countna function to keep only one na column made out of the sum of na in each condition
