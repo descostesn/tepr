@@ -712,40 +712,6 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   unigroupdf <- cbind(res, completedf)
 
   return(unigroupdf)
-!!!!!!!!!!!!
-Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
-    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint  
-!!!!!!!!!!!!
-  ## Going through the rows of the filter df and perform the adapted filtering
-  apply(filterdf, 1, function(currentfilter))
-  ## Filter attenuation values based on pval AUC
-  if (filterauc) {
-    message("\t Replacing non-significant auc by NA")
-    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
-  }
-
-  ## Keeping rows if full means higher than fullmeanthres
-  if (filterfullmean) {
-    if (verbose) message("\t Keeping rows if full means higher than ",
-      "fullmeanthres")
-    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
-  }
-
-  ## Keeping the lines having a fdr dauc > daucfdrlog10thres
-  if (filterdaucfdr) {
-    if (verbose) message("\t Keeping rows with fdr auc higher than ",
-      daucfdrlog10thres)
-    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrlog10thres)
-  }
-
-  ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
-  if (filterctrlfdr) {
-    if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
-      ctrlfdrthres)
-    completedf <- .filterctrlfdr(colnamevec, completedf, ctrlfdrthres)
-  }
-
-  return(completedf)
 }
 
 
