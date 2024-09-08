@@ -20,14 +20,10 @@ outputfolder <- "/g/romebioinfo/tmp/figures"
 
 
 ##################
-# MAIN
+#FUNCTIONS
 ##################
 
-unigroupdf <- readRDS(unigrouppath)
-expdf <- read.csv(exptabpath, header = TRUE)
-genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
-
-plotauc <- function(df, expdf, genevec, outfile = "AUCcompare_pval.pdf",
+plotauc <- function(df, expdf, genevec, outfile = "AUCcompare_pval.pdf", # nolint
     outfold = "./", formatname = "pdf") {
 
     ## Retrieving the column containing the adj pval for delta acu ks.test
@@ -72,3 +68,15 @@ plotauc <- function(df, expdf, genevec, outfile = "AUCcompare_pval.pdf",
     ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
         plot = g2, device = formatname, path = outfold)
 }
+
+
+##################
+# MAIN
+##################
+
+unigroupdf <- readRDS(unigrouppath)
+expdf <- read.csv(exptabpath, header = TRUE)
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+
+## Plotting scatter of auc per condition
+plotauc(unigroupdf, expdf, genevec, outfold = outputfolder)
