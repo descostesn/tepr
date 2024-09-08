@@ -499,7 +499,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
         scoremat <- transtable[, colnamestr]
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
-        res <- lapply(condvec, function(c, m, n) {
+        res <- sapply(condvec, function(c, m, n) {
           idxcol <- grep(c, n)
           if (!isTRUE(all.equal(length(idxcol), 1))) {
             return(length(which(apply(m[, idxcol], 1,
@@ -508,11 +508,12 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
             return(length(which(is.na(m[, idxcol]))))
           }
         }, scoremat, colnamestr)
-        res <- do.call("cbind", res)
-        colnames(res) <- paste0(condvec, "_NA")
+
+        ## Retrieving total NA and transcript info
+        countna <- sum(res)
         info <- data.frame(gene = unique(transtable$gene),
           transcript = unique(transtable$transcript), strand = str)
-        return(cbind(info, res))
+        return(cbind(info, countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
   return(do.call("rbind", nabytranslist))
