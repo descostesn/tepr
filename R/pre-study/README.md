@@ -440,3 +440,4 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 3) Modify the function resfilter to handle Universe and Group using the filter table
   - rename resfilter to universegroup
   - The filtering is done with the subfunction .createboolmat
+  - The result of the function is stored in the variable unigroupdf
