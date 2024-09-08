@@ -632,49 +632,43 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
-.filterauc <- function(colnamevec, completedf, pval, verbose) {
+.createboolmat <- function(tab, completedf) {
 
-  ## Retrieving indexes of columns with pval auc and attenuation
-  idxpaucvec <- grep("^pvalaucks", colnamevec)
-  idxattvec <- grep("attenuation", colnamevec)
-  ## Replace the attenuation values if pval auc > pval
-  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-    idxna <- which(tab[, idxpauc] < pval)
-    lna <- length(idxna)
+  booleanlist <- apply(tab, 1, function(currentfilter, completedf) {
 
-    if (!isTRUE(all.equal(lna, 0))) {
-      if (verbose) message("\t\t ", lna, "/", nrow(tab))
-      tab[idxna, idxatt] <- NA
+    currentfeature <- as.character(currentfilter["feature"])
+
+    if (isTRUE(all.equal(currentfeature, "countna"))) {
+      return(as.vector(completedf["countna"] < currentfilter["threshold"]))
+    } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
+      return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
+    } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
+      colstr <- paste0("meanvaluefull_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
+      colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"]) # nolint
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "auc"))) {
+      colstr <- paste0("auc_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
+      colnamevec <- colnames(completedf)
+      idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec) # nolint
+      .checkunique(idx)
+      colstr <- colnamevec[idx]
+      return(-log10(completedf[, colstr]) > currentfilter["threshold"])
+    } else {
+      stop("The feature ", currentfeature, " is not handlded.",
+        "Allowed features are: countna, windowsize, fullmean, pvalauc, auc, ",
+        "and daucfdrlog10. If you are sure that there is no typo, contact the",
+        " developper.")
     }
-    return(tab[, idxatt])
-  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
-      SIMPLIFY = FALSE)
-  replacedf <- do.call("cbind", colattlist)
-  completedf[, idxattvec] <- replacedf
-  return(completedf)
+  }, completedf, simplify = FALSE)
+
+  booleanmat <- do.call("cbind", booleanlist)
+  colnames(booleanmat) <- paste(tab[, "feature"], tab[, "condition"], sep = "-")
+  return(booleanmat)
 }
-
-
-.filterdaucfdr <- function(colnamevec, completedf, daucfdrlog10thres) {
-  idxcol <- grep("adjFDR_pvaldeltadaucks", colnamevec)
-  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrlog10thres)
-  if (isTRUE(all.equal(length(idxkeep), 0)))
-    stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
-  completedf <- completedf[idxkeep, ]
-  return(completedf)
-}
-
-.filterctrlfdr <- function(colnamevec, completedf, ctrlfdrthres) {
-    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnamevec)
-    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-    return(completedf)
-}
-
 
 universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
@@ -687,43 +681,11 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   grouptab <- filterdf[which(filterdf$group), ]
 
   ## Creating bool matrix for universe and group
-  !!.createboolmat(tab, completedf)
+  universemat <- .createboolmat(universetab, completedf)
+  groupmat <- .createboolmat(grouptab, completedf)
 
-  .createboolmat <- function(tab, completedf) {
-    booleanlist <- apply(tab, 1, function(currentfilter, completedf) {
 
-    currentfeature <- as.character(currentfilter["feature"])
-
-    if (isTRUE(all.equal(currentfeature, "countna"))) {
-      return(as.vector(completedf["countna"] < currentfilter["threshold"]))
-    } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
-      return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
-    } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
-      colstr <- paste0("meanvaluefull_", currentfilter["condition"])
-      return(completedf[, colstr] > currentfilter["threshold"])
-    } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
-      colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"])
-      return(completedf[, colstr] > currentfilter["threshold"])
-    } else if (isTRUE(all.equal(currentfeature, "auc"))) {
-      colstr <- paste0("auc_", currentfilter["condition"])
-      return(completedf[, colstr] > currentfilter["threshold"])
-    } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
-      colnamevec <- colnames(completedf)
-      idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec)
-      .checkunique(idx)
-      colstr <- colnamevec[idx]
-      return(-log10(completedf[, colstr]) > currentfilter["threshold"])
-    } else {
-      stop("The feature ", currentfeature, " is not handlded.",
-        "Allowed features are: countna, windowsize, fullmean, pvalauc, auc, ",
-        "and daucfdrlog10. If you are sure that there is no typo, contact the",
-        " developper.")
-    }
-  }, completedf, simplify = FALSE)
-  booleanmat <- do.call("cbind", booleanlist)
-  colnames(booleanmat) <- paste(tab[, "feature"], tab[, "condition"], sep = "-")
-  return(booleanmat)
-  }
+  
   
 !!!!!!!!!!!!
 mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
