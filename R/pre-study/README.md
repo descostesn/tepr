@@ -437,3 +437,4 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
   - add conditions on column names in checkfilter
 2) Modify countna function to keep only one na column made out of the sum of na in each condition.
 3) Modify the function resfilter to handle Universe and Group using the filter table
+  - rename resfilter to universegroup
