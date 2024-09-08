@@ -711,6 +711,11 @@ resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
 
+  ## Keeping filtering rows
+  filterdf <- filterdf[filterdf$filter, ]
+!!!!!!!!!!!! CURRENT
+  ## Going through the rows of the filter df and perform the adapted filtering
+  apply(filterdf, 1, function(currentfilter))
   ## Filter attenuation values based on pval AUC
   if (filterauc) {
     message("\t Replacing non-significant auc by NA")
