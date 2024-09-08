@@ -775,6 +775,14 @@ checkfilter <- function(filterdf, expdf) {
   if (!all(filterdf$filter))
     stop("All the rows of the filter column are set to FALSE. No rows will",
       " be used for the analysis.")
+
+  if (!all(filterdf$universe))
+    stop("All the rows of the universe column are set to FALSE. No rows will",
+      " be used for the analysis.")
+
+  if (!all(filterdf$group))
+    stop("All the rows of the group column are set to FALSE. No rows will",
+      " be used for the analysis.")
 }
 
 
