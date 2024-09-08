@@ -21,6 +21,8 @@ library("pracma")
 
 alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
+filtertabpath <- "/g/romebioinfo/Projects/tepr/Dataset/filtertab.csv"
+
 expthres <- 0.1
 ## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
 nbcpubg <- 8
@@ -699,6 +701,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
     return(completedf)
 }
 
+
 resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
   filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
   filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
@@ -858,7 +861,7 @@ if (!testonerep) {
 
 message("Filtering results")
 start_time <- Sys.time()
-filtereddf <- resfilter(completedf)
+filtereddf <- resfilter(completedf, expdf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 if (!testonerep) {
