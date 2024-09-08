@@ -768,6 +768,8 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 ## Reading alldf and info tab
 alldf <- readRDS(alldfpath)
 expdf <- read.csv(exptabpath, header = TRUE)
+filterdf <- read.csv(filtertabpath, header = TRUE)
+
 
 if (testonerep) {
   ## Removing the second replicate
