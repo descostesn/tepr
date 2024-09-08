@@ -704,6 +704,10 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
 resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
+  nrowcomp <- nrow(completedf)
+  universevec <- rep(FALSE, nrowcomp)
+  groupvec <- rep(NA, nrowcomp)
+
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
 
