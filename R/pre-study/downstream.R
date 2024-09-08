@@ -696,6 +696,9 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
     } else if (isTRUE(all.equal(currentfilter$feature, "fullmean"))) {
       colstr <- paste0("meanvaluefull_", currentfilter$condition)
       return(completedf[, colstr] > currentfilter$threshold)
+    } else if (isTRUE(all.equal(currentfilter$feature, "pvalauc"))) {
+      colstr <- paste0("adjFDR_pvalaucks_", currentfilter$condition)
+      return(completedf[, colstr] > currentfilter$threshold)
     }
   }, completedf, simplify = FALSE)
 
