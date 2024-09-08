@@ -703,7 +703,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
-resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
+universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   nrowcomp <- nrow(completedf)
   universevec <- rep(FALSE, nrowcomp)
@@ -920,7 +920,7 @@ if (!testonerep) {
 
 message("Filtering results")
 start_time <- Sys.time()
-filtereddf <- resfilter(completedf, expdf, filterdf)
+filtereddf <- universegroup(completedf, expdf, filterdf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 if (!testonerep) {
