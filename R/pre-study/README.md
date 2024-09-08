@@ -441,3 +441,6 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
   - rename resfilter to universegroup
   - The filtering is done with the subfunction .createboolmat
   - The result of the function is stored in the variable unigroupdf
+
+The code for plotting were saved to [figure2dvic.R](figure2dvic.R) and [figure2all-vic.R](figure2all-vic.R).
+The respective corresponding files are [figure2d.R](figure2d.R) and [figure2all.R](figure2all.R).
