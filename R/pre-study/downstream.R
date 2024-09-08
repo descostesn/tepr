@@ -712,9 +712,16 @@ resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
 
-  ## Keeping filtering rows
-  filterdf <- filterdf[filterdf$filter, ]
-!!!!!!!!!!!! CURRENT
+  ## Defining universe
+  universetab <- filterdf[which(filterdf$universe), ]
+
+
+!!!!!!!!!!!!
+mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
+    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
+  relocate(Universe, .before = 1)  
+!!!!!!!!!!!!
   ## Going through the rows of the filter df and perform the adapted filtering
   apply(filterdf, 1, function(currentfilter))
   ## Filter attenuation values based on pval AUC
@@ -787,6 +794,19 @@ checkfilter <- function(filterdf, expdf) {
   if (!isTRUE(all.equal(length(idxna), 0)))
     stop("The following features are missing from your filter table: ",
       paste(featurevec[idxna], collapse = "-"))
+
+  colnametab <- colnames(filterdf)
+  colnamevec <- c("condition", "feature", "threshold", "universe", "group")
+
+  if (any(duplicated(colnametab)))
+    stop("The columns of the filter table should be unique and must contain:",
+      paste(colnamevec, collapse = "-"))
+
+  idx <- match(colnamevec, colnametab)
+  idxna <- which(is.na(idx))
+  if (!isTRUE(all.equal(length(idxna), 0)))
+    stop("The following columns are missing from your filter table: ",
+      colnamevec[idxna])
 }
 
 
