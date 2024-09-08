@@ -759,6 +759,16 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 }
 
 
+checkfilter <- function(filterdf, expdf) {
+  filtercond <- unique(filterdf$condition[!is.na(filterdf$condition)])
+  if (!isTRUE(all.equal(filtercond, unique(expdf$condition))))
+    stop("The condition column of your experiment and filter tab should",
+      " contain the same values.")
+
+  if(!all(filterdf$filter))
+    warning("All the rows of the filter column are set to FALSE. All rows will",
+      " be used for the analysis.", immediate. = TRUE)
+}
 
 
 ##################
@@ -769,7 +779,7 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 alldf <- readRDS(alldfpath)
 expdf <- read.csv(exptabpath, header = TRUE)
 filterdf <- read.csv(filtertabpath, header = TRUE)
-
+checkfilter(filterdf, expdf)
 
 if (testonerep) {
   ## Removing the second replicate
