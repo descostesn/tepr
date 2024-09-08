@@ -432,9 +432,10 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 
 1) Handle filtering with a table given in parameter
   - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal. See downstream.R
-  - add a checkfilter function that verify the validity of the condition column, and that the universe and group column do not only contain false.
+  - add a checkfilter function that verify the validity of the condition column, and that the universe and group columns do not only contain false.
   - add testing on feature names in checkfilter
   - add conditions on column names in checkfilter
+  - add new columns group.attenuated and group.outgroup
 2) Modify countna function to keep only one na column made out of the sum of na in each condition.
 3) Modify the function resfilter to handle Universe and Group using the filter table
   - rename resfilter to universegroup
