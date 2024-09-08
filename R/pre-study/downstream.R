@@ -707,6 +707,11 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
       .checkunique(idx)
       colstr <- colnamevec[idx]
       return(-log10(completedf[, colstr]) > currentfilter$threshold)
+    } else {
+      stop("The feature ", currentfilter$feature, " is not handlded. Allowed",
+        " features are: countna, windowsize, fullmean, pvalauc, auc, and",
+        " daucfdrlog10. If you are sure that there is no typo, contact the",
+        " developper.")
     }
   }, completedf, simplify = FALSE)
 
