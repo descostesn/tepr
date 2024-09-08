@@ -426,3 +426,9 @@ The problem is not coming from the negative strand because the values are valid 
 ```
 
 Note that the differences are in the positions of the NA for M6PR. Therefore, due to the black list which is different or the mapping track.
+
+
+** Note for branch "figures"**
+
+1) Modify the function resfilter to handle Universe and Group
+  - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal.
