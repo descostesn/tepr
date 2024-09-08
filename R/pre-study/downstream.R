@@ -716,7 +716,8 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
         " developper.")
     }
   }, completedf, simplify = FALSE)
-
+  booleanmat <- do.call("cbind", booleanlist)
+  colnames(booleanmat) <- paste(universetab[, "feature"], universetab[, "condition"], sep = "-")
 
 !!!!!!!!!!!!
 mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
