@@ -681,32 +681,40 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
 universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
-  nrowcomp <- nrow(completedf)
-  universevec <- rep(FALSE, nrowcomp)
-  groupvec <- rep(NA, nrowcomp)
-
   ## Retrieving universe and group information
   universetab <- filterdf[which(filterdf$universe), ]
   grouptab <- filterdf[which(filterdf$group), ]
 
-  ## Creating bool matrices and vectors for universe and group
+  ## Creating bool matrix and vector for universe
   universemat <- .createboolmat(universetab, completedf)
+  universevec <- apply(universemat, 1, all)
+
+  ## Creating bool matrix and vector for group
+  groupvec <- rep(NA, nrow(completedf))
   groupmat <- .createboolmat(grouptab, completedf)
-  universeboolvec <- apply(universemat, 1, all)
-  groupboolvecattenuated <- apply(groupmat, 1, all)
+  attenuatedcols <-  as.vector(apply(filterdf[which(filterdf$group.attenuated),
+    c("feature", "condition")], 1, paste, collapse = "-"))
+  outgroupcols <-  as.vector(apply(filterdf[which(filterdf$group.outgroup),
+    c("feature", "condition")], 1, paste, collapse = "-"))
+  attenuatedvec <- apply(cbind(universevec, groupmat[, attenuatedcols]), 1, all)
+  outgroupvec <- apply(cbind(universevec, groupmat[, outgroupcols]), 1, all)
+  if (any(attenuatedvec))
+    groupvec[attenuatedvec] <- "Attenuated"
+  else
+    warning("No attenuated genes were found")
+  if (any(outgroupvec))
+    groupvec[outgroupvec] <- "Outgroup"
+  else
+    warning("No outgroup genes were found")
 
-  ## Replacing values in universevec and groupvec that were defined at the
-  ## beginning
-  universevec[universeboolvec] <- TRUE
-  groupvec[groupboolvec] <- 
+  ## Building the final data.frame
+  res <- data.frame(universe = universevec, group = groupvec)
+  unigroupdf <- cbind(res, completedf)
 
-  
-  
+  return(unigroupdf)
 !!!!!!!!!!!!
-mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
-    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
-    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
-  relocate(Universe, .before = 1)  
+Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
+    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint  
 !!!!!!!!!!!!
   ## Going through the rows of the filter df and perform the adapted filtering
   apply(filterdf, 1, function(currentfilter))
