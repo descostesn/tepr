@@ -687,6 +687,8 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   ## Defining universe
   universetab <- filterdf[which(filterdf$universe), ]
+  grouptab <- filterdf[which(filterdf$group), ]
+
   booleanlist <- apply(universetab, 1, function(currentfilter, completedf) {
 
     if (isTRUE(all.equal(currentfilter$feature, "countna"))) {
@@ -698,6 +700,9 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
       return(completedf[, colstr] > currentfilter$threshold)
     } else if (isTRUE(all.equal(currentfilter$feature, "pvalauc"))) {
       colstr <- paste0("adjFDR_pvalaucks_", currentfilter$condition)
+      return(completedf[, colstr] > currentfilter$threshold)
+    } else if(isTRUE(all.equal(currentfilter$feature, "auc"))) {
+      colstr <- paste0("auc_", currentfilter$condition)
       return(completedf[, colstr] > currentfilter$threshold)
     }
   }, completedf, simplify = FALSE)
