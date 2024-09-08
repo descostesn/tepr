@@ -688,29 +688,31 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   booleanlist <- apply(universetab, 1, function(currentfilter, completedf) {
 
-    if (isTRUE(all.equal(currentfilter$feature, "countna"))) {
-      return(completedf$countna < currentfilter$threshold)
-    } else if (isTRUE(all.equal(currentfilter$feature, "windowsize"))) {
-      return(completedf$windsize > currentfilter$threshold)
-    } else if (isTRUE(all.equal(currentfilter$feature, "fullmean"))) {
-      colstr <- paste0("meanvaluefull_", currentfilter$condition)
-      return(completedf[, colstr] > currentfilter$threshold)
-    } else if (isTRUE(all.equal(currentfilter$feature, "pvalauc"))) {
-      colstr <- paste0("adjFDR_pvalaucks_", currentfilter$condition)
-      return(completedf[, colstr] > currentfilter$threshold)
-    } else if (isTRUE(all.equal(currentfilter$feature, "auc"))) {
-      colstr <- paste0("auc_", currentfilter$condition)
-      return(completedf[, colstr] > currentfilter$threshold)
-    } else if (isTRUE(all.equal(currentfilter$feature, "daucfdrlog10"))) {
+    currentfeature <- as.character(currentfilter["feature"])
+
+    if (isTRUE(all.equal(currentfeature, "countna"))) {
+      return(as.vector(completedf["countna"] < currentfilter["threshold"]))
+    } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
+      return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
+    } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
+      colstr <- paste0("meanvaluefull_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
+      colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "auc"))) {
+      colstr <- paste0("auc_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+    } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
       colnamevec <- colnames(completedf)
       idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec)
       .checkunique(idx)
       colstr <- colnamevec[idx]
-      return(-log10(completedf[, colstr]) > currentfilter$threshold)
+      return(-log10(completedf[, colstr]) > currentfilter["threshold"])
     } else {
-      stop("The feature ", currentfilter$feature, " is not handlded. Allowed",
-        " features are: countna, windowsize, fullmean, pvalauc, auc, and",
-        " daucfdrlog10. If you are sure that there is no typo, contact the",
+      stop("The feature ", currentfeature, " is not handlded.",
+        "Allowed features are: countna, windowsize, fullmean, pvalauc, auc, ",
+        "and daucfdrlog10. If you are sure that there is no typo, contact the",
         " developper.")
     }
   }, completedf, simplify = FALSE)
