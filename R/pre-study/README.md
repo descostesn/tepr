@@ -430,6 +430,8 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 
 ** Note for branch "figures"**
 
+Examples of tables can be found at [exptab](../../Dataset/exptab.csv) and [filtertab](../../Dataset/filtertab.csv).
+
 1) Handle filtering with a table given in parameter
   - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal. See downstream.R
   - add a checkfilter function that verify the validity of the condition column, and that the universe and group columns do not only contain false.
