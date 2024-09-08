@@ -702,11 +702,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
-resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
-  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
-  filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrlog10thres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1,
-  verbose = TRUE) {
+resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   ## Retrieve column names of completedf
   colnamevec <- colnames(completedf)
@@ -760,14 +756,15 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 
 
 checkfilter <- function(filterdf, expdf) {
+
   filtercond <- unique(filterdf$condition[!is.na(filterdf$condition)])
   if (!isTRUE(all.equal(filtercond, unique(expdf$condition))))
     stop("The condition column of your experiment and filter tab should",
       " contain the same values.")
 
-  if(!all(filterdf$filter))
-    warning("All the rows of the filter column are set to FALSE. All rows will",
-      " be used for the analysis.", immediate. = TRUE)
+  if (!all(filterdf$filter))
+    stop("All the rows of the filter column are set to FALSE. No rows will",
+      " be used for the analysis.")
 }
 
 
@@ -873,7 +870,7 @@ if (!testonerep) {
 
 message("Filtering results")
 start_time <- Sys.time()
-filtereddf <- resfilter(completedf, expdf)
+filtereddf <- resfilter(completedf, expdf, filterdf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 if (!testonerep) {
