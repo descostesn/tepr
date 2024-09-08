@@ -779,11 +779,11 @@ checkfilter <- function(filterdf, expdf) {
     stop("The condition column of your experiment and filter tab should",
       " contain the same values.")
 
-  if (!all(filterdf$universe))
+  if (all(!filterdf$universe))
     stop("All the rows of the universe column are set to FALSE. No rows will",
       " be used for the analysis.")
 
-  if (!all(filterdf$group))
+  if (all(!filterdf$group))
     stop("All the rows of the group column are set to FALSE. No rows will",
       " be used for the analysis.")
 
