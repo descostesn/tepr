@@ -680,10 +680,16 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   universetab <- filterdf[which(filterdf$universe), ]
   grouptab <- filterdf[which(filterdf$group), ]
 
-  ## Creating bool matrix for universe and group
+  ## Creating bool matrices and vectors for universe and group
   universemat <- .createboolmat(universetab, completedf)
   groupmat <- .createboolmat(grouptab, completedf)
+  universeboolvec <- apply(universemat, 1, all)
+  groupboolvec <- apply(groupmat, 1, all)
 
+  ## Replacing values in universevec and groupvec that were defined at the
+  ## beginning
+  universevec[universeboolvec] <- TRUE
+  groupvec[groupboolvec] <- 
 
   
   
@@ -741,6 +747,14 @@ checkfilter <- function(filterdf, expdf) {
     stop("All the rows of the group column are set to FALSE. No rows will",
       " be used for the analysis.")
 
+  if (all(!filterdf$group.attenuated))
+    stop("All the rows of the group.attenuated column are set to FALSE. No ",
+      "rows will be used for the analysis.")
+
+    if (all(!filterdf$group.outgroup))
+    stop("All the rows of the group.attenuated column are set to FALSE. No ",
+      "rows will be used for the analysis.")
+
   featurevec <- c("auc", "countna", "windowsize", "fullmean", "daucfdrlog10",
     "pvalauc")
   idx <- match(featurevec, filterdf$feature)
@@ -750,7 +764,8 @@ checkfilter <- function(filterdf, expdf) {
       paste(featurevec[idxna], collapse = "-"))
 
   colnametab <- colnames(filterdf)
-  colnamevec <- c("condition", "feature", "threshold", "universe", "group")
+  colnamevec <- c("condition", "feature", "threshold", "threshold2", "universe",
+    "group", "group.attenuated", "group.outgroup")
 
   if (any(duplicated(colnametab)))
     stop("The columns of the filter table should be unique and must contain:",
