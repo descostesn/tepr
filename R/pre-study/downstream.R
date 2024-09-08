@@ -640,17 +640,26 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
     if (isTRUE(all.equal(currentfeature, "countna"))) {
       return(as.vector(completedf["countna"] < currentfilter["threshold"]))
+
     } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
       return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
+
     } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
       colstr <- paste0("meanvaluefull_", currentfilter["condition"])
       return(completedf[, colstr] > currentfilter["threshold"])
+
     } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
       colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"]) # nolint
       return(completedf[, colstr] > currentfilter["threshold"])
+
     } else if (isTRUE(all.equal(currentfeature, "auc"))) {
       colstr <- paste0("auc_", currentfilter["condition"])
-      return(completedf[, colstr] > currentfilter["threshold"])
+      if (!is.na(currentfilter["threshold2"]))
+        res <- completedf[, colstr] > currentfilter["threshold"] &
+          completedf[, colstr] < currentfilter["threshold2"]
+      else
+        res <- completedf[, colstr] > currentfilter["threshold"]
+      return(res)
     } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
       colnamevec <- colnames(completedf)
       idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec) # nolint
@@ -684,7 +693,7 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   universemat <- .createboolmat(universetab, completedf)
   groupmat <- .createboolmat(grouptab, completedf)
   universeboolvec <- apply(universemat, 1, all)
-  groupboolvec <- apply(groupmat, 1, all)
+  groupboolvecattenuated <- apply(groupmat, 1, all)
 
   ## Replacing values in universevec and groupvec that were defined at the
   ## beginning
