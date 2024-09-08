@@ -828,7 +828,10 @@ results_main_table <- main_table_read(name_table, extension,
 resultsECDF <- genesECDF(main_table = results_main_table[[1]], rounding,
     expressed_transcript_name_list = results_main_table[[2]], extension,
     working_dir = file.path(working_directory, "bedgraphs"))
+saveRDS(resultsECDF, file = "/g/romebioinfo/tmp/explore/resultsECDF.rds")
+
 concat_dfFX_res <- calculates_meanFx(resultsECDF,200) ## 200 is because each gene is divided in 200 windows # nolint
+saveRDS(concat_dfFX_res, file = "/g/romebioinfo/tmp/explore/concat_dfFX_res.rds")
 
 ## !! Skipping this for the moment
 condition_comparison(extension,file.path(working_directory, "bedgraphs")) ## Does not return anything
@@ -836,40 +839,45 @@ dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs C
 condition_compared(extension,working_directory,) ## Does not return anything
 
 concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
+saveRDS(concat_Diff_mean_res, file = "/g/romebioinfo/tmp/explore/concat_Diff_mean_res.rds")
 
 ## Time difference of 36.69392 secs
 start_time <- Sys.time()
 dAUC_allcondi_res <- dAUC_allcondi_fun(concat_Diff_mean_res, 200, dontcompare_dtag) # nolint
 end_time <- Sys.time()
 print(end_time - start_time)
+saveRDS(dAUC_allcondi_res, file = "/g/romebioinfo/tmp/explore/dAUC_allcondi_res.rds")
 
 start_time <- Sys.time()
 AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res, 200)
 end_time <- Sys.time()
 print(end_time - start_time)
+saveRDS(AUC_allcondi_res, file = "/g/romebioinfo/tmp/explore/AUC_allcondi_res.rds")
 
 start_time <- Sys.time()
 count_NA_res <- countNA_fun(results_main_table[[1]], extension, working_directory)
 end_time <- Sys.time()
 print(end_time - start_time)
+saveRDS(count_NA_res, file = "/g/romebioinfo/tmp/explore/count_NA_res.rds")
 
 start_time <- Sys.time()
 KneeID_res <- KneeID_fun(concat_Diff_mean_res)
 end_time <- Sys.time()
 print(end_time - start_time)
-
+saveRDS(KneeID_res, file = "/g/romebioinfo/tmp/explore/KneeID_res.rds")
 
 AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res,
   by = c("transcript", "gene", "strand", "window_size"))  %>% 
   left_join(., KneeID_res, by = c("transcript"))  %>% 
   left_join(., count_NA_res, by = c("gene", "transcript", "strand"))
-
 AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>%
   summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1],
   gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>%
   left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand"))
-tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
+saveRDS(AUC_KS_Knee_NA.df, file = "/g/romebioinfo/tmp/explore/AUC_KS_Knee_NA.df.rds") # nolint
 
+tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA # nolint
+saveRDS(tst_df, file = "/g/romebioinfo/tmp/explore/tst_df-1.rds")
 
 mean_value_control_full <- "MeanValueFull_ctrl"
 mean_value_stress <- "MeanValueFull_HS"
@@ -882,8 +890,11 @@ tst_df <- tst_df %>%
     !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
     !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
   relocate(Universe, .before = 1)
+saveRDS(tst_df, file = "/g/romebioinfo/tmp/explore/tst_df-2.rds")
+
 tst_df <- tst_df %>% mutate(
     Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
   ) %>% relocate(Group, .before = 2)
+saveRDS(tst_df, file = "/g/romebioinfo/tmp/explore/tst_df-3.rds")
 
