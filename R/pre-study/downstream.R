@@ -714,6 +714,14 @@ resfilter <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   ## Defining universe
   universetab <- filterdf[which(filterdf$universe), ]
+  booleanlist <- apply(universetab, 1, function(currentfilter, completedf) {
+
+    if (isTRUE(all.equal(currentfilter$feature, "countna"))) {
+      return(completedf$countna < currentfilter$threshold)
+    } else if (isTRUE(all.equal(currentfilter$feature, "windowsize"))) {
+      return(completedf$windsize > currentfilter$threshold)
+    }
+  }, completedf, simplify = FALSE)
 
 
 !!!!!!!!!!!!
