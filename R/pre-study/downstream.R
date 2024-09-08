@@ -682,9 +682,6 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   universevec <- rep(FALSE, nrowcomp)
   groupvec <- rep(NA, nrowcomp)
 
-  ## Retrieve column names of completedf
-  colnamevec <- colnames(completedf)
-
   ## Defining universe
   universetab <- filterdf[which(filterdf$universe), ]
   grouptab <- filterdf[which(filterdf$group), ]
@@ -701,9 +698,15 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
     } else if (isTRUE(all.equal(currentfilter$feature, "pvalauc"))) {
       colstr <- paste0("adjFDR_pvalaucks_", currentfilter$condition)
       return(completedf[, colstr] > currentfilter$threshold)
-    } else if(isTRUE(all.equal(currentfilter$feature, "auc"))) {
+    } else if (isTRUE(all.equal(currentfilter$feature, "auc"))) {
       colstr <- paste0("auc_", currentfilter$condition)
       return(completedf[, colstr] > currentfilter$threshold)
+    } else if (isTRUE(all.equal(currentfilter$feature, "daucfdrlog10"))) {
+      colnamevec <- colnames(completedf)
+      idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec)
+      .checkunique(idx)
+      colstr <- colnamevec[idx]
+      return(-log10(completedf[, colstr]) > currentfilter$threshold)
     }
   }, completedf, simplify = FALSE)
 
