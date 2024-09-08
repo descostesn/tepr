@@ -682,11 +682,15 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
   universevec <- rep(FALSE, nrowcomp)
   groupvec <- rep(NA, nrowcomp)
 
-  ## Defining universe
+  ## Retrieving universe and group information
   universetab <- filterdf[which(filterdf$universe), ]
   grouptab <- filterdf[which(filterdf$group), ]
 
-  booleanlist <- apply(universetab, 1, function(currentfilter, completedf) {
+  ## Creating bool matrix for universe and group
+  !!.createboolmat(tab, completedf)
+
+  .createboolmat <- function(tab, completedf) {
+    booleanlist <- apply(tab, 1, function(currentfilter, completedf) {
 
     currentfeature <- as.character(currentfilter["feature"])
 
@@ -717,8 +721,10 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
     }
   }, completedf, simplify = FALSE)
   booleanmat <- do.call("cbind", booleanlist)
-  colnames(booleanmat) <- paste(universetab[, "feature"], universetab[, "condition"], sep = "-")
-
+  colnames(booleanmat) <- paste(tab[, "feature"], tab[, "condition"], sep = "-")
+  return(booleanmat)
+  }
+  
 !!!!!!!!!!!!
 mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
     !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
