@@ -432,4 +432,4 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 
 1) Modify the function resfilter to handle Universe and Group
   - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal. See downstream.R
-  - add a checkfilter function that verify the validity of the condition column and through a warning if the filter column only contain false.
+  - add a checkfilter function that verify the validity of the condition column and that the filter column does not only contain false.
