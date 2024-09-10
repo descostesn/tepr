@@ -25,7 +25,7 @@ outputfolder <- "/g/romebioinfo/tmp/figures"
 #FUNCTIONS
 ##################
 
-plotaucvic <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
+plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
     labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, outfold = "./",
     outfile = "AUCcompare_pval.pdf", formatname = "pdf", plot = FALSE) {
@@ -79,7 +79,7 @@ genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
 plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 
 ## Test plot on vic tab
-plotaucvic(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
 
