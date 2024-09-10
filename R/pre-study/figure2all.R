@@ -89,12 +89,9 @@ plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 ## Test plot on vic tab
 
  
-mean_value_control_full <- "MeanValueFull_ctrl"
-mean_value_stress <- "MeanValueFull_HS"
 AUC_ctrl <- "AUC_ctrl"
 AUC_stress <- "AUC_HS"
 pvalkstest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
-p_value_theoritical<- "adjFDR_p_AUC_ctrl" 
 df <- cbind(victab, kstestlog10 = -log10(victab[, pvalkstest]))
 kstestlog10str <- "kstestlog10"
 genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
