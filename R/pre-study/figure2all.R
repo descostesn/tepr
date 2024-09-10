@@ -87,10 +87,40 @@ victab <- read.delim(victabpath, header = TRUE)
 plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 
 ## Test plot on vic tab
+
+ 
+mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+pvalkstest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl" 
+df <- cbind(victab, kstestlog10 = -log10(victab[, pvalkstest]))
+kstestlog10str <- "kstestlog10"
+ g <- ggplot(df %>% arrange(df[, kstestlog10str]), aes_string(AUC_ctrl, AUC_stress, color= kstestlog10str)) +
+  geom_point(size=0.5) +
+  geom_density_2d()+
+  geom_label_repel(data = subset(victab, gene %in% c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")), aes(label = gene),
+   box.padding   = 0.55,
+   point.padding = 0,
+   segment.color = 'black', max.overlaps = 50, color="red") +
+  scale_color_gradient2(midpoint=0,  low="white", mid="grey", high = "darkgreen") +
+  xlim(-10,100) + ylim(-10,100)+
+  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", color="-log10 p-value") +
+  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
+  theme_classic() +
+  theme(legend.position = "bottom" )
+
+
+
+!!!!!!!!!
+
 auccols <- c("AUC_ctrl", "AUC_HS")
 idxctrl <- 1
+condvec <- unique(expdf$condition)
 ksvals <- "p_dAUC_Diff_meanFx_HS_ctrl"
-g <- ggplot2::ggplot(victab %>% dplyr::arrange(df[, ksvals]),
+genedf <- subset(victab, gene %in% genevec) # nolint
+g <- ggplot2::ggplot(victab %>% dplyr::arrange(victab[, ksvals]),
         ggplot2::aes_string(auccols[idxctrl], auccols[-idxctrl],
         color = ksvals)) +
         ggplot2::geom_point(size = 0.5) + ggplot2::geom_density_2d()
@@ -112,22 +142,3 @@ g <- ggplot2::ggplot(victab %>% dplyr::arrange(df[, ksvals]),
             legend = "-log10 p-value", color = "-log10 p-value") +
         ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
         ggplot2::theme(legend.position = "bottom")
-
-
- [1] "transcript"                        "chr"
- [3] "coor1"                             "coor2"
- [5] "strand"                            "gene"
- [7] "size"                              "window_size"
- [9] "AUC_ctrl"                          "p_AUC_ctrl"
-[11] "D_AUC_ctrl"                        "MeanValueFull_ctrl"
-[13] "AUC_HS"                            "p_AUC_HS"
-[15] "D_AUC_HS"                          "MeanValueFull_HS"
-[17] "adjFDR_p_AUC_ctrl"                 "adjFDR_p_AUC_HS"
-[19] "dAUC_Diff_meanFx_HS_ctrl"          "p_dAUC_Diff_meanFx_HS_ctrl"
-[21] "D_dAUC_Diff_meanFx_HS_ctrl"        "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
-[23] "knee_AUC_ctrl"                     "max_diff_Fx_ctrl"
-[25] "knee_AUC_HS"                       "max_diff_Fx_HS"
-[27] "Count_NA"                          "Attenuation_ctrl"
-[29] "UP_mean_ctrl"                      "DOWN_mean_ctrl"
-[31] "Attenuation_HS"                    "UP_mean_HS"
-[33] "DOWN_mean_HS"
