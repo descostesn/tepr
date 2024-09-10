@@ -83,3 +83,7 @@ plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
 
+## Test plot with nic tab
+plotauc(unigroupdf, "auc_ctrl", "auc_HS", "adjFDR_pvaldeltadaucks_mean_Fx_HS",
+    labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
+    plot = TRUE)
