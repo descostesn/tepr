@@ -97,16 +97,19 @@ pvalkstest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 p_value_theoritical<- "adjFDR_p_AUC_ctrl" 
 df <- cbind(victab, kstestlog10 = -log10(victab[, pvalkstest]))
 kstestlog10str <- "kstestlog10"
- g <- ggplot(df %>% arrange(df[, kstestlog10str]), aes_string(AUC_ctrl, AUC_stress, color= kstestlog10str)) +
+genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
+labelx <- "AUC in Control"
+labely <- "AUC in HS"
+ ggplot(df %>% arrange(df[, kstestlog10str]), aes_string(AUC_ctrl, AUC_stress, color= kstestlog10str)) +
   geom_point(size=0.5) +
   geom_density_2d()+
-  geom_label_repel(data = subset(victab, gene %in% c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")), aes(label = gene),
+  geom_label_repel(data = subset(df, gene %in% genevec), aes(label = gene),
    box.padding   = 0.55,
    point.padding = 0,
    segment.color = 'black', max.overlaps = 50, color="red") +
   scale_color_gradient2(midpoint=0,  low="white", mid="grey", high = "darkgreen") +
   xlim(-10,100) + ylim(-10,100)+
-  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", color="-log10 p-value") +
+  labs(x=labelx, y=labely, legend="-log10 p-value", color="-log10 p-value") +
   coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
   theme_classic() +
   theme(legend.position = "bottom" )
