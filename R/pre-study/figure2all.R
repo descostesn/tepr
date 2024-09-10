@@ -100,20 +100,21 @@ kstestlog10str <- "kstestlog10"
 genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
 labelx <- "AUC in Control"
 labely <- "AUC in HS"
- ggplot(df %>% arrange(df[, kstestlog10str]), aes_string(AUC_ctrl, AUC_stress, color= kstestlog10str)) +
-  geom_point(size=0.5) +
-  geom_density_2d()+
-  geom_label_repel(data = subset(df, gene %in% genevec), aes(label = gene),
+
+g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]), ggplot2::aes_string(AUC_ctrl, AUC_stress, color= kstestlog10str)) +
+  ggplot2::geom_point(size=0.5) + ggplot2::geom_density_2d()
+
+g1 <- g + ggrepel::geom_label_repel(data = subset(df, gene %in% genevec), aes(label = gene),
    box.padding   = 0.55,
    point.padding = 0,
-   segment.color = 'black', max.overlaps = 50, color="red") +
-  scale_color_gradient2(midpoint=0,  low="white", mid="grey", high = "darkgreen") +
-  xlim(-10,100) + ylim(-10,100)+
-  labs(x=labelx, y=labely, legend="-log10 p-value", color="-log10 p-value") +
-  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
-  theme_classic() +
-  theme(legend.position = "bottom" )
+   segment.color = 'black', max.overlaps = 50, color="red")
 
+g2 <- g1 +  ggplot2::scale_color_gradient2(midpoint=0,  low="white", mid="grey", high = "darkgreen") +
+  ggplot2::xlim(-10,100) + ggplot2::ylim(-10,100)+
+  ggplot2::labs(x=labelx, y=labely, legend="-log10 p-value", color="-log10 p-value") +
+  ggplot2::coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
+  ggplot2::theme_classic() +
+  ggplot2::theme(legend.position = "bottom" )
 
 
 !!!!!!!!!
