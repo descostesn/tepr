@@ -433,16 +433,23 @@ Note that the differences are in the positions of the NA for M6PR. Therefore, du
 Examples of tables can be found at [exptab](../../Dataset/exptab.csv) and [filtertab](../../Dataset/filtertab.csv).
 
 1) Handle filtering with a table given in parameter
-  - create a table tabfilter with all the specifications. This table can be used from a file filtertabpath or defined by the user in the terminal. See downstream.R
-  - add a checkfilter function that verify the validity of the condition column, and that the universe and group columns do not only contain false.
+  - create a table tabfilter with all the specifications. See downstream.R
+  - add a checkfilter function that verify the validity of the condition columns, and that the universe and group columns do not only contain false.
   - add testing on feature names in checkfilter
   - add conditions on column names in checkfilter
-  - add new columns group.attenuated and group.outgroup
+  - add new columns group.attenuated and group.outgroup to the final data.frame
 2) Modify countna function to keep only one na column made out of the sum of na in each condition.
 3) Modify the function resfilter to handle Universe and Group using the filter table
   - rename resfilter to universegroup
   - The filtering is done with the subfunction .createboolmat
   - The result of the function is stored in the variable unigroupdf
+4) Create a function plotauc in figure2all.R as showcase.
 
 The code for plotting were saved to [figure2dvic.R](figure2dvic.R) and [figure2all-vic.R](figure2all-vic.R).
 The respective corresponding files are [figure2d.R](figure2d.R) and [figure2all.R](figure2all.R).
+
+The rds objects necessary to test figure2d.R and figure2all.R are provided at:
+
+https://oc.embl.de/index.php/s/rfwaQl6Yt5GMSWV
+
+The package will be developped from now using the file "Cugusi2022_AttenuationScores_10_200.tsv". Possible differences with the article can be investigated later.
