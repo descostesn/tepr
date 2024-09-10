@@ -15,7 +15,7 @@
 ####################
 
 ## Loading
-tst_df <- read.delim("/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Cugusi2022/RAW_TTseq/Cugusi2022_AttenuationScores_10_200.tsv", header=T, sep="\t")
+tst_df <- read.delim("/g/romebioinfo/Projects/tepr/downloads/Cugusi2022_AttenuationScores_10_200.tsv", header=T, sep="\t")
 working_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Cugusi2022/RAW_TTseq/deduplicated/MAPQ255/stranded/bedgraph255"
 extension <- "*.bg"
 
