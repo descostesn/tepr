@@ -88,10 +88,12 @@ genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
 plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 
 ## Test plot on vic tab
+plotaucvic(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+    labelx = "AUC in Control", labely = "AUC in HS", plot = TRUE)
 
-auc_ctrlname <- "AUC_ctrl"
-auc_stressname <- "AUC_HS"
-pvalkstestcolname <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+auc_ctrlname <- 
+auc_stressname <- 
+pvalkstestcolname <- 
 df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstest]))
 kstestlog10str <- "kstestlog10"
 labelx <- "AUC in Control"
@@ -105,7 +107,8 @@ axismax_y <- 100
 
 plotaucvic <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
     labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
-    axismax_x = 100, axismin_y = -10, axismax_y = 100) {
+    axismax_x = 100, axismin_y = -10, axismax_y = 100, outfold = "./",
+    outfile = "AUCcompare_pval.pdf", formatname = "pdf", plot = FALSE) {
 
         df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
         kstestlog10str <- "kstestlog10"
@@ -131,6 +134,12 @@ plotaucvic <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # n
                 color = "-log10 p-value") +
             ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
             ggplot2::theme(legend.position = "bottom")
+
+        if (plot)
+            print(g2)
+        else
+            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
+                plot = g2, device = formatname, path = outfold)
 }
 
 
