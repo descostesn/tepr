@@ -84,17 +84,17 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 victab <- read.delim(victabpath, header = TRUE)
 
 ## Plotting scatter of auc per condition
+genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
 plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 
 ## Test plot on vic tab
 
- 
-AUC_ctrl <- "AUC_ctrl"
-AUC_stress <- "AUC_HS"
+plotaucvic <- function()
+auc_ctrlname <- "AUC_ctrl"
+auc_stressname <- "AUC_HS"
 pvalkstest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 df <- cbind(victab, kstestlog10 = -log10(victab[, pvalkstest]))
 kstestlog10str <- "kstestlog10"
-genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
 labelx <- "AUC in Control"
 labely <- "AUC in HS"
 axismin_x <- -10
@@ -103,7 +103,7 @@ axismin_y <- -10
 axismax_y <- 100
 
 g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]),
-    ggplot2::aes(!!sym(AUC_ctrl), !!sym(AUC_stress), color= !!sym(kstestlog10str))) +
+    ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname), color= !!sym(kstestlog10str))) +
   ggplot2::geom_point(size=0.5) + ggplot2::geom_density_2d()
 
 g1 <- g + ggrepel::geom_label_repel(data = subset(df, gene %in% genevec), aes(label = gene),
