@@ -89,11 +89,10 @@ plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
 
 ## Test plot on vic tab
 
-plotaucvic <- function()
 auc_ctrlname <- "AUC_ctrl"
 auc_stressname <- "AUC_HS"
-pvalkstest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
-df <- cbind(victab, kstestlog10 = -log10(victab[, pvalkstest]))
+pvalkstestcolname <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstest]))
 kstestlog10str <- "kstestlog10"
 labelx <- "AUC in Control"
 labely <- "AUC in HS"
@@ -102,21 +101,38 @@ axismax_x <- 100
 axismin_y <- -10
 axismax_y <- 100
 
-g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]),
-    ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname), color= !!sym(kstestlog10str))) +
-  ggplot2::geom_point(size=0.5) + ggplot2::geom_density_2d()
 
-g1 <- g + ggrepel::geom_label_repel(data = subset(df, gene %in% genevec), aes(label = gene),
-   box.padding   = 0.55,
-   point.padding = 0,
-   segment.color = 'black', max.overlaps = 50, color="red")
 
-g2 <- g1 +  ggplot2::scale_color_gradient2(midpoint=0,  low="white", mid="grey", high = "darkgreen") +
-  ggplot2::xlim(axismin_x,axismax_x) + ggplot2::ylim(axismin_y,axismax_y)+
-  ggplot2::labs(x=labelx, y=labely, legend="-log10 p-value", color="-log10 p-value") +
-  ggplot2::coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
-  ggplot2::theme_classic() +
-  ggplot2::theme(legend.position = "bottom" )
+plotaucvic <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
+    labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
+    axismax_x = 100, axismin_y = -10, axismax_y = 100) {
+
+        df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
+        kstestlog10str <- "kstestlog10"
+
+        ## Structure of the basic scatterplot
+        g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]),
+             ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname),
+             color = !!sym(kstestlog10str))) +
+             ggplot2::geom_point(size = 0.5) + ggplot2::geom_density_2d()
+
+        ## Adding highlight of the genes
+        g1 <- g + ggrepel::geom_label_repel(data = subset(df,
+            gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
+            point.padding = 0, segment.color = "black", max.overlaps = 50,
+            color = "red")
+
+        ## Formatting functions
+        g2 <- g1 +  ggplot2::scale_color_gradient2(midpoint = 0,
+            low = "white", mid = "grey", high = "darkgreen") +
+            ggplot2::xlim(axismin_x, axismax_x) +
+            ggplot2::ylim(axismin_y, axismax_y) +
+            ggplot2::labs(x = labelx, y = labely, legend = "-log10 p-value",
+                color = "-log10 p-value") +
+            ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
+            ggplot2::theme(legend.position = "bottom")
+}
+
 
 
 !!!!!!!!!
