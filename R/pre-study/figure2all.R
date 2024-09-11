@@ -16,6 +16,7 @@ library("ggrepel")
 ##################
 
 unigrouppath <- "/g/romebioinfo/tmp/downstream/unigroupdf.rds"
+exploretabpath <- "/g/romebioinfo/tmp/explore/tst_df-3.rds"
 victabpath <- "/g/romebioinfo/Projects/tepr/downloads/Cugusi2022_AttenuationScores_10_200.tsv" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 outputfolder <- "/g/romebioinfo/tmp/figures"
@@ -31,7 +32,8 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
     subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
-    outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE) {
+    outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE,
+    universename = "universe", groupname = "group") {
 
         if (!isTRUE(all.equal(plottype, "pval")) &&
             !isTRUE(all.equal(plottype, "groups")))
@@ -46,9 +48,9 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
             geompointinfo <- ggplot2::geom_point(size = 0.5)
             geompointinfo2 <- ggplot2::geom_density_2d()
         } else {
-            df <- tab %>% dplyr::filter(!Universe) # nolint
-            dfatt <- tab %>% dplyr::filter(Group == "Attenuated") # nolint
-            dfoutgroup <- tab %>% filter(Group == "Outgroup") # nolint
+            df <- tab %>% dplyr::filter(!!sym(universename)) # nolint
+            dfatt <- tab %>% dplyr::filter(!!sym(groupname) == "Attenuated") # nolint
+            dfoutgroup <- tab %>% filter(!!sym(groupname) == "Outgroup") # nolint
 
             aesvar <- ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname)) # nolint
             geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey")
@@ -124,6 +126,7 @@ victorpreprocess <- function(victab) {
 unigroupdf <- readRDS(unigrouppath)
 expdf <- read.csv(exptabpath, header = TRUE)
 victab <- read.delim(victabpath, header = TRUE)
+exploretab <- readRDS("/g/romebioinfo/tmp/explore/tst_df-3.rds")
 
 ## Performing preprocessing on victab - REMOVE FROM FINAL CODE
 tst_df <- victorpreprocess(victab)
@@ -143,48 +146,16 @@ plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", legendpos = "none",
     subtitle = "Genes selected for Unibind", maintitle = "AUC Control vs HS",
     outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = TRUE,
+    plottype = "groups", universename = "Universe", groupname = "Group")
+plotauc(exploretab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+    labelx = "AUC in Control", labely = "AUC in HS", legendpos = "none",
+    subtitle = "Genes selected for Unibind", maintitle = "AUC Control vs HS",
+    outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = TRUE,
+    plottype = "groups", universename = "Universe", groupname = "Group")
+
+## Test plot with groups on nic tab
+plotauc(unigroupdf, "auc_ctrl", "auc_HS", "adjFDR_pvaldeltadaucks_mean_Fx_HS",
+    labelx = "AUC in Control", labely = "AUC in HS", legendpos = "none",
+    subtitle = "Genes selected for Unibind", maintitle = "AUC Control vs HS",
+    outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = TRUE,
     plottype = "groups")
-
-ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl, AUC_HS) ) +
-  geom_point(size=0.5, color="grey") +
-  geom_point(data=tst_df %>% filter(Group=="Attenuated"), aes( x=AUC_ctrl , y=AUC_HS), colour="black" , size=1.3) +
-  geom_point(data=tst_df %>% filter(Group=="Attenuated"), aes( x=AUC_ctrl , y=AUC_HS), color="#e76f51" , size=1) +
-  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aes( x=AUC_ctrl , y=AUC_HS), colour="black" , size=1.3) +
-  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aes( x=AUC_ctrl , y=AUC_HS), color="#e9c46a" , size=1) +
-  xlim(-10,100) + ylim(-10,100)+
-  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", title = "AUC Control vs HS", subtitle = "Genes selected for Unibind") +
-  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
-  theme_classic() +
-  theme(legend.position = "none" )
-
-auc_ctrlname = "AUC_ctrl"
-auc_stressname = "AUC_HS"
-aesvar <- aes(!!sym(auc_ctrlname), !!sym(auc_stressname))
-ggplot(tst_df %>% filter(!Universe), aesvar) +
-  geom_point(size=0.5, color="grey") +
-  geom_point(data=tst_df %>% filter(Group == "Attenuated"), aesvar, color="#e76f51" , size=1) +
-  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aesvar, color="#e9c46a" , size=1) +
-  xlim(-10,100) + ylim(-10,100)+
-  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", title = "AUC Control vs HS", subtitle = "Genes selected for Unibind") +
-  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
-  theme_classic() +
-  theme(legend.position = "none" )
-
-
-ggplot2::ggplot(df, aesvar) + ggplot2::geom_point(size = 0.5, color = "grey") +  ggplot2::geom_point(data = dfatt, aesvar, color = "#e76f51", size = 1)
-
-
-df <-  # nolint
-dfatt <- df %>% dplyr::filter(Group == "Attenuated") # nolint
-dfoutgroup <- df %>% filter(Group == "Outgroup") # nolint
-aesvar <-  # nolint
-geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey")
-geompointinfo2 <- ggplot2::geom_point(data = dfatt, aesvar,
-                color = "#e76f51", size = 1)
-geompointinfo3 <- ggplot2::geom_point(data = dfoutgroup, aesvar,
-                    color = "#e9c46a", size = 1)
-
-
-        ## Structure of the basic scatterplot
-        g <- ggplot2::ggplot(tst_df %>% dplyr::filter(!Universe),
-            ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname))) + geompointinfo + geompointinfo2 + geompointinfo3
