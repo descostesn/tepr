@@ -453,3 +453,37 @@ The rds objects necessary to test figure2d.R and figure2all.R are provided at:
 https://oc.embl.de/index.php/s/rfwaQl6Yt5GMSWV
 
 The package will be developped from now using the file "Cugusi2022_AttenuationScores_10_200.tsv". Possible differences with the article can be investigated later.
+
+Problem with the group columns:
+
+```
+> table(tst_df$Group)
+
+Attenuated   Outgroup
+       421       5334
+> table(exploretab$Group)
+
+Attenuated   Outgroup
+       513       5374
+> table(unigroupdf$group)
+
+Attenuated   Outgroup
+      1096        885
+```
+
+Problem with the universe column:
+
+```
+> table(tst_df$Universe)
+
+FALSE  TRUE
+ 8435  6567
+> table(exploretab$Universe)
+
+FALSE  TRUE
+ 8373  6612
+> table(unigroupdf$universe)
+
+FALSE  TRUE
+13095  1981
+```
