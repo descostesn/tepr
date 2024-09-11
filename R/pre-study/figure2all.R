@@ -28,7 +28,7 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 ##################
 
 plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
-    labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
+    labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
     subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
     outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE) {
@@ -184,16 +184,26 @@ victab <- read.delim(victabpath, header = TRUE)
 ## Performing preprocessing on victab - REMOVE FROM FINAL CODE
 tst_df <- victorpreprocess(victab)
 
-## Test plot on vic tab - REMOVE FROM FINAL CODE
+## Test plot with pval on vic tab - REMOVE FROM FINAL CODE
 plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
 
-## Test plot with nic tab
+## Test plot with pval on nic tab
 plotauc(unigroupdf, "auc_ctrl", "auc_HS", "adjFDR_pvaldeltadaucks_mean_Fx_HS",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
 
+## Test plot with groups on vic tab - REMOVE FROM FINAL CODE
+plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+    labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
+    plot = TRUE)
+
+plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+    labelx = "AUC in Control", labely = "AUC in HS", legendpos = "none",
+    subtitle = "Genes selected for Unibind", maintitle = "AUC Control vs HS",
+    outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = FALSE,
+    plottype = "groups")
 
 ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl, AUC_HS) ) +
   geom_point(size=0.5, color="grey") +
