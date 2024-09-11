@@ -29,11 +29,88 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 
 plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
     labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
-    axismax_x = 100, axismin_y = -10, axismax_y = 100, outfold = "./",
-    outfile = "AUCcompare_pval.pdf", formatname = "pdf", plot = FALSE) {
+    axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
+    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
+    outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE) {
 
-        df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
-        kstestlog10str <- "kstestlog10"
+        if (!isTRUE(all.equal(plottype, "pval")) &&
+            !isTRUE(all.equal(plottype, "groups")))
+            stop("plottype should be equal to 'pval' or 'groups'.")
+
+        if (isTRUE(all.equal(plottype, "pval"))) {
+            df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
+            kstestlog10str <- "kstestlog10"
+            df <- df %>% dplyr::arrange(df[, kstestlog10str])
+            aesvar <- ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname), # nolint
+             color = !!sym(kstestlog10str))
+            geompointinfo <- ggplot2::geom_point(size = 0.5)
+            geompointinfo2 <- ggplot2::geom_density_2d()
+        } else {
+            df <- tab %>% dplyr::filter(!Universe) # nolint
+            dfatt <- tab %>% dplyr::filter(Group == "Attenuated") # nolint
+            dfoutgroup <- df %>% filter(Group == "Outgroup") # nolint
+
+            aesvar <- ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname)) # nolint
+            geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey") +
+                ggplot2::geom_point(data = dfatt, aesvar, color = "#e76f51",
+                size = 1) +
+                ggplot2::geom_point(data = dfoutgroup, aesvar,
+                    color = "#e9c46a", size = 1)
+        }
+
+        ## Structure of the basic scatterplot
+        g <- ggplot2::ggplot(df, aesvar) + geompointinfo
+
+        if (isTRUE(all.equal(plottype, "pval"))) {
+            g <- g + geompointinfo2
+            ## Adding highlight of the genes
+            g <- g + ggrepel::geom_label_repel(data = subset(df,
+                gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
+                point.padding = 0, segment.color = "black", max.overlaps = 50,
+                color = "red") +
+                ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
+                    mid = "grey", high = "darkgreen")
+        }
+
+        ## Formatting functions
+        g <- g + ggplot2::xlim(axismin_x, axismax_x) +
+            ggplot2::ylim(axismin_y, axismax_y) +
+            ggplot2::labs(x = labelx, y = labely, legend = "-log10 p-value",
+                color = "-log10 p-value", title = maintitle,
+                subtitle = subtitle) +
+            ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
+            ggplot2::theme(legend.position = legendpos)
+
+        if (plot) {
+            warning("You chose to plot the auc, the figure is not saved.")
+            print(g)
+        } else {
+            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
+                plot = g, device = formatname, path = outfold)
+        }
+}
+
+
+
+!!!!!!!!!!!!!!!!!! BACK UP
+
+
+plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
+    labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
+    axismax_x = 100, axismin_y = -10, axismax_y = 100, outfold = "./",
+    outfile = "AUCcompare_pval.pdf", formatname = "pdf", plottype = "pval",
+    plot = FALSE) {
+
+        if (!isTRUE(all.equal(plottype, "pval")) &&
+            !isTRUE(all.equal(plottype, "groups")))
+            stop("plottype should be equal to 'pval' or 'groups'.")
+
+        if (isTRUE(all.equal(plottype, "pval"))) {
+            df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
+            kstestlog10str <- "kstestlog10"
+        } else {
+            df <- tab
+        }
 
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]),
@@ -65,6 +142,10 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
                 plot = g2, device = formatname, path = outfold)
         }
 }
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 victorpreprocess <- function(victab) {
 
