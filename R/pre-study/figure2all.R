@@ -75,8 +75,7 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 victab <- read.delim(victabpath, header = TRUE)
 
 ## Plotting scatter of auc per condition
-genevec <- c("EGFR","DAP","FLI1","MARCHF6", "LINC01619")
-plotauc(unigroupdf, expdf, genevec, outfold = outputfolder, plot = TRUE)
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 
 ## Test plot on vic tab
 plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
