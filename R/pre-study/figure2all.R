@@ -48,21 +48,20 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
         } else {
             df <- tab %>% dplyr::filter(!Universe) # nolint
             dfatt <- tab %>% dplyr::filter(Group == "Attenuated") # nolint
-            dfoutgroup <- df %>% filter(Group == "Outgroup") # nolint
+            dfoutgroup <- tab %>% filter(Group == "Outgroup") # nolint
 
             aesvar <- ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname)) # nolint
-            geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey") +
-                ggplot2::geom_point(data = dfatt, aesvar, color = "#e76f51",
-                size = 1) +
-                ggplot2::geom_point(data = dfoutgroup, aesvar,
+            geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey")
+            geompointinfo2 <- ggplot2::geom_point(data = dfatt, aesvar,
+                color = "#e76f51", size = 1)
+            geompointinfo3 <- ggplot2::geom_point(data = dfoutgroup, aesvar,
                     color = "#e9c46a", size = 1)
         }
 
         ## Structure of the basic scatterplot
-        g <- ggplot2::ggplot(df, aesvar) + geompointinfo
+        g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
 
         if (isTRUE(all.equal(plottype, "pval"))) {
-            g <- g + geompointinfo2
             ## Adding highlight of the genes
             g <- g + ggrepel::geom_label_repel(data = subset(df,
                 gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
@@ -70,6 +69,8 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
                 color = "red") +
                 ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
                     mid = "grey", high = "darkgreen")
+        } else {
+            g <- g + geompointinfo3
         }
 
         ## Formatting functions
@@ -89,63 +90,6 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
                 plot = g, device = formatname, path = outfold)
         }
 }
-
-
-
-!!!!!!!!!!!!!!!!!! BACK UP
-
-
-plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # nolint
-    labelx = "AUC in Control", labely = "AUC in HS", axismin_x = -10,
-    axismax_x = 100, axismin_y = -10, axismax_y = 100, outfold = "./",
-    outfile = "AUCcompare_pval.pdf", formatname = "pdf", plottype = "pval",
-    plot = FALSE) {
-
-        if (!isTRUE(all.equal(plottype, "pval")) &&
-            !isTRUE(all.equal(plottype, "groups")))
-            stop("plottype should be equal to 'pval' or 'groups'.")
-
-        if (isTRUE(all.equal(plottype, "pval"))) {
-            df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
-            kstestlog10str <- "kstestlog10"
-        } else {
-            df <- tab
-        }
-
-        ## Structure of the basic scatterplot
-        g <- ggplot2::ggplot(df %>% dplyr::arrange(df[, kstestlog10str]),
-             ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname),
-             color = !!sym(kstestlog10str))) +
-             ggplot2::geom_point(size = 0.5) + ggplot2::geom_density_2d()
-
-        ## Adding highlight of the genes
-        g1 <- g + ggrepel::geom_label_repel(data = subset(df,
-            gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
-            point.padding = 0, segment.color = "black", max.overlaps = 50,
-            color = "red")
-
-        ## Formatting functions
-        g2 <- g1 +  ggplot2::scale_color_gradient2(midpoint = 0,
-            low = "white", mid = "grey", high = "darkgreen") +
-            ggplot2::xlim(axismin_x, axismax_x) +
-            ggplot2::ylim(axismin_y, axismax_y) +
-            ggplot2::labs(x = labelx, y = labely, legend = "-log10 p-value",
-                color = "-log10 p-value") +
-            ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
-            ggplot2::theme(legend.position = "bottom")
-
-        if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.")
-            print(g2)
-        } else {
-            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
-                plot = g2, device = formatname, path = outfold)
-        }
-}
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 victorpreprocess <- function(victab) {
 
@@ -196,13 +140,9 @@ plotauc(unigroupdf, "auc_ctrl", "auc_HS", "adjFDR_pvaldeltadaucks_mean_Fx_HS",
 
 ## Test plot with groups on vic tab - REMOVE FROM FINAL CODE
 plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
-    labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
-    plot = TRUE)
-
-plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", legendpos = "none",
     subtitle = "Genes selected for Unibind", maintitle = "AUC Control vs HS",
-    outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = FALSE,
+    outfold = outputfolder, outfile = "AUCcompare_groups.pdf", plot = TRUE,
     plottype = "groups")
 
 ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl, AUC_HS) ) +
@@ -229,3 +169,22 @@ ggplot(tst_df %>% filter(!Universe), aesvar) +
   coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
   theme_classic() +
   theme(legend.position = "none" )
+
+
+ggplot2::ggplot(df, aesvar) + ggplot2::geom_point(size = 0.5, color = "grey") +  ggplot2::geom_point(data = dfatt, aesvar, color = "#e76f51", size = 1)
+
+
+df <-  # nolint
+dfatt <- df %>% dplyr::filter(Group == "Attenuated") # nolint
+dfoutgroup <- df %>% filter(Group == "Outgroup") # nolint
+aesvar <-  # nolint
+geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey")
+geompointinfo2 <- ggplot2::geom_point(data = dfatt, aesvar,
+                color = "#e76f51", size = 1)
+geompointinfo3 <- ggplot2::geom_point(data = dfoutgroup, aesvar,
+                    color = "#e9c46a", size = 1)
+
+
+        ## Structure of the basic scatterplot
+        g <- ggplot2::ggplot(tst_df %>% dplyr::filter(!Universe),
+            ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname))) + geompointinfo + geompointinfo2 + geompointinfo3
