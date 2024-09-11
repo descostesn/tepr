@@ -19,6 +19,8 @@ unigrouppath <- "/g/romebioinfo/tmp/downstream/unigroupdf.rds"
 victabpath <- "/g/romebioinfo/Projects/tepr/downloads/Cugusi2022_AttenuationScores_10_200.tsv" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 outputfolder <- "/g/romebioinfo/tmp/figures"
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+
 
 
 ##################
@@ -71,11 +73,7 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
 
 unigroupdf <- readRDS(unigrouppath)
 expdf <- read.csv(exptabpath, header = TRUE)
-genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 victab <- read.delim(victabpath, header = TRUE)
-
-## Plotting scatter of auc per condition
-genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 
 ## Test plot on vic tab
 plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
