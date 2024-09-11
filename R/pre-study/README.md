@@ -426,3 +426,64 @@ The problem is not coming from the negative strand because the values are valid 
 ```
 
 Note that the differences are in the positions of the NA for M6PR. Therefore, due to the black list which is different or the mapping track.
+
+
+** Note for branch "figures"**
+
+Examples of tables can be found at [exptab](../../Dataset/exptab.csv) and [filtertab](../../Dataset/filtertab.csv).
+
+1) Handle filtering with a table given in parameter
+  - create a table tabfilter with all the specifications. See downstream.R
+  - add a checkfilter function that verify the validity of the condition columns, and that the universe and group columns do not only contain false.
+  - add testing on feature names in checkfilter
+  - add conditions on column names in checkfilter
+  - add new columns group.attenuated and group.outgroup to the final data.frame
+2) Modify countna function to keep only one na column made out of the sum of na in each condition.
+3) Modify the function resfilter to handle Universe and Group using the filter table
+  - rename resfilter to universegroup
+  - The filtering is done with the subfunction .createboolmat
+  - The result of the function is stored in the variable unigroupdf
+4) Create a function plotauc in figure2all.R as showcase.
+
+The code for plotting were saved to [figure2dvic.R](figure2dvic.R) and [figure2all-vic.R](figure2all-vic.R).
+The respective corresponding files are [figure2d.R](figure2d.R) and [figure2all.R](figure2all.R).
+
+The rds objects necessary to test figure2d.R and figure2all.R are provided at:
+
+https://oc.embl.de/index.php/s/rfwaQl6Yt5GMSWV
+
+The package will be developped from now using the file "Cugusi2022_AttenuationScores_10_200.tsv". Possible differences with the article can be investigated later.
+
+Problem with the group columns:
+
+```
+> table(tst_df$Group)
+
+Attenuated   Outgroup
+       421       5334
+> table(exploretab$Group)
+
+Attenuated   Outgroup
+       513       5374
+> table(unigroupdf$group)
+
+Attenuated   Outgroup
+      1096        885
+```
+
+Problem with the universe column:
+
+```
+> table(tst_df$Universe)
+
+FALSE  TRUE
+ 8435  6567
+> table(exploretab$Universe)
+
+FALSE  TRUE
+ 8373  6612
+> table(unigroupdf$universe)
+
+FALSE  TRUE
+13095  1981
+```

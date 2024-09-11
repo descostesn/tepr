@@ -21,6 +21,8 @@ library("pracma")
 
 alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
+filtertabpath <- "/g/romebioinfo/Projects/tepr/Dataset/filtertab.csv"
+
 expthres <- 0.1
 ## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
 nbcpubg <- 8
@@ -497,7 +499,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
         scoremat <- transtable[, colnamestr]
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
-        res <- lapply(condvec, function(c, m, n) {
+        res <- sapply(condvec, function(c, m, n) {
           idxcol <- grep(c, n)
           if (!isTRUE(all.equal(length(idxcol), 1))) {
             return(length(which(apply(m[, idxcol], 1,
@@ -506,11 +508,12 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
             return(length(which(is.na(m[, idxcol]))))
           }
         }, scoremat, colnamestr)
-        res <- do.call("cbind", res)
-        colnames(res) <- paste0(condvec, "_NA")
+
+        ## Retrieving total NA and transcript info
+        countna <- sum(res)
         info <- data.frame(gene = unique(transtable$gene),
           transcript = unique(transtable$transcript), strand = str)
-        return(cbind(info, res))
+        return(cbind(info, countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
   return(do.call("rbind", nabytranslist))
@@ -629,133 +632,134 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 }
 
 
-.filterauc <- function(colnamevec, completedf, pval, verbose) {
+.createboolmat <- function(tab, completedf) {
 
-  ## Retrieving indexes of columns with pval auc and attenuation
-  idxpaucvec <- grep("^pvalaucks", colnamevec)
-  idxattvec <- grep("attenuation", colnamevec)
-  ## Replace the attenuation values if pval auc > pval
-  colattlist <- mapply(function(idxpauc, idxatt, tab, pval) {
-    idxna <- which(tab[, idxpauc] < pval)
-    lna <- length(idxna)
+  booleanlist <- apply(tab, 1, function(currentfilter, completedf) {
 
-    if (!isTRUE(all.equal(lna, 0))) {
-      if (verbose) message("\t\t ", lna, "/", nrow(tab))
-      tab[idxna, idxatt] <- NA
+    currentfeature <- as.character(currentfilter["feature"])
+
+    if (isTRUE(all.equal(currentfeature, "countna"))) {
+      return(as.vector(completedf["countna"] < currentfilter["threshold"]))
+
+    } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
+      return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
+
+    } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
+      colstr <- paste0("meanvaluefull_", currentfilter["condition"])
+      return(completedf[, colstr] > currentfilter["threshold"])
+
+    } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
+      colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"]) # nolint
+      return(completedf[, colstr] > currentfilter["threshold"])
+
+    } else if (isTRUE(all.equal(currentfeature, "auc"))) {
+      colstr <- paste0("auc_", currentfilter["condition"])
+      if (!is.na(currentfilter["threshold2"]))
+        res <- completedf[, colstr] > currentfilter["threshold"] &
+          completedf[, colstr] < currentfilter["threshold2"]
+      else
+        res <- completedf[, colstr] > currentfilter["threshold"]
+      return(res)
+    } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
+      colnamevec <- colnames(completedf)
+      idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec) # nolint
+      .checkunique(idx)
+      colstr <- colnamevec[idx]
+      return(-log10(completedf[, colstr]) > currentfilter["threshold"])
+    } else {
+      stop("The feature ", currentfeature, " is not handlded.",
+        "Allowed features are: countna, windowsize, fullmean, pvalauc, auc, ",
+        "and daucfdrlog10. If you are sure that there is no typo, contact the",
+        " developper.")
     }
-    return(tab[, idxatt])
-  }, idxpaucvec, idxattvec, MoreArgs = list(completedf, pval),
-      SIMPLIFY = FALSE)
-  replacedf <- do.call("cbind", colattlist)
-  completedf[, idxattvec] <- replacedf
-  return(completedf)
+  }, completedf, simplify = FALSE)
+
+  booleanmat <- do.call("cbind", booleanlist)
+  colnames(booleanmat) <- paste(tab[, "feature"], tab[, "condition"], sep = "-")
+  return(booleanmat)
 }
 
-.filternbna <- function(colnamevec, completedf, nathres) {
+universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
-  idxnavec <- grep("_NA", colnamevec)
-  matna <- completedf[, idxnavec]
-  if (length(idxnavec) < 2)
-    matna <- as.matrix(matna)
-  idxkeep <- which(apply(matna, 1, function(x) return(any(x <= nathres))))
-  if (isTRUE(all.equal(length(idxkeep), 0)))
-    stop("No rows had a number of NA lower or equal to ", nathres, ". You",
-        " might want to increase the threshold.")
-  completedf <- completedf[idxkeep, ]
-  return(completedf)
-}
+  ## Retrieving universe and group information
+  universetab <- filterdf[which(filterdf$universe), ]
+  grouptab <- filterdf[which(filterdf$group), ]
 
-.filterfullmean <- function(colnamevec, completedf, fullthres) {
+  ## Creating bool matrix and vector for universe
+  universemat <- .createboolmat(universetab, completedf)
+  universevec <- apply(universemat, 1, all)
 
-    idxfull <- grep("meanvaluefull", colnamevec)
-    matmean <- completedf[, idxfull]
-    if (length(idxfull) < 2)
-      matmean <- as.matrix(matmean)
-    idxkeep <- which(apply(matmean, 1, function(x) return(all(x > fullthres))))
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had all full mean higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-    return(completedf)
-}
+  ## Creating bool matrix and vector for group
+  groupvec <- rep(NA, nrow(completedf))
+  groupmat <- .createboolmat(grouptab, completedf)
+  attenuatedcols <-  as.vector(apply(filterdf[which(filterdf$group.attenuated),
+    c("feature", "condition")], 1, paste, collapse = "-"))
+  outgroupcols <-  as.vector(apply(filterdf[which(filterdf$group.outgroup),
+    c("feature", "condition")], 1, paste, collapse = "-"))
+  attenuatedvec <- apply(cbind(universevec, groupmat[, attenuatedcols]), 1, all)
+  outgroupvec <- apply(cbind(universevec, groupmat[, outgroupcols]), 1, all)
+  if (any(attenuatedvec))
+    groupvec[attenuatedvec] <- "Attenuated"
+  else
+    warning("No attenuated genes were found")
+  if (any(outgroupvec))
+    groupvec[outgroupvec] <- "Outgroup"
+  else
+    warning("No outgroup genes were found")
 
-.filterdaucfdr <- function(colnamevec, completedf, daucfdrlog10thres) {
-  idxcol <- grep("adjFDR_pvaldeltadaucks", colnamevec)
-  idxkeep <- which(-log10(completedf[, idxcol]) > daucfdrlog10thres)
-  if (isTRUE(all.equal(length(idxkeep), 0)))
-    stop("No rows had a delta auc fdr higher than ", fullthres, ". You",
-        " might want to decrease the threshold.")
-  completedf <- completedf[idxkeep, ]
-  return(completedf)
-}
+  ## Building the final data.frame
+  res <- data.frame(universe = universevec, group = groupvec)
+  unigroupdf <- cbind(res, completedf)
 
-.filterctrlfdr <- function(colnamevec, completedf, ctrlfdrthres) {
-    idxcol <- grep("adjFDR_pvalaucks_ctrl", colnamevec)
-    idxkeep <- which(completedf[, idxcol] > ctrlfdrthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows had a ctrl auc fdr higher than ", ctrlfdrthres, ". You",
-        " might want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-    return(completedf)
-}
-
-resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
-  filterwindows = TRUE, winthres = 50, filternbna = TRUE, nathres = 20,
-  filterfullmean = TRUE, fullthres = 0.5, filterdaucfdr = TRUE,
-  daucfdrlog10thres = 2, filterctrlfdr = TRUE, ctrlfdrthres = 0.1,
-  verbose = TRUE) {
-
-  ## Retrieve column names of completedf
-  colnamevec <- colnames(completedf)
-
-  ## Filter attenuation values based on pval AUC
-  if (filterauc) {
-    message("\t Replacing non-significant auc by NA")
-    completedf <- .filterauc(colnamevec, completedf, pval, verbose)
-  }
-
-  ## Keeping rows with a window size > winthres
-  if (filterwindows) {
-    if (verbose) message("\t Keeping rows with a window size > ", winthres)
-    idxkeep <- which(completedf$size > winthres)
-    if (isTRUE(all.equal(length(idxkeep), 0)))
-      stop("No rows have a window size higher than ", winthres, ". you might ",
-        "want to decrease the threshold.")
-    completedf <- completedf[idxkeep, ]
-  }
-
-  ## Keeping rows if at least one condition has cond_NA < nathres
-  if (filternbna) {
-    if (verbose) message("\t Keeping rows if at least one condition has ",
-      "cond_NA < nathres")
-    completedf <- .filternbna(colnamevec, completedf, nathres)
-  }
-
-  ## Keeping rows if full means higher than fullmeanthres
-  if (filterfullmean) {
-    if (verbose) message("\t Keeping rows if full means higher than ",
-      "fullmeanthres")
-    completedf <- .filterfullmean(colnamevec, completedf, fullthres)
-  }
-
-  ## Keeping the lines having a fdr dauc > daucfdrlog10thres
-  if (filterdaucfdr) {
-    if (verbose) message("\t Keeping rows with fdr auc higher than ",
-      daucfdrlog10thres)
-    completedf <- .filterdaucfdr(colnamevec, completedf, daucfdrlog10thres)
-  }
-
-  ## Keeping the lines having a ctrl auc fdr > ctrlfdrthres
-  if (filterctrlfdr) {
-    if (verbose) message("\t Keeping rows with a ctrl auc fdr higher than ",
-      ctrlfdrthres)
-    completedf <- .filterctrlfdr(colnamevec, completedf, ctrlfdrthres)
-  }
-
-  return(completedf)
+  return(unigroupdf)
 }
 
 
+checkfilter <- function(filterdf, expdf) {
+
+  filtercond <- unique(filterdf$condition[!is.na(filterdf$condition)])
+  if (!isTRUE(all.equal(filtercond, unique(expdf$condition))))
+    stop("The condition column of your experiment and filter tab should",
+      " contain the same values.")
+
+  if (all(!filterdf$universe))
+    stop("All the rows of the universe column are set to FALSE. No rows will",
+      " be used for the analysis.")
+
+  if (all(!filterdf$group))
+    stop("All the rows of the group column are set to FALSE. No rows will",
+      " be used for the analysis.")
+
+  if (all(!filterdf$group.attenuated))
+    stop("All the rows of the group.attenuated column are set to FALSE. No ",
+      "rows will be used for the analysis.")
+
+    if (all(!filterdf$group.outgroup))
+    stop("All the rows of the group.attenuated column are set to FALSE. No ",
+      "rows will be used for the analysis.")
+
+  featurevec <- c("auc", "countna", "windowsize", "fullmean", "daucfdrlog10",
+    "pvalauc")
+  idx <- match(featurevec, filterdf$feature)
+  idxna <- which(is.na(idx))
+  if (!isTRUE(all.equal(length(idxna), 0)))
+    stop("The following features are missing from your filter table: ",
+      paste(featurevec[idxna], collapse = "-"))
+
+  colnametab <- colnames(filterdf)
+  colnamevec <- c("condition", "feature", "threshold", "threshold2", "universe",
+    "group", "group.attenuated", "group.outgroup")
+
+  if (any(duplicated(colnametab)))
+    stop("The columns of the filter table should be unique and must contain:",
+      paste(colnamevec, collapse = "-"))
+
+  idx <- match(colnamevec, colnametab)
+  idxna <- which(is.na(idx))
+  if (!isTRUE(all.equal(length(idxna), 0)))
+    stop("The following columns are missing from your filter table: ",
+      colnamevec[idxna])
+}
 
 
 ##################
@@ -765,6 +769,8 @@ resfilter <- function(completedf, expdf, filterauc = TRUE, pval = 0.05,
 ## Reading alldf and info tab
 alldf <- readRDS(alldfpath)
 expdf <- read.csv(exptabpath, header = TRUE)
+filterdf <- read.csv(filtertabpath, header = TRUE)
+checkfilter(filterdf, expdf)
 
 if (testonerep) {
   ## Removing the second replicate
@@ -858,11 +864,11 @@ if (!testonerep) {
 
 message("Filtering results")
 start_time <- Sys.time()
-filtereddf <- resfilter(completedf)
+unigroupdf <- universegroup(completedf, expdf, filterdf)
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
 if (!testonerep) {
-  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf.rds")
+  saveRDS(unigroupdf, "/g/romebioinfo/tmp/downstream/unigroupdf.rds")
 } else {
-  saveRDS(filtereddf, "/g/romebioinfo/tmp/downstream/filtereddf-onerep.rds")
+  saveRDS(unigroupdf, "/g/romebioinfo/tmp/downstream/unigroupdf-onerep.rds")
 }

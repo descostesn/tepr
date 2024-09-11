@@ -1,6 +1,6 @@
 ########################
 ## This script aims at reproducing the figure 2d of the article using the
-## object completedf generated with the script downstream.R
+## objects completedf and dfmeandiff generated with the script downstream.R
 ##
 ## Descostes - R-4.4.1 - sept 2024
 ########################
