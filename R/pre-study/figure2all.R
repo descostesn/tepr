@@ -66,6 +66,31 @@ plotauc <- function(tab, auc_ctrlname, auc_stressname, pvalkstestcolname, # noli
         }
 }
 
+victorpreprocess <- function(victab) {
+
+    mean_value_control_full <- "MeanValueFull_ctrl"
+    mean_value_stress <- "MeanValueFull_HS"
+    AUC_ctrl <- "AUC_ctrl"
+    AUC_stress <- "AUC_HS"
+    p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+    p_value_theoritical<- "adjFDR_p_AUC_ctrl" 
+
+    tst_df <- victab %>%
+    mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
+        !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+        !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
+        relocate(Universe, .before = 1) 
+    tst_df <- tst_df %>%
+    mutate(Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 &
+    -log10(!!sym(p_value_KStest))>2, "Attenuated", NA),
+        Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 &
+        !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group)
+    ) %>%  relocate(Group, .before = 2)
+
+    return(tst_df)
+}
+
+
 
 ##################
 # MAIN
@@ -75,8 +100,11 @@ unigroupdf <- readRDS(unigrouppath)
 expdf <- read.csv(exptabpath, header = TRUE)
 victab <- read.delim(victabpath, header = TRUE)
 
-## Test plot on vic tab
-plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+## Performing preprocessing on victab - REMOVE FROM FINAL CODE
+tst_df <- victorpreprocess(victab)
+
+## Test plot on vic tab - REMOVE FROM FINAL CODE
+plotauc(tst_df, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
 
@@ -84,3 +112,29 @@ plotauc(victab, "AUC_ctrl", "AUC_HS", "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 plotauc(unigroupdf, "auc_ctrl", "auc_HS", "adjFDR_pvaldeltadaucks_mean_Fx_HS",
     labelx = "AUC in Control", labely = "AUC in HS", outfold = outputfolder,
     plot = TRUE)
+
+
+ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl, AUC_HS) ) +
+  geom_point(size=0.5, color="grey") +
+  geom_point(data=tst_df %>% filter(Group=="Attenuated"), aes( x=AUC_ctrl , y=AUC_HS), colour="black" , size=1.3) +
+  geom_point(data=tst_df %>% filter(Group=="Attenuated"), aes( x=AUC_ctrl , y=AUC_HS), color="#e76f51" , size=1) +
+  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aes( x=AUC_ctrl , y=AUC_HS), colour="black" , size=1.3) +
+  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aes( x=AUC_ctrl , y=AUC_HS), color="#e9c46a" , size=1) +
+  xlim(-10,100) + ylim(-10,100)+
+  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", title = "AUC Control vs HS", subtitle = "Genes selected for Unibind") +
+  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
+  theme_classic() +
+  theme(legend.position = "none" )
+
+auc_ctrlname = "AUC_ctrl"
+auc_stressname = "AUC_HS"
+aesvar <- aes(!!sym(auc_ctrlname), !!sym(auc_stressname))
+ggplot(tst_df %>% filter(!Universe), aesvar) +
+  geom_point(size=0.5, color="grey") +
+  geom_point(data=tst_df %>% filter(Group == "Attenuated"), aesvar, color="#e76f51" , size=1) +
+  geom_point(data=tst_df %>% filter(Group=="Outgroup"), aesvar, color="#e9c46a" , size=1) +
+  xlim(-10,100) + ylim(-10,100)+
+  labs(x="AUC in Control", y="AUC in HS", legend="-log10 p-value", title = "AUC Control vs HS", subtitle = "Genes selected for Unibind") +
+  coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
+  theme_classic() +
+  theme(legend.position = "none" )
