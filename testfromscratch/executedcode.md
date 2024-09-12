@@ -543,4 +543,50 @@ The files produced have the following numbers of lines:
    2772000 bedgraph255/lncRNA_score/HS_rep2.reverse.window200.MANE.wmean.name.score
 ```
 
+Executing the following R code to combine the files for protein coding:
 
+```
+main_directory <- "bedgraph255"
+write_file_protein_coding <- paste0(main_directory,"/protCoding_dTAG_Cugusi_stranded_20230810.tsv")
+write_file_lncRNA <- paste0(main_directory,"/lncRNA_dTAG_Cugusi_stranded_20230810.tsv")
+Big_tsv <-paste0(main_directory,"/dTAG_Cugusi_stranded_20230810.tsv") 
+
+library(dplyr)
+library(purrr)
+
+### DO NOT FORGET TO CHANGE THE BEDGRAPH EXTENSION TO TH ONE IN USE IN THE FOLDER
+window <- 200
+working_directory <- paste0(main_directory,"/protein_coding_score")
+bedgraph_files <- list.files(main_directory, pattern = "*.bg", full.names = TRUE)
+
+files <- bedgraph_files %>%
+  map(~{
+    filename <- tools::file_path_sans_ext(basename(.))
+    file.path(working_directory, paste0(filename, ".window", window, ".MANE.wmean.name.score"))
+  })
+
+# reading all the files
+list_of_dfs <- lapply(files, read.delim, header= F, sep= "\t",  na.strings = "NAN", dec = ".", col.names = c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id","dataset","score"), stringsAsFactors=FALSE)
+
+# joining all the files
+joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
+   dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+
+ write.table(joined_df, file = write_file_protein_coding, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
+
+ rm(list_of_dfs)
+ rm(joined_df)
+ ```
+
+ The code above was copied to the file `joinprotcod.R` and executed with R-4.4.1:
+
+ ```
+ Rscript joinprotcod.R
+ ```
+
+ The following files were obtained:
+
+ ```
+ > wc -l bedgraph255/protCoding_dTAG_Cugusi_stranded_20230810.tsv
+
+ ```
