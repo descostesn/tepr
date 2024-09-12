@@ -143,7 +143,7 @@ Now considering the following bedgraph files that were copied to the folder `./b
 15766282 HS_rep2.reverse.bg
 ```
 
-The following code that was copied in a file `scoring.zsh`:
+The following code that was copied in a file `scoring.zsh` and is dealing with protein coding genes:
 
 ```
 #!/usr/bin/zsh
@@ -198,6 +198,8 @@ done
 
 mkdir $WORKING/protein_coding_score
 mv $WORKING/*.score $WORKING/protein_coding_score/
+mv $WORKING/withzeros $WORKING/withzeros-proteincoding
+mv $WORKING/mapHigh $WORKING/mapHigh-proteincoding
 ```
 
 The code above was executed with the command:
@@ -211,134 +213,102 @@ zsh scoring.zsh
 The command gave the output:
 
 ```
-starting file :
-ctrl_rep1.forward
-removing blacklist region
-***** WARNING: File ./bedgraph255/ctrl_rep1.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       80      1.0061
 
-***** WARNING: File ./bedgraph255/ctrl_rep1.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       80      1.0061
-
-removing low mappability region
-scoring windows
-done
-starting file :
-ctrl_rep1.reverse
-removing blacklist region
-***** WARNING: File ./bedgraph255/ctrl_rep1.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       580     0
-
-***** WARNING: File ./bedgraph255/ctrl_rep1.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       580     0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-ctrl_rep2.forward
-removing blacklist region
-***** WARNING: File ./bedgraph255/ctrl_rep2.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       470     0
-
-***** WARNING: File ./bedgraph255/ctrl_rep2.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       470     0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-ctrl_rep2.reverse
-removing blacklist region
-***** WARNING: File ./bedgraph255/ctrl_rep2.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       610     0
-
-***** WARNING: File ./bedgraph255/ctrl_rep2.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       610     0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-HS_rep1.forward
-removing blacklist region
-***** WARNING: File ./bedgraph255/HS_rep1.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       760     0
-
-***** WARNING: File ./bedgraph255/HS_rep1.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       760     0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-HS_rep1.reverse
-removing blacklist region
-***** WARNING: File ./bedgraph255/HS_rep1.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       2290    0
-
-***** WARNING: File ./bedgraph255/HS_rep1.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       2290    0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-HS_rep2.forward
-removing blacklist region
-***** WARNING: File ./bedgraph255/HS_rep2.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       840     0
-
-***** WARNING: File ./bedgraph255/HS_rep2.forward.bg has inconsistent naming convention for record:
-GL000008.2      0       840     0
-
-removing low mappability region
-scoring windows
-done
-starting file :
-HS_rep2.reverse
-removing blacklist region
-***** WARNING: File ./bedgraph255/HS_rep2.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       40      0
-
-***** WARNING: File ./bedgraph255/HS_rep2.reverse.bg has inconsistent naming convention for record:
-GL000008.2      0       40      0
-
-removing low mappability region
-scoring windows
-done
 ```
 
 The files produced have the following numbers of lines:
 
 ```
-> wc -l bedgraph255/withzeros/*
-  11833015 bedgraph255/withzeros/ctrl_rep1.forward.nonzeros.bg
-  11028069 bedgraph255/withzeros/ctrl_rep1.reverse.nonzeros.bg
-  13764078 bedgraph255/withzeros/ctrl_rep2.forward.nonzeros.bg
-  12867337 bedgraph255/withzeros/ctrl_rep2.reverse.nonzeros.bg
-   8299043 bedgraph255/withzeros/HS_rep1.forward.nonzeros.bg
-   7801098 bedgraph255/withzeros/HS_rep1.reverse.nonzeros.bg
-  12597790 bedgraph255/withzeros/HS_rep2.forward.nonzeros.bg
-  11807275 bedgraph255/withzeros/HS_rep2.reverse.nonzeros.bg
+> wc -l bedgraph255/withzeros-proteincoding/*
 
-> wc -l bedgraph255/mapHigh/*
-  20651207 bedgraph255/mapHigh/ctrl_rep1.forward.0.8.bg
-  19098231 bedgraph255/mapHigh/ctrl_rep1.reverse.0.8.bg
-  22434617 bedgraph255/mapHigh/ctrl_rep2.forward.0.8.bg
-  20800178 bedgraph255/mapHigh/ctrl_rep2.reverse.0.8.bg
-  17325729 bedgraph255/mapHigh/HS_rep1.forward.0.8.bg
-  16056740 bedgraph255/mapHigh/HS_rep1.reverse.0.8.bg
-  21345438 bedgraph255/mapHigh/HS_rep2.forward.0.8.bg
-  19808651 bedgraph255/mapHigh/HS_rep2.reverse.0.8.bg
+> wc -l bedgraph255/mapHigh-proteincoding/*
 
 > wc -l bedgraph255/protein_coding_score/*
-   3725600 bedgraph255/protein_coding_score/ctrl_rep1.forward.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/ctrl_rep1.reverse.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/ctrl_rep2.forward.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/ctrl_rep2.reverse.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/HS_rep1.forward.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/HS_rep1.reverse.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/HS_rep2.forward.window200.MANE.wmean.name.score
-   3725600 bedgraph255/protein_coding_score/HS_rep2.reverse.window200.MANE.wmean.name.score
+
+```
+
+The following code that was copied in a file `lncRNA.zsh` and is dealing with lncRNAs:
+
+```
+#!/usr/bin/zsh
+
+ext="bg"
+WORKING="bedgraph255"
+window=200
+
+umapk50="k50.umap.hg38.0.8.bed"
+windowS="makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"
+blacklist="hg38-blacklist.v2.bed"
+ANNOTATION="Ensembl_canonical_TSL123.lncRNA.bed"
+
+mkdir $WORKING/withzeros
+mkdir $WORKING/mapHigh
+
+for file in $WORKING/*.$ext ;
+do
+filename=$(basename "$file" .$ext) ;
+echo "starting file :"
+echo $filename ;
+
+if echo $filename | egrep -q "reverse|minus" ;  then 
+  strand="-"
+elif echo $filename | egrep -q "forward|plus" ; then
+  strand='+'
+fi
+
+
+echo "removing blacklist region"
+ bedtools intersect \
+-a $WORKING/${filename}.$ext \
+-b <( awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v) \
+ | sort -k1,1 -k2,2n > $WORKING/withzeros/${filename}.nonzeros.$ext
+
+
+echo "removing low mappability region"
+
+bedtools intersect -a $WORKING/withzeros/${filename}.nonzeros.$ext -b $umapk50 -sorted | awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > $WORKING/mapHigh/${filename}.0.8.$ext
+
+echo "scoring windows"
+
+bedmap --echo --wmean --delim "\t" $windowS $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "lncRNA",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
+
+echo "done"
+
+done
+
+mkdir $WORKING/lncRNA_score
+mv $WORKING/*.score $WORKING/lncRNA_score/
+mv $WORKING/withzeros $WORKING/withzeros-lncRNA
+mv $WORKING/mapHigh $WORKING/mapHigh-lncRNA
+```
+
+The code above was executed with the command:
+
+```
+#!/usr/bin/sh
+
+zsh lncRNA.zsh
+```
+
+The command gave the output:
+
+```
+
+```
+
+The command gave the output:
+
+```
+
+```
+
+The files produced have the following numbers of lines:
+
+```
+> wc -l bedgraph255/withzeros-lncRNA/*
+
+> wc -l bedgraph255/mapHigh-lncRNA/*
+
+> wc -l bedgraph255/lncRNA_score/*
+
 ```
