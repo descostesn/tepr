@@ -18,6 +18,18 @@ grep -w transcript gencode.v43.basic.annotation.gtf | grep -w lncRNA | grep -w E
 awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > Ensembl_canonical_TSL123.lncRNA.bed
 ```
 
+The files produced have the following number of lines:
+
+```
+> wc -l gencode.v43.basic.annotation.gtf MANE_Select.protein_coding.gtf MANE_Select.protein_coding.bed Ensembl_canonical_TSL123.lncRNA.gtf Ensembl_canonical_TSL123.lncRNA.bed
+
+1998585 gencode.v43.basic.annotation.gtf
+19077 MANE_Select.protein_coding.gtf
+19077 MANE_Select.protein_coding.bed
+14271 Ensembl_canonical_TSL123.lncRNA.gtf
+14271 Ensembl_canonical_TSL123.lncRNA.bed
+```
+
 In the code below, note that the file of Victor is called `hg38-blacklist.v2.sorted.bed` and that therefore an extra step of sorting might have been performed. The awk command throws a warning `WARNING: Interval chrX:135309480-135309659 is smaller than the number of windows requested. Skipping.`. The echo command returns `./makewindow/v43.MANE_protein.window200.bed`. Removing the black list and make windows from the protein coding file:
 
 ```
@@ -110,7 +122,15 @@ WARNING: Interval chr9:4850299-4850373 is smaller than the number of windows req
 WARNING: Interval chr9:97214834-97214929 is smaller than the number of windows requested. Skipping.
 ```
 
-Now considering the following bedgraph files that were copied to the folder `./bedgraph255` and whose sizes are indicated below:
+The produced files have the follwing number of lines
+
+```
+> wc -l makewindow/v43.MANE_protein.window200.bed makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+3725600 makewindow/v43.MANE_protein.window200.bed
+2772000 makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+```
+
+Now considering the following bedgraph files that were copied to the folder `./bedgraph255`, sizes and number of lines are indicated below:
 
 ```
 437M    ctrl_rep1.forward.bg
@@ -121,6 +141,15 @@ Now considering the following bedgraph files that were copied to the folder `./b
 316M    HS_rep1.reverse.bg
 496M    HS_rep2.forward.bg
 475M    HS_rep2.reverse.bg
+
+14857004 ctrl_rep1.forward.bg
+14095382 ctrl_rep1.reverse.bg
+17346714 ctrl_rep2.forward.bg
+16515469 ctrl_rep2.reverse.bg
+11037780 HS_rep1.forward.bg
+10605325 HS_rep1.reverse.bg
+16466636 HS_rep2.forward.bg
+15766282 HS_rep2.reverse.bg
 ```
 
 The following code that was copied in a file `scoring.zsh`:
