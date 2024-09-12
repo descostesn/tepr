@@ -631,5 +631,44 @@ The following file was obtained:
 
 ```
 > wc -l bedgraph255/lncRNA_dTAG_Cugusi_stranded_20230810.tsv
+    2770600 bedgraph255/lncRNA_dTAG_Cugusi_stranded_20230810.tsv
 ```
 
+The R code below was used to merge the tables:
+
+```
+library(dplyr)
+library(purrr)
+
+main_directory <- "bedgraph255"
+Big_tsv <-paste0(main_directory,"/dTAG_Cugusi_stranded_20230810.tsv") 
+
+tsv_files <- list.files(main_directory, pattern = "*.tsv", full.names = TRUE)
+
+files <- tsv_files %>%
+  map(~{
+    filename <- tools::file_path_sans_ext(basename(.))
+    file.path(main_directory, paste0(filename, ".tsv"))
+  })
+# reading all the files
+list_of_dfs <- lapply(files, read.delim, header= F, sep= "\t",  na.strings = "NAN", dec = ".", stringsAsFactors=FALSE)
+# joining all the files
+bound_df <- purrr::reduce(list_of_dfs, dplyr::bind_rows)
+
+write.table(bound_df, file = Big_tsv, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
+rm(list_of_dfs)
+rm(bound_df)
+```
+
+The code was copoied to `jointsvs.R` and executed with the command:
+
+```
+Rscript jointsvs.R
+```
+
+The following file was obtained:
+
+```
+> wc -l bedgraph255/dTAG_Cugusi_stranded_20230810.tsv
+    6493200 bedgraph255/dTAG_Cugusi_stranded_20230810.tsv
+```
