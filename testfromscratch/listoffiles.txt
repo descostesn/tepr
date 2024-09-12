@@ -1,3 +1,4 @@
-## The format is victorefile (nicofiles)
+#### The format is: victorefile (nicofiles) - note
 
-gencode.v43.basic.annotation.gtf (gencode.v43.basic.annotation.gtf)
+* gencode.v43.basic.annotation.gtf (gencode.v43.basic.annotation.gtf) - downloaded from gencode website
+* hg38-blacklist.v2.sorted.bed (hg38-blacklist.v2.bed) - downloaded from https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz
