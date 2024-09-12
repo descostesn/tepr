@@ -453,6 +453,8 @@ checkexptab(exptab)
 
 ## Read gencode file
 gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+
+## Keeping "transcript" annotations
 gencode <- gencode[which(gencode$V3 == "transcript"), ]
 
 ## Selecting Ensembl_canonical transcripts i.e. most representative transcript
