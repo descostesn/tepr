@@ -110,3 +110,86 @@ WARNING: Interval chr9:4850299-4850373 is smaller than the number of windows req
 WARNING: Interval chr9:97214834-97214929 is smaller than the number of windows requested. Skipping.
 ```
 
+Now considering the following bedgraph files that were copied to the folder `./bedgraph255` and whose sizes are indicated below:
+
+```
+437M    ctrl_rep1.forward.bg
+414M    ctrl_rep1.reverse.bg
+519M    ctrl_rep2.forward.bg
+494M    ctrl_rep2.reverse.bg
+329M    HS_rep1.forward.bg
+316M    HS_rep1.reverse.bg
+496M    HS_rep2.forward.bg
+475M    HS_rep2.reverse.bg
+```
+
+The following code that was copied in a file `scoring.zsh`:
+
+```
+#!/usr/bin/zsh
+
+## DO NOT FORGET TO CHANGE THE EXTENSION OF THE BEDGRAPH IF NEEDED
+ext="bg"
+##it works and validated by looking at head and tail of documents and exemple genes
+WORKING="./bedgraph255"
+window=200
+######
+umapk50="k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
+windowS="makewindow/v43.MANE_protein.window${window}.bed" #genes with the window
+blacklist="hg38-blacklist.v2.bed"
+ANNOTATION="MANE_Select.protein_coding.bed"
+#######
+
+mkdir $WORKING/withzeros
+mkdir $WORKING/mapHigh
+
+for file in $WORKING/*.$ext ;
+do
+filename=$(basename "$file" .$ext);
+echo "starting file :"
+echo $filename;
+
+
+if echo $filename | egrep -q "reverse|minus" ;  then  
+  strand="-"
+elif echo $filename | egrep -q "forward|plus" ; then
+  strand='+'
+fi
+
+echo "removing blacklist region"
+ bedtools intersect \
+-a $WORKING/${filename}.$ext \
+-b <( awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v) \
+ | sort -k1,1 -k2,2n > $WORKING/withzeros/${filename}.nonzeros.$ext
+
+
+echo "removing low mappability region"
+
+
+bedtools intersect -a $WORKING/withzeros/${filename}.nonzeros.${ext} -b $umapk50 -sorted | awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > $WORKING/mapHigh/${filename}.0.8.$ext
+
+echo "scoring windows"
+
+bedmap --echo --wmean --delim "\t" $windowS $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
+
+echo "done"
+
+done
+
+mkdir $WORKING/protein_coding_score
+mv $WORKING/*.score $WORKING/protein_coding_score/
+```
+
+The code above was executed with the command:
+
+```
+#!/usr/bin/sh
+
+zsh scoring.zsh
+```
+
+The command gave the output:
+
+```
+
+```
