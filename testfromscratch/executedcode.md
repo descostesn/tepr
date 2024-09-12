@@ -33,3 +33,80 @@ awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools i
 
 echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed 
 ```
+
+Performing the same thing for lncRNA. The echo command returns `./makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed`:
+
+```
+#!/usr/bin/sh
+
+ANNOTATION="Ensembl_canonical_TSL123.lncRNA.bed"
+WORKING="."
+blacklist="hg38-blacklist.v2.bed"
+window=200
+
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed 
+
+echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+```
+
+Note that the awk command above gives the following warnings:
+
+```
+WARNING: Interval chr1:111181374-111181491 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:16905199-16905396 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:17439186-17439328 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:222742640-222742729 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:247189576-247189725 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:27773858-27774041 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr1:28648600-28648730 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr10:13099855-13099968 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr10:133374736-133374869 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr11:123741776-123741896 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr11:65492897-65493058 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr11:94650324-94650442 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr12:121874193-121874337 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr12:4275562-4275755 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr13:113165002-113165183 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr15:40874433-40874595 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr15:58456188-58456348 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr16:173502-173660 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr16:177313-177490 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr16:29709156-29709328 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr16:73014319-73014476 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:19868568-19868689 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:2748078-2748182 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:30117079-30117172 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:41867581-41867736 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:57955965-57956143 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:58659125-58659306 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr17:80149627-80149798 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr18:8406761-8406953 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr2:25362232-25362427 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr2:61854376-61854552 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr2:64275361-64275503 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr2:85387074-85387146 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr20:38961925-38962111 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr22:38736610-38736792 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr3:179584271-179584410 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr3:194637505-194637664 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr3:58329965-58330118 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr4:158841813-158841980 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr4:68376551-68376665 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr5:139775305-139775472 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:156780327-156780455 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:26474337-26474441 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:28335662-28335828 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:35764401-35764503 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:41764292-41764460 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:41791410-41791477 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:43770429-43770616 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr6:81969453-81969539 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr7:148941483-148941638 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr7:16471184-16471373 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr7:25855322-25855483 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr9:10948372-10948481 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr9:129328261-129328401 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr9:4850299-4850373 is smaller than the number of windows requested. Skipping.
+WARNING: Interval chr9:97214834-97214929 is smaller than the number of windows requested. Skipping.
+```
+
