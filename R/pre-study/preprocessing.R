@@ -92,13 +92,15 @@ createblacklist <- function(blacklistname, outputfolder) { # nolint
     return(blacklistgr)
 }
 
+## For different strings provided in the vector "valvec", perform the filtering
+## of gentab on each string using the result of the previous filtering
 grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
     invisible(sapply(valvec, function(val) {
         idx <- grep(val, gentab$V9, invert = invert)
         if (verbose)
             message(val, " - ", length(idx), " gentab - ", nrow(gentab))
         if (!isTRUE(all.equal(length(idx), 0)))
-            gentab <<- gentab[idx, ]
+            gentab <<- gentab[idx, ] ## This line enables sequential grep
     }))
     return(gentab)
 }
