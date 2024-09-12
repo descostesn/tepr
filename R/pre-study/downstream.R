@@ -894,6 +894,42 @@ FALSE  TRUE
 
 Attenuated   Outgroup
        513       5374
+
+####### With completedf
+
+mean_value_control_full <- "meanvaluefull_ctrl"
+mean_value_stress <- "meanvaluefull_HS"
+AUC_ctrl <- "auc_ctrl"
+AUC_stress <- "auc_HS"
+p_value_KStest <- "adjFDR_pvaldeltadaucks_mean_Fx_HS"
+p_value_theoritical<- "adjFDR_pvalaucks_ctrl"
+
+completetstdf <- completedf %>%
+  mutate(Universe = ifelse(windsize > 50 & countna < 20 &
+    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
+  relocate(Universe, .before = 1)
+
+completetstdf <- completetstdf %>% mutate(
+    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
+    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
+  ) %>% relocate(Group, .before = 2)
+
+> print(table(completetstdf$Universe))
+FALSE  TRUE
+13777  1299
+> print(table(completetstdf$Group))
+Attenuated   Outgroup
+       108       1014
+
+## check unigroupdf
+> print(table(unigroupdf$universe))
+FALSE  TRUE
+13095  1981
+> print(table(unigroupdf$group))
+Attenuated   Outgroup
+      1096        885
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 message("Filtering results")
 start_time <- Sys.time()
