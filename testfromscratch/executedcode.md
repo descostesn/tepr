@@ -576,17 +576,60 @@ joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr"
 
  rm(list_of_dfs)
  rm(joined_df)
- ```
+```
 
- The code above was copied to the file `joinprotcod.R` and executed with R-4.4.1:
+The code above was copied to the file `joinprotcod.R` and executed with R-4.4.1:
 
- ```
- Rscript joinprotcod.R
- ```
+```
+Rscript joinprotcod.R
+```
 
- The following files were obtained:
+The following file was obtained:
 
- ```
- > wc -l bedgraph255/protCoding_dTAG_Cugusi_stranded_20230810.tsv
+```
+> wc -l bedgraph255/protCoding_dTAG_Cugusi_stranded_20230810.tsv
+3722600 bedgraph255/protCoding_dTAG_Cugusi_stranded_20230810.tsv
+```
 
- ```
+Executing the following R code to combine the files for lncRNA:
+
+```
+library(dplyr)
+library(purrr)
+
+### DO NOT FORGET TO CHANGE THE BEDGRAPH EXTENSION TO TH ONE IN USE IN THE FOLDER
+window <- 200
+main_directory <- "bedgraph255"
+working_directory <- paste0(main_directory,"/lncRNA_score")
+write_file_lncRNA <- paste0(main_directory,"/lncRNA_dTAG_Cugusi_stranded_20230810.tsv")
+
+bedgraph_files <- list.files(main_directory, pattern = "*.bg", full.names = TRUE)
+
+files <- bedgraph_files %>%
+  map(~{
+    filename <- tools::file_path_sans_ext(basename(.))
+    file.path(working_directory, paste0(filename, ".window", window, ".MANE.wmean.name.score"))
+  })
+# reading all the files
+list_of_dfs <- lapply(files, read.delim, header= F, sep= "\t",  na.strings = "NAN", dec = ".", col.names = c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id","dataset","score"), stringsAsFactors=FALSE)
+# joining all the files
+joined_df <- purrr::reduce(list_of_dfs, dplyr::left_join, by = c("biotype","chr","coor1","coor2","transcript","gene","strand","window","id")) %>% 
+   dplyr::filter(strand!="Y") ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
+
+write.table(joined_df, file = write_file_lncRNA, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
+rm(list_of_dfs)
+rm(joined_df)
+```
+
+The code above was copied to the file `joinlncrna.R` and executed with R-4.4.1:
+
+```
+Rscript joinlncrna.R
+```
+
+The following file was obtained:
+
+```
+> wc -l bedgraph255/lncRNA_dTAG_Cugusi_stranded_20230810.tsv
+```
+
