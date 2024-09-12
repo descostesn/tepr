@@ -411,22 +411,136 @@ zsh lncRNA.zsh
 The command gave the output:
 
 ```
+starting file :
+ctrl_rep1.forward
+removing blacklist region
+***** WARNING: File bedgraph255/ctrl_rep1.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       80      1.0061
 
-```
+***** WARNING: File bedgraph255/ctrl_rep1.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       80      1.0061
 
-The command gave the output:
+removing low mappability region
+scoring windows
+done
+starting file :
+ctrl_rep1.reverse
+removing blacklist region
+***** WARNING: File bedgraph255/ctrl_rep1.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       580     0
 
-```
+***** WARNING: File bedgraph255/ctrl_rep1.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       580     0
 
+removing low mappability region
+scoring windows
+done
+starting file :
+ctrl_rep2.forward
+removing blacklist region
+***** WARNING: File bedgraph255/ctrl_rep2.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       470     0
+
+***** WARNING: File bedgraph255/ctrl_rep2.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       470     0
+
+removing low mappability region
+scoring windows
+done
+starting file :
+ctrl_rep2.reverse
+removing blacklist region
+***** WARNING: File bedgraph255/ctrl_rep2.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       610     0
+
+***** WARNING: File bedgraph255/ctrl_rep2.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       610     0
+
+removing low mappability region
+scoring windows
+done
+starting file :
+HS_rep1.forward
+removing blacklist region
+***** WARNING: File bedgraph255/HS_rep1.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       760     0
+
+***** WARNING: File bedgraph255/HS_rep1.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       760     0
+
+removing low mappability region
+scoring windows
+done
+starting file :
+HS_rep1.reverse
+removing blacklist region
+***** WARNING: File bedgraph255/HS_rep1.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       2290    0
+
+***** WARNING: File bedgraph255/HS_rep1.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       2290    0
+
+removing low mappability region
+scoring windows
+done
+starting file :
+HS_rep2.forward
+removing blacklist region
+***** WARNING: File bedgraph255/HS_rep2.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       840     0
+
+***** WARNING: File bedgraph255/HS_rep2.forward.bg has inconsistent naming convention for record:
+GL000008.2      0       840     0
+
+removing low mappability region
+scoring windows
+done
+starting file :
+HS_rep2.reverse
+removing blacklist region
+***** WARNING: File bedgraph255/HS_rep2.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       40      0
+
+***** WARNING: File bedgraph255/HS_rep2.reverse.bg has inconsistent naming convention for record:
+GL000008.2      0       40      0
+
+removing low mappability region
+scoring windows
+done
 ```
 
 The files produced have the following numbers of lines:
 
 ```
 > wc -l bedgraph255/withzeros-lncRNA/*
+   426766 bedgraph255/withzeros-lncRNA/ctrl_rep1.forward.nonzeros.bg
+   431670 bedgraph255/withzeros-lncRNA/ctrl_rep1.reverse.nonzeros.bg
+   495350 bedgraph255/withzeros-lncRNA/ctrl_rep2.forward.nonzeros.bg
+   514695 bedgraph255/withzeros-lncRNA/ctrl_rep2.reverse.nonzeros.bg
+   353893 bedgraph255/withzeros-lncRNA/HS_rep1.forward.nonzeros.bg
+   358254 bedgraph255/withzeros-lncRNA/HS_rep1.reverse.nonzeros.bg
+   483067 bedgraph255/withzeros-lncRNA/HS_rep2.forward.nonzeros.bg
+   497714 bedgraph255/withzeros-lncRNA/HS_rep2.reverse.nonzeros.bg
 
 > wc -l bedgraph255/mapHigh-lncRNA/*
+  3716631 bedgraph255/mapHigh-lncRNA/ctrl_rep1.forward.0.8.bg
+  3421650 bedgraph255/mapHigh-lncRNA/ctrl_rep1.reverse.0.8.bg
+  3777258 bedgraph255/mapHigh-lncRNA/ctrl_rep2.forward.0.8.bg
+  3494694 bedgraph255/mapHigh-lncRNA/ctrl_rep2.reverse.0.8.bg
+  3649638 bedgraph255/mapHigh-lncRNA/HS_rep1.forward.0.8.bg
+  3355952 bedgraph255/mapHigh-lncRNA/HS_rep1.reverse.0.8.bg
+  3763918 bedgraph255/mapHigh-lncRNA/HS_rep2.forward.0.8.bg
+  3477181 bedgraph255/mapHigh-lncRNA/HS_rep2.reverse.0.8.bg
 
 > wc -l bedgraph255/lncRNA_score/*
-
+   2772000 bedgraph255/lncRNA_score/ctrl_rep1.forward.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/ctrl_rep1.reverse.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/ctrl_rep2.forward.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/ctrl_rep2.reverse.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/HS_rep1.forward.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/HS_rep1.reverse.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/HS_rep2.forward.window200.MANE.wmean.name.score
+   2772000 bedgraph255/lncRNA_score/HS_rep2.reverse.window200.MANE.wmean.name.score
 ```
+
+
