@@ -861,7 +861,40 @@ if (!testonerep) {
   saveRDS(completedf, "/g/romebioinfo/tmp/downstream/completedf-onerep.rds")
 }
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+unigroupdf <- readRDS("/g/romebioinfo/tmp/downstream/unigroupdf.rds")
+completedf <- readRDS("/g/romebioinfo/tmp/downstream/completedf.rds")
+tst_df <- readRDS("/g/romebioinfo/tmp/explore/tst_df-1.rds")
 
+
+####### With tst_df
+mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
+
+tstdf <- tst_df %>%
+  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 &
+    !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+    !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%
+  relocate(Universe, .before = 1)
+
+tstdf <- tstdf %>% mutate(
+    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest)) >1.5, "Attenuated", NA), # nolint
+    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group) # nolint
+  ) %>% relocate(Group, .before = 2)
+
+> print(table(tstdf$Universe))
+
+FALSE  TRUE
+ 8373  6612
+> print(table(tstdf$Group))
+
+Attenuated   Outgroup
+       513       5374
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 message("Filtering results")
 start_time <- Sys.time()
 unigroupdf <- universegroup(completedf, expdf, filterdf)
