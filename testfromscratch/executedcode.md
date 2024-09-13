@@ -2913,6 +2913,36 @@ The code is executed with:
 Rscript plotsfig2.R
 ```
 
+The output is:
+
+```
+loading the summary table and applying threshold for attenuated vs non attenuated
+Saving list of attenuated and outgroup transcripts for downstream analysis
+scatter plot
+metagenes
+Warning message:
+Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.
+Histograms
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Warning messages:
+1: Removed 2256 rows containing non-finite outside the scale range (`stat_density2d()`).
+2: The following aesthetics were dropped during statistical transformation: colour.
+ℹ This can happen when ggplot fails to infer the correct grouping structure in the data.
+ℹ Did you forget to specify a `group` aesthetic or to convert a numerical variable into a factor?
+3: Removed 2256 rows containing missing values or values outside the scale range (`geom_point()`).
+Saving 7 x 7 in image
+Warning messages:
+1: Removed 2175 rows containing missing values or values outside the scale range (`geom_point()`).
+2: Removed 19 rows containing missing values or values outside the scale range (`geom_point()`).
+3: Removed 19 rows containing missing values or values outside the scale range (`geom_point()`).
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Saving 7 x 7 in image
+Done
+```
 
 !!!!!!!!!!!!!!!!!
 write.table(tst_df, 
