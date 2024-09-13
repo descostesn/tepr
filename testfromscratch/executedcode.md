@@ -1418,3 +1418,128 @@ The script should give:
 [1] "ctrl vs HS"
 ```
 
+Computing the differences of means:
+
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+Diff_mean_fun<-function(concat_df, dontcompare=NULL){
+  if(is.null(dontcompare)) {
+  dontcompare <- c() } 
+  # return(dontcompare)
+  
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+replicate_numbers <- res$replicate_numbers
+
+
+for (i in 1:length(Conditions)) {
+  for (j in (1+i):length(Conditions)) {
+    if (j>length(Conditions)){ break}
+    cond1 <- Conditions[i]
+    cond2 <- Conditions[j]
+    
+    ## making sure to not do useless comparison for the user,
+    compare <- paste0(cond1," vs ", cond2)
+    if (! compare %in% dontcompare){
+    
+   # print(paste0(cond1,"_",cond2))
+   # print(paste0(cond2,"_",cond1))
+   # print(cond1,cond2)
+    mean_value_condi_name1 <- paste0("mean_value_", cond1)
+    mean_value_condi_name2 <- paste0("mean_value_", cond2)
+    
+    mean_Fx_condi_name1 <- paste0("mean_Fx_", cond1)
+    mean_Fx_condi_name2 <- paste0("mean_Fx_", cond2)
+    
+    Diff_meanValue_name1 <- paste0("Diff_meanValue_",cond1,"_",cond2) 
+    Diff_meanValue_name2 <- paste0("Diff_meanValue_",cond2,"_",cond1) 
+    
+    Diff_meanFx_name1 <- paste0("Diff_meanFx_",cond1,"_",cond2)
+    Diff_meanFx_name2 <- paste0("Diff_meanFx_",cond2,"_",cond1) 
+    #comparison_result <- my_list[[element1]] - my_list[[element2]]
+    
+    concat_df[[Diff_meanValue_name1]] <- concat_df[[mean_value_condi_name1]] - concat_df[[mean_value_condi_name2]]
+    concat_df[[Diff_meanValue_name2]] <- concat_df[[mean_value_condi_name2]] - concat_df[[mean_value_condi_name1]]
+    
+    concat_df[[Diff_meanFx_name1]] <- concat_df[[mean_Fx_condi_name1]] - concat_df[[mean_Fx_condi_name2]]
+    concat_df[[Diff_meanFx_name2]] <- concat_df[[mean_Fx_condi_name2]] - concat_df[[mean_Fx_condi_name1]]
+   }
+  }
+}
+
+return(concat_df=concat_df)
+}
+
+concat_dfFX_res <- readRDS("concat_dfFX_res.rds")
+concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
+saveRDS(concat_Diff_mean_res, file = "concat_Diff_mean_res.rds")
+print(concat_Diff_mean_res)
+```
+
+The code was copied to `concat_Diff_mean_res.R` and run:
+
+```
+Rscript concat_Diff_mean_res.R
+```
+
+The script should output:
+
+```
+
+```
