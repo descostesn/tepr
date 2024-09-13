@@ -2236,3 +2236,156 @@ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
 6  ENST00000002125.9            45       0.04963404          96     0.05176256
 ```
 
+Code for the attenuation function:
+
+```
+library(dplyr)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+Attenuation_fun<- function(AUC_KS_Knee_NA_DF, concat_df, pval,Replaced){
+  res<-getting_var_names(extension, working_directory)
+  Conditions <- res$Conditions
+
+  Complete_summary <-  left_join(concat_df, AUC_KS_Knee_NA_DF, by = c("gene","transcript","strand"))
+  
+  for (cond in Conditions) {
+    mean_value_condi_name <- paste0("mean_value_", cond)
+    print(mean_value_condi_name)
+    knee_column_name <- paste0("knee_AUC_", cond)
+    
+    Attenuation_cond <- paste0("Attenuation_", cond)
+    
+    UPmean_cond <- paste0("UP_mean_", cond)
+    DOWNmean_cond <- paste0("DOWN_mean_", cond)
+    
+    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- NA
+    
+    
+    result <- Complete_summary %>%
+    group_by(transcript) %>%
+    arrange(coord) %>%
+    dplyr::reframe(transcript=transcript[1],
+                     !!sym(UPmean_cond) := 
+                       mean((!!sym(mean_value_condi_name))[coord <= !!sym(knee_column_name)]),
+                     !!sym(DOWNmean_cond) := 
+                       mean((!!sym(mean_value_condi_name))[coord >= !!sym(knee_column_name) & coord <= max(coord)])) %>%
+      select(transcript,!!sym(UPmean_cond),!!sym(DOWNmean_cond), !!sym(DOWNmean_cond)) %>%
+   distinct()
+    
+    AUC_KS_Knee_NA_DF <- left_join(AUC_KS_Knee_NA_DF,result, by=c("transcript"))
+    AUC_KS_Knee_NA_DF[[Attenuation_cond]] <- 100- AUC_KS_Knee_NA_DF[[DOWNmean_cond]]/AUC_KS_Knee_NA_DF[[UPmean_cond]]*100
+  }
+  
+
+if (exists("Replaced") && !is.na(Replaced)) {
+  if (Replaced != "NOT") {
+  for (cond in Conditions) {
+  p_AUC_cond <- paste0("p_AUC_", cond)
+  print(p_AUC_cond)
+  AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+    mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, Replaced, .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an inout value is KS test > at threshold
+  AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+    mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold
+  }
+  }
+} else {
+    for (cond in Conditions) {
+      p_AUC_cond <- paste0("p_AUC_", cond)
+      print(p_AUC_cond)
+      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+        mutate(!!paste0("Attenuation_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("Attenuation_", cond)]])) ## replacing the Attenuation by an input value if KS test > at threshold
+      AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+        mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[p_AUC_cond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA if KS test > at threshold
+    }
+}
+
+
+  return(AUC_KS_Knee_NA_DF)
+}
+
+AUC_allcondi_res <- readRDS("AUC_allcondi_res.rds")
+dAUC_allcondi_res <- readRDS("dAUC_allcondi_res.rds")
+KneeID_res <- readRDS("KneeID_res.rds")
+count_NA_res <- readRDS("count_NA_res.rds")
+
+AUC_KS_Knee_NA.df <- left_join(AUC_allcondi_res, dAUC_allcondi_res, by=c("transcript", "gene", "strand","window_size"))  %>% 
+  left_join(.,KneeID_res, by=c("transcript"))  %>% 
+  left_join(.,count_NA_res, by=c("gene", "transcript", "strand"))
+
+concat_Diff_mean_res <- readRDS("concat_Diff_mean_res.rds")
+
+AUC_KS_Knee_NA.df <- concat_Diff_mean_res %>% group_by(transcript) %>% summarise( chr=chr[1], coor1=min(coor1), coor2=max(coor2), strand=strand[1], gene=gene[1], transcript=transcript[1], size=coor2-coor1+1) %>% left_join(AUC_KS_Knee_NA.df, by=c("gene", "transcript", "strand") )
+
+message("Before calling the function the result should be:")
+print(head(AUC_KS_Knee_NA.df))
+
+saveRDS(AUC_KS_Knee_NA.df, file = "AUC_KS_Knee_NA.df.rds")
+tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA
+saveRDS(tst_df, file = "tst_df.rds")
+
+message("The result of the attenuation function should be:")
+print(head(tst_df))
+```
+
+Execute the code with:
+
+```
+Rscript Attenuation_fun.R
+```
+
+The output should be:
+
+```
+
+```
