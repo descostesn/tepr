@@ -2684,6 +2684,10 @@ The figure for MARCHF6 is:
 The code below generate several plots for figure 2:
 
 ```
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
 ## Loading
 tst_df <- readRDS("tst_df.rds")
 working_directory <- "bedgraph255"
@@ -2740,6 +2744,7 @@ concat_dfFX_res <- readRDS("concat_dfFX_res.rds")
 ## SCATTER PLOT ##
 ##################
 
+message("scatter plot")
 ## Fig 2C. AUC in HS vs AUC in control with pValue
 AUC_HS_vs_control_pvalue <- ggplot(tst_df %>% arrange(-log10(!!sym(p_value_KStest))), aes( AUC_ctrl, AUC_HS, color= -log10(!!sym(p_value_KStest)))) +
   geom_point(size=0.5) +
@@ -2774,6 +2779,7 @@ AUC_HS_vs_control_groups <- ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl
 ## METAGENES ##
 ###############
 
+message("metagenes")
 #This work also for single genes
 Attenuation_list<- tst_df %>% filter(Group=="Attenuated") %>% pull(transcript)
 Outgroup_list<- tst_df %>% filter(Group=="Outgroup") %>% pull(transcript)
@@ -2850,13 +2856,14 @@ All_metagene <-   ggplot() +
 
 ## see Fig2_D_plotECDF_function.R for the function 
 #pattern_colors  "#10AFBB" "#FC4E07"
-MARCHF6_plot <- plot_gene_ECDF("MARCHF6", concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2)
-EGFR_plot <- plot_gene_ECDF("EGFR", concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2)
+#MARCHF6_plot <- plot_gene_ECDF("MARCHF6", concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2)
+#EGFR_plot <- plot_gene_ECDF("EGFR", concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2)
 
 ################
 ## HISTOGRAMS ##
 ################
 
+message("Histograms")
 histo_per <- ggplot(tst_df %>% filter(Universe==TRUE & Group=="Attenuated"), aes(x=knee_AUC_HS/2)) +
   geom_histogram(binwidth=5, fill = "grey", color = "black", boundary=0)+
   xlim(0,100) + xlab("Distance TSS to knee (% of the gene)") +
@@ -2874,7 +2881,7 @@ histo_kb <- ggplot(tst_df %>% filter(Universe==TRUE & Group=="Attenuated"), aes(
 ## SAVING FILES ##
 ##################
 
-PATH_ggsave <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/R_script/plots_paper_function/Plot_V2_20240807/Figure_2/" 
+PATH_ggsave <- "./" 
 
 # 2B Universe_metagene
 # 2C AUC_HS_vs_control_pvalue
@@ -2886,17 +2893,23 @@ PATH_ggsave <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/R_script/pl
 # 2I histo_per
 # 2J histo_kb
 
-ggsave(paste0(PATH_ggsave,"Fig2_","Universe_metagene",".pdf"), plot = Universe_metagene, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","AUC_HS_vs_control_pvalue",".pdf"), plot = AUC_HS_vs_control_pvalue, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","MARCHF6_plot",".pdf"), plot = MARCHF6_plot, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","EGFR_plot",".pdf"), plot = EGFR_plot, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","AUC_HS_vs_control_groups",".pdf"), plot = AUC_HS_vs_control_groups, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","Attenuated_metagene",".pdf"), plot = Attenuated_metagene, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","Outgroup_metagene",".pdf"), plot = Outgroup_metagene, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","histo_per",".pdf"), plot = histo_per, width = 8, height = 6, dpi=300)
-ggsave(paste0(PATH_ggsave,"Fig2_","histo_kb",".pdf"), plot = histo_kb, width = 8, height = 6, dpi=300)
+ggsave(paste0(PATH_ggsave,"Fig2_","Universe_metagene",".png"), plot = Universe_metagene)
+ggsave(paste0(PATH_ggsave,"Fig2_","AUC_HS_vs_control_pvalue",".png"), plot = AUC_HS_vs_control_pvalue)
+#ggsave(paste0(PATH_ggsave,"Fig2_","MARCHF6_plot",".pdf"), plot = MARCHF6_plot, width = 8, height = 6, dpi=300)
+#ggsave(paste0(PATH_ggsave,"Fig2_","EGFR_plot",".pdf"), plot = EGFR_plot, width = 8, height = 6, dpi=300)
+ggsave(paste0(PATH_ggsave,"Fig2_","AUC_HS_vs_control_groups",".png"), plot = AUC_HS_vs_control_groups)
+ggsave(paste0(PATH_ggsave,"Fig2_","Attenuated_metagene",".png"), plot = Attenuated_metagene)
+ggsave(paste0(PATH_ggsave,"Fig2_","Outgroup_metagene",".png"), plot = Outgroup_metagene)
+ggsave(paste0(PATH_ggsave,"Fig2_","histo_per",".png"), plot = histo_per)
+ggsave(paste0(PATH_ggsave,"Fig2_","histo_kb",".png"), plot = histo_kb)
 
+message("Done")
+```
 
+The code is executed with:
+
+```
+Rscript plotsfig2.R
 ```
 
 
