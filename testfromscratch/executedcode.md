@@ -1154,3 +1154,131 @@ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
 5       0.0000000000                  0                0                0
 6       0.0004959702                  0                0                0
 ```
+
+The code below calculates mean values:
+
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+calculates_meanFx <- function(concat_df,window_number){
+
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+replicate_numbers <- res$replicate_numbers
+
+
+column_vector_value <- character()
+column_vector_Fx <- character()
+
+
+for (cond in Conditions) {
+  mean_value_condi_name <- paste0("mean_value_", cond)
+  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
+  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  
+  for (rep_num in replicate_numbers) {
+    new_column_value <- paste0("value_", cond, "_rep", rep_num, "_score") # Generate a new item
+    new_column_Fx <- paste0("Fx_", cond, "_rep", rep_num, "_score") # Generate a new item
+    column_vector_value <- c(column_vector_value, new_column_value)
+    column_vector_Fx <- c(column_vector_Fx, new_column_Fx)
+  }
+  # Calculate row means for the specified columns
+  # Check if there is more than one replicate
+  if (length(replicate_numbers) > 1) {
+    concat_df[[mean_value_condi_name]] <- rowMeans(concat_df[, column_vector_value], na.rm = F)
+    concat_df[[mean_Fx_condi_name]] <- rowMeans(concat_df[, column_vector_Fx], na.rm = FALSE)
+  } else {
+    # Handle case when column_vector_value is empty
+    new_column_value <- paste0("value_", cond, "_rep", "1", "_score") # Generate a new item
+    new_column_Fx <- paste0("Fx_", cond, "_rep", "1", "_score") # Generate a new item
+    
+    concat_df[[mean_value_condi_name]] <- concat_df[[new_column_value]]
+    concat_df[[mean_Fx_condi_name]] <- concat_df[[new_column_Fx]]
+  }
+  
+  concat_df[[diff_Fx_condi_name]] <- concat_df[[mean_Fx_condi_name]] - concat_df$coord/window_number ## Difference with the y=x ECDF, used to calculate AUC
+  
+  column_vector_value <- character() ## obligatory to reset the columns values to empty
+  column_vector_Fx <- character()
+}
+
+return(concat_dfFx=concat_df)
+}
+
+PATH <- "./"
+rounding <- 10
+window_n <- 200
+PaperYear <- "cugusi2023"
+resultsECDF_path <- paste0(PATH,PaperYear,"_ECDFScores_",rounding,"_",window_n,".tsv")
+resultsECDF <- read.delim(resultsECDF_path, header = TRUE)
+concat_dfFX_res <- calculates_meanFx(resultsECDF, 200)
+saveRDS(concat_dfFX_res, file = "concat_dfFX_res.rds")
+print(head(concat_dfFX_res))
+```
+
+The code was copied to `concat_dfFX_res.R` and run with:
+
+```
+Rscript concat_dfFX_res.R
+```
+
+The script should output:
+
+```
+
+```
