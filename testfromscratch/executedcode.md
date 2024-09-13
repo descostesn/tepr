@@ -1605,6 +1605,7 @@ Computing the delta AUC:
 library(tidyr)
 library(purrr)
 library(dplyr)
+library(pracma)
 
 working_directory <- "bedgraph255" 
 extension <- "*.bg"
@@ -1752,3 +1753,6 @@ The script `dAUC_allcondi_res.R` with this code was executed:
 Rscript dAUC_allcondi_res.R
 ```
 
+The output should be:
+
+```
