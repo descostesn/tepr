@@ -1599,3 +1599,156 @@ The script should output:
 6       -0.0002479851
 ```
 
+Computing the delta AUC:
+
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+modify_p_values <- function(col) {
+  col <- ifelse(col == 0.000000e+00, 10^(-16), col)
+  return(col)
+}
+
+dAUC_allcondi_fun <- function(concat_df,window_number, dontcompare){
+  if(is.null(dontcompare)) {
+  dontcompare <- c() } 
+
+dAUC_allcondi <- concat_df  %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct()
+
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+
+
+for (i in 1:length(Conditions)) {
+ for (j in (1+i):length(Conditions)) {
+   if (j>length(Conditions)){ break}
+    cond1 <- Conditions[i]
+    cond2 <- Conditions[j]
+    
+        ## making sure to not do useless comparison for the user,
+    compare <- paste0(cond1," vs ", cond2)
+    if (! compare %in% dontcompare){
+    
+    mean_Fx_condi_name1 <- paste0("mean_Fx_", cond1) #e,g Control
+    mean_Fx_condi_name2 <- paste0("mean_Fx_", cond2) #e.g HS
+
+    Diff_meanFx_name1 <- paste0("Diff_meanFx_",cond1,"_",cond2)
+    Diff_meanFx_name2 <- paste0("Diff_meanFx_",cond2,"_",cond1) 
+    
+      df_name <- paste0("gene_summary_AUC_", Diff_meanFx_name1)
+      assign(df_name,data.frame()) 
+  
+  # Get the data frame using the dynamically generated name
+  dAUC_summary_condi_df <- data.frame()
+  dAUC_summary_condi_df <- get(df_name)
+    
+  
+  dAUC <- paste0("dAUC_",Diff_meanFx_name2)
+  p_dAUC <- paste0("p_dAUC_",Diff_meanFx_name2)
+  D_dAUC <- paste0("D_dAUC_",Diff_meanFx_name2)
+  
+  dAUC_summary_condi_df  <- concat_df %>%
+     group_by(transcript) %>%
+     arrange(coord) %>%
+     reframe(gene=gene[1],
+            strand=strand, transcript=transcript, 
+            !!dAUC := trapz(coord,!!sym(Diff_meanFx_name2)),# delta AUC
+            !!p_dAUC := ks.test(!!sym(mean_Fx_condi_name1),!!sym(mean_Fx_condi_name2))$p.value,
+            !!D_dAUC := ks.test(!!sym(mean_Fx_condi_name1),!!sym(mean_Fx_condi_name2))$statistic,
+  ) %>%
+  dplyr::distinct()
+
+      assign(df_name, dAUC_summary_condi_df)
+  
+  dAUC_allcondi <- left_join(dAUC_allcondi, dAUC_summary_condi_df, by = c("transcript", "gene","strand"))
+  
+}
+  }
+}
+
+  dAUC_allcondi <- dAUC_allcondi %>%
+  mutate(across(contains("p_dAUC"), ~ modify_p_values(.))) 
+
+# Get the column names containing "p_dAUC"
+p_dAUC_columns <- grep("p_dAUC", colnames(dAUC_allcondi), value = TRUE)
+
+# Loop through each column, calculate adjusted p-values, and create new columns
+for (col_name in p_dAUC_columns) {
+  print(col_name)
+  adjusted_col_name <- paste0("adjFDR_", col_name)
+  dAUC_allcondi[[adjusted_col_name]] <- p.adjust(dAUC_allcondi[[col_name]], method = "fdr")
+}
+
+
+return(dAUC_allcondi)
+}
+
+dontcompare_dtag <- c("CPSF3depleted_ctrl vs CPSF3wt_HS", "CPSF3depleted_HS vs CPSF3wt_ctrl") 
+concat_Diff_mean_res <- readRDS("concat_Diff_mean_res.rds")
+
+dAUC_allcondi_res<-dAUC_allcondi_fun(concat_Diff_mean_res,200, dontcompare_dtag)
+saveRDS(dAUC_allcondi_res, file = "dAUC_allcondi_res.rds")
+print(dAUC_allcondi_res)
+```
+
+The script `dAUC_allcondi_res.R` with this code was executed:
+
+```
+Rscript dAUC_allcondi_res.R
+```
+
