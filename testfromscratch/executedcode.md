@@ -2390,5 +2390,41 @@ Rscript Attenuation_fun.R
 The output should be:
 
 ```
-
+Before calling the function the result should be:
+# A tibble: 6 × 27
+  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.3
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46   -1.13
+3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56    5.49
+4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52   -0.389
+5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93   -3.06
+6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87    3.78
+# ℹ 18 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <int>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <int>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>
+[1] "mean_value_ctrl"
+[1] "mean_value_HS"
+The result of the attenuation function should be:
+# A tibble: 6 × 33
+  transcript         chr    coor1  coor2 strand gene   size window_size AUC_ctrl
+  <chr>              <chr>  <int>  <int> <chr>  <chr> <dbl>       <int>    <dbl>
+1 ENST00000000233.10 chr7  1.28e8 1.28e8 +      ARF5   3290          16  -16.3
+2 ENST00000000412.8  chr12 8.94e6 8.95e6 -      M6PR   9285          46   -1.13
+3 ENST00000000442.11 chr11 6.43e7 6.43e7 +      ESRRA 11220          56    5.49
+4 ENST00000001008.6  chr12 2.79e6 2.81e6 +      FKBP4 10454          52   -0.389
+5 ENST00000001146.7  chr2  7.21e7 7.21e7 -      CYP2… 18625          93   -3.06
+6 ENST00000002125.9  chr2  3.72e7 3.72e7 +      NDUF… 17503          87    3.78
+# ℹ 24 more variables: p_AUC_ctrl <dbl>, D_AUC_ctrl <dbl>,
+#   MeanValueFull_ctrl <dbl>, AUC_HS <dbl>, p_AUC_HS <dbl>, D_AUC_HS <dbl>,
+#   MeanValueFull_HS <dbl>, adjFDR_p_AUC_ctrl <dbl>, adjFDR_p_AUC_HS <dbl>,
+#   dAUC_Diff_meanFx_HS_ctrl <dbl>, p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   D_dAUC_Diff_meanFx_HS_ctrl <dbl>, adjFDR_p_dAUC_Diff_meanFx_HS_ctrl <dbl>,
+#   knee_AUC_ctrl <int>, max_diff_Fx_ctrl <dbl>, knee_AUC_HS <int>,
+#   max_diff_Fx_HS <dbl>, Count_NA <int>, Attenuation_ctrl <dbl>, …
 ```
+
