@@ -2213,3 +2213,26 @@ Execute:
 ```
 Rscript KneeID_res.R
 ```
+
+The output should be:
+
+```
+Warning message:
+Using an external vector in selections was deprecated in tidyselect 1.1.0.
+ℹ Please use `all_of()` or `any_of()` instead.
+  # Was:
+  data %>% select(diff_Fx_condi_name)
+
+  # Now:
+  data %>% select(all_of(diff_Fx_condi_name))
+
+See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+          transcript knee_AUC_ctrl max_diff_Fx_ctrl knee_AUC_HS max_diff_Fx_HS
+1 ENST00000000233.10           200       0.00000000         115     0.01315520
+2  ENST00000000412.8            29       0.02065747          29     0.02118756
+3 ENST00000000442.11           149       0.08630770         100     0.12800346
+4  ENST00000001008.6           173       0.05832662         172     0.06735177
+5  ENST00000001146.7           182       0.05344648         123     0.02478108
+6  ENST00000002125.9            45       0.04963404          96     0.05176256
+```
+
