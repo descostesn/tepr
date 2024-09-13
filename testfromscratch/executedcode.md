@@ -2239,7 +2239,10 @@ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
 Code for the attenuation function:
 
 ```
+library(tidyr)
+library(purrr)
 library(dplyr)
+library(pracma)
 
 working_directory <- "bedgraph255" 
 extension <- "*.bg"
