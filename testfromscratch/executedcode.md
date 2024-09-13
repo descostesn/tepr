@@ -2962,11 +2962,13 @@ The number of lines for the files produced is:
 
 Below are the figures produced:
 
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
-<img src="pictures/" alt="" width="400"/>
+<img src="pictures/Fig2_Attenuated_metagene.png" alt="Fig2_Attenuated_metagene" width="400"/>
+<img src="pictures/Fig2_AUC_HS_vs_control_groups.png" alt="Fig2_AUC_HS_vs_control_groups" width="400"/>
+<img src="pictures/Fig2_histo_kb.png" alt="Fig2_histo_kb" width="400"/>
+<img src="pictures/Fig2_histo_per.png" alt="Fig2_histo_per" width="400"/>
+<img src="pictures/Fig2_Outgroup_metagene.png" alt="Fig2_Outgroup_metagene" width="400"/>
+<img src="pictures/Fig2_Universe_metagene.png" alt="Fig2_Universe_metagene" width="400"/>
+
+This one is different from the article:
+
+<img src="pictures/Fig2_AUC_HS_vs_control_pvalue.png" alt="Fig2_AUC_HS_vs_control_pvalue" width="400"/>
