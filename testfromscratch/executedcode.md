@@ -1529,7 +1529,7 @@ return(concat_df=concat_df)
 concat_dfFX_res <- readRDS("concat_dfFX_res.rds")
 concat_Diff_mean_res <- Diff_mean_fun(concat_dfFX_res)
 saveRDS(concat_Diff_mean_res, file = "concat_Diff_mean_res.rds")
-print(concat_Diff_mean_res)
+print(head(concat_Diff_mean_res))
 ```
 
 The code was copied to `concat_Diff_mean_res.R` and run:
@@ -1541,5 +1541,61 @@ Rscript concat_Diff_mean_res.R
 The script should output:
 
 ```
-
+         biotype  chr     coor1     coor2         transcript gene strand window
+1 protein-coding chr7 127588411 127588427 ENST00000000233.10 ARF5      +      1
+2 protein-coding chr7 127588427 127588443 ENST00000000233.10 ARF5      +      2
+3 protein-coding chr7 127588443 127588459 ENST00000000233.10 ARF5      +      3
+4 protein-coding chr7 127588459 127588475 ENST00000000233.10 ARF5      +      4
+5 protein-coding chr7 127588475 127588491 ENST00000000233.10 ARF5      +      5
+6 protein-coding chr7 127588491 127588507 ENST00000000233.10 ARF5      +      6
+                           id         ctrl_rep1         ctrl_rep2
+1 ENST00000000233.10_ARF5_+_1 ctrl_rep1.forward ctrl_rep2.forward
+2 ENST00000000233.10_ARF5_+_2 ctrl_rep1.forward ctrl_rep2.forward
+3 ENST00000000233.10_ARF5_+_3 ctrl_rep1.forward ctrl_rep2.forward
+4 ENST00000000233.10_ARF5_+_4 ctrl_rep1.forward ctrl_rep2.forward
+5 ENST00000000233.10_ARF5_+_5 ctrl_rep1.forward ctrl_rep2.forward
+6 ENST00000000233.10_ARF5_+_6 ctrl_rep1.forward ctrl_rep2.forward
+          HS_rep1         HS_rep2 coord value_ctrl_rep1_score
+1 HS_rep1.forward HS_rep2.forward     1              0.000000
+2 HS_rep1.forward HS_rep2.forward     2              0.000000
+3 HS_rep1.forward HS_rep2.forward     3              0.000000
+4 HS_rep1.forward HS_rep2.forward     4              0.000000
+5 HS_rep1.forward HS_rep2.forward     5              0.000000
+6 HS_rep1.forward HS_rep2.forward     6              0.440169
+  value_ctrl_rep2_score value_HS_rep1_score value_HS_rep2_score
+1                     0                   0                   0
+2                     0                   0                   0
+3                     0                   0                   0
+4                     0                   0                   0
+5                     0                   0                   0
+6                     0                   0                   0
+  Fx_ctrl_rep1_score Fx_ctrl_rep2_score Fx_HS_rep1_score Fx_HS_rep2_score
+1       0.0000000000                  0                0                0
+2       0.0000000000                  0                0                0
+3       0.0000000000                  0                0                0
+4       0.0000000000                  0                0                0
+5       0.0000000000                  0                0                0
+6       0.0004959702                  0                0                0
+  mean_value_ctrl mean_Fx_ctrl diff_Fx_ctrl mean_value_HS mean_Fx_HS diff_Fx_HS
+1       0.0000000 0.0000000000  -0.00500000             0          0     -0.005
+2       0.0000000 0.0000000000  -0.01000000             0          0     -0.010
+3       0.0000000 0.0000000000  -0.01500000             0          0     -0.015
+4       0.0000000 0.0000000000  -0.02000000             0          0     -0.020
+5       0.0000000 0.0000000000  -0.02500000             0          0     -0.025
+6       0.2200845 0.0002479851  -0.02975201             0          0     -0.030
+  Diff_meanValue_ctrl_HS Diff_meanValue_HS_ctrl Diff_meanFx_ctrl_HS
+1              0.0000000              0.0000000        0.0000000000
+2              0.0000000              0.0000000        0.0000000000
+3              0.0000000              0.0000000        0.0000000000
+4              0.0000000              0.0000000        0.0000000000
+5              0.0000000              0.0000000        0.0000000000
+6              0.2200845             -0.2200845        0.0002479851
+  Diff_meanFx_HS_ctrl
+1        0.0000000000
+2        0.0000000000
+3        0.0000000000
+4        0.0000000000
+5        0.0000000000
+6       -0.0002479851
 ```
+
