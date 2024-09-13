@@ -830,6 +830,77 @@ The script should output:
 
 ```
 
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning messages:
+1: Using `across()` in `filter()` was deprecated in dplyr 1.0.8.
+ℹ Please use `if_any()` or `if_all()` instead.
+2: Using `across()` in `filter()` was deprecated in dplyr 1.0.8.
+ℹ Please use `if_any()` or `if_all()` instead.
+3: Using `across()` in `filter()` was deprecated in dplyr 1.0.8.
+ℹ Please use `if_any()` or `if_all()` instead.
+4: Using `across()` in `filter()` was deprecated in dplyr 1.0.8.
+ℹ Please use `if_any()` or `if_all()` instead.
+The results obtained have the following features:
+[1] "list"   "vector"
+[1] 2
+[1] "data.frame" "list"       "oldClass"   "vector"
+[1] "character"           "vector"              "data.frameRowLabels"
+[4] "SuperClassMethod"
+[1] 6493200      25
+[1] 15002
+  biotype  chr  coor1  coor2        transcript   gene strand window
+1  lncRNA chr1 817371 817383 ENST00000326734.2 FAM87B      +      1
+2  lncRNA chr1 817383 817395 ENST00000326734.2 FAM87B      +      2
+3  lncRNA chr1 817395 817407 ENST00000326734.2 FAM87B      +      3
+4  lncRNA chr1 817407 817419 ENST00000326734.2 FAM87B      +      4
+5  lncRNA chr1 817419 817431 ENST00000326734.2 FAM87B      +      5
+6  lncRNA chr1 817431 817443 ENST00000326734.2 FAM87B      +      6
+                            id    ctrl_rep1.plus ctrl_rep1.plus_score
+1 ENST00000326734.2_FAM87B_+_1 ctrl_rep1.forward                    0
+2 ENST00000326734.2_FAM87B_+_2 ctrl_rep1.forward                   NA
+3 ENST00000326734.2_FAM87B_+_3 ctrl_rep1.forward                   NA
+4 ENST00000326734.2_FAM87B_+_4 ctrl_rep1.forward                   NA
+5 ENST00000326734.2_FAM87B_+_5 ctrl_rep1.forward                   NA
+6 ENST00000326734.2_FAM87B_+_6 ctrl_rep1.forward                   NA
+    ctrl_rep1.minus ctrl_rep1.minus_score    ctrl_rep2.plus
+1 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+2 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+3 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+4 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+5 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+6 ctrl_rep1.reverse                    NA ctrl_rep2.forward
+  ctrl_rep2.plus_score   ctrl_rep2.minus ctrl_rep2.minus_score    HS_rep1.plus
+1                    0 ctrl_rep2.reverse                    NA HS_rep1.forward
+2                   NA ctrl_rep2.reverse                    NA HS_rep1.forward
+3                   NA ctrl_rep2.reverse                    NA HS_rep1.forward
+4                   NA ctrl_rep2.reverse                    NA HS_rep1.forward
+5                   NA ctrl_rep2.reverse                    NA HS_rep1.forward
+6                   NA ctrl_rep2.reverse                    NA HS_rep1.forward
+  HS_rep1.plus_score   HS_rep1.minus HS_rep1.minus_score    HS_rep2.plus
+1                  0 HS_rep1.reverse                  NA HS_rep2.forward
+2                 NA HS_rep1.reverse                  NA HS_rep2.forward
+3                 NA HS_rep1.reverse                  NA HS_rep2.forward
+4                 NA HS_rep1.reverse                  NA HS_rep2.forward
+5                 NA HS_rep1.reverse                  NA HS_rep2.forward
+6                 NA HS_rep1.reverse                  NA HS_rep2.forward
+  HS_rep2.plus_score   HS_rep2.minus HS_rep2.minus_score
+1                  0 HS_rep2.reverse                  NA
+2                 NA HS_rep2.reverse                  NA
+3                 NA HS_rep2.reverse                  NA
+4                 NA HS_rep2.reverse                  NA
+5                 NA HS_rep2.reverse                  NA
+6                 NA HS_rep2.reverse                  NA
+[1] "ENST00000000233.10" "ENST00000000412.8"  "ENST00000000442.11"
+[4] "ENST00000001008.6"  "ENST00000001146.7"  "ENST00000002125.9"
 ```
 
 The following code computes ECDF on the main table:
