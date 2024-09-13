@@ -2685,11 +2685,11 @@ The code below generate several plots for figure 2:
 
 ```
 ## Loading
-tst_df <- read.delim("/g/romebioinfo/Projects/tepr/downloads/Cugusi2022_AttenuationScores_10_200.tsv", header=T, sep="\t")
-working_directory <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Cugusi2022/RAW_TTseq/deduplicated/MAPQ255/stranded/bedgraph255"
+tst_df <- readRDS("tst_df.rds")
+working_directory <- "bedgraph255"
 extension <- "*.bg"
 
-PATH <- "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Cugusi2022/RAW_TTseq/"
+PATH <- "./"
 rounding <- 10
 window_n <- 200
 PaperYear <- "Cugusi2022"
@@ -2702,6 +2702,7 @@ p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 p_value_theoritical<- "adjFDR_p_AUC_ctrl" 
 
 # loading the summary table and applying threshold for attenuated vs non attenuated
+message("loading the summary table and applying threshold for attenuated vs non attenuated")
 tst_df <- tst_df %>%
   mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 & !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
                              !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%  relocate(Universe, .before = 1) 
@@ -2712,26 +2713,26 @@ tst_df <- tst_df %>%
   ) %>%  relocate(Group, .before = 2)
 
 ## Saving list of attenuated and outgroup transcripts for downstream analysis
+message("Saving list of attenuated and outgroup transcripts for downstream analysis")
 write.table(tst_df, 
-            file = "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/LOLA_analysis/Cugusi_analysis/20240818/All_transcripts.tsv",
+            file = "All_transcripts.tsv",
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
 write.table(tst_df %>% filter(Group=="Attenuated"), 
-            file = "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/LOLA_analysis/Cugusi_analysis/20240818/Attenuation_HS_table.tsv",
+            file = "Attenuation_HS_table.tsv",
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
 write.table(tst_df %>% filter(Group=="Outgroup"), 
-            file = "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/LOLA_analysis/Cugusi_analysis/20240818/Outgroup_table.tsv",
+            file = "Outgroup_table.tsv",
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
 write.table(tst_df %>% filter(Universe==T), 
-            file = "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/LOLA_analysis/Cugusi_analysis/20240818/Universe_table.tsv",
+            file = "Universe_table.tsv",
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
-
 write.table(tst_df %>% filter(Universe==T) %>%  mutate(score_bed=".") %>% select(c(chr, coor1, coor2, transcript, score_bed, strand )), 
-            file = "/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/LOLA_analysis/Cugusi_analysis/20240818/Universe_transcripts.nosorted.bed",
+            file = "Universe_transcripts.nosorted.bed",
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = F)
 
 # For metagenes
 #concat_dfFX_res created from results_ECDF with calculates_meanFx function
-concat_dfFX_res <- read.delim("/Volumes/cristo-nas-shared/Personal_documents/Victor/DATA/Cugusi2022/RAW_TTseq/Big_intermediary_file/concat_dfFX_res_Cugusi2rep.tsv", header=T, sep="\t")
+concat_dfFX_res <- readRDS("concat_dfFX_res.rds")
 
 
 
@@ -2767,6 +2768,7 @@ AUC_HS_vs_control_groups <- ggplot(tst_df %>% filter(Universe==F), aes( AUC_ctrl
   coord_fixed(ratio = 1) +   # Set aspect ratio to 1:1
   theme_classic() +
   theme(legend.position = "none" )
+
 
 ###############
 ## METAGENES ##
@@ -2896,3 +2898,19 @@ ggsave(paste0(PATH_ggsave,"Fig2_","histo_kb",".pdf"), plot = histo_kb, width = 8
 
 
 ```
+
+
+!!!!!!!!!!!!!!!!!
+write.table(tst_df, 
+            file = "All_transcripts.tsv",
+            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
+write.table(tst_df %>% filter(Group=="Attenuated"), 
+            file = "Attenuation_HS_table.tsv",
+            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
+write.table(tst_df %>% filter(Group=="Outgroup"), 
+            file = "Outgroup_table.tsv",
+            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
+write.table(tst_df %>% filter(Universe==T), 
+            file = "Universe_table.tsv",
+            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
+Universe_transcripts.nosorted.bed
