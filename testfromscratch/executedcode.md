@@ -660,7 +660,7 @@ rm(list_of_dfs)
 rm(bound_df)
 ```
 
-The code was copoied to `jointsvs.R` and executed with the command:
+The code was copied to `jointsvs.R` and executed with the command:
 
 ```
 Rscript jointsvs.R
@@ -671,4 +671,157 @@ The following file was obtained:
 ```
 > wc -l bedgraph255/dTAG_Cugusi_stranded_20230810.tsv
     6493200 bedgraph255/dTAG_Cugusi_stranded_20230810.tsv
+```
+
+
+Note that in the provided script, the input table has a different name: `Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.tsv`. It was replaced by the one obtained above `dTAG_Cugusi_stranded_20230810.tsv` in the variable `name_table`. The following code reads and filters this file based on a minimal expression threshold:
+
+```
+#setting columns names
+#files names have to be : condition_rep#.strand, a condition can contain several sub condition (cond1a_cond1b)
+
+working_directory <- "bedgraph255" 
+## in the working directory the files are: 
+# ctrl_rep1.forward.bg  ctrl_rep2.forward.bg  HS_rep1.forward.bg  HS_rep2.forward.bg
+# ctrl_rep1.reverse.bg  ctrl_rep2.reverse.bg  HS_rep1.reverse.bg  HS_rep2.reverse.bg
+# Cugusi_protein-lncRNA_stranded_analysis_MAPQ255_20230705.tsv 
+
+extension <- "*.bg"
+name_table <- "dTAG_Cugusi_stranded_20230810.tsv"
+rounding <- 10
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+main_table_read <- function(name_table, extension, working_directory, expression_threshold){
+
+df_final <- data.frame()
+df_final_gene <- data.frame()
+concat_df <- data.frame()
+gene_name_list <- character()
+expressed_gene_name_list <- character()
+
+#file
+#Load data without header
+res <- getting_var_names(extension, working_directory)
+col_names <- res$col_names
+var_names <- res$var_names
+
+main_table <- data.frame()
+
+main_table <- read.delim(paste0(working_directory,"/",name_table),
+                      header = FALSE, # set header = FALSE to avoid overwriting it
+                      sep="\t",
+                      col.names = col_names )
+
+
+for (gene in unique(main_table$gene)){
+  gene_name_list <- c(gene_name_list, gene)
+}
+sorted_list <- sort(gene_name_list, decreasing = F)
+#print(length(sorted_list))
+#####
+
+# Get the column names with the suffix "score"
+score_columns <- grep("score$", col_names, value = TRUE)
+
+# Initialize an empty list to store the mean column names
+mean_column_names <- list()
+expressed_gene_name <- data.frame()
+expressed_plus <- data.frame()
+
+expressed_transcript_name <- main_table %>%
+  group_by(transcript) %>%
+  dplyr::summarize(gene=gene[1],strand=strand[1],
+                   across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean")
+  )
+
+
+expressed_plus <- expressed_transcript_name %>%
+  filter(strand=="+") %>% 
+  select(gene, transcript, strand, contains("plus"))  %>%
+  filter(across(all_of(contains("score")), ~ !is.na(.) ) ) %>%
+  filter(across(all_of(contains("score")), ~ . >expression_threshold ) )
+
+expressed_minus <- expressed_transcript_name %>%
+  filter(strand=="-") %>% 
+  select(gene,transcript, strand, contains("minus")) %>%
+  filter(across(all_of(contains("score")), ~ !is.na(.) ) ) %>%
+  filter(across(all_of(contains("score")), ~ . >expression_threshold ) )
+
+expressed_transcript_name_list <- bind_rows(expressed_plus, expressed_minus) %>% arrange(transcript) %>% pull(transcript)
+#print(length(expressed_transcript_name_list)) ## this will set the loading bar
+
+return(list(main_table=main_table,expressed_transcript_name_list=expressed_transcript_name_list))
+
+}
+
+library(tidyr)
+library(purrr)
+library(dplyr)
+
+results_main_table <- main_table_read(name_table, extension, working_directory, 0.1)
+saveRDS(results_main_table, file = "/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds")
+
+message("The results obtained have the following features:")
+print(is(results_main_table))
+print(length(results_main_table))
+print(is(results_main_table[[1]]))
+print(is(results_main_table[[2]]))
+print(dim(results_main_table[[1]]))
+print(length(results_main_table[[2]]))
+print(head(results_main_table[[1]]))
+print(head(results_main_table[[2]]))
+```
+
+The code above was copied to `results_main_table.R` and run with:
+
+```
+Rscript results_main_table.R
 ```
