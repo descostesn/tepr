@@ -177,10 +177,11 @@ gene_name <- "EGFR"  # Example gene
  my_plot <- 
   plot_gene_ECDF(gene_name, concat_dfFX_res, tst_df, extension, working_directory, pattern_colors, 2) ##last parameter is rounding
 
-#file_path <- paste("/Users/victor/Documents/PhD/4th yer/PhD_day_2024/", gene_name, ".pdf", sep = "")
-#ggsave(file_path, plot = my_plot, width = 10.5, height = 6, units = "cm", bg='transparent')
+file_path <- paste("./", gene_name, ".png", sep = "")
+ggsave(file_path, plot = my_plot, width = 10.5, height = 6, units = "cm", bg='transparent')
 
 
 #("#00AFBB","#10AFBB","#FF9A04", "#FD1E00", "#000E00")
 pattern_colors <- c("#90AFBB","#FF9A04","#10AFBB", "#FC4E07")
 pattern_colors <- c("#10AFBB", "#FC4E07")
+
