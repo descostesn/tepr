@@ -1,3 +1,23 @@
+The initial files are:
+
+```
+#### The format is: victorefile (nicofiles) - note
+
+* gencode.v43.basic.annotation.gtf (gencode.v43.basic.annotation.gtf) - downloaded from gencode website  
+* hg38-blacklist.v2.sorted.bed (hg38-blacklist.v2.bed) - downloaded from https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz  
+* k50.umap.hg38.0.8.bed (k50.umap.hg38.0.8.bed) - sent by victor
+
+* ctrl_rep1.forward.bg (ctrl_rep1.forward.bg) - sent by victor
+* ctrl_rep1.reverse.bg (ctrl_rep1.reverse.bg) - sent by victor
+* ctrl_rep2.forward.bg (ctrl_rep2.forward.bg) - sent by victor
+* ctrl_rep2.reverse.bg (ctrl_rep2.reverse.bg) - sent by victor
+* HS_rep1.forward.bg (HS_rep1.forward.bg) - sent by victor
+* HS_rep1.reverse.bg (HS_rep1.reverse.bg) - sent by victor
+* HS_rep2.forward.bg (HS_rep2.forward.bg) - sent by victor
+* HS_rep2.reverse.bg (HS_rep2.reverse.bg) - sent by victor
+```
+
+
 The first piece of code was executed from `testfromscratch/` in which the annotation file `gencode.v43.basic.annotation.gtf` was copied. The folder hence contains only one file at this point. Retrieving the code from `BashAndR\pre-study\documentation\TSV_creation_lite_20240617.html`, and replacing `*gtf` by `gencode.v43.basic.annotation.gtf` (otherwise it generates an infinite loop), the first piece of code executed is:
 
 ```
