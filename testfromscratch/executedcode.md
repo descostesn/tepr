@@ -2687,6 +2687,7 @@ The code below generate several plots for figure 2:
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(ggrepel)
 
 ## Loading
 tst_df <- readRDS("tst_df.rds")
