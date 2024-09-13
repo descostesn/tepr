@@ -2672,10 +2672,13 @@ The output should be:
 ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 ```
 
-The figure is:
+The figure for EGFR is:
 
 <img src="pictures/EGFR.png" alt="egfr" width="400"/>
 
+The figure for MARCHF6 is:
+
+<img src="pictures/MARCHF6.png" alt="marchf6" width="400"/>
 
 
 The code below generate several plots for figure 2:
