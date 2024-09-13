@@ -909,5 +909,128 @@ The following code computes ECDF on the main table:
 results_main_table <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds")
 main_table <- results_main_table$main_table # %>% filter(gene=="DAP")
 
+genesECDF <- function(main_table, rounding, expressed_transcript_name_list, extension, working_directory){
+gc()
+  
+res <- getting_var_names(extension, working_directory)
+col_names <- res$col_names
+var_names <- res$var_names  
+  
+total_iterations <- length(expressed_transcript_name_list)
+#setting the progress bar
+pb <- txtProgressBar(min = 0, max = total_iterations, style =5)
+
+j=0
+concat_df <- data.frame()
+## Looping through all the transcripts
+for (variable in expressed_transcript_name_list){
+  gene_table <- data.frame()
+  bigDF <- data.frame()  
+  
+  transcript_table <- data.frame()
+  transcript <- filter(main_table, main_table$transcript==variable) 
+  transcript[transcript == "NAN"] <- NA
+  bigDF <- transcript
+  my_length <- length(bigDF[,'window'])
+  
+  
+  var_names_score <- paste0(var_names,"_score")
+  
+  if (transcript$strand[1]=="-") {
+    bigDF <- bigDF %>%
+      select(!matches("plus"))
+    bigDF$coord <- seq(from=my_length, to=1,by=-1)
+    bigDF <- arrange(bigDF, coord)
+    conditions <- var_names_score[grepl("minus",var_names_score)]
+  } else {
+    bigDF <- bigDF %>%
+      select(!matches("minus"))
+    bigDF$coord <- seq(from=1, to=my_length,by=1)
+    conditions <- var_names_score[grepl("plus",var_names_score)]
+  }
+  
+  bigDF <- bigDF %>% fill(contains("score"), .direction = "downup")
+  
+  df_long <- bigDF %>% 
+    gather(key = "variable", value = "value", conditions)
+  df_long[,'value'] <- as.numeric(df_long[,'value'])
+  df_long[,'value_round']<- round(df_long$value*rounding)
+  
+  j=j+1
+#  Update the progress bar
+  setTxtProgressBar(pb, j)
+  
+  list_df <- list()
+  i <- 1
+  for (my_var in unique(df_long$variable)){
+    
+    df_subset <- subset(df_long, subset = variable == my_var) 
+    df_expanded <- df_subset[rep(seq_len(nrow(df_subset)), df_subset$value_round), ]
+    ecdf_df <- ecdf(df_expanded[,"coord"])
+    df_subset$Fx <- ecdf_df(df_subset$coord) 
+    list_df[[i]] <- df_subset
+    i <- i + 1
+  }
+  
+  df_final <- bind_rows(list_df)
+  transcript_table <- df_final  %>% pivot_wider(., names_from = "variable", values_from = c("value", "value_round", "Fx")) %>% select(., -contains("value_round")) 
+  
+  # getting rid of plus and minus
+  if (transcript_table$strand[1]=="-") {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+    dataset_without_dropped <- transcript_table %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".minus", "", .), contains(".minus"))
+    
+  } else {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+    dataset_without_dropped <- transcript_table %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".plus", "", .), contains(".plus"))
+    
+  }
+  concat_df <- bind_rows(concat_df, modified_dataset)
+  
+}
+
+# # Close the progress bar
+ close(pb)  
+# list_gene_table <- concat_df %>% select(gene) %>% distinct()
+gc()
+
+return(concat_df=concat_df)
+}
+
+resultsECDF <- genesECDF(main_table, rounding, expressed_transcript_name_list, extension, working_directory)
+
+PATH <- "./"
+rounding <- 10
+window_n <- 200
+PaperYear <- "cugusi2023"
+
+resultsECDF_path <- paste0(PATH,PaperYear,"_ECDFScores_",rounding,"_",window_n,".tsv")
+write.table(resultsECDF, file = resultsECDF_path, sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
+
+print(is(resultsECDF))
+print(head(resultsECDF))
+```
+
+The code above was copied to `ecdf.R` and run with:
+
+```
+Rscript ecdf.R
+```
+
+The script should output:
+
+```
 
 ```
