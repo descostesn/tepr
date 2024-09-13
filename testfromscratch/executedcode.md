@@ -2104,5 +2104,112 @@ The script outputs:
 6 CFTR    ENST00000003084.11 +             3
 ```
 
+Identification of knee:
 
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(pracma)
 
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+KneeID_fun <- function(concat_df){
+gene_summary_allcondi <- concat_df %>% select("transcript") %>% distinct()
+
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+
+for (cond in Conditions) {
+  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  df_name <- paste0("gene_summary_AUC_", cond)
+  assign(df_name,data.frame()) 
+  
+  # Get the data frame using the dynamically generated name
+  gene_summary_condi_df <- data.frame()
+  gene_summary_condi_df <- get(df_name)
+  
+  # Perform operations on the data frame
+  # For example, add columns or rows to the data frame
+  max_column_name <- paste0("max_", diff_Fx_condi_name)
+  knee_column_name <- paste0("knee_AUC_", cond)
+  
+  
+  gene_summary_condi_df <- concat_df %>%
+    dplyr::group_by(transcript)  %>%
+    dplyr::filter(!!sym(diff_Fx_condi_name) == max(!!sym(diff_Fx_condi_name)))  %>% # !!sym() inside the filter() to convert the variable name to a symbol and then access the column using the !! operator.
+    slice_min(coord, n = 1)  %>% #if equality of difference within the same gene it takes the closest knee from the TSS
+    select(transcript, coord, diff_Fx_condi_name)  %>%
+    dplyr::rename(!!max_column_name := !!sym(diff_Fx_condi_name)) %>%
+    dplyr::rename(!!knee_column_name := coord) ## the knee position is defined as the max difference between the ecdf and y=x curve
+  
+  # Assign the modified data frame back to the dynamically generated name
+  assign(df_name, gene_summary_condi_df)
+  
+  gene_summary_allcondi <- left_join(gene_summary_allcondi, gene_summary_condi_df, by = "transcript")
+  
+}
+return(gene_summary_allcondi)
+}
+
+concat_Diff_mean_res <- readRDS("concat_Diff_mean_res.rds")
+KneeID_res <- KneeID_fun(concat_Diff_mean_res)
+saveRDS(KneeID_res, file = "KneeID_res.rds")
+print(head(KneeID_res))
+```
+
+Execute:
+
+```
+Rscript KneeID_res.R
+```
