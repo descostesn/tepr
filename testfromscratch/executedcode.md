@@ -825,3 +825,18 @@ The code above was copied to `results_main_table.R` and run with:
 ```
 Rscript results_main_table.R
 ```
+
+The script should output:
+
+```
+
+```
+
+The following code computes ECDF on the main table:
+
+```
+results_main_table <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds")
+main_table <- results_main_table$main_table # %>% filter(gene=="DAP")
+
+
+```
