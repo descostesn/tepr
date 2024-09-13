@@ -1788,4 +1788,151 @@ Caused by warning in `ks.test.default()`:
 6                         1.0000000
 ```
 
+Here is the code for AUC calculation and MeanValueFull:
+
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(pracma)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+modify_p_values <- function(col) {
+  col <- ifelse(col == 0.000000e+00, 10^(-16), col)
+  return(col)
+}
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+
+AUC_allcondi_fun <- function(concat_df,window_number){
+
+  # Load a library using require()
+  if (!require(pracma)) {
+    install.packages("pracma")
+    library(pracma)
+  }    
+  
+  
+AUC_allcondi <- concat_df %>% filter(window==round(window_number/2))  %>% mutate(window_size = abs(coor2-coor1), .keep = "all") %>% select("transcript", "gene", "strand", "window_size") %>% distinct()
+res <- getting_var_names(extension, working_directory)
+Conditions <- res$Conditions
+
+
+
+n <- window_number
+cumulative_density <- seq(1, n) / n
+
+for (cond in Conditions) {
+  #already present columns
+  diff_Fx_condi_name <- paste0("diff_Fx_", cond)
+  mean_value_condi_name <- paste0("mean_value_", cond)
+  mean_Fx_condi_name <- paste0("mean_Fx_", cond)
+
+  df_name <- paste0("gene_summary_AUC_", cond)
+  assign(df_name,data.frame()) 
+  
+  # Get the data frame using the dynamically generated name
+  AUC_summary_condi_df <- data.frame()
+  AUC_summary_condi_df <- get(df_name)
+  
+  #new column
+  AUC <- paste0("AUC_", cond)
+  p_AUC <- paste0("p_AUC_", cond)
+  D_AUC <- paste0("D_AUC_", cond)
+  MeanValueFull_condi_name <- paste0("MeanValueFull_", cond) #mean value over the full gene body
+  
+  AUC_summary_condi_df <- concat_df %>%
+    group_by(transcript) %>%
+    arrange(coord) %>% 
+    reframe(gene=gene[1], 
+              !!AUC := trapz(coord,!!sym(diff_Fx_condi_name)) ,
+              !!p_AUC := ks.test(!!sym(mean_Fx_condi_name),cumulative_density)$p.value,
+              !!D_AUC := ks.test(!!sym(mean_Fx_condi_name),cumulative_density)$statistic,
+              strand=strand,
+              transcript=transcript, 
+              !!(MeanValueFull_condi_name) :=mean(!!sym(mean_value_condi_name))) %>% 
+    dplyr::distinct()
+  
+  assign(df_name, AUC_summary_condi_df)
+  
+  AUC_allcondi <- left_join(AUC_allcondi, AUC_summary_condi_df, by = c("transcript", "gene","strand"))
+}
+
+  AUC_allcondi <- AUC_allcondi %>%
+  mutate(across(contains("p_AUC"), ~ modify_p_values(.))) 
+
+# Get the column names containing "p_dAUC"
+p_AUC_columns <- grep("p_AUC", colnames(AUC_allcondi), value = TRUE)
+
+# Loop through each column, calculate adjusted p-values, and create new columns
+for (col_name in p_AUC_columns) {
+  print(col_name)
+  adjusted_col_name <- paste0("adjFDR_", col_name)
+  AUC_allcondi[[adjusted_col_name]] <- p.adjust(AUC_allcondi[[col_name]], method = "fdr")
+}
+
+return(AUC_allcondi)
+}
+
+concat_Diff_mean_res <- readRDS("concat_Diff_mean_res.rds")
+AUC_allcondi_res <- AUC_allcondi_fun(concat_Diff_mean_res,200)
+saveRDS(AUC_allcondi_res, file = "AUC_allcondi_res.rds")
+print(head(AUC_allcondi_res))
+```
+
+The code was executed with:
+
+```
+Rscript AUC_allcondi_res.R
+```
 
