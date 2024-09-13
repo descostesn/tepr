@@ -1936,3 +1936,46 @@ The code was executed with:
 Rscript AUC_allcondi_res.R
 ```
 
+The output should be:
+
+```
+[1] "p_AUC_ctrl"
+[1] "p_AUC_HS"
+Warning messages:
+1: There were 30004 warnings in `reframe()`.
+The first warning was:
+ℹ In argument: `p_AUC_ctrl = ks.test(mean_Fx_ctrl, cumulative_density)$p.value`.
+ℹ In group 1: `transcript = "ENST00000000233.10"`.
+Caused by warning in `ks.test.default()`:
+! p-value will be approximate in the presence of ties
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 30003 remaining warnings.
+2: There were 30004 warnings in `reframe()`.
+The first warning was:
+ℹ In argument: `p_AUC_HS = ks.test(mean_Fx_HS, cumulative_density)$p.value`.
+ℹ In group 1: `transcript = "ENST00000000233.10"`.
+Caused by warning in `ks.test.default()`:
+! p-value will be approximate in the presence of ties
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 30003 remaining warnings.
+          transcript    gene strand window_size    AUC_ctrl p_AUC_ctrl
+1 ENST00000000233.10    ARF5      +          16 -16.3074988 0.01195204
+2  ENST00000000412.8    M6PR      -          46  -1.1345227 0.99719233
+3 ENST00000000442.11   ESRRA      +          56   5.4897297 0.39273381
+4  ENST00000001008.6   FKBP4      +          52  -0.3890706 0.14195987
+5  ENST00000001146.7 CYP26B1      -          93  -3.0554547 0.01637739
+6  ENST00000002125.9 NDUFAF7      +          87   3.7823643 0.96394524
+  D_AUC_ctrl MeanValueFull_ctrl    AUC_HS   p_AUC_HS D_AUC_HS MeanValueFull_HS
+1      0.160           4.969072 -9.007623 0.32749746    0.095        4.6122881
+2      0.040           9.323340 -1.892277 0.96394524    0.050        9.9787520
+3      0.090           4.092283 10.849169 0.06809222    0.130        3.1439703
+4      0.115           7.654320  2.730475 0.32749746    0.095       22.4015586
+5      0.155           0.170454 -9.178374 0.02984147    0.145        0.1724797
+6      0.050           3.735020  4.441746 0.92281679    0.055        4.1387797
+  adjFDR_p_AUC_ctrl adjFDR_p_AUC_HS
+1        0.04026601      0.44434448
+2        1.00000000      1.00000000
+3        0.67013110      0.12273453
+4        0.31480886      0.44434448
+5        0.05272396      0.06141882
+6        1.00000000      0.97948900
+```
+
