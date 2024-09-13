@@ -1744,7 +1744,7 @@ concat_Diff_mean_res <- readRDS("concat_Diff_mean_res.rds")
 
 dAUC_allcondi_res<-dAUC_allcondi_fun(concat_Diff_mean_res,200, dontcompare_dtag)
 saveRDS(dAUC_allcondi_res, file = "dAUC_allcondi_res.rds")
-print(dAUC_allcondi_res)
+print(head(dAUC_allcondi_res))
 ```
 
 The script `dAUC_allcondi_res.R` with this code was executed:
@@ -1756,3 +1756,36 @@ Rscript dAUC_allcondi_res.R
 The output should be:
 
 ```
+[1] "p_dAUC_Diff_meanFx_HS_ctrl"
+Warning message:
+There were 30004 warnings in `reframe()`.
+The first warning was:
+ℹ In argument: `p_dAUC_Diff_meanFx_HS_ctrl = ks.test(mean_Fx_ctrl, mean_Fx_HS)$p.value`.
+ℹ In group 1: `transcript = "ENST00000000233.10"`.
+Caused by warning in `ks.test.default()`:
+! p-value will be approximate in the presence of ties
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 30003 remaining warnings.
+          transcript    gene strand window_size dAUC_Diff_meanFx_HS_ctrl
+1 ENST00000000233.10    ARF5      +          16                7.2998757
+2  ENST00000000412.8    M6PR      -          46               -0.7577543
+3 ENST00000000442.11   ESRRA      +          56                5.3594396
+4  ENST00000001008.6   FKBP4      +          52                3.1195453
+5  ENST00000001146.7 CYP26B1      -          93               -6.1229193
+6  ENST00000002125.9 NDUFAF7      +          87                0.6593815
+  p_dAUC_Diff_meanFx_HS_ctrl D_dAUC_Diff_meanFx_HS_ctrl
+1                  0.2202056                      0.105
+2                  1.0000000                      0.025
+3                  0.8642828                      0.060
+4                  0.4653198                      0.085
+5                  0.2202056                      0.105
+6                  0.9999907                      0.030
+  adjFDR_p_dAUC_Diff_meanFx_HS_ctrl
+1                         0.4602931
+2                         1.0000000
+3                         1.0000000
+4                         0.7873594
+5                         0.4602931
+6                         1.0000000
+```
+
+
