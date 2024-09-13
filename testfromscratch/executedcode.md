@@ -1979,3 +1979,130 @@ Caused by warning in `ks.test.default()`:
 6        1.00000000      0.97948900
 ```
 
+Code to count NA:
+
+```
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(pracma)
+
+working_directory <- "bedgraph255" 
+extension <- "*.bg"
+
+modify_p_values <- function(col) {
+  col <- ifelse(col == 0.000000e+00, 10^(-16), col)
+  return(col)
+}
+
+getting_var_names <- function(extension, working_directory) {
+  
+# This function uses the extension and working directory to get the condition names, the number of replicates, and the variable names.
+# It needs the file names to be written in the form:
+# Condition_rep#.strand.extension such as :
+# HS_rep1.reverse.bg
+  
+  
+# In input: extension such as "*.bg" and the working directory
+  
+  
+  bedgraph_files <- list.files(working_directory, pattern = extension, full.names = TRUE)
+  files <- bedgraph_files %>%
+    map(~{
+      filename <- tools::file_path_sans_ext(basename(.))
+    })
+  
+  string <- files
+  var_names <- string
+  
+  for (i in seq_along(var_names)) {
+    if (grepl("(reverse|forward)", var_names[i])) {
+      var_names[i] <- gsub("reverse", "minus", var_names[i])
+      var_names[i] <- gsub("forward", "plus", var_names[i])
+    }
+  }
+  
+  # Extract conditions
+  Conditions <- unique(sub("(\\w+)_rep\\d+.*", "\\1", var_names)) ## verify it can work with several "_" 
+  
+  # Extract replication numbers
+  replicate_numbers <- unique(sub(".*_rep(\\d+).*", "\\1", var_names))
+  
+  ###########
+  # Setting fixed column names
+  fixed_names <- c("biotype","chr", "coor1", "coor2","transcript", "gene", "strand","window","id") #biotype is added in the .tsv file
+  
+  num_fixed_cols <- length(fixed_names)
+  # Number of variable columns based on input file
+  num_var_cols <- ncol(table) - num_fixed_cols
+  #Generate variable column names for category 2, alternating with category 1
+  test <- rep(var_names, each=2)
+  suffix <- rep(c("", "_score"), length(var_names))
+  test <- paste0(test, suffix)
+  col_names <- c(fixed_names, test)
+  
+  return(list(col_names=col_names,var_names=var_names, replicate_numbers=replicate_numbers, Conditions=Conditions)) 
+}
+
+countNA_fun <- function(main_table,extension,working_directory){
+res <- getting_var_names(extension, working_directory)
+col_names <- res$col_names
+score_columns <- grep("score$", col_names, value = TRUE)  
+
+##Adding NA count
+Count_NA <- main_table %>%
+  group_by(transcript) %>%
+  dplyr::reframe(gene=gene[1], strand = strand[1], 
+                   across(all_of(score_columns), ~ mean(., na.rm = TRUE), .names = "{.col}_mean"), #score_columns obtained in the first chunk creating densities 
+                   across(contains("score"), ~ sum(is.na(.)), .names = "{.col}_NA")) %>%
+  select(-contains("_mean_NA")) %>%
+  set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "score") && str_detect(.x, "_NA"), str_replace(.x, "_score", "_count"), .x)))
+
+NA_plus <- Count_NA %>%
+  filter(strand=="+") %>%   select(gene, transcript, strand, contains("plus")) %>%  select(gene, transcript, strand, contains("NA")) %>%
+  set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "plus") && str_detect(.x, "_NA"), str_replace(.x, ".plus_", "_strand_"), .x)))
+NA_minus <- Count_NA %>%
+  filter(strand=="-") %>%   select(gene, transcript,strand, contains("minus")) %>%  select(gene, transcript,strand, contains("NA")) %>%
+  set_names(map_chr(names(.), ~ ifelse(str_detect(.x, "minus") && str_detect(.x, "_NA"), str_replace(.x, ".minus_", "_strand_"), .x)))
+
+rm(Count_NA)
+
+NA_test <- bind_rows(NA_plus, NA_minus) %>% 
+  select(gene, transcript, strand, matches("_count_NA")) %>%
+  select(1:4)  %>%
+  dplyr::rename(Count_NA = matches("count_NA")) # I drop the other NA columns because it is the same value for all the conditions (NA depends on blacklist and unmmapable region)
+
+return(NA_test)
+}
+
+library(stringr)
+
+results_main_table <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds")
+main_table <- results_main_table$main_table # %>% filter(gene=="DAP")
+count_NA_res <- countNA_fun(main_table,extension,working_directory)
+saveRDS(count_NA_res, file = "count_NA_res.rds")
+print(head(count_NA_res))
+```
+
+Execute the code with:
+
+```
+Rscript count_NA_res.R
+```
+
+The script outputs:
+
+```
+# A tibble: 6 × 4
+  gene    transcript         strand Count_NA
+  <chr>   <chr>              <chr>     <int>
+1 ARF5    ENST00000000233.10 +            12
+2 ESRRA   ENST00000000442.11 +            18
+3 FKBP4   ENST00000001008.6  +             2
+4 NDUFAF7 ENST00000002125.9  +             4
+5 SEMA3F  ENST00000002829.8  +             0
+6 CFTR    ENST00000003084.11 +             3
+```
+
+
+
