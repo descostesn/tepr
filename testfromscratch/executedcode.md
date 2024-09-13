@@ -2944,17 +2944,29 @@ Saving 7 x 7 in image
 Done
 ```
 
-!!!!!!!!!!!!!!!!!
-write.table(tst_df, 
-            file = "All_transcripts.tsv",
-            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
-write.table(tst_df %>% filter(Group=="Attenuated"), 
-            file = "Attenuation_HS_table.tsv",
-            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
-write.table(tst_df %>% filter(Group=="Outgroup"), 
-            file = "Outgroup_table.tsv",
-            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
-write.table(tst_df %>% filter(Universe==T), 
-            file = "Universe_table.tsv",
-            sep = "\t", quote = FALSE, row.names = FALSE, col.names = T)
-Universe_transcripts.nosorted.bed
+The number of lines for the files produced is:
+
+```
+> wc -l All_transcripts.tsv
+15003 All_transcripts.tsv
+
+> wc -l Attenuation_HS_table.tsv
+422 Attenuation_HS_table.tsv
+
+> wc -l Outgroup_table.tsv
+5335 Outgroup_table.tsv
+
+> wc -l Universe_table.tsv
+6568 Universe_table.tsv
+```
+
+Below are the figures produced:
+
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
+<img src="pictures/" alt="" width="400"/>
