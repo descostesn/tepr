@@ -145,8 +145,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 colnames(resmap))]
             resmap <- resmap %>% dplyr::distinct(chrom, start, end,
                 start.anno, end.anno, .keep_all = TRUE)
-            
-            
+
+            ## Processing data per transcript
+            message("\t\t\t Building scoring results by transcript")
+            bgscorebytrans <- split(resmap, factor(resmap$transcript.anno))
+
             !!
             
             return(resmap)})
@@ -165,27 +168,52 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
+        bedgraphwmeanlist <- mapply(function(currentgr, currentstrand,
+            currentname, allwindowsgr, windsize, nbcputrans) {
 
+                message("Overlapping ", currentname, " with annotations on ",
+                    "strand ", currentstrand)
+                BiocGenerics::strand(currentgr) <- currentstrand
+                res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
+                    ignore.strand = FALSE)
 
-!!!!!!!!!!!!!!!!! CODE FOR KEEPING ON HIGH MAPPABILITY
-        resmaplist <- lapply(chromvec, function(currentchrom) {
+                message("\t Building scoring results by transcript")
+                ## Separating the bedgraph score indexes by transcript names
+                idxanno <- S4Vectors::subjectHits(res)
+                idxbgscorebytrans <- split(as.data.frame(res),
+                    factor(names(allwindowsgr)[idxanno]))
 
-            if (verbose) message("\t\t\t over ", currentchrom)
-            ## Keeping scores on high mappability track
-            if (verbose) message("\t Keeping scores on high mappability track")
-            resmap <-  tryCatch({
-                valr::bed_intersect(resblack,
-                maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
-                suffix = c("", "maphigh"))
-            }, error = function(e) {
-                message(e)
-                return(NA)
-            })
-            return(resmap)})
+                ## For each transcript, retrieve the information and the
+                ## bedgraph coordinates, strand and scores, applying a weighted
+                ## mean
+                message("\t Weighted mean on duplicated frames for each ",
+                    "transcript")
+                start_time <- Sys.time()
+                dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans,
+                    allwindowsgr, currentgr, currentstrand, currentname,
+                    windsize, nbcputrans)
+                end_time <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time - start_time)
 
+                if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)),
+                    windsize)))
+                    stop("Problem in replacing scores by weighted mean",
+                        " on the data")
 
+                message("\t Combining transcripts")
+                dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+                end_time2 <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time2 - start_time)
 
-!!!!!!!!!!!!!!!
+                return(dfwmeanbytrans)
+
+        }, bedgraphgrlist, exptab$strand, expnamevec,
+            MoreArgs = list(allwindowsgr, windsize, nbcputrans),
+            SIMPLIFY = FALSE)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 bedgraphwmeanreplace <- function(bedgraphgrlist, exptab, expnamevec,
     allwindowsgr, windsize, nbcputrans) {
@@ -237,3 +265,24 @@ bedgraphwmeanreplace <- function(bedgraphgrlist, exptab, expnamevec,
         return(bedgraphwmeanlist)
 }
 
+
+
+!!!!!!!!!!!!!!!!! CODE FOR KEEPING ON HIGH MAPPABILITY
+        resmaplist <- lapply(chromvec, function(currentchrom) {
+
+            if (verbose) message("\t\t\t over ", currentchrom)
+            ## Keeping scores on high mappability track
+            if (verbose) message("\t Keeping scores on high mappability track")
+            resmap <-  tryCatch({
+                valr::bed_intersect(resblack,
+                maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+                suffix = c("", "maphigh"))
+            }, error = function(e) {
+                message(e)
+                return(NA)
+            })
+            return(resmap)})
+
+
+
+!!!!!!!!!!!!!!!
