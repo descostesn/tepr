@@ -132,21 +132,23 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
 
         ## Keeping scores on high mappability track
         if (verbose) message("\t Keeping scores on high mappability track")
-        resmap <- valr::bed_intersect(resblack, maptracktib,
-            suffix = c("", "maphigh"))
-        res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
+        # resmap <- valr::bed_intersect(resblack, maptracktib,
+        #     suffix = c("", "maphigh"))
 
         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
         resmaplist <- parallel::mclapply(chromvec, function(currentchrom) {
             if (verbose) message("\t\t\t over ", currentchrom)
-            resmap <-  tryCatch( {
+            resmap <-  tryCatch({
                 valr::bed_intersect(resblack,
-                maptracktib  %>% dplyr::filter(chrom == currentchrom))
+                maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+                suffix = c("", "maphigh"))
             }, error = function(e) {
                 message(e)
                 return(NA)
             })
             return(resmap)}, mc.cores = nbcpuchrom)
+        resmap <- do.call("rbind", resmaplist)
+        res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
 !!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!
