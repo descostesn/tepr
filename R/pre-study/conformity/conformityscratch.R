@@ -18,7 +18,7 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blac
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
 nbcpubg <- 1
-
+nbcpuchrom <- 20
 
 
 ##################
@@ -46,6 +46,7 @@ bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
     }
     return(grres)
 }
+
 
 ##################
 # MAIN
@@ -86,8 +87,8 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
 
 
 
-retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
-    allwindowsbed, expnamevec, verbose = TRUE) {
+retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
+    nbcpuchrom, allwindowsbed, expnamevec, verbose = TRUE) {
 
     if (verbose) message("Converting annotations' windows to tibble")
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
@@ -106,8 +107,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
     # currentstrand <- exptab$strand[1]
-    bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
-        currentstrand, allwindtib, blacklisttib, maptracktib, verbose) {
+    bedgraphgrlist <- mapply(function(currentpath, currentname,
+        currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
+        verbose) {
 
         ## Dealing with bedgraph values
         if (verbose) message("\t Retrieving values for ", currentname)
@@ -128,7 +130,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
         ## Removing black list
         if (verbose) message("\t Keeping scores not on black list")
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
-        test <- resblack %>% dplyr::select(!dplyr::ends_with("anno"))
+        # test <- resblack %>% dplyr::select(!dplyr::ends_with("anno"))
 
         ## Keeping scores on high mappability track
         if (verbose) message("\t Keeping scores on high mappability track")
@@ -149,21 +151,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
             return(resmap)}, mc.cores = nbcpuchrom)
         resmap <- do.call("rbind", resmaplist)
         res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
-!!!!!!!!!!!!!!!!
-
-!!!!!!!!!!!!!!!!!
-
-
-
 
         return(res)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, verbose), mc.cores = nbcpubg,
-        SIMPLIFY = FALSE)
+        blacklisttib, maptracktib, nbcpuchrom, verbose), SIMPLIFY = FALSE)
 
     return(bedgraphgrlist)
 }
-
-
-
