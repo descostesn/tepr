@@ -127,11 +127,17 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         if (verbose) message("\t Keeping scores not on black list")
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
 
-        ## Keeping scores on high mappability track
-        if (verbose) message("\t Keeping scores on high mappability track")
+        ## Processing by chromosomes because of size limits, the mappability
+        ## track has too many rows
+        if (verbose) message("\t Processing by chromosomes")
         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-        resmaplist <- lapply(chromvec, function(currentchrom) {
-            if (verbose) message("\t\t\t over ", currentchrom)
+
+        !!resmaplist <- lapply(chromvec, function(currentchrom) {
+
+            if (verbose) message("\t\t over ", currentchrom)
+            ## Keeping scores on high mappability track
+            if (verbose) message("\t\t\t Keeping scores on high mappability",
+                " track")
             resmap <-  tryCatch({
                 valr::bed_intersect(resblack,
                 maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
@@ -158,6 +164,21 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
+!!!!!!!!!!!!!!!!! CODE FOR KEEPING ON HIGH MAPPABILITY
+        resmaplist <- lapply(chromvec, function(currentchrom) {
+
+            if (verbose) message("\t\t\t over ", currentchrom)
+            ## Keeping scores on high mappability track
+            if (verbose) message("\t Keeping scores on high mappability track")
+            resmap <-  tryCatch({
+                valr::bed_intersect(resblack,
+                maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+                suffix = c("", "maphigh"))
+            }, error = function(e) {
+                message(e)
+                return(NA)
+            })
+            return(resmap)})
 
 
 
