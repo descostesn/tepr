@@ -59,6 +59,7 @@ bgnic <- allbgnic[["ctrl_rep1.forward"]]
 ## Reading all windows bed
 allwindowsbed <- readRDS(allwindowspath)
 
+
 ## Selecting the lines corresponding to the gene ARF5
 bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
 bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
@@ -80,17 +81,29 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
 
 
 retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
-    expnamevec, verbose = TRUE) {
+    allwindowsbed, expnamevec, verbose = TRUE) {
 
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
+    currentstrand
     bedgraphgrlist <- mcmapply(function(currentpath, currentname, blacklistgr,
         maptrackgr, nbcpu, verbose) {
 
         if (verbose) message("\t Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
+        if (verbose) message("\t\t Converting to tibble")
+        valdf <- as.data.frame(valgr)
+        colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
+            "score")
+        valtib <- tibble::as_tibble(valdf)
 
+        if (verbose) message("Converting annotations' windows to tibble")
+        colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
+            "transcript", "gene", "strand", "window", "coord")
+        allwindtib <- tibble::as_tibble(allwindowsbed)
+        
+        valr::bed_intersect(valtib, allwindtib)
 !!!!!!!!!!!!!!!!
 
 
