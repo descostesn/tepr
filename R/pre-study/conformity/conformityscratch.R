@@ -1,5 +1,8 @@
 library("rtracklayer")
 library("GenomicRanges")
+library("tibble")
+library("valr")
+
 
 ##################
 # PARAMETERS
@@ -12,7 +15,7 @@ allwindowspath <- "/g/romebioinfo/tmp/preprocessing/allwindowsbed.rds"
 
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
-maptrackpath <- "/g/romebioinfo/tmp/preprocessing/maptrackgr.gr"
+maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
 nbcpubg <- 1
 
@@ -69,9 +72,12 @@ allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
 ## Reading exptab, black list, and maptrack
 exptab <- read.csv(exptabpath, header = TRUE)
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+
 blacklistbed <- read.delim(blacklistshpath, header = FALSE)
 blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
-maptrackgr <- readRDS(maptrackpath)
+
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
 
 ## Debugging filtering
 
