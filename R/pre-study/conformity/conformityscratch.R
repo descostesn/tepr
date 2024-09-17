@@ -18,7 +18,6 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blac
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
 nbcpubg <- 1
-nbcpuchrom <- 20
 
 
 ##################
@@ -88,7 +87,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
 
 
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
-    nbcpuchrom, allwindowsbed, expnamevec, verbose = TRUE) {
+    nbcpubg, allwindowsbed, expnamevec, verbose = TRUE) {
 
     if (verbose) message("Converting annotations' windows to tibble")
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
@@ -104,7 +103,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     maptracktib <- tibble::as_tibble(maptrackbed)
 
     ## Looping on each experiment bw file
-    bedgraphgrlist <- mapply(function(currentpath, currentname,
+    bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
         verbose) {
 
@@ -131,7 +130,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         ## Keeping scores on high mappability track
         if (verbose) message("\t Keeping scores on high mappability track")
         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-        resmaplist <- parallel::mclapply(chromvec, function(currentchrom) {
+        resmaplist <- lapply(chromvec, function(currentchrom) {
             if (verbose) message("\t\t\t over ", currentchrom)
             resmap <-  tryCatch({
                 valr::bed_intersect(resblack,
@@ -141,14 +140,15 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 message(e)
                 return(NA)
             })
-            return(resmap)}, mc.cores = nbcpuchrom)
+            return(resmap)})
         resmap <- do.call("rbind", resmaplist)
         res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
 
         return(res)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, nbcpuchrom, verbose), SIMPLIFY = FALSE)
+        blacklisttib, maptracktib, verbose), SIMPLIFY = FALSE,
+        mc.cores = nbcpubg)
 
     return(bedgraphgrlist)
 }
