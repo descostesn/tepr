@@ -67,7 +67,7 @@ allwindowsbed <- readRDS(allwindowspath)
 bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
 bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
 allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
-allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
+#allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
 
 ## Reading exptab, black list, and maptrack
 exptab <- read.csv(exptabpath, header = TRUE)
@@ -94,12 +94,20 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
             "transcript", "gene", "strand", "window", "coord")
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
+    if (verbose) message("Converting blacklist to tibble")
+    colnames(blacklistbed) <- c("chrom", "start", "end", "type")
+    blacklisttib <- tibble::as_tibble(blacklistbed)
+
+    if (verbose) message("Converting mappability track to tibble")
+    colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
+    maptracktib <- tibble::as_tibble(maptrackbed)
+
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
     # currentstrand <- exptab$strand[1]
     bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
-        currentstrand, allwindtib, blacklistbed, maptrackbed, verbose) {
+        currentstrand, allwindtib, blacklisttib, maptracktib, verbose) {
 
         ## Dealing with bedgraph values
         if (verbose) message("\t Retrieving values for ", currentname)
@@ -115,9 +123,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
             currentstrand)
         allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand)
         resanno <- valr::bed_intersect(valtib, allwindstrand,
-            suffix = c("", ".y"))
+            suffix = c("", ".anno"))
 
         ## Removing black list
+        if (verbose) message("\t Keeping scores not on black list")
+        resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
 !!!!!!!!!!!!!!!!
 
 
@@ -155,7 +165,7 @@ ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
         return(valgr)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklistbed, maptrackbed, verbose), mc.cores = nbcpubg,
+        blacklisttib, maptracktib, verbose), mc.cores = nbcpubg,
         SIMPLIFY = FALSE)
 
     return(bedgraphgrlist)
