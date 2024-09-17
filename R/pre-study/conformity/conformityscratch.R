@@ -103,7 +103,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     maptracktib <- tibble::as_tibble(maptrackbed)
 
     ## Looping on each experiment bw file
-    bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
+    bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
         verbose) {
 
@@ -150,5 +150,5 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         blacklisttib, maptracktib, verbose), SIMPLIFY = FALSE,
         mc.cores = nbcpubg)
 
-    return(bedgraphgrlist)
+    return(bedgraphlist)
 }
