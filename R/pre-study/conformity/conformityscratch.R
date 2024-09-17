@@ -134,44 +134,17 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
         if (verbose) message("\t Keeping scores on high mappability track")
         resmap <- valr::bed_intersect(resblack, maptracktib,
             suffix = c("", "maphigh"))
-        res <- test <- resblack %>% dplyr::select(!dplyr::ends_with("maphigh"))
-        
+        res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
+
         resmap <- valr::bed_intersect(test %>% dplyr::select("chrom", "start", "end"), maptracktib  %>% dplyr::select("chrom", "start", "end"))
 !!!!!!!!!!!!!!!!
-
-
-if (verbose) message("\t Keeping scores on annotations")
-pairs <- IRanges::findOverlapPairs(valgr, allwindowsgr[which(strand(allwindowsgr) == "+")], ignore.strand = TRUE)
-ansgr <- IRanges::pintersect(pairs, ignore.strand = TRUE)
-
-if (verbose) message("\t\t Filtering out scores in black list ranges")
-ansnoblackgr <- IRanges::subsetByOverlaps(ansgr, blacklistgr, invert = TRUE, ignore.strand = TRUE)
-
-pairs <- IRanges::findOverlapPairs(ansnoblackgr, maptrackgr, ignore.strand = TRUE)
-ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
-
 
 !!!!!!!!!!!!!!!!!
 
 
 
-        if (verbose) message("\t\t Filtering out scores in black list ranges")
-        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr,
-            ignore.strand = TRUE)
-        idxblack <- unique(S4Vectors::queryHits(resblack))
-        BiocGenerics::score(valgr)[idxblack] <- NA
 
-        if (verbose) message("\t\t Keeping high mappability scores")
-        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr,
-            ignore.strand = TRUE)
-        idxhigh <- unique(S4Vectors::queryHits(reshigh))
-        if (isTRUE(all.equal(length(idxhigh), length(valgr))))
-            message("Only highly mappable element were found")
-        else
-            ## Setting the scores of the ranges NOT in idxhigh to NA
-            BiocGenerics::score(valgr)[-idxhigh] <- NA
-
-        return(valgr)
+        return(res)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, verbose), mc.cores = nbcpubg,
@@ -182,4 +155,3 @@ ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
 
 
 
-\
