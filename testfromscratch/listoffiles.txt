@@ -1,0 +1,14 @@
+#### The format is: victorefile (nicofiles) - note
+
+* gencode.v43.basic.annotation.gtf (gencode.v43.basic.annotation.gtf) - downloaded from gencode website  
+* hg38-blacklist.v2.sorted.bed (hg38-blacklist.v2.bed) - downloaded from https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz  
+* k50.umap.hg38.0.8.bed (k50.umap.hg38.0.8.bed) - sent by victor
+
+* ctrl_rep1.forward.bg (ctrl_rep1.forward.bg) - sent by victor
+* ctrl_rep1.reverse.bg (ctrl_rep1.reverse.bg) - sent by victor
+* ctrl_rep2.forward.bg (ctrl_rep2.forward.bg) - sent by victor
+* ctrl_rep2.reverse.bg (ctrl_rep2.reverse.bg) - sent by victor
+* HS_rep1.forward.bg (HS_rep1.forward.bg) - sent by victor
+* HS_rep1.reverse.bg (HS_rep1.reverse.bg) - sent by victor
+* HS_rep2.forward.bg (HS_rep2.forward.bg) - sent by victor
+* HS_rep2.reverse.bg (HS_rep2.reverse.bg) - sent by victor

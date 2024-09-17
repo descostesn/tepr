@@ -13,7 +13,6 @@ library("parallel")
 library("purrr")
 library("dplyr")
 
-# source("commons.R")
 
 
 ##################
@@ -21,27 +20,26 @@ library("dplyr")
 ##################
 
 gencodepath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
+windsize <- 200
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
+database_name <- "org.Hs.eg.db"
+outputfolder <- "/g/romebioinfo/tmp/preprocessing"
+robjoutputfold <- outputfolder
+
+## Set this variable to NULL if the online retrieval should be performed
+blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
+## The bed file below was created and sent by Victor
+maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
+## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
+nbcpubg <- 8
+## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
+nbcputrans <- 20
+
 ## Note: For a complete list of blacklist names see
 ## ah <- AnnotationHub() # nolint
 ## query_data <- subset(ah, preparerclass == "excluderanges") # nolint
 ## print(query_data) # nolint
 blacklistname <- "hg38.Kundaje.GRCh38_unified_Excludable"
-## Set this variable to NULL if the online retrieval should be performed
-blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
-
-outputfolder <- "/g/romebioinfo/Projects/tepr/downloads"
-robjoutputfold <- "/g/romebioinfo/Projects/tepr/robjsave"
-## The bed file below was created and sent by Victor
-maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
-## Size of the window to extract values
-windsize <- 200
-## Table of experiments - contains the columns "name,condition,replicate,strand,path" # nolint
-exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
-database_name <- "org.Hs.eg.db"
-## Parallelization on bedgraph files. The maximum should be equal to the number of bedgraph files.  # nolint
-nbcpubg <- 8
-## Parallelization on transcripts. The maximum should be limited to the capacity of your machine.  # nolint
-nbcputrans <- 20
 
 
 
@@ -94,13 +92,15 @@ createblacklist <- function(blacklistname, outputfolder) { # nolint
     return(blacklistgr)
 }
 
+## For different strings provided in the vector "valvec", perform the filtering
+## of gentab on each string using the result of the previous filtering
 grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
     invisible(sapply(valvec, function(val) {
         idx <- grep(val, gentab$V9, invert = invert)
         if (verbose)
             message(val, " - ", length(idx), " gentab - ", nrow(gentab))
         if (!isTRUE(all.equal(length(idx), 0)))
-            gentab <<- gentab[idx, ]
+            gentab <<- gentab[idx, ] ## This line enables sequential grep
     }))
     return(gentab)
 }
@@ -455,6 +455,8 @@ checkexptab(exptab)
 
 ## Read gencode file
 gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+
+## Keeping "transcript" annotations
 gencode <- gencode[which(gencode$V3 == "transcript"), ]
 
 ## Selecting Ensembl_canonical transcripts i.e. most representative transcript
