@@ -138,9 +138,17 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             resmap <-  valr::bed_intersect(resblack,
                 maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
                 suffix = c("", "maphigh"))
+
+            ## Removing mapping columns and duplicates
+            message("\t\t\t Removing mapping columns and duplicates")
+            resmap <- resmap[,-grep("maphigh|.overlap|.source",
+                colnames(resmap))]
+            resmap <- resmap %>% dplyr::distinct(chrom, start, end,
+                start.anno, end.anno, .keep_all = TRUE)
             
-            ## Removing mapping columns and removing duplicates
-            resmap <- resmap %>% select(!ends_with("maphigh"))
+            
+            !!
+            
             return(resmap)})
 
         return(resmap)
