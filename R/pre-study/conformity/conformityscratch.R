@@ -141,10 +141,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 return(NA)
             })
             return(resmap)})
-        if (verbose) message("\t\t Merging chromosomes")
-        resmap <- purrr::map_dfr(resmaplist, dplyr::bind_rows)
 
-        return(res)
+        return(resmap)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, verbose), SIMPLIFY = FALSE,
