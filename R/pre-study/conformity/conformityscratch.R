@@ -132,8 +132,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
 
         ## Keeping scores on high mappability track
         if (verbose) message("\t Keeping scores on high mappability track")
-        resmap <- valr::bed_intersect(test, maptracktib,
+        resmap <- valr::bed_intersect(resblack, maptracktib,
             suffix = c("", "maphigh"))
+        res <- test <- resblack %>% dplyr::select(!dplyr::ends_with("maphigh"))
+        
+        resmap <- valr::bed_intersect(test %>% dplyr::select("chrom", "start", "end"), maptracktib  %>% dplyr::select("chrom", "start", "end"))
 !!!!!!!!!!!!!!!!
 
 
