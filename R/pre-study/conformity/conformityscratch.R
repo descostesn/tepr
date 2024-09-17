@@ -104,9 +104,6 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     maptracktib <- tibble::as_tibble(maptrackbed)
 
     ## Looping on each experiment bw file
-    # currentpath <- exptab$path[1]
-    # currentname <- expnamevec[1]
-    # currentstrand <- exptab$strand[1]
     bedgraphgrlist <- mapply(function(currentpath, currentname,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
         verbose) {
@@ -123,20 +120,16 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         ## Overlapping scores with anno on correct strand
         if (verbose) message("\t Retrieving scores on annotations of strand ",
             currentstrand)
-        allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand)
+        allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand) # nolint
         resanno <- valr::bed_intersect(valtib, allwindstrand,
             suffix = c("", ".anno"))
 
         ## Removing black list
         if (verbose) message("\t Keeping scores not on black list")
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
-        # test <- resblack %>% dplyr::select(!dplyr::ends_with("anno"))
 
         ## Keeping scores on high mappability track
         if (verbose) message("\t Keeping scores on high mappability track")
-        # resmap <- valr::bed_intersect(resblack, maptracktib,
-        #     suffix = c("", "maphigh"))
-
         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
         resmaplist <- parallel::mclapply(chromvec, function(currentchrom) {
             if (verbose) message("\t\t\t over ", currentchrom)
