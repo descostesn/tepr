@@ -91,6 +91,24 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
         if (verbose) message("\t Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
 
+!!!!!!!!!!!!!!!!
+
+
+if (verbose) message("\t Keeping scores on annotations")
+pairs <- IRanges::findOverlapPairs(valgr, allwindowsgr[which(strand(allwindowsgr) == "+")], ignore.strand = TRUE)
+ansgr <- IRanges::pintersect(pairs, ignore.strand = TRUE)
+
+if (verbose) message("\t\t Filtering out scores in black list ranges")
+ansnoblackgr <- IRanges::subsetByOverlaps(ansgr, blacklistgr, invert = TRUE, ignore.strand = TRUE)
+
+pairs <- IRanges::findOverlapPairs(ansnoblackgr, maptrackgr, ignore.strand = TRUE)
+ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
+
+
+!!!!!!!!!!!!!!!!!
+
+
+
         if (verbose) message("\t\t Filtering out scores in black list ranges")
         resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr,
             ignore.strand = TRUE)
@@ -114,3 +132,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
 
     return(bedgraphgrlist)
 }
+
+
+
+\
