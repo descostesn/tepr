@@ -10,8 +10,13 @@ bgvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/protein_c
 allbgnicpath <- "/g/romebioinfo/tmp/preprocessing/backup/bedgraphwmeanlist.rds"
 allwindowspath <- "/g/romebioinfo/tmp/preprocessing/allwindowsbed.rds"
 
+exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 maptrackpath <- "/g/romebioinfo/tmp/preprocessing/maptrackgr.gr"
+
+nbcpubg <- 1
+
+
 
 ##################
 #FUNCTIONS
@@ -60,7 +65,52 @@ bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
 allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
 
-## Reading black list and maptrack
+## Reading exptab, black list, and maptrack
+exptab <- read.csv(exptabpath, header = TRUE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 blacklistbed <- read.delim(blacklistshpath, header = FALSE)
 blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
 maptrackgr <- readRDS(maptrackpath)
+
+## Debugging filtering
+
+bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
+    maptrackgr, nbcpubg, expnamevec)
+
+
+
+retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
+    expnamevec, verbose = TRUE) {
+
+    ## Looping on each experiment bw file
+    # currentpath <- exptab$path[1]
+    # currentname <- expnamevec[1]
+    bedgraphgrlist <- mcmapply(function(currentpath, currentname, blacklistgr,
+        maptrackgr, nbcpu, verbose) {
+
+        if (verbose) message("\t Retrieving values for ", currentname)
+        valgr <- rtracklayer::import.bedGraph(currentpath)
+
+        if (verbose) message("\t\t Filtering out scores in black list ranges")
+        resblack <- GenomicRanges::findOverlaps(valgr, blacklistgr,
+            ignore.strand = TRUE)
+        idxblack <- unique(S4Vectors::queryHits(resblack))
+        BiocGenerics::score(valgr)[idxblack] <- NA
+
+        if (verbose) message("\t\t Keeping high mappability scores")
+        reshigh <- GenomicRanges::findOverlaps(valgr, maptrackgr,
+            ignore.strand = TRUE)
+        idxhigh <- unique(S4Vectors::queryHits(reshigh))
+        if (isTRUE(all.equal(length(idxhigh), length(valgr))))
+            message("Only highly mappable element were found")
+        else
+            ## Setting the scores of the ranges NOT in idxhigh to NA
+            BiocGenerics::score(valgr)[-idxhigh] <- NA
+
+        return(valgr)
+
+    }, exptab$path, expnamevec, MoreArgs = list(blacklistgr,
+        maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
+
+    return(bedgraphgrlist)
+}
