@@ -18,7 +18,7 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blac
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
 nbcpubg <- 1
-
+windsize <- 200
 
 ##################
 #FUNCTIONS
@@ -87,7 +87,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
 
 
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
-    nbcpubg, allwindowsbed, expnamevec, verbose = TRUE) {
+    nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
     if (verbose) message("Converting annotations' windows to tibble")
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
@@ -105,7 +105,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     ## Looping on each experiment bw file
     bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
-        verbose) {
+        windsize, verbose) {
 
         ## Dealing with bedgraph values
         if (verbose) message("\t Retrieving values for ", currentname)
@@ -150,6 +150,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             message("\t\t\t Building scoring results by transcript")
             bgscorebytrans <- split(resmap, factor(resmap$transcript.anno))
 
+            lapply(bgscorebytrans, function(currenttrans, windsize) {
+                ## Setting missing frames to NA
+               !! idx <- match(seq_len(windsize))
+            }, windsize)
+
             !!
             
             return(resmap)})
@@ -157,7 +162,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         return(resmap)
 
     }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, verbose), SIMPLIFY = FALSE,
+        blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
         mc.cores = nbcpubg)
 
     return(bedgraphlist)
@@ -165,24 +170,80 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
+.computewmeanvec <- function(dupframenbvec, df, expname, colscore) {
+    wmeanvec <- sapply(dupframenbvec, function(namedup, df, expname, colscore) {
+
+        ## Selecting all rows having a duplicated frame found at index idx
+        allframedf <- df[which(df$window == namedup), ]
+        if (isTRUE(all.equal(nrow(allframedf), 1)))
+            stop("There should be more than one frame selected")
+
+        ## Testing that the coord of the window is the same for all scores
+        ## selected (this should not give an error)
+        if (!isTRUE(all.equal(length(unique(allframedf[, "start"])), 1)) ||
+            !isTRUE(all.equal(length(unique(allframedf[, "end"])), 1)))
+                stop("The size of the window is not unique for the frame rows ",
+                    "selected, this should not happen, contact the developper.")
+
+        ## Retrieving the coordinates and the size of the transcript
+        windowstart <- allframedf[1, "start"]
+        windowend <- allframedf[1, "end"]
+
+        ## Retrieve the nb of overlapping nt for each score
+        overntvec <- apply(allframedf, 1,
+            function(x, expname, windowstart, windowend) {
+                nt <- seq(from = x[paste0(expname, "start")],
+                    to = x[paste0(expname, "end")], by = 1)
+                overnt <- length(which(nt >= windowstart & nt <= windowend))
+                return(overnt)
+            }, expname, windowstart, windowend)
+
+        ## Computing weighted mean
+        wmean <- weighted.mean(allframedf[, colscore], overntvec)
+        return(wmean)
+    }, df, expname, colscore)
+    return(wmeanvec)
+}
 
 
 
-        bedgraphwmeanlist <- mapply(function(currentgr, currentstrand,
-            currentname, allwindowsgr, windsize, nbcputrans) {
 
-                message("Overlapping ", currentname, " with annotations on ",
-                    "strand ", currentstrand)
-                BiocGenerics::strand(currentgr) <- currentstrand
-                res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
-                    ignore.strand = FALSE)
 
-                message("\t Building scoring results by transcript")
-                ## Separating the bedgraph score indexes by transcript names
-                idxanno <- S4Vectors::subjectHits(res)
-                idxbgscorebytrans <- split(as.data.frame(res),
-                    factor(names(allwindowsgr)[idxanno]))
+        # tab=bgscorebytrans[[1]]; nametrs=names(idxbgscorebytrans)[1]
+        # annogr=allwindowsgr;bggr=currentgr;strd=currentstrand;
+        # expname=currentname
+        dfwmeanbytranslist <- mcmapply(function(tab, nametrs, annogr, bggr,
+            strd, expname, windsize) {
 
+            ## Building the complete data.frame and identifying duplicated
+            ## frames
+            df <- .buildtransinfotable(annogr, tab, bggr, expname)
+            dupidx <- which(duplicated(df$window))
+            colscore <- paste0(expname, "score")
+
+            if (!isTRUE(all.equal(length(dupidx), 0))) {
+                dupframenbvec <- unique(df$window[dupidx])
+                ## For each duplicated frame
+                wmeanvec <- .computewmeanvec(dupframenbvec, df, expname,
+                    colscore)
+
+                ## Remove duplicated frames and replace scores by wmean and
+                ## adding the coord column
+                df <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+                    dupframenbvec, colscore, strd, wmeanvec)
+            }
+
+            return(df)
+        }, idxbgscorebytrans, names(idxbgscorebytrans),
+        MoreArgs = list(allwindowsgr, currentgr, currentstrand, currentname,
+        windsize), SIMPLIFY = FALSE, mc.cores = nbcputrans)
+
+        return(dfwmeanbytranslist)
+}
+
+
+
+        
                 ## For each transcript, retrieve the information and the
                 ## bedgraph coordinates, strand and scores, applying a weighted
                 ## mean
