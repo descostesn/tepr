@@ -141,8 +141,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 return(NA)
             })
             return(resmap)})
-        resmap <- do.call("rbind", resmaplist)
-        res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
+        if (verbose) message("\t\t Merging chromosomes")
+        resmap <- purrr::map_dfr(resmaplist, dplyr::bind_rows)
 
         return(res)
 
@@ -152,3 +152,66 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
     return(bedgraphlist)
 }
+
+
+
+
+
+
+
+
+
+
+
+!!!!!!!!!!!!!!!
+
+bedgraphwmeanreplace <- function(bedgraphgrlist, exptab, expnamevec,
+    allwindowsgr, windsize, nbcputrans) {
+
+        bedgraphwmeanlist <- mapply(function(currentgr, currentstrand,
+            currentname, allwindowsgr, windsize, nbcputrans) {
+
+                message("Overlapping ", currentname, " with annotations on ",
+                    "strand ", currentstrand)
+                BiocGenerics::strand(currentgr) <- currentstrand
+                res <- GenomicRanges::findOverlaps(currentgr, allwindowsgr,
+                    ignore.strand = FALSE)
+
+                message("\t Building scoring results by transcript")
+                ## Separating the bedgraph score indexes by transcript names
+                idxanno <- S4Vectors::subjectHits(res)
+                idxbgscorebytrans <- split(as.data.frame(res),
+                    factor(names(allwindowsgr)[idxanno]))
+
+                ## For each transcript, retrieve the information and the
+                ## bedgraph coordinates, strand and scores, applying a weighted
+                ## mean
+                message("\t Weighted mean on duplicated frames for each ",
+                    "transcript")
+                start_time <- Sys.time()
+                dfwmeanbytranslist <- summarizebywmean(idxbgscorebytrans,
+                    allwindowsgr, currentgr, currentstrand, currentname,
+                    windsize, nbcputrans)
+                end_time <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time - start_time)
+
+                if (!isTRUE(all.equal(unique(sapply(dfwmeanbytranslist,nrow)),
+                    windsize)))
+                    stop("Problem in replacing scores by weighted mean",
+                        " on the data")
+
+                message("\t Combining transcripts")
+                dfwmeanbytrans <- do.call("rbind", dfwmeanbytranslist)
+                end_time2 <- Sys.time()
+                message("\t\t ## Analysis performed in: ",
+                    end_time2 - start_time)
+
+                return(dfwmeanbytrans)
+
+        }, bedgraphgrlist, exptab$strand, expnamevec,
+            MoreArgs = list(allwindowsgr, windsize, nbcputrans),
+            SIMPLIFY = FALSE)
+        return(bedgraphwmeanlist)
+}
+
