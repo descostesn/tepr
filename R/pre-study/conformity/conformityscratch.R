@@ -136,7 +136,12 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
             suffix = c("", "maphigh"))
         res <- resmap %>% dplyr::select(!dplyr::ends_with("maphigh"))
 
-        resmap <- valr::bed_intersect(test %>% dplyr::select("chrom", "start", "end"), maptracktib  %>% dplyr::select("chrom", "start", "end"))
+        chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
+        resmaplist <- parallel::mclapply(chromvec, function(currentchrom) {
+            if (verbose) message("\t\t\t over ", currentchrom)
+            resmap <- valr::bed_intersect(resblack,
+                maptracktib  %>% dplyr::filter(chrom == currentchrom))
+            return(resmap)}, mc.cores = nbcpuchrom)
 !!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!
