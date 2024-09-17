@@ -99,8 +99,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
     # currentname <- expnamevec[1]
     # currentstrand <- exptab$strand[1]
     bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
-        currentstrand, allwindowsbed, blacklistbed, maptrackbed, verbose) {
+        currentstrand, allwindtib, blacklistbed, maptrackbed, verbose) {
 
+        ## Dealing with bedgraph values
         if (verbose) message("\t Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
         if (verbose) message("\t\t Converting to tibble")
@@ -108,8 +109,15 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
         colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
             "score")
         valtib <- tibble::as_tibble(valdf)
-        
-        valr::bed_intersect(valtib, allwindtib)
+
+        ## Overlapping scores with anno on correct strand
+        if (verbose) message("\t Retrieving scores on annotations of strand ",
+            currentstrand)
+        allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand)
+        resanno <- valr::bed_intersect(valtib, allwindstrand,
+            suffix = c("", ".y"))
+
+        ## Removing black list
 !!!!!!!!!!!!!!!!
 
 
@@ -146,7 +154,7 @@ ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
 
         return(valgr)
 
-    }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindowsbed,
+    }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklistbed, maptrackbed, verbose), mc.cores = nbcpubg,
         SIMPLIFY = FALSE)
 
