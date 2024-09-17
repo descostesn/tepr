@@ -74,27 +74,32 @@ exptab <- read.csv(exptabpath, header = TRUE)
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 
 blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
+# blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
 
 maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
 
 ## Debugging filtering
 
-bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
-    maptrackgr, nbcpubg, expnamevec)
+bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
+    maptrackbed, nbcpubg, expnamevec)
 
 
 
-retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
+retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, nbcpubg,
     allwindowsbed, expnamevec, verbose = TRUE) {
+
+    if (verbose) message("Converting annotations' windows to tibble")
+    colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
+            "transcript", "gene", "strand", "window", "coord")
+    allwindtib <- tibble::as_tibble(allwindowsbed)
 
     ## Looping on each experiment bw file
     # currentpath <- exptab$path[1]
     # currentname <- expnamevec[1]
-    currentstrand
-    bedgraphgrlist <- mcmapply(function(currentpath, currentname, blacklistgr,
-        maptrackgr, nbcpu, verbose) {
+    # currentstrand <- exptab$strand[1]
+    bedgraphgrlist <- parallel::mcmapply(function(currentpath, currentname,
+        currentstrand, allwindowsbed, blacklistbed, maptrackbed, verbose) {
 
         if (verbose) message("\t Retrieving values for ", currentname)
         valgr <- rtracklayer::import.bedGraph(currentpath)
@@ -103,11 +108,6 @@ retrieveandfilterfrombg <- function(exptab, blacklistgr, maptrackgr, nbcpu,
         colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
             "score")
         valtib <- tibble::as_tibble(valdf)
-
-        if (verbose) message("Converting annotations' windows to tibble")
-        colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
-            "transcript", "gene", "strand", "window", "coord")
-        allwindtib <- tibble::as_tibble(allwindowsbed)
         
         valr::bed_intersect(valtib, allwindtib)
 !!!!!!!!!!!!!!!!
@@ -146,8 +146,9 @@ ansmaphigh <- IRanges::pintersect(pairs, ignore.strand = TRUE)
 
         return(valgr)
 
-    }, exptab$path, expnamevec, MoreArgs = list(blacklistgr,
-        maptrackgr, nbcpu, verbose), mc.cores = nbcpu, SIMPLIFY = FALSE)
+    }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindowsbed,
+        blacklistbed, maptrackbed, verbose), mc.cores = nbcpubg,
+        SIMPLIFY = FALSE)
 
     return(bedgraphgrlist)
 }
