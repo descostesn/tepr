@@ -207,9 +207,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     ## If some windows are missing
                     if (!isTRUE(all.equal(length(idxnavec), 0))) {
 
+                        .retrievemissingwind <- function(idxnavec, allwindstrand, currentstrand, currenttrans) {}
+
                         ## For each missing window whose number is contained in idxnavec
                         #message("\t\t\t Retrieving missing scores")
-                        missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand, currenttrans) {
+                        missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand) {
                             ## Retrieving the line of the missing window in allwindstrand
                             idxmissing <-  which(allwindstrand$chrom == uniquechrom &
                                     allwindstrand$transcript == uniquetrans &
@@ -230,11 +232,12 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                                                 strand.window = windstrandrow$strand, window = windstrandrow$window, coord = windstrandrow$coord)
                             return(resmissing)
 
-                        }, allwindstrand, currentstrand)
+                        }, allwindstrand)
                         missingrowsdf <- do.call("rbind", missingrowslist)
                         currenttrans <- rbind(currenttrans, missingrowsdf)
                         currenttrans <- currenttrans[order(currenttrans$coord), ]
                     }
+
                     score.bg <- currenttrans$score.bg
                     currenttrans <- currenttrans[, -grep(".bg", colnames(currenttrans))]
                     currenttrans <- cbind(currenttrans, score.bg)
