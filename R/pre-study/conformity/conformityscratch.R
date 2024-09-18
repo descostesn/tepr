@@ -143,6 +143,46 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 
 }
 
+.retrievemissingwind <- function(idxnavec, allwindstrand, currenttrans,
+    uniquechrom, uniquetrans, uniquegene) {
+
+    ## For each missing window whose number is contained in idxnavec
+    missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand) {
+
+        ## Retrieving the line of the missing window in allwindstrand
+        idxmissing <-  which(allwindstrand$chrom == uniquechrom &
+            allwindstrand$transcript == uniquetrans &
+            allwindstrand$gene == uniquegene &
+            allwindstrand$window == idxna)
+
+        if (!isTRUE(all.equal(length(idxmissing), 1)))
+            stop("Problem in retrieving the missing window, this should not ",
+                "happen. Contact the developper.")
+
+        ## Below the bedgraph information columns are set to NA. These columns will be removed later # nolint
+        ## The score is set to NA since it is a missing value resulting from removing black list and low mappability (keeping high mappability) # nolint
+        ## Filling the other columns with the line retrieved in allwindstrand # nolint
+        windstrandrow <- allwindstrand[idxmissing, ]
+        resmissing <- data.frame(chrom = windstrandrow$chrom,
+            start.bg = NA, end.bg = NA, width.bg = NA, strand.bg = "*", ## Set the bedgraph info # nolint
+            score.bg = NA, ## Set the score to NA to keep track of missing values # nolint
+            biotype.window = windstrandrow$biotype,
+            start.window = windstrandrow$start,
+            end.window = windstrandrow$end,
+            transcript = windstrandrow$transcript, gene = windstrandrow$gene,
+            strand.window = windstrandrow$strand, window = windstrandrow$window,
+            coord = windstrandrow$coord)
+
+        return(resmissing)
+        }, allwindstrand)
+
+    missingrowsdf <- do.call("rbind", missingrowslist)
+    currenttrans <- rbind(currenttrans, missingrowsdf)
+    currenttrans <- currenttrans[order(currenttrans$coord), ]
+
+    return(currenttrans)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -172,7 +212,6 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows
-            if (verbose) message("\t Keeping scores on high mappability track")
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
             resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand,
                 currentname, resblack, maptracktib) {
@@ -189,6 +228,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 bgscorebytrans <- split(resmap,
                     factor(resmap$transcript.window))
 
+                message("\t\t\t Setting missing windows scores to NA")
                 #currenttrans=bgscorebytrans[[1]]
                 bytranslist <- lapply(bgscorebytrans,
                     function(currenttrans, windsize, allwindstrand,
@@ -205,38 +245,10 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     idxnavec <- which(is.na(idx))
 
                     ## If some windows are missing
-                    if (!isTRUE(all.equal(length(idxnavec), 0))) {
-
-                        .retrievemissingwind <- function(idxnavec, allwindstrand, currentstrand, currenttrans) {}
-
-                        ## For each missing window whose number is contained in idxnavec
-                        #message("\t\t\t Retrieving missing scores")
-                        missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand) {
-                            ## Retrieving the line of the missing window in allwindstrand
-                            idxmissing <-  which(allwindstrand$chrom == uniquechrom &
-                                    allwindstrand$transcript == uniquetrans &
-                                    allwindstrand$gene == uniquegene &
-                                    allwindstrand$window == idxna)
-                            if (!isTRUE(all.equal(length(idxmissing), 1)))
-                                stop("Problem in retrieving the missing window, this should not happen. Contact the developper.")
-                            
-                            ## Below the bedgraph information columns are set to NA. These columns will be removed later
-                            ## The score is set to NA since it is a missing value resulting from removing black list and low mappability (keeping high mappability)
-                            ## Filling the other columns with the line retrieved in allwindstrand
-                            windstrandrow <- allwindstrand[idxmissing, ]
-                            resmissing <- data.frame(chrom = windstrandrow$chrom,
-                                                start.bg = NA, end.bg = NA, width.bg = NA, strand.bg = "*", ## Set the bedgraph info
-                                                score.bg = NA, ## Set the score to NA to keep track of missing values
-                                                biotype.window = windstrandrow$biotype, start.window = windstrandrow$start,
-                                                end.window = windstrandrow$end, transcript = windstrandrow$transcript, gene = windstrandrow$gene,
-                                                strand.window = windstrandrow$strand, window = windstrandrow$window, coord = windstrandrow$coord)
-                            return(resmissing)
-
-                        }, allwindstrand)
-                        missingrowsdf <- do.call("rbind", missingrowslist)
-                        currenttrans <- rbind(currenttrans, missingrowsdf)
-                        currenttrans <- currenttrans[order(currenttrans$coord), ]
-                    }
+                    if (!isTRUE(all.equal(length(idxnavec), 0)))
+                        currenttrans <- .retrievemissingwind(idxnavec,
+                            allwindstrand, currenttrans, uniquechrom,
+                            uniquetrans, uniquegene)
 
                     score.bg <- currenttrans$score.bg
                     currenttrans <- currenttrans[, -grep(".bg", colnames(currenttrans))]
