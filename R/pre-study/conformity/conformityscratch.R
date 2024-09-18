@@ -298,14 +298,14 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         ## Retrieve the nb of overlapping nt for each score
         overntvec <- apply(allframedf, 1,
             function(x, currentname, windowstart, windowend) {
-                nt <- seq(from = x[paste0(currentname, "start")],
-                    to = x[paste0(currentname, "end")], by = 1)
+                nt <- seq(from = x["start.bg"], to = x["end.bg"], by = 1)
                 overnt <- length(which(nt >= windowstart & nt <= windowend))
                 return(overnt)
             }, currentname, windowstart, windowend)
 
         ## Computing weighted mean
-        wmean <- weighted.mean(allframedf[, colscore], overntvec)
+        allcolscore <- as.vector(allframedf[, colscore])[[1]]
+        wmean <- weighted.mean(allcolscore, overntvec)
         return(wmean)
     }, currenttrans, currentname, colscore)
     return(wmeanvec)
