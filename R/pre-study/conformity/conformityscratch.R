@@ -260,8 +260,10 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     function(currenttrans, windsize, allwindstrand,
                         currentname) {
 
-                            currenttrans <- .arrangewindows(currenttrans,
+                            res <- .arrangewindows(currenttrans,
                                 windsize, allwindstrand, currentname)
+                            currenttrans <- res[[1]]
+                            transname <- res[[2]]
 
                 }, windsize, allwindstrand, currentname)
 
@@ -311,6 +313,23 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     return(wmeanvec)
 }
 
+.replaceframeswithwmean <- function(currenttrans, dupidx, windsize, transname,
+    dupframenbvec, colscore, wmeanvec) {
+
+        ## Remove duplicated frames and replace scores by wmean
+        currenttrans <- currenttrans[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+            stop("The number of frames should be equal to windsize: ",
+                windsize, " for transcript ", transname)
+        idxscorereplace <- match(dupframenbvec, currenttrans$window)
+        if (!isTRUE(all.equal(dupframenbvec,
+            currenttrans$window[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        currenttrans[idxscorereplace, colscore] <- wmeanvec
+
+        return(currenttrans)
+}
+
 ## Identifying duplicated windows
 dupidx <- which(duplicated(currenttrans$window))
 colscore <- paste0(currentname, "_score") # nolint
@@ -323,6 +342,6 @@ if (!isTRUE(all.equal(length(dupidx), 0))) {
                     colscore)
    ## Remove duplicated frames and replace scores by wmean and
    ## adding the coord column
-   df <- .replaceframeswithwmean(currenttrans, dupidx, windsize, nametrs,
-       dupframenbvec, colscore, strd, wmeanvec)
+   currenttrans <- .replaceframeswithwmean(currenttrans, dupidx, windsize, transname,
+       dupframenbvec, colscore, wmeanvec)
 }
