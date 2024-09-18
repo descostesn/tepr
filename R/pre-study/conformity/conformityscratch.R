@@ -142,6 +142,30 @@ maptrackbed <- read.delim(maptrackpath, header = FALSE)
     return(resmap)
 }
 
+.uniqueformatcolnames <- function(currenttrans) {
+
+    ## Verifying uniformity of chrom, transcript, and genes
+    uniquechrom <- as.character(unique(currenttrans$chrom))
+    uniquetrans <- as.character(unique(currenttrans$transcript.window))
+    uniquegene <- as.character(unique(currenttrans$gene.window))
+
+    if (!isTRUE(all.equal(length(uniquechrom), 1)) ||
+        !isTRUE(all.equal(length(uniquetrans), 1)) ||
+        !isTRUE(all.equal(length(uniquegene), 1)))
+            stop("chrom, transcript, and genes should be unique, this should", # nolint
+                " not happen. Contact the developper.") # nolint
+
+    ## Renaming window and coord columns removing the suffix
+    colnamevec <- colnames(currenttrans)
+    colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
+    colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord"
+    colnames(currenttrans)[which(colnamevec == "gene.window")] <- "gene"
+    colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript" # nolint
+
+    return(list(currenttrans, uniquechrom, uniquetrans, uniquegene))
+
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -191,22 +215,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 #currenttrans=bgscorebytrans[[1]]
                 bytranslist <- lapply(bgscorebytrans, function(currenttrans, windsize, allwindstrand, currentname) {
 
-                    ## Verifying uniformity of chrom, transcript, and genes
-                    uniquechrom <- as.character(unique(currenttrans$chrom))
-                    uniquetrans <- as.character(unique(currenttrans$transcript.window))
-                    uniquegene <- as.character(unique(currenttrans$gene.window))
-
-                    if (!isTRUE(all.equal(length(uniquechrom), 1)) ||
-                        !isTRUE(all.equal(length(uniquetrans), 1)) ||
-                        !isTRUE(all.equal(length(uniquegene), 1)))
-                        stop("chrom, transcript, and genes should be unique, this should not happen. Contact the developper.")
-
-                    ## Renaming window and coord columns removing the suffix
-                    colnamevec <- colnames(currenttrans)
-                    colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
-                    colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord"
-                    colnames(currenttrans)[which(colnamevec == "gene.window")] <- "gene"
-                    colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript"
+                    res <- .uniqueformatcolnames(currenttrans)
+                    currenttrans <- res[[1]]
+                    uniquechrom <- res[[2]]
+                    uniquetrans <- res[[3]]
+                    uniquegene <- res[[4]]
 
                     ## Identifying the missing window in currenttrans
                     idx <- match(seq_len(windsize), unique(currenttrans$window))
