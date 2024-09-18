@@ -24,33 +24,23 @@ windsize <- 200
 #FUNCTIONS
 ##################
 
-bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
-    allwindows = FALSE) {
-
-    if (!allwindows) {
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-                ranges = IRanges::IRanges(start = currentbed[, 2],
-                                      end = currentbed[, 3],
-                                      names = currentbed[, 4]),
-                strand = if (strand) currentbed[, 6] else "*",
-                symbol = if (symbol) currentbed[, 5] else NA)
-    } else {
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
-                ranges = IRanges::IRanges(start = currentbed[, 3],
-                                      end = currentbed[, 4],
-                                      name = currentbed[, 5]),
-                gene = currentbed[, 6], strand = currentbed[, 7],
-                biotype = currentbed[, 1], window = currentbed[, 8],
-                coord = currentbed[, 9])
-    }
-    return(grres)
-}
 
 
 ##################
 # MAIN
 ##################
 
+## Reading all windows bed
+allwindowsbed <- readRDS(allwindowspath)
+
+## Reading exptab, black list, and maptrack
+exptab <- read.csv(exptabpath, header = TRUE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+
+##################### TEST
 ## This is the ctrl rep1 fwd
 bgvic <- read.delim(bgvicpath, header = FALSE)
 
@@ -60,25 +50,12 @@ names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
 bgnic <- allbgnic[["ctrl_rep1.forward"]]
 rm(allbgnic)
 gc()
-
-## Reading all windows bed
-allwindowsbed <- readRDS(allwindowspath)
-
-
 ## Selecting the lines corresponding to the gene ARF5
 bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
 bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
 allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 #allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
 
-## Reading exptab, black list, and maptrack
-exptab <- read.csv(exptabpath, header = TRUE)
-expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-
-blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-# blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
-
-maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -213,7 +190,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     factor(resmap$transcript.window))
 
                 #currenttrans=bgscorebytrans[[1]]
-                bytranslist <- lapply(bgscorebytrans, function(currenttrans, windsize, allwindstrand, currentname) {
+                bytranslist <- lapply(bgscorebytrans,
+                    function(currenttrans, windsize, allwindstrand,
+                        currentname) {
 
                     res <- .uniqueformatcolnames(currenttrans)
                     currenttrans <- res[[1]]
