@@ -111,6 +111,37 @@ maptrackbed <- read.delim(maptrackpath, header = FALSE)
     return(valtib)
 }
 
+.removeblacklist <- function(allwindstrand, valtib, currentstrand,
+    blacklisttib, verbose) {
+
+        if (verbose) message("\t Retrieving scores on annotations of strand ", # nolint
+                currentstrand)
+        suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
+                suffix = c("", ".window")))
+
+        ## Removing black list
+        if (verbose) message("\t Keeping scores not on black list") # nolint
+        resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
+
+        return(resblack)
+}
+
+.retrieveonhighmap <- function(resblack, maptracktib, currentchrom) {
+
+    ## Keeping scores on high mappability track
+    resmap <-  valr::bed_intersect(resblack,
+        maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+        suffix = c(".bg", ".maphigh"))
+    colnames(resmap) <- gsub(".window.bg", ".window", colnames(resmap))
+
+    ## Removing mapping columns and duplicates
+    resmap <- resmap[, -grep(".maphigh|.overlap|.source", colnames(resmap))]
+    resmap <- resmap %>% dplyr::distinct(chrom, start.bg, end.bg, # nolint
+        start.window, end.window, .keep_all = TRUE) # nolint
+    invisible(gc())
+    return(resmap)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -129,38 +160,31 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             if (verbose) message("\t Retrieving values for ", currentname) # nolint
             valtib <- .retrievebgval(currentpath, verbose)
 
-            ## Overlapping scores with anno on correct strand
-            if (verbose) message("\t Retrieving scores on annotations of strand ",
-                currentstrand)
-            allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand) # nolint
-            suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
-                suffix = c("", ".window")))
+            ## Keeping window coordinates on the correct strand
+            allwindstrand <- allwindtib %>%
+                dplyr::filter(strand == currentstrand) # nolint
 
-            ## Removing black list
-            if (verbose) message("\t Keeping scores not on black list")
-            resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
+            ## Overlapping scores with anno on correct strand and remove
+            ## blacklist
+            resblack <- .removeblacklist(allwindstrand, valtib, currentstrand,
+                blacklisttib, verbose)
 
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows
             if (verbose) message("\t Keeping scores on high mappability track")
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand, currentname) {
+            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand,
+                currentname, resblack, maptracktib) {
 
                 if (verbose) message("\t\t over ", currentchrom)
-                ## Keeping scores on high mappability track
-                resmap <-  valr::bed_intersect(resblack,
-                    maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
-                    suffix = c(".bg", ".maphigh"))
-                colnames(resmap) <- gsub(".window.bg", ".window", colnames(resmap))
 
-                ## Removing mapping columns and duplicates
-                message("\t\t\t Removing mapping columns and duplicates")
-                resmap <- resmap[, -grep(".maphigh|.overlap|.source",
-                    colnames(resmap))]
-                resmap <- resmap %>% dplyr::distinct(chrom, start.bg, end.bg,
-                    start.window, end.window, .keep_all = TRUE)
-                invisible(gc())
+                if (verbose) message("\t\t\t Keeping scores on high ",
+                    "mappability track")
+                resmap <- .retrieveonhighmap(resblack, maptracktib,
+                    currentchrom)
 
+                
+                
                 ## Processing data per transcript
                 message("\t\t\t Building scoring results by transcript")
                 bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
@@ -227,7 +251,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     return(currenttrans)
                 }, windsize, allwindstrand, currentname)
 
-            }, allwindstrand, currentname)
+            }, allwindstrand, currentname, resblack, maptracktib)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
         mc.cores = nbcpubg)
