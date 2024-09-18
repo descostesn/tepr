@@ -147,11 +147,13 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 colnames(resmap))]
             resmap <- resmap %>% dplyr::distinct(chrom, start, end,
                 start.anno, end.anno, .keep_all = TRUE)
+            invisible(gc())
 
             ## Processing data per transcript
             message("\t\t\t Building scoring results by transcript")
             bgscorebytrans <- split(resmap, factor(resmap$transcript.anno))
 
+            #currenttrans=bgscorebytrans[[1]]
             lapply(bgscorebytrans, function(currenttrans, windsize) {
                 ## Setting missing frames to NA
                !! idx <- match(seq_len(windsize))
