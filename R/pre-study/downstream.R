@@ -453,6 +453,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
 
     if (verbose) message("\t Computing the differences (d or delta) of AUC")
     start_time <- Sys.time()
+    !!!!!!!!!!!!!! ONLY EXECUTE IF TWO CONDITIONS
     daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
       nbcputrans)
     end_time <- Sys.time()
