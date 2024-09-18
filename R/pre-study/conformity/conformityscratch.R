@@ -148,7 +148,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 message("\t\t\t Removing mapping columns and duplicates")
                 resmap <- resmap[, -grep(".maphigh|.overlap|.source",
                     colnames(resmap))]
-                resmap <- resmap %>% dplyr::distinct(chrom, start, end,
+                resmap <- resmap %>% dplyr::distinct(chrom, start.bg, end.bg,
                     start.window, end.window, .keep_all = TRUE)
                 invisible(gc())
 
