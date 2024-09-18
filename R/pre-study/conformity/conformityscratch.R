@@ -206,7 +206,7 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
     scorename <- paste0(currentname, "_score") # nolint
     colnames(currenttrans)[idxscore] <- scorename
 
-    return(currenttrans)
+    return(list(currenttrans, uniquetrans))
 }
 
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
@@ -321,9 +321,8 @@ if (!isTRUE(all.equal(length(dupidx), 0))) {
     ## For each duplicated frame
     wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans, currentname,
                     colscore)
-!!
-                ## Remove duplicated frames and replace scores by wmean and
-                ## adding the coord column
-                df <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
-                    dupframenbvec, colscore, strd, wmeanvec)
-            }
+   ## Remove duplicated frames and replace scores by wmean and
+   ## adding the coord column
+   df <- .replaceframeswithwmean(currenttrans, dupidx, windsize, nametrs,
+       dupframenbvec, colscore, strd, wmeanvec)
+}
