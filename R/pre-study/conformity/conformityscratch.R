@@ -109,14 +109,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         allwindtib <- tibres[[1]]
         blacklisttib <- tibres[[2]]
         maptracktib <- tibres[[3]]
-    
-    
-    ## Looping on each experiment bw file
-    #  currentpath=exptab$path[1];currentname=expnamevec[1];
-    #     currentstrand=exptab$strand[1]
-    bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
-        currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
-        windsize, verbose) {
+
+        ## Looping on each experiment bg file
+        bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
+            currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
+            windsize, verbose) {
 
             ## Dealing with bedgraph values
             if (verbose) message("\t Retrieving values for ", currentname)
