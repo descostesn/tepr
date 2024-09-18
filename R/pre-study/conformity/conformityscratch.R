@@ -81,30 +81,36 @@ blacklistbed <- read.delim(blacklistshpath, header = FALSE)
 maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
 
-## Debugging filtering
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
-    maptrackbed, nbcpubg, expnamevec)
+.convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed, verbose) {
 
-
-
-retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
-    nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
-
-!!        .convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed)
-    if (verbose) message("Converting annotations' windows to tibble")
+    if (verbose) message("Converting annotations' windows to tibble") # nolint
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
             "transcript", "gene", "strand", "window", "coord")
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
-    if (verbose) message("Converting blacklist to tibble")
+    if (verbose) message("Converting blacklist to tibble") # nolint
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
     blacklisttib <- tibble::as_tibble(blacklistbed)
 
-    if (verbose) message("Converting mappability track to tibble")
+    if (verbose) message("Converting mappability track to tibble") # nolint
     colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
     maptracktib <- tibble::as_tibble(maptrackbed)
 
+    return(list(allwindtib, blacklisttib, maptracktib))
+}
+
+retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
+    nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
+
+        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed,
+            verbose)
+        allwindtib <- tibres[[1]]
+        blacklisttib <- tibres[[2]]
+        maptracktib <- tibres[[3]]
+    
+    
     ## Looping on each experiment bw file
     #  currentpath=exptab$path[1];currentname=expnamevec[1];
     #     currentstrand=exptab$strand[1]
