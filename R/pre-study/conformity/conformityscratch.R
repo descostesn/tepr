@@ -135,7 +135,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         ## track has too many rows
         if (verbose) message("\t Keeping scores on high mappability track")
         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-        resmaplist <- lapply(chromvec, function(currentchrom) {
+        resmaplist <- lapply(chromvec, function(currentchrom, allwindtib) {
 
             if (verbose) message("\t\t over ", currentchrom)
             ## Keeping scores on high mappability track
@@ -156,14 +156,58 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             bgscorebytrans <- split(resmap, factor(resmap$transcript.anno))
 
             #currenttrans=bgscorebytrans[[1]]
-            lapply(bgscorebytrans, function(currenttrans, windsize) {
+            lapply(bgscorebytrans, function(currenttrans, windsize, resmap) {
                 ## Setting missing frames to NA
                idx <- match(seq_len(windsize), unique(currenttrans$window.anno))
-            }, windsize)
+               idxna <- which(is.na(idx))
+               if (!isTRUE(all.equal(length(idxna), 0))) {
+                    message("\t\t\t Integrating missing scores")
+                    missinglist <- lapply(idxna, function(currentna, resmap,
+                        currenttrans) {
+                            misschrom <- currenttrans$chrom[1]
+                            misstrans <- currenttrans$transcript.anno[1]
+                            missgene <- currenttrans$gene.anno[1]
+
+                            idxmiss <- which(resmap$chrom == misschrom &
+                                resmap$transcript.anno == misstrans &
+                                resmap$gene.anno == missgene &
+                                resmap$window.anno == currentna)
+                              
+                            if (!isTRUE(all.equal(length(idxmiss), 1)))
+                                stop("idxmiss should be unique in retrieveandfilterfrombg. Contact the developper.")
+                            
+                            resrow <- resmap[idxmiss, ]
+                            resrow["score"] <- NA
+
+                              chrom     start       end width strand score   biotype.anno start.anno
+1  chr7 127586671 127588500  1830      *     0 protein-coding  127588411
+2  chr7 127586671 127588500  1830      *     0 protein-coding  127588427
+   end.anno    transcript.anno gene.anno strand.anno window.anno coord.anno
+1 127588427 ENST00000000233.10      ARF5           +           1          1
+2 127588443 ENST00000000233.10      ARF5           +           2          2
+
+                            chrom  start    end width strand  score biotype.anno start.anno end.anno
+1  chr7 149501 149640   140      * 0.0000       lncRNA     149597   149626
+2  chr7 149501 149640   140      * 0.0000       lncRNA     149626   149655
+3  chr7 149641 149670    30      * 1.0061       lncRNA     149626   149655
+4  chr7 149641 149670    30      * 1.0061       lncRNA     149655   149684
+5  chr7 149671 149730    60      * 2.0122       lncRNA     149655   149684
+6  chr7 149671 149730    60      * 2.0122       lncRNA     149684   149713
+    transcript.anno gene.anno strand.anno window.anno coord.anno
+1 ENST00000484550.1 LINC03014           +           1          1
+2 ENST00000484550.1 LINC03014           +           2          2
+3 ENST00000484550.1 LINC03014           +           2          2
+4 ENST00000484550.1 LINC03014           +           3          3
+5 ENST00000484550.1 LINC03014           +           3          3
+6 ENST00000484550.1 LINC03014           +           4          4
+               }
+                
+            }, windsize, resmap)
 
             !!
             
-            return(resmap)})
+            return(resmap)
+            }, allwindtib)
 
         return(resmap)
 
