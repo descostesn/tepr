@@ -183,6 +183,35 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
     return(currenttrans)
 }
 
+.arrangewindows <- function(currenttrans, windsize, allwindstrand) {
+
+    res <- .uniqueformatcolnames(currenttrans)
+    currenttrans <- res[[1]]
+    uniquechrom <- res[[2]]
+    uniquetrans <- res[[3]]
+    uniquegene <- res[[4]]
+
+    ## Identifying the missing window in currenttrans
+    idx <- match(seq_len(windsize), unique(currenttrans$window))
+    idxnavec <- which(is.na(idx))
+
+    ## If some windows are missing
+    if (!isTRUE(all.equal(length(idxnavec), 0)))
+        currenttrans <- .retrievemissingwind(idxnavec,
+            allwindstrand, currenttrans, uniquechrom,
+            uniquetrans, uniquegene)
+
+    scorebg <- currenttrans$score.bg
+    idxremovebg <- grep(".bg", colnames(currenttrans))
+    currenttrans <- currenttrans[, -idxremovebg]
+    currenttrans <- cbind(currenttrans, scorebg)
+    idxscore <- which(colnames(currenttrans) == "scorebg")
+    scorename <- paste0(currentname, "_score") # nolint
+    colnames(currenttrans)[idxscore] <- scorename
+ 
+    return(currenttrans)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -234,31 +263,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     function(currenttrans, windsize, allwindstrand,
                         currentname) {
 
-                    res <- .uniqueformatcolnames(currenttrans)
-                    currenttrans <- res[[1]]
-                    uniquechrom <- res[[2]]
-                    uniquetrans <- res[[3]]
-                    uniquegene <- res[[4]]
+                            currenttrans <- .arrangewindows(currenttrans,
+                                windsize, allwindstrand)
 
-                    ## Identifying the missing window in currenttrans
-                    idx <- match(seq_len(windsize), unique(currenttrans$window))
-                    idxnavec <- which(is.na(idx))
-
-                    ## If some windows are missing
-                    if (!isTRUE(all.equal(length(idxnavec), 0)))
-                        currenttrans <- .retrievemissingwind(idxnavec,
-                            allwindstrand, currenttrans, uniquechrom,
-                            uniquetrans, uniquegene)
-
-                    scorebg <- currenttrans$score.bg
-                    idxremovebg <- grep(".bg", colnames(currenttrans))
-                    currenttrans <- currenttrans[, -idxremovebg]
-                    currenttrans <- cbind(currenttrans, scorebg)
-                    idxscore <- which(colnames(currenttrans) == "scorebg")
-                    scorename <- paste0(currentname, "_score") # nolint
-                    colnames(currenttrans)[idxscore] <- scorename
-
-                    return(currenttrans)
                 }, windsize, allwindstrand, currentname)
 
             }, allwindstrand, currentname, resblack, maptracktib)
