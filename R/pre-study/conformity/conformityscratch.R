@@ -162,7 +162,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
             ## Keeping window coordinates on the correct strand
             allwindstrand <- allwindtib %>%
-                dplyr::filter(strand == currentstrand) # nolint
+                dplyr::filter(strand == as.character(currentstrand)) # nolint
 
             ## Overlapping scores with anno on correct strand and remove
             ## blacklist
@@ -183,11 +183,10 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 resmap <- .retrieveonhighmap(resblack, maptracktib,
                     currentchrom)
 
-                
-                
                 ## Processing data per transcript
                 message("\t\t\t Building scoring results by transcript")
-                bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
+                bgscorebytrans <- split(resmap,
+                    factor(resmap$transcript.window))
 
                 #currenttrans=bgscorebytrans[[1]]
                 bytranslist <- lapply(bgscorebytrans, function(currenttrans, windsize, allwindstrand, currentname) {
