@@ -103,6 +103,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     maptracktib <- tibble::as_tibble(maptrackbed)
 
     ## Looping on each experiment bw file
+    #  currentpath=exptab$path[1];currentname=expnamevec[1];
+    #     currentstrand=exptab$strand[1]
     bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
         windsize, verbose) {
@@ -120,8 +122,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         if (verbose) message("\t Retrieving scores on annotations of strand ",
             currentstrand)
         allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand) # nolint
-        resanno <- valr::bed_intersect(valtib, allwindstrand,
-            suffix = c("", ".anno"))
+        suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
+            suffix = c("", ".anno")))
 
         ## Removing black list
         if (verbose) message("\t Keeping scores not on black list")
