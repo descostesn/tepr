@@ -170,9 +170,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
                             idxmiss <- which(resmap$chrom == misschrom &
                                 resmap$transcript.anno == misstrans &
-                                resmap$gene.anno == missgene &
-                                resmap$window.anno == currentna)
-                              
+                                resmap$gene.anno == missgene)
+                            
+                            !!!!!!!!! RETRIEVE CURRENTNA - 1 EXCEPT IF CURRENTNA IS 1
+                            !!!!!!!!!!! THEN MODIFY CURRENTTRANS WITH <<-
+                            !!!!!!!!!! CHANGE LOOP TO INVISIBLE
                             if (!isTRUE(all.equal(length(idxmiss), 1)))
                                 stop("idxmiss should be unique in retrieveandfilterfrombg. Contact the developper.")
                             
