@@ -97,7 +97,7 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
                 suffix = c("", ".window")))
 
         ## Removing black list
-        if (verbose) message("\t Keeping scores not on black list") # nolint
+        if (verbose) message("\t Keeping scores outside blacklist intervals") # nolint
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
 
         return(resblack)
