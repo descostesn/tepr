@@ -91,6 +91,7 @@ bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistbed,
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
+!!        .convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed)
     if (verbose) message("Converting annotations' windows to tibble")
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
             "transcript", "gene", "strand", "window", "coord")
@@ -161,8 +162,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
                     ## Verifying uniformity of chrom, transcript, and genes
                     uniquechrom <- as.character(unique(currenttrans$chrom))
-                    uniquetrans <- as.character(unique(currenttrans$transcript))
-                    uniquegene <- as.character(unique(currenttrans$gene))
+                    uniquetrans <- as.character(unique(currenttrans$transcript.window))
+                    uniquegene <- as.character(unique(currenttrans$gene.window))
 
                     if (!isTRUE(all.equal(length(uniquechrom), 1)) ||
                         !isTRUE(all.equal(length(uniquetrans), 1)) ||
@@ -184,7 +185,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     if (!isTRUE(all.equal(length(idxnavec), 0))) {
 
                         ## For each missing window whose number is contained in idxnavec
-                        message("\t\t\t Retrieving missing scores")
+                        #message("\t\t\t Retrieving missing scores")
                         missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand, currenttrans) {
                             ## Retrieving the line of the missing window in allwindstrand
                             idxmissing <-  which(allwindstrand$chrom == uniquechrom &
