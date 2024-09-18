@@ -58,6 +58,8 @@ bgvic <- read.delim(bgvicpath, header = FALSE)
 allbgnic <- readRDS(allbgnicpath)
 names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
 bgnic <- allbgnic[["ctrl_rep1.forward"]]
+rm(allbgnic)
+gc()
 
 ## Reading all windows bed
 allwindowsbed <- readRDS(allwindowspath)
@@ -156,7 +158,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             #currenttrans=bgscorebytrans[[1]]
             lapply(bgscorebytrans, function(currenttrans, windsize) {
                 ## Setting missing frames to NA
-               !! idx <- match(seq_len(windsize))
+               idx <- match(seq_len(windsize), unique(currenttrans$window.anno))
             }, windsize)
 
             !!
