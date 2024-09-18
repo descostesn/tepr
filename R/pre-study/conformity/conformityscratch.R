@@ -250,10 +250,14 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                             allwindstrand, currenttrans, uniquechrom,
                             uniquetrans, uniquegene)
 
-                    score.bg <- currenttrans$score.bg
-                    currenttrans <- currenttrans[, -grep(".bg", colnames(currenttrans))]
-                    currenttrans <- cbind(currenttrans, score.bg)
-                    colnames(currenttrans)[which(colnames(currenttrans) == "score.bg")] <- paste0(currentname, ".score")
+                    scorebg <- currenttrans$score.bg
+                    idxremovebg <- grep(".bg", colnames(currenttrans))
+                    currenttrans <- currenttrans[, -idxremovebg]
+                    currenttrans <- cbind(currenttrans, scorebg)
+                    idxscore <- which(colnames(currenttrans) == "scorebg")
+                    scorename <- paste0(currentname, "_score") # nolint
+                    colnames(currenttrans)[idxscore] <- scorename
+
                     return(currenttrans)
                 }, windsize, allwindstrand, currentname)
 
