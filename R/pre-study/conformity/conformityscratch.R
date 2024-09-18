@@ -164,10 +164,10 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     uniquetrans <- as.character(unique(currenttrans$transcript))
                     uniquegene <- as.character(unique(currenttrans$gene))
 
-                    if (!isTRUE(all.equal(length(), 1)) ||
-                        !isTRUE(all.equal(length(), 1)) ||
-                        !isTRUE(all.equal(length(), 1)))
-                        stop("element")
+                    if (!isTRUE(all.equal(length(uniquechrom), 1)) ||
+                        !isTRUE(all.equal(length(uniquetrans), 1)) ||
+                        !isTRUE(all.equal(length(uniquegene), 1)))
+                        stop("chrom, transcript, and genes should be unique, this should not happen. Contact the developper.")
 
                     ## Renaming window and coord columns removing the suffix
                     colnamevec <- colnames(currenttrans)
@@ -187,23 +187,25 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                         message("\t\t\t Integrating missing scores")
                         missingrowslist <- lapply(idxnavec, function(idxna, resmap, allwindstrand, currenttrans) {
                             ## Retrieving the line of the missing window in allwindstrand
-                          !!idxmissing <-  which(allwindstrand$chrom == currenttrans$chrom[1] &
-                                    allwindstrand$transcript == currenttrans$transcript[1] &
-                                    allwindstrand$gene == currenttrans$gene[1] &
+                            idxmissing <-  which(allwindstrand$chrom == uniquechrom &
+                                    allwindstrand$transcript == uniquetrans &
+                                    allwindstrand$gene == uniquegene &
                                     allwindstrand$window == idxna)
                             if (!isTRUE(all.equal(length(idxmissing), 1)))
                                 stop("Problem in retrieving the missing window, this should not happen. Contact the developper.")
-                            ## Below the bedgraph information columns are set to NA. These columns will be removed
-                            resmissing <- data.frame(chrom = NA, start = NA, end = NA, width = NA, strand = "*", ## Set the bedgraph info
-                                                )
+                            
+                            ## Below the bedgraph information columns are set to NA. These columns will be removed later
+                            ## The score is set to NA since it is a missing value resulting from removing black list and low mappability (keeping high mappability)
+                            ## Filling the other columns with the line retrieved in allwindstrand
+                            windstrandrow <- allwindstrand[idxmissing, ]
+                            resmissing <- data.frame(chrom = windstrandrow$chrom,
+                                                start.bg = NA, end.bg = NA, width.bg = NA, strand.bg = "*", ## Set the bedgraph info
+                                                score.bg = NA, ## Set the score to NA to keep track of missing values
+                                                biotype.window = windstrandrow$biotype, start.window = windstrandrow$start,
+                                                end.window = windstrandrow$end, transcript = windstrandrow$transcript, gene = windstrandrow$gene,
+                                                strand.window = windstrandrow$strand, window = windstrandrow$window, coord = windstrandrow$coord)
+                            return(resmissing)
 
-    chrom     start       end width strand score biotype.window start.window
-1  chr7 127586671 127588500  1830      *     0 protein-coding    127588411
-2  chr7 127586671 127588500  1830      *     0 protein-coding    127588427
-  end.window         transcript gene strand.window window coord
-1  127588427 ENST00000000233.10 ARF5             +      1     1
-2  127588443 ENST00000000233.10 ARF5             +      2     2
->
                         }, resmap, allwindstrand, currentstrand)
                     }
 
