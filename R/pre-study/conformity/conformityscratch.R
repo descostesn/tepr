@@ -159,6 +159,16 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 #currenttrans=bgscorebytrans[[1]]
                 lapply(bgscorebytrans, function(currenttrans, windsize, resmap, allwindstrand) {
 
+                    ## Verifying uniformity of chrom, transcript, and genes
+                    uniquechrom <- as.character(unique(currenttrans$chrom))
+                    uniquetrans <- as.character(unique(currenttrans$transcript))
+                    uniquegene <- as.character(unique(currenttrans$gene))
+
+                    if (!isTRUE(all.equal(length(), 1)) ||
+                        !isTRUE(all.equal(length(), 1)) ||
+                        !isTRUE(all.equal(length(), 1)))
+                        stop("element")
+
                     ## Renaming window and coord columns removing the suffix
                     colnamevec <- colnames(currenttrans)
                     colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
