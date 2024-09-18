@@ -142,6 +142,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 resmap <-  valr::bed_intersect(resblack,
                     maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
                     suffix = c(".bg", ".maphigh"))
+                colnames(resmap) <- gsub(".window.bg", ".window", colnames(resmap))
 
                 ## Removing mapping columns and duplicates
                 message("\t\t\t Removing mapping columns and duplicates")
