@@ -135,7 +135,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             ## track has too many rows
             if (verbose) message("\t Keeping scores on high mappability track")
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand) {
+            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand, currentname) {
 
                 if (verbose) message("\t\t over ", currentchrom)
                 ## Keeping scores on high mappability track
@@ -157,7 +157,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
 
                 #currenttrans=bgscorebytrans[[1]]
-                lapply(bgscorebytrans, function(currenttrans, windsize, resmap, allwindstrand) {
+                bytranslist <- lapply(bgscorebytrans, function(currenttrans, windsize, allwindstrand, currentname) {
 
                     ## Verifying uniformity of chrom, transcript, and genes
                     uniquechrom <- as.character(unique(currenttrans$chrom))
@@ -184,8 +184,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     if (!isTRUE(all.equal(length(idxnavec), 0))) {
 
                         ## For each missing window whose number is contained in idxnavec
-                        message("\t\t\t Integrating missing scores")
-                        missingrowslist <- lapply(idxnavec, function(idxna, resmap, allwindstrand, currenttrans) {
+                        message("\t\t\t Retrieving missing scores")
+                        missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand, currenttrans) {
                             ## Retrieving the line of the missing window in allwindstrand
                             idxmissing <-  which(allwindstrand$chrom == uniquechrom &
                                     allwindstrand$transcript == uniquetrans &
@@ -206,12 +206,19 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                                                 strand.window = windstrandrow$strand, window = windstrandrow$window, coord = windstrandrow$coord)
                             return(resmissing)
 
-                        }, resmap, allwindstrand, currentstrand)
+                        }, allwindstrand, currentstrand)
+                        missingrowsdf <- do.call("rbind", missingrowslist)
+                        currenttrans <- rbind(currenttrans, missingrowsdf)
+                        currenttrans <- currenttrans[order(currenttrans$coord), ]
                     }
+                    score.bg <- currenttrans$score.bg
+                    currenttrans <- currenttrans[, -grep(".bg", colnames(currenttrans))]
+                    currenttrans <- cbind(currenttrans, score.bg)
+                    colnames(currenttrans)[which(colnames(currenttrans) == "score.bg")] <- paste0(currentname, ".score")
+                    return(currenttrans)
+                }, windsize, allwindstrand, currentname)
 
-                }, windsize, resmap, allwindstrand)
-
-            }, allwindstrand)
+            }, allwindstrand, currentname)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
         mc.cores = nbcpubg)
