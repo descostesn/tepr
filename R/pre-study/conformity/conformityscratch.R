@@ -183,7 +183,8 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
     return(currenttrans)
 }
 
-.arrangewindows <- function(currenttrans, windsize, allwindstrand) {
+.arrangewindows <- function(currenttrans, windsize, allwindstrand,
+    currentname) {
 
     res <- .uniqueformatcolnames(currenttrans)
     currenttrans <- res[[1]]
@@ -201,14 +202,10 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
             allwindstrand, currenttrans, uniquechrom,
             uniquetrans, uniquegene)
 
-    scorebg <- currenttrans$score.bg
-    idxremovebg <- grep(".bg", colnames(currenttrans))
-    currenttrans <- currenttrans[, -idxremovebg]
-    currenttrans <- cbind(currenttrans, scorebg)
-    idxscore <- which(colnames(currenttrans) == "scorebg")
+    idxscore <- which(colnames(currenttrans) == "score.bg")
     scorename <- paste0(currentname, "_score") # nolint
     colnames(currenttrans)[idxscore] <- scorename
- 
+
     return(currenttrans)
 }
 
@@ -264,7 +261,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                         currentname) {
 
                             currenttrans <- .arrangewindows(currenttrans,
-                                windsize, allwindstrand)
+                                windsize, allwindstrand, currentname)
 
                 }, windsize, allwindstrand, currentname)
 
@@ -277,4 +274,56 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+.computewmeanvec <- function(dupframenbvec, currenttrans, currentname,
+    colscore) {
 
+    ## For each duplicated frame
+    wmeanvec <- sapply(dupframenbvec, function(nbdup, currenttrans, currentname,
+        colscore) {
+
+        ## Selecting all rows having a window equal tro nbdup
+        allframedf <- currenttrans[which(currenttrans$window == nbdup), ]
+        if (isTRUE(all.equal(nrow(allframedf), 1)))
+            stop("There should be more than one frame selected")
+
+        ## Testing that the coord of the window is the same for all scores
+        ## selected (this should not give an error)
+        windowstart <- unique(allframedf$start.window)
+        windowend <- unique(allframedf$end.window)
+        if (!isTRUE(all.equal(length(windowstart), 1)) ||
+            !isTRUE(all.equal(length(windowend), 1)))
+                stop("The size of the window is not unique for the frame rows ",
+                    "selected, this should not happen, contact the developper.")
+
+        ## Retrieve the nb of overlapping nt for each score
+        overntvec <- apply(allframedf, 1,
+            function(x, currentname, windowstart, windowend) {
+                nt <- seq(from = x[paste0(currentname, "start")],
+                    to = x[paste0(currentname, "end")], by = 1)
+                overnt <- length(which(nt >= windowstart & nt <= windowend))
+                return(overnt)
+            }, currentname, windowstart, windowend)
+
+        ## Computing weighted mean
+        wmean <- weighted.mean(allframedf[, colscore], overntvec)
+        return(wmean)
+    }, currenttrans, currentname, colscore)
+    return(wmeanvec)
+}
+
+## Identifying duplicated windows
+dupidx <- which(duplicated(currenttrans$window))
+colscore <- paste0(currentname, "_score") # nolint
+
+if (!isTRUE(all.equal(length(dupidx), 0))) {
+
+    dupframenbvec <- unique(currenttrans$window[dupidx])
+    ## For each duplicated frame
+    wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans, currentname,
+                    colscore)
+!!
+                ## Remove duplicated frames and replace scores by wmean and
+                ## adding the coord column
+                df <- .replaceframeswithwmean(df, dupidx, windsize, nametrs,
+                    dupframenbvec, colscore, strd, wmeanvec)
+            }
