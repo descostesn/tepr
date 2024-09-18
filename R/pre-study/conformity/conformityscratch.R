@@ -101,6 +101,16 @@ maptrackbed <- read.delim(maptrackpath, header = FALSE)
     return(list(allwindtib, blacklisttib, maptracktib))
 }
 
+.retrievebgval <- function(currentpath, verbose) {
+
+    valgr <- rtracklayer::import.bedGraph(currentpath)
+    if (verbose) message("\t\t Converting to tibble")
+    valdf <- as.data.frame(valgr)
+    colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
+    valtib <- tibble::as_tibble(valdf)
+    return(valtib)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -115,14 +125,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
             windsize, verbose) {
 
-            ## Dealing with bedgraph values
-            if (verbose) message("\t Retrieving values for ", currentname)
-            valgr <- rtracklayer::import.bedGraph(currentpath)
-            if (verbose) message("\t\t Converting to tibble")
-            valdf <- as.data.frame(valgr)
-            colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
-                "score")
-            valtib <- tibble::as_tibble(valdf)
+            ## Retrieving bedgraph values
+            if (verbose) message("\t Retrieving values for ", currentname) # nolint
+            valtib <- .retrievebgval(currentpath, verbose)
 
             ## Overlapping scores with anno on correct strand
             if (verbose) message("\t Retrieving scores on annotations of strand ",
