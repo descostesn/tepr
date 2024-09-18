@@ -111,59 +111,106 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
         windsize, verbose) {
 
-        ## Dealing with bedgraph values
-        if (verbose) message("\t Retrieving values for ", currentname)
-        valgr <- rtracklayer::import.bedGraph(currentpath)
-        if (verbose) message("\t\t Converting to tibble")
-        valdf <- as.data.frame(valgr)
-        colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
-            "score")
-        valtib <- tibble::as_tibble(valdf)
+            ## Dealing with bedgraph values
+            if (verbose) message("\t Retrieving values for ", currentname)
+            valgr <- rtracklayer::import.bedGraph(currentpath)
+            if (verbose) message("\t\t Converting to tibble")
+            valdf <- as.data.frame(valgr)
+            colnames(valdf) <- c("chrom", "start", "end", "width", "strand",
+                "score")
+            valtib <- tibble::as_tibble(valdf)
 
-        ## Overlapping scores with anno on correct strand
-        if (verbose) message("\t Retrieving scores on annotations of strand ",
-            currentstrand)
-        allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand) # nolint
-        suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
-            suffix = c("", ".window")))
+            ## Overlapping scores with anno on correct strand
+            if (verbose) message("\t Retrieving scores on annotations of strand ",
+                currentstrand)
+            allwindstrand <- allwindtib %>% dplyr::filter(strand == currentstrand) # nolint
+            suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
+                suffix = c("", ".window")))
 
-        ## Removing black list
-        if (verbose) message("\t Keeping scores not on black list")
-        resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
+            ## Removing black list
+            if (verbose) message("\t Keeping scores not on black list")
+            resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
 
-        ## Processing by chromosomes because of size limits, the mappability
-        ## track has too many rows
-        if (verbose) message("\t Keeping scores on high mappability track")
-        chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-        resmaplist <- lapply(chromvec, function(currentchrom, allwindtib) {
+            ## Processing by chromosomes because of size limits, the mappability
+            ## track has too many rows
+            if (verbose) message("\t Keeping scores on high mappability track")
+            chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
+            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand) {
 
-            if (verbose) message("\t\t over ", currentchrom)
-            ## Keeping scores on high mappability track
-            resmap <-  valr::bed_intersect(resblack,
-                maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
-                suffix = c("", "maphigh"))
+                if (verbose) message("\t\t over ", currentchrom)
+                ## Keeping scores on high mappability track
+                resmap <-  valr::bed_intersect(resblack,
+                    maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+                    suffix = c(".bg", ".maphigh"))
 
-            ## Removing mapping columns and duplicates
-            message("\t\t\t Removing mapping columns and duplicates")
-            resmap <- resmap[, -grep("maphigh|.overlap|.source",
-                colnames(resmap))]
-            resmap <- resmap %>% dplyr::distinct(chrom, start, end,
-                start.anno, end.anno, .keep_all = TRUE)
-            invisible(gc())
+                ## Removing mapping columns and duplicates
+                message("\t\t\t Removing mapping columns and duplicates")
+                resmap <- resmap[, -grep(".maphigh|.overlap|.source",
+                    colnames(resmap))]
+                resmap <- resmap %>% dplyr::distinct(chrom, start, end,
+                    start.window, end.window, .keep_all = TRUE)
+                invisible(gc())
 
-            ## Processing data per transcript
-            message("\t\t\t Building scoring results by transcript")
-            bgscorebytrans <- split(resmap, factor(resmap$transcript.anno))
+                ## Processing data per transcript
+                message("\t\t\t Building scoring results by transcript")
+                bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
 
-            #currenttrans=bgscorebytrans[[1]]
-            lapply(bgscorebytrans, function(currenttrans, windsize, resmap) {
+                #currenttrans=bgscorebytrans[[1]]
+                lapply(bgscorebytrans, function(currenttrans, windsize, resmap, allwindstrand) {
+
+                    ## Renaming window and coord columns removing the suffix
+                    colnamevec <- colnames(currenttrans)
+                    colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
+                    colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord"
+                    colnames(currenttrans)[which(colnamevec == "gene.window")] <- "gene"
+                    colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript"
+
+                    ## Identifying the missing window in currenttrans
+                    idx <- match(seq_len(windsize), unique(currenttrans$window))
+                    idxnavec <- which(is.na(idx))
+
+                    ## If some windows are missing
+                    if (!isTRUE(all.equal(length(idxnavec), 0))) {
+
+                        ## For each missing window whose number is contained in idxnavec
+                        message("\t\t\t Integrating missing scores")
+                        missingrowslist <- lapply(idxnavec, function(idxna, resmap, allwindstrand, currenttrans) {
+                            ## Retrieving the line of the missing window in allwindstrand
+                          !!idxmissing <-  which(allwindstrand$chrom == currenttrans$chrom[1] &
+                                    allwindstrand$transcript == currenttrans$transcript[1] &
+                                    allwindstrand$gene == currenttrans$gene[1] &
+                                    allwindstrand$window == idxna)
+                            if (!isTRUE(all.equal(length(idxmissing), 1)))
+                                stop("Problem in retrieving the missing window, this should not happen. Contact the developper.")
+                            ## Below the bedgraph information columns are set to NA. These columns will be removed
+                            resmissing <- data.frame(chrom = NA, start = NA, end = NA, width = NA, strand = "*", ## Set the bedgraph info
+                                                )
+
+    chrom     start       end width strand score biotype.window start.window
+1  chr7 127586671 127588500  1830      *     0 protein-coding    127588411
+2  chr7 127586671 127588500  1830      *     0 protein-coding    127588427
+  end.window         transcript gene strand.window window coord
+1  127588427 ENST00000000233.10 ARF5             +      1     1
+2  127588443 ENST00000000233.10 ARF5             +      2     2
+>
+                        }, resmap, allwindstrand, currentstrand)
+                    }
+
+                }, windsize, resmap, allwindstrand)
+
+            }, allwindstrand)
+        }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
+        blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
+        mc.cores = nbcpubg)
+}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                
+
                 ## Setting missing frames to NA
-               idx <- match(seq_len(windsize), unique(currenttrans$window.anno))
-               idxna <- which(is.na(idx))
-               if (!isTRUE(all.equal(length(idxna), 0))) {
-                    message("\t\t\t Integrating missing scores")
-                    missinglist <- lapply(idxna, function(currentna, resmap,
-                        currenttrans) {
+               
+                    
 
                             # misschrom <- currenttrans$chrom[1]
                             # misstrans <- currenttrans$transcript.anno[1]
@@ -182,13 +229,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                             # resrow <- resmap[idxmiss, ]
                             # resrow["score"] <- NA
 
-                            ## Testing that the coord of the window is the same for all scores
-                            ## selected (this should not give an error)
-                            if (!isTRUE(all.equal(length(unique(allframedf[, "start"])), 1)) ||
-                                !isTRUE(all.equal(length(unique(allframedf[, "end"])), 1)))
-                                stop("The size of the window is not unique for the frame rows ",
-                                "selected, this should not happen, contact the developper.")
-
+                            
                             if (isTRUE(all.equal(currentna, 1))) {} else {}
                                 
                             resrow <- data.frame(chrom = currenttrans$chrom[1]
@@ -197,23 +238,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
-chrom     start       end width strand score   biotype.anno start.anno
-1  chr7 127586671 127588500  1830      *     0 protein-coding  127588411
-2  chr7 127586671 127588500  1830      *     0 protein-coding  127588427
-3  chr7 127586671 127588500  1830      *     0 protein-coding  127588443
-4  chr7 127586671 127588500  1830      *     0 protein-coding  127588459
-5  chr7 127586671 127588500  1830      *     0 protein-coding  127588475
-6  chr7 127586671 127588500  1830      *     0 protein-coding  127588491
-   end.anno    transcript.anno gene.anno strand.anno window.anno coord.anno
-1 127588427 ENST00000000233.10      ARF5           +           1          1
-2 127588443 ENST00000000233.10      ARF5           +           2          2
-3 127588459 ENST00000000233.10      ARF5           +           3          3
-4 127588475 ENST00000000233.10      ARF5           +           4          4
-5 127588491 ENST00000000233.10      ARF5           +           5          5
-6 127588507 ENST00000000233.10      ARF5           +           6          6
-               }
+               })
                 
-            }, windsize, resmap)
+            }, windsize, resmap, allwindtib)
 
             !!
             
@@ -222,9 +249,7 @@ chrom     start       end width strand score   biotype.anno start.anno
 
         return(resmap)
 
-    }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
-        mc.cores = nbcpubg)
+    })
 
     return(bedgraphlist)
 }
