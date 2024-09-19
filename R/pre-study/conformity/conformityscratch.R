@@ -62,18 +62,15 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-.convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed, verbose) {
+.convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
 
-    if (verbose) message("Converting annotations' windows to tibble") # nolint
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
             "transcript", "gene", "strand", "window", "coord")
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
-    if (verbose) message("Converting blacklist to tibble") # nolint
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
     blacklisttib <- tibble::as_tibble(blacklistbed)
 
-    if (verbose) message("Converting mappability track to tibble") # nolint
     colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
     maptracktib <- tibble::as_tibble(maptrackbed)
 
@@ -91,17 +88,12 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 }
 
 .removeblacklist <- function(allwindstrand, valtib, currentstrand,
-    blacklisttib, verbose) {
-
-        if (verbose) message("\t Retrieving scores on annotations of strand ", # nolint
-                currentstrand)
+    blacklisttib) {
+        ## Retrieving scores on annotations of strand
         suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
                 suffix = c("", ".window")))
-
         ## Removing black list
-        if (verbose) message("\t Keeping scores outside blacklist intervals") # nolint
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
-
         return(resblack)
 }
 
@@ -267,6 +259,8 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
+        if (verbose) message("\t Converting annotations' windows, blacklist,",
+            " and mappability track to tibble")
         tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed,
             verbose)
         allwindtib <- tibres[[1]]
@@ -274,30 +268,38 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         maptracktib <- tibres[[3]]
 
         ## Looping on each experiment bg file
+        if (verbose) message("\t For each bedgraph file")
         bedgraphlist <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
             windsize, nbcputrans, verbose) {
 
             ## Retrieving bedgraph values
-            if (verbose) message("\t Retrieving values for ", currentname) # nolint
+            if (verbose) message("\t\t Retrieving begraph values for ",
+                currentname)
             valtib <- .retrievebgval(currentpath, verbose)
 
             ## Keeping window coordinates on the correct strand
+            if (verbose) message("\t\t Retrieving coordinates on strand ",
+                currentstrand)
             allwindstrand <- allwindtib %>%
                 dplyr::filter(strand == as.character(currentstrand)) # nolint
 
             ## Overlapping scores with anno on correct strand and remove
             ## blacklist
+            if (verbose) message("\t\t Keeping scores outside blacklist ",
+                "intervals")
             resblack <- .removeblacklist(allwindstrand, valtib, currentstrand,
                 blacklisttib, verbose)
 
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows
+            if (verbose) message("\t\t Retrieving list of chromosomes")
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
+            if (verbose) message("\t\t Formatting scores")
             resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand,
                 currentname, resblack, maptracktib, nbcputrans) {
 
-                if (verbose) message("\t\t over ", currentchrom)
+                if (verbose) message("\t\t\t over ", currentchrom)
 
                 if (verbose) message("\t\t\t Keeping scores on high ",
                     "mappability track")
