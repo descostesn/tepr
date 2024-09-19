@@ -239,8 +239,7 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
             }, currentname, windowstart, windowend)
 
         ## Computing weighted mean
-        allcolscore <- as.vector(allframedf[, colscore])[[1]]
-        wmean <- weighted.mean(allcolscore, overntvec)
+        wmean <- weighted.mean(allframedf[, colscore], overntvec)
         return(wmean)
     }, currenttrans, currentname, colscore)
     return(wmeanvec)
@@ -309,12 +308,13 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                     factor(resmap$transcript.window))
 
                 message("\t\t\t Setting missing windows scores to NA and",
-                    "computing weighted mean for each transcript")
+                    " computing weighted mean for each transcript")
                 #currenttrans=bgscorebytrans[[1]]
+                i<-1
                 bytranslist <- lapply(bgscorebytrans,
                     function(currenttrans, windsize, allwindstrand,
                         currentname) {
-
+                            message(i)
                             res <- .arrangewindows(currenttrans,
                                 windsize, allwindstrand, currentname)
                             currenttrans <- res[[1]]
@@ -323,7 +323,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                             ## Identifying duplicated windows
                             dupidx <- which(duplicated(currenttrans$window))
                             colscore <- paste0(currentname, "_score") # nolint
-                            
+
                             if (!isTRUE(all.equal(length(dupidx), 0))) {
                                 dupframenbvec <- unique(
                                     currenttrans$window[dupidx])
@@ -336,6 +336,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                                     currenttrans, dupidx, windsize, transname,
                                     dupframenbvec, colscore, wmeanvec)
                            }
+                           currenttrans <- currenttrans[
+                                order(currenttrans$coord), ]
                            return(currenttrans)
                 }, windsize, allwindstrand, currentname)
                 !!
