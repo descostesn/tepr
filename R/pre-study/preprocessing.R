@@ -323,33 +323,6 @@ createtablescores <- function(bedgraphwmeanlist, nbcpubg) {
     return(completeframedf)
 }
 
-
-
-
-!!!!!!!!!!!!!!!!!!!!
-
-## Creating a rowid that will be used for merging
-message("Adding rowid for each bedgraph")
-bedgraphwmeanlist <- mclapply(bedgraphwmeanlist, function(tab) {
-    rowidvec <- paste(tab$biotype, tab$seqnames, tab$start, tab$end, tab$strand,
-        tab$gene, tab$transcript, paste0("frame", tab$window),
-        paste0("coord", tab$coord), sep = "_")
-    ## Inserting rowid col after transcript
-    res <- data.frame(seqnames = tab$seqnames, start = tab$start, end = tab$end,
-        strand = tab$strand, gene = tab$gene, biotype = tab$biotype,
-        window = tab$window, coord = tab$coord, transcript = tab$transcript,
-        rowid = rowidvec, tab[, grep("score", colnames(tab))])
-    colnames(res)[ncol(res)] <- colnames(tab)[grep("score", colnames(tab))]
-    return(res)
-}, mc.cores = nbcpubg)
-
-message("Joining the elements of each bedgraph")
-start_time <- Sys.time()
-completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
-    by = c("seqnames", "start", "end", "strand", "gene", "biotype", "window",
-    "coord", "transcript", "rowid"))
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time)
-saveRDS(completeframedf, file = "/g/romebioinfo/tmp/preprocessing/completeframedf-blacklistfile.rds") # nolint
-
-saveRDS(completeframedf, file = "/g/romebioinfo/tmp/preprocessing/completeframedf.rds") # nolint
+message("Merging results of each bedgraph into a single table")
+finaltab <- createtablescores(bedgraphwmeanlist, nbcpubg)
+saveRDS(finaltab, file = file.path(robjoutputfold, "finaltab.rds"))
