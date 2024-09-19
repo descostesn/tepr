@@ -12,8 +12,10 @@ library("parallel")
 # PARAMETERS
 ##################
 
-bgvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/protein_coding_score/ctrl_rep1.forward.window200.MANE.wmean.name.score"
 
+#### preprocessing
+
+bgvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/protein_coding_score/ctrl_rep1.forward.window200.MANE.wmean.name.score" # nolint
 allbgnicpath <- "/g/romebioinfo/tmp/preprocessing/backup/bedgraphwmeanlist.rds"
 allwindowspath <- "/g/romebioinfo/tmp/preprocessing/allwindowsbed.rds"
 
@@ -24,6 +26,11 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg3
 nbcpubg <- 1
 nbcputrans <- 20
 windsize <- 200
+
+#### downstream
+
+vicbigtsvpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv" # nolint
+
 
 ##################
 #FUNCTIONS
@@ -397,3 +404,12 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 # PART 2: DOWNSTREAM
 #########################################
 
+## This code tests the functions of downstream.R with the input table of
+## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
+
+bigtsv <- read.table(vicbigtsvpath, header = FALSE)
+colnames(shdf) <- c("biotype", "seqnames", "start", "end", "transcript", "gene",
+    "strand", "window", "rowid", "ctrl1fwd", "ctrl1fwdscore", "ctrl1rev",
+    "ctrl1revscore", "ctrl2fwd", "ctrl2fwdscore", "ctrl2rev", "ctrl2revscore",
+    "HS1fwd", "HS1fwdscore", "HS1rev", "HS1revscore", "HS2fwd",
+    "HS2fwdscore", "HS2rev", "HS2revscore")
