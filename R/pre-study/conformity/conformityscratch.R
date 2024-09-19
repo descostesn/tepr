@@ -2,6 +2,7 @@ library("rtracklayer")
 library("GenomicRanges")
 library("tibble")
 library("valr")
+library("utils")
 
 
 ##################
@@ -18,6 +19,7 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blac
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
 nbcpubg <- 1
+nbcputrans <- 20
 windsize <- 200
 
 ##################
@@ -263,7 +265,7 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 }
 
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
-    nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
+    nbcputrans, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
         tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed,
             verbose)
@@ -272,9 +274,9 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         maptracktib <- tibres[[3]]
 
         ## Looping on each experiment bg file
-        bedgraphlist <- parallel::mcmapply(function(currentpath, currentname,
+        bedgraphlist <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
-            windsize, verbose) {
+            windsize, nbcputrans, verbose) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\t Retrieving values for ", currentname) # nolint
@@ -293,7 +295,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             ## track has too many rows
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
             resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand,
-                currentname, resblack, maptracktib) {
+                currentname, resblack, maptracktib, nbcputrans) {
 
                 if (verbose) message("\t\t over ", currentchrom)
 
@@ -310,11 +312,10 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 message("\t\t\t Setting missing windows scores to NA and",
                     " computing weighted mean for each transcript")
                 #currenttrans=bgscorebytrans[[1]]
-                i<-1
-                bytranslist <- lapply(bgscorebytrans,
+                bytranslist <- parallel::mclapply(bgscorebytrans,
                     function(currenttrans, windsize, allwindstrand,
                         currentname) {
-                            message(i)
+
                             res <- .arrangewindows(currenttrans,
                                 windsize, allwindstrand, currentname)
                             currenttrans <- res[[1]]
@@ -339,13 +340,13 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                            currenttrans <- currenttrans[
                                 order(currenttrans$coord), ]
                            return(currenttrans)
-                }, windsize, allwindstrand, currentname)
+                }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
                 !!
 
-            }, allwindstrand, currentname, resblack, maptracktib)
+            }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, verbose), SIMPLIFY = FALSE,
-        mc.cores = nbcpubg)
+        blacklisttib, maptracktib, windsize, nbcputrans, verbose),
+        SIMPLIFY = FALSE)
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
