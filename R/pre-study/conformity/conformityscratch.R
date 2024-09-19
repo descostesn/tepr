@@ -316,8 +316,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
         ## Looping on each experiment bg file
         if (verbose) message("\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
-            windsize, nbcputrans, verbose) {
+            currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
+            nbcputrans,verbose) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\t\t Retrieving begraph values for ",
