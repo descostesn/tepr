@@ -30,6 +30,8 @@ windsize <- 200
 #### downstream
 
 vicbigtsvpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv" # nolint
+expthres <- 0.1
+
 
 
 ##################
@@ -408,8 +410,20 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 ## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
 
 bigtsv <- read.table(vicbigtsvpath, header = FALSE)
-colnames(shdf) <- c("biotype", "seqnames", "start", "end", "transcript", "gene",
-    "strand", "window", "rowid", "ctrl1fwd", "ctrl1fwdscore", "ctrl1rev",
-    "ctrl1revscore", "ctrl2fwd", "ctrl2fwdscore", "ctrl2rev", "ctrl2revscore",
-    "HS1fwd", "HS1fwdscore", "HS1rev", "HS1revscore", "HS2fwd",
-    "HS2fwdscore", "HS2rev", "HS2revscore")
+colnames(bigtsv) <- c("biotype", "seqnames", "start", "end", "transcript",
+    "gene", "strand", "window", "rowid", "ctrl1fwd", "ctrl1fwdscore",
+    "ctrl1rev", "ctrl1revscore", "ctrl2fwd", "ctrl2fwdscore", "ctrl2rev",
+    "ctrl2revscore", "HS1fwd", "HS1fwdscore", "HS1rev", "HS1revscore",
+    "HS2fwd", "HS2fwdscore", "HS2rev", "HS2revscore")
+
+## The function has been copied to the terminal from downstream.R
+niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
+    verbose = TRUE)
+viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
+colnames(viccode_allexprsdfsvic[[1]]) <- colnames(niccode_allexprsdfsvic[[1]])
+if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
+    message("table is equal after averageandfilterexprs")
+
+if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
+    message("transcript list is equal after averageandfilterexprs")
+
