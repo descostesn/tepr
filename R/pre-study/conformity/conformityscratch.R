@@ -308,7 +308,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 bgscorebytrans <- split(resmap,
                     factor(resmap$transcript.window))
 
-                message("\t\t\t Setting missing windows scores to NA")
+                message("\t\t\t Setting missing windows scores to NA and",
+                    "computing weighted mean for each transcript")
                 #currenttrans=bgscorebytrans[[1]]
                 bytranslist <- lapply(bgscorebytrans,
                     function(currenttrans, windsize, allwindstrand,
@@ -319,7 +320,25 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                             currenttrans <- res[[1]]
                             transname <- res[[2]]
 
+                            ## Identifying duplicated windows
+                            dupidx <- which(duplicated(currenttrans$window))
+                            colscore <- paste0(currentname, "_score") # nolint
+                            
+                            if (!isTRUE(all.equal(length(dupidx), 0))) {
+                                dupframenbvec <- unique(
+                                    currenttrans$window[dupidx])
+                                ## For each duplicated frame
+                                wmeanvec <- .computewmeanvec(dupframenbvec,
+                                    currenttrans, currentname, colscore)
+                                ## Remove duplicated frames and replace scores
+                                ## by wmean and adding the coord column
+                                currenttrans <- .replaceframeswithwmean(
+                                    currenttrans, dupidx, windsize, transname,
+                                    dupframenbvec, colscore, wmeanvec)
+                           }
+                           return(currenttrans)
                 }, windsize, allwindstrand, currentname)
+                !!
 
             }, allwindstrand, currentname, resblack, maptracktib)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
@@ -332,18 +351,3 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
-## Identifying duplicated windows
-dupidx <- which(duplicated(currenttrans$window))
-colscore <- paste0(currentname, "_score") # nolint
-
-if (!isTRUE(all.equal(length(dupidx), 0))) {
-
-    dupframenbvec <- unique(currenttrans$window[dupidx])
-    ## For each duplicated frame
-    wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans, currentname,
-                    colscore)
-   ## Remove duplicated frames and replace scores by wmean and
-   ## adding the coord column
-   currenttrans <- .replaceframeswithwmean(currenttrans, dupidx, windsize, transname,
-       dupframenbvec, colscore, wmeanvec)
-}
