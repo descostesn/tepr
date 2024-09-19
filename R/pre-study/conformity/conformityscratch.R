@@ -345,8 +345,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             if (verbose) message("\t\t Retrieving list of chromosomes")
             chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
             if (verbose) message("\t\t Formatting scores")
-            resmaplist <- lapply(chromvec, function(currentchrom, allwindstrand,
-                currentname, resblack, maptracktib, nbcputrans) {
+            bychromlist <- lapply(chromvec, function(currentchrom,
+                allwindstrand, currentname, resblack, maptracktib, nbcputrans) {
 
                 if (verbose) message("\t\t\t over ", currentchrom)
                 if (verbose) message("\t\t\t Keeping scores on high ",
@@ -365,8 +365,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             ## Merging results that were computed on each chromome
             if (verbose) message("\t\t Merging results that were computed on",
                 " each chromome")
-            resallchrom <- do.call("rbind", resmaplist)
-            rm(resmaplist)
+            resallchrom <- do.call("rbind", bychromlist)
+            rm(bychromlist)
             invisible(gc())
             return(resallchrom)
 
