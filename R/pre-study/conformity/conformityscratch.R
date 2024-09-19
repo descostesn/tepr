@@ -236,7 +236,8 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
             }, currentname, windowstart, windowend)
 
         ## Computing weighted mean
-        wmean <- weighted.mean(allframedf[, colscore], overntvec)
+        allscores <- as.data.frame(allframedf[,colscore])[[1]]
+        wmean <- weighted.mean(allscores, overntvec)
         return(wmean)
     }, currenttrans, currentname, colscore)
     return(wmeanvec)
