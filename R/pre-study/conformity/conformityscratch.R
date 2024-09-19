@@ -336,6 +336,8 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
                 "intervals")
             resblack <- .removeblacklist(allwindstrand, valtib, currentstrand,
                 blacklisttib)
+            rm(valtib)
+            invisible(gc())
 
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows. Formatting scores, keeping those on
