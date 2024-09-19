@@ -416,7 +416,7 @@ colnames(bigtsv) <- c("biotype", "seqnames", "start", "end", "transcript",
     "ctrl2revscore", "HS1fwd", "HS1fwdscore", "HS1rev", "HS1revscore",
     "HS2fwd", "HS2fwdscore", "HS2rev", "HS2revscore")
 
-## The function has been copied to the terminal from downstream.R
+## The function averageandfilterexprs has been copied to the terminal from downstream.R # nolint
 niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
     verbose = TRUE)
 viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
@@ -427,3 +427,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     message("transcript list is equal after averageandfilterexprs")
 
+## The function genesECDF has been copied to the terminal from downstream.R
+niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, exptab,
+    nbcpu = nbcputrans, verbose = TRUE)
+viccode_resecdfvic <- 
