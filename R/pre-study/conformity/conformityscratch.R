@@ -366,6 +366,9 @@ expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
 blacklistbed <- read.delim(blacklistshpath, header = FALSE)
 maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
+bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
+    nbcputrans, allwindowsbed, expnamevec, windsize)
+
 
 ##################### TEST
 ## This is the ctrl rep1 fwd
@@ -377,13 +380,8 @@ names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
 bgnic <- allbgnic[["ctrl_rep1.forward"]]
 rm(allbgnic)
 gc()
+
 ## Selecting the lines corresponding to the gene ARF5
 bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
 bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
 allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
-#allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
