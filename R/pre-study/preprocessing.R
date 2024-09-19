@@ -480,19 +480,10 @@ maptrackbed <- read.delim(maptrackpath, header = FALSE)
 saveRDS(maptrackbed, file.path(robjoutputfold, "maptrackbed.rds"))
 
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-!!bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
+!!bedgraphwmeanlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
 
-## Retrieving values according to annotations and calculate an arithmetic
-## weighted mean for each bedgraph
-message("Retrieving values according to annotations and calculate an ",
-    "arithmetic weighted mean for each bedgraph")
-bedgraphwmeanlist <- bedgraphwmeanreplace(bedgraphgrlist, exptab, expnamevec,
-    allwindowsgr, windsize, nbcputrans)
-
-saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
-saveRDS(bedgraphwmeanlist, file = "/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist-blacklistfile.rds") # nolint`
-# bedgraphwmeanlist <- readRDS("/g/romebioinfo/tmp/preprocessing/bedgraphwmeanlist.rds") # nolint
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ## Creating a rowid that will be used for merging
 message("Adding rowid for each bedgraph")
