@@ -358,6 +358,11 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
 # MAIN
 ##################
 
+#########################################
+# PART 1: PREPROCESSING
+#########################################
+
+
 ## Reading all windows bed
 allwindowsbed <- readRDS(allwindowspath)
 
@@ -386,3 +391,9 @@ gc()
 bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
 bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
 allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
+
+
+#########################################
+# PART 2: DOWNSTREAM
+#########################################
+
