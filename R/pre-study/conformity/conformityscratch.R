@@ -246,6 +246,23 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
     return(wmeanvec)
 }
 
+.replaceframeswithwmean <- function(currenttrans, dupidx, windsize, transname,
+    dupframenbvec, colscore, wmeanvec) {
+
+        ## Remove duplicated frames and replace scores by wmean
+        currenttrans <- currenttrans[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+            stop("The number of frames should be equal to windsize: ",
+                windsize, " for transcript ", transname)
+        idxscorereplace <- match(dupframenbvec, currenttrans$window)
+        if (!isTRUE(all.equal(dupframenbvec,
+            currenttrans$window[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        currenttrans[idxscorereplace, colscore] <- wmeanvec
+
+        return(currenttrans)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcpubg, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -314,22 +331,6 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
 
 
-.replaceframeswithwmean <- function(currenttrans, dupidx, windsize, transname,
-    dupframenbvec, colscore, wmeanvec) {
-
-        ## Remove duplicated frames and replace scores by wmean
-        currenttrans <- currenttrans[-dupidx, ]
-        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
-            stop("The number of frames should be equal to windsize: ",
-                windsize, " for transcript ", transname)
-        idxscorereplace <- match(dupframenbvec, currenttrans$window)
-        if (!isTRUE(all.equal(dupframenbvec,
-            currenttrans$window[idxscorereplace])))
-            stop("Problem in replacing scores by wmean, contact the developer.")
-        currenttrans[idxscorereplace, colscore] <- wmeanvec
-
-        return(currenttrans)
-}
 
 ## Identifying duplicated windows
 dupidx <- which(duplicated(currenttrans$window))
