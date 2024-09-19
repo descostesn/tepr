@@ -303,13 +303,12 @@ windsize <- 200
             return(resallchrom)
 }
 
-retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
+retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
         if (verbose) message("\t Converting annotations' windows, blacklist,",
             " and mappability track to tibble")
-        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed,
-            verbose)
+        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
         allwindtib <- tibres[[1]]
         blacklisttib <- tibres[[2]]
         maptracktib <- tibres[[3]]
