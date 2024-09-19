@@ -259,6 +259,51 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
         return(currenttrans)
 }
 
+.missingandwmean <- function(resmap, windsize, allwindstrand, currentname,
+    nbcputrans) {
+
+    ## Splitting the scores kept on the high mappability track by transcript
+    bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
+
+    ## Performing identification of missing windows and calculation of weighted
+    ## means for each transcript. This is parallelized on nbcputrans CPUs.
+    bytranslist <- parallel::mclapply(bgscorebytrans, function(currenttrans,
+        windsize, allwindstrand, currentname) {
+
+            ## Identification of missing windows for the current transcript
+            ## and setting their scores to NA. Indeed if a window is missing
+            ## it is because it was in a black list or a low mappability
+            ## interval.
+            res <- .arrangewindows(currenttrans, windsize, allwindstrand,
+                currentname)
+            currenttrans <- res[[1]]
+            transname <- res[[2]]
+
+            ## Identifying duplicated windows that will be used to compute
+            ## a weighted mean.
+            dupidx <- which(duplicated(currenttrans$window))
+            colscore <- paste0(currentname, "_score") # nolint
+
+            if (!isTRUE(all.equal(length(dupidx), 0))) {
+                dupframenbvec <- unique(currenttrans$window[dupidx])
+                ## For each duplicated frame, compute the weighted mean
+                wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans,
+                    currentname, colscore)
+                ## Remove duplicated frames and replace scores by wmean
+                currenttrans <- .replaceframeswithwmean(currenttrans, dupidx,
+                    windsize, transname, dupframenbvec, colscore, wmeanvec)
+             }
+
+             currenttrans <- currenttrans[order(currenttrans$coord), ]
+             return(currenttrans)
+    }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
+
+    transdf <- do.call("rbind", bytranslist)
+    rm(bytranslist)
+    invisible(gc())
+    return(transdf)
+}
+
 retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose = TRUE) {
 
@@ -272,7 +317,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
         ## Looping on each experiment bg file
         if (verbose) message("\t For each bedgraph file")
-        bedgraphlist <- mapply(function(currentpath, currentname,
+        bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, nbcpuchrom,
             windsize, nbcputrans, verbose) {
 
@@ -303,55 +348,17 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 currentname, resblack, maptracktib, nbcputrans) {
 
                 if (verbose) message("\t\t\t over ", currentchrom)
-
                 if (verbose) message("\t\t\t Keeping scores on high ",
                     "mappability track")
                 resmap <- .retrieveonhighmap(resblack, maptracktib,
                     currentchrom)
 
                 ## Processing data per transcript
-                message("\t\t\t Building scoring results by transcript")
-                bgscorebytrans <- split(resmap,
-                    factor(resmap$transcript.window))
-
                 message("\t\t\t Setting missing windows scores to NA and",
                     " computing weighted mean for each transcript")
-                #currenttrans=bgscorebytrans[[1]]
-                bytranslist <- parallel::mclapply(bgscorebytrans,
-                    function(currenttrans, windsize, allwindstrand,
-                        currentname) {
-
-                            res <- .arrangewindows(currenttrans,
-                                windsize, allwindstrand, currentname)
-                            currenttrans <- res[[1]]
-                            transname <- res[[2]]
-
-                            ## Identifying duplicated windows
-                            dupidx <- which(duplicated(currenttrans$window))
-                            colscore <- paste0(currentname, "_score") # nolint
-
-                            if (!isTRUE(all.equal(length(dupidx), 0))) {
-                                dupframenbvec <- unique(
-                                    currenttrans$window[dupidx])
-                                ## For each duplicated frame
-                                wmeanvec <- .computewmeanvec(dupframenbvec,
-                                    currenttrans, currentname, colscore)
-                                ## Remove duplicated frames and replace scores
-                                ## by wmean and adding the coord column
-                                currenttrans <- .replaceframeswithwmean(
-                                    currenttrans, dupidx, windsize, transname,
-                                    dupframenbvec, colscore, wmeanvec)
-                           }
-                           currenttrans <- currenttrans[
-                                order(currenttrans$coord), ]
-                           return(currenttrans)
-                }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
-
-                transdf <- do.call("rbind", bytranslist)
-                rm(bytranslist)
-                invisible(gc())
+                transdf <- .missingandwmean(resmap, windsize, allwindstrand,
+                    currentname, nbcputrans)
                 return(transdf)
-
             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
 
             ## Merging results that were computed on each chromome
@@ -366,6 +373,5 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
 
-        message("Merging results for all bedgraphs into a single table")
-        bedgraphlist
+        return(bedgraphlistwmean)
 }
