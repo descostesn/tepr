@@ -147,31 +147,6 @@ checkremoval <- function(datagr, dataremovedgr, dataname, removename,
 }
 
 
-
-bedtogr <- function(currentbed, strand = TRUE, symbol = TRUE,
-    allwindows = FALSE) {
-
-    if (!allwindows) {
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 1],
-                ranges = IRanges::IRanges(start = currentbed[, 2],
-                                      end = currentbed[, 3],
-                                      names = currentbed[, 4]),
-                strand = if (strand) currentbed[, 6] else "*",
-                symbol = if (symbol) currentbed[, 5] else NA)
-    } else {
-        grres <- GenomicRanges::GRanges(seqnames = currentbed[, 2],
-                ranges = IRanges::IRanges(start = currentbed[, 3],
-                                      end = currentbed[, 4],
-                                      name = currentbed[, 5]),
-                gene = currentbed[, 6], strand = currentbed[, 7],
-                biotype = currentbed[, 1], window = currentbed[, 8],
-                coord = currentbed[, 9])
-    }
-    return(grres)
-}
-
-
-
 .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
 
     cl <- parallel::makeCluster(nbcputrans)
@@ -489,7 +464,6 @@ if (!isTRUE(all.equal(length(idxpar), 0)))
 allwindowsbed <- makewindowsbedtools(expbed = allannobed, nbwindows = windsize,
     nbcputrans = nbcputrans)
 saveRDS(allwindowsbed, file.path(robjoutputfold, "allwindowsbed.rds"))
-allwindowsgr <- bedtogr(allwindowsbed, allwindows = TRUE)
 
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
@@ -500,22 +474,14 @@ if (is.null(blacklistshpath)) {
     blacklistgr <- createblacklist(blacklistname, outputfolder)
 } else {
     blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-    blacklistgr <- bedtogr(blacklistbed, strand = FALSE, symbol = FALSE)
 }
 
-maptrack <- read.delim(maptrackpath, header = FALSE)
-maptrackgr <- bedtogr(maptrack, strand = FALSE)
-
-saveRDS(maptrackgr, file.path(robjoutputfold, "maptrackgr.gr"))
-# maptrackgr <- readRDS(file.path(robjoutputfold, "maptrackgr.gr")) # nolint
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+saveRDS(maptrackbed, file.path(robjoutputfold, "maptrackbed.rds"))
 
 expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
+!!bedgraphgrlist <- retrieveandfilterfrombg(exptab, blacklistgr,
     maptrackgr, nbcpubg, expnamevec)
-
-saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist.rds"))
-saveRDS(bedgraphgrlist, file.path(robjoutputfold, "bedgraphgrlist-blacklistfile.rds")) # nolint
-# bedgraphgrlist <- readRDS(file.path(robjoutputfold, "bedgraphgrlist.rds")) # nolint
 
 ## Retrieving values according to annotations and calculate an arithmetic
 ## weighted mean for each bedgraph
