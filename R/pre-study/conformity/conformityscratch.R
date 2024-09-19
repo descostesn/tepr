@@ -341,16 +341,14 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                                 order(currenttrans$coord), ]
                            return(currenttrans)
                 }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
-                !!
+
+                transdf <- do.call("rbind", bytranslist)
+                rm(bytranslist)
+                invisible(gc())
+                return(transdf)
 
             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
 }
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
