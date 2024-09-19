@@ -1,8 +1,11 @@
 library("rtracklayer")
 library("GenomicRanges")
 library("tibble")
+library("dplyr")
 library("valr")
 library("utils")
+library("parallel")
+
 
 
 ##################
@@ -357,8 +360,12 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
             resallchrom <- do.call("rbind", resmaplist)
             rm(resmaplist)
             invisible(gc())
+            return(resallchrom)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
+
+        message("Merging results for all bedgraphs into a single table")
+        bedgraphlist
 }
