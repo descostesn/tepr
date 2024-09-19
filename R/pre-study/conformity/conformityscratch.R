@@ -29,42 +29,6 @@ windsize <- 200
 #FUNCTIONS
 ##################
 
-
-
-##################
-# MAIN
-##################
-
-## Reading all windows bed
-allwindowsbed <- readRDS(allwindowspath)
-
-## Reading exptab, black list, and maptrack
-exptab <- read.csv(exptabpath, header = TRUE)
-expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-maptrackbed <- read.delim(maptrackpath, header = FALSE)
-
-
-##################### TEST
-## This is the ctrl rep1 fwd
-bgvic <- read.delim(bgvicpath, header = FALSE)
-
-## Selecting ctrl rep1 fwd
-allbgnic <- readRDS(allbgnicpath)
-names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
-bgnic <- allbgnic[["ctrl_rep1.forward"]]
-rm(allbgnic)
-gc()
-## Selecting the lines corresponding to the gene ARF5
-bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
-bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
-allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
-#allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 .convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
 
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
@@ -386,3 +350,40 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
 
         return(bedgraphlistwmean)
 }
+
+
+
+##################
+# MAIN
+##################
+
+## Reading all windows bed
+allwindowsbed <- readRDS(allwindowspath)
+
+## Reading exptab, black list, and maptrack
+exptab <- read.csv(exptabpath, header = TRUE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+
+##################### TEST
+## This is the ctrl rep1 fwd
+bgvic <- read.delim(bgvicpath, header = FALSE)
+
+## Selecting ctrl rep1 fwd
+allbgnic <- readRDS(allbgnicpath)
+names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
+bgnic <- allbgnic[["ctrl_rep1.forward"]]
+rm(allbgnic)
+gc()
+## Selecting the lines corresponding to the gene ARF5
+bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
+bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
+allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
+#allwindowsgr <- bedtogr(allwindarf, allwindows = TRUE)
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
