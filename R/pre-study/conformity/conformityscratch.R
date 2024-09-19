@@ -350,6 +350,14 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed,
                 return(transdf)
 
             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
+
+            ## Merging results that were computed on each chromome
+            if (verbose) message("\t\t Merging results that were computed on",
+                " each chromome")
+            resallchrom <- do.call("rbind", resmaplist)
+            rm(resmaplist)
+            invisible(gc())
+
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
