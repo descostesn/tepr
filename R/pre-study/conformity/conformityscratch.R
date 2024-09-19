@@ -317,7 +317,7 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
         if (verbose) message("\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans,verbose) {
+            nbcputrans, verbose) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\t\t Retrieving begraph values for ",
