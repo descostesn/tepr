@@ -19,7 +19,7 @@ library("pracma")
 ##################
 
 
-alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
+alldfpath <- "/g/romebioinfo/tmp/comparewithscratch/finaltab.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 filtertabpath <- "/g/romebioinfo/Projects/tepr/Dataset/filtertab.csv"
 
