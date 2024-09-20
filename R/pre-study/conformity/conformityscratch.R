@@ -418,8 +418,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
 
     message("\t Joining the elements of each bedgraph")
     completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
-        by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype",
-        "window", "coord", "transcript", "rowid"))
+        by = c("chrom", "start.window", "end.window", "strand.window", "gene",
+        "biotype.window", "window", "coord", "transcript", "rowid"))
 
     return(completeframedf)
 }
