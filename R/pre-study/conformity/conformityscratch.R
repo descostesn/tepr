@@ -38,7 +38,7 @@ outputfolder <- "/g/romebioinfo/tmp/comparewithscratch"
 
 
 ##################
-#FUNCTIONS
+#FUNCTIONS - preprocessing
 ##################
 
 .convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
@@ -402,6 +402,52 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
     return(completeframedf)
 }
 
+##################
+#FUNCTIONS - downstream
+##################
+
+averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
+
+    scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
+      "_score")
+
+    ## Calculate the average expression per transcript (over each frame)
+    if (verbose) message("\t Calculating average expression per transcript") # nolint
+    dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
+        dplyr::summarize(gene = gene[1], strand = strand.window[1], # nolint
+            dplyr::across(
+                tidyselect::all_of(scorecolvec),
+                ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+
+    ## Remove a line if it contains only values < expthres (separating strands)
+    if (verbose) message("\t Removing lines with values < expthres") # nolint
+    dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
+        expthres) {
+            if ((isTRUE(all.equal(strandname, "+")) &&
+                isTRUE(all.equal(directname, "rev"))) ||
+                (isTRUE(all.equal(strandname, "-")) &&
+                isTRUE(all.equal(directname, "fwd"))))
+                    stop("Strand and direction do not match, contact the ",
+                        "developer")
+            dfstrand <- dfbytranscript %>%
+                dplyr::filter(strand == strandname) %>% # nolint
+                dplyr::select(gene, transcript, strand, # nolint
+                tidyselect::contains(directname))  %>%
+                dplyr::filter(dplyr::if_all(tidyselect::all_of(
+                tidyselect::contains("mean")), ~ !is.na(.))) %>%
+                dplyr::filter(dplyr::if_all(tidyselect::all_of(
+                tidyselect::contains("mean")), ~ . > expthres))
+            return(dfstrand)
+        }, unique(expdf$strand), unique(expdf$direction),
+            MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
+
+    exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
+        dplyr::arrange(transcript) %>% dplyr::pull(transcript) # nolint
+
+    return(list(maintable = alldf, exptranlist = exptranstab))
+}
+
+
 
 
 ##################
@@ -457,20 +503,6 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 bigtsvnic <- readRDS(nicbigtsvpath)
 oldbigtsvnic <- readRDS(oldnictsvpath)
 
-# chrom biotype.window start.window end.window        transcript
-# 1  chr1 protein-coding      6624868    6624911 ENST00000054650.9
-# 2  chr1 protein-coding      6624911    6624954 ENST00000054650.9
-#                                                                         rowid
-# 1 protein-coding_chr1_6624868_6624911_+_THAP3_ENST00000054650.9_frame1_coord1
-# 2 protein-coding_chr1_6624911_6624954_+_THAP3_ENST00000054650.9_frame2_coord2
-#    gene strand.window window coord ctrl1fwd_score ctrl1rev_score ctrl2fwd_score
-# 1 THAP3             +      1     1      2.7439091             NA       5.302834
-# 2 THAP3             +      2     2      0.6859773             NA       6.845477
-#   ctrl2rev_score HS1fwd_score HS1rev_score HS2fwd_score HS2rev_score
-# 1             NA     4.533872           NA     6.666301           NA
-# 2             NA     5.603660           NA     8.351600           NA
-
-
 ## This code tests the functions of downstream.R with the input table of
 ## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
 bigtsv <- read.table(vicbigtsvpath, header = FALSE)
@@ -486,16 +518,36 @@ namecolvec <- c("ctrl1fwd$", "ctrl1rev$", "ctrl2fwd$", "ctrl2rev$", "HS1fwd$",
 idxnames <- sapply(namecolvec, grep, colnames(bigtsv))
 bigtsv <- bigtsv[, -idxnames]
 
-## The function averageandfilterexprs has been copied to the terminal from downstream.R # nolint
+####
+#### averageandfilterexprs
+####
+
 niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
     verbose = TRUE)
 viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
-colnames(viccode_allexprsdfsvic[[1]]) <- colnames(niccode_allexprsdfsvic[[1]])
+
+## Modify cols for comparaison
+colnames(viccode_allexprsdfsvic[[1]]) <- c("biotype.window", "chrom",
+    "start.window", "end.window", "transcript", "gene", "strand.window",
+    "window", "rowid", "ctrl_rep1.plus", "ctrl1fwd_score", "ctrl_rep1.minus",
+    "ctrl1rev_score", "ctrl_rep2.plus", "ctrl2fwd_score", "ctrl_rep2.minus",
+    "ctrl2rev_score", "HS_rep1.plus", "HS1fwd_score", "HS_rep1.minus",
+    "HS1rev_score", "HS_rep2.plus", "HS2fwd_score", "HS_rep2.minus",
+    "HS2rev_score")
+namecolvec <- c("ctrl_rep1.plus", "ctrl_rep1.minus", "ctrl_rep2.plus",
+    "ctrl_rep2.minus", "HS_rep1.plus", "HS_rep1.minus", "HS_rep2.plus",
+    "HS_rep2.minus")
+idxnames <- sapply(namecolvec, grep, colnames(viccode_allexprsdfsvic[[1]]))
+viccode_allexprsdfsvic[[1]] <- viccode_allexprsdfsvic[[1]][, -idxnames]
+
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
     message("table is equal after averageandfilterexprs")
 
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     message("transcript list is equal after averageandfilterexprs")
+
+
+
 
 ## The function genesECDF has been copied to the terminal from downstream.R
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, exptab,
