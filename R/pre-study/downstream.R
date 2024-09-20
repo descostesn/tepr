@@ -328,10 +328,10 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         if (!is.null(nbwindows)) {
             if (isTRUE(all.equal(as.character(strand), "+"))) {
                 windsize <- floor(
-                    (transtab$end[nbwindows] - transtab$start.window[1]) / nbwindows)
+                    (transtab$end.window[nbwindows] - transtab$start.window[1]) / nbwindows)
             } else {
                 windsize <- floor(
-                    (transtab$end[1] - transtab$start.window[nbwindows]) / nbwindows)
+                    (transtab$end.window[1] - transtab$start.window[nbwindows]) / nbwindows)
             }
             infodf <- cbind(infodf, windsize)
         }
@@ -556,7 +556,7 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
 .summarytrans <- function(bytransmeanlist, nbcpu) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
     coor1 <- min(trans$start.window)
-    coor2 <- max(trans$end)
+    coor2 <- max(trans$end.window)
     return(data.frame(chr = trans$chrom[1], coor1, coor2,
           strand = trans$strand[1], gene = trans$gene[1],
           transcript = trans$transcript[1], size = coor2 - coor1 + 1))
