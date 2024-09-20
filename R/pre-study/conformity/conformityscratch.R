@@ -518,6 +518,7 @@ namecolvec <- c("ctrl1fwd$", "ctrl1rev$", "ctrl2fwd$", "ctrl2rev$", "HS1fwd$",
 idxnames <- sapply(namecolvec, grep, colnames(bigtsv))
 bigtsv <- bigtsv[, -idxnames]
 
+
 ####
 #### averageandfilterexprs
 ####
@@ -545,7 +546,6 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
 
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     message("transcript list is equal after averageandfilterexprs")
-
 
 
 ####
@@ -663,6 +663,17 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 
 !!!!!!!!!!!!!!
 
-niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, exptab,
+## Reading the result of ecdf that contains the column coord that is present in
+## the input table of nic
+viccode_resecdfvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/cugusi2023_ECDFScores_10_200.tsv"
+viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TRUE)
+
+## Adding the coordinate column
+idx <- match(niccode_allexprsdfsvic[[1]]$rowid, viccode_resecdfvic$id)
+if (!isTRUE(all.equal(nrow(niccode_allexprsdfsvic[[1]]), length(idx))))
+    stop("Cannot retrieve coord")
+niccode_allexprsdfsviccoord <- niccode_allexprsdfsvic
+niccode_allexprsdfsviccoord[[1]] <- cbind(niccode_allexprsdfsviccoord[[1]], coord = viccode_resecdfvic$coord[idx])
+
+niccode_resecdfvic <- genesECDF(niccode_allexprsdfsviccoord, exptab,
     nbcpu = nbcputrans, verbose = TRUE)
-viccode_resecdfvic <- 
