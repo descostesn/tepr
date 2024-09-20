@@ -390,7 +390,7 @@ bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
 createtablescores <- function(bedgraphlistwmean, nbcpubg) {
 
     ## Creating a rowid that will be used for merging
-    message("\t Adding rowid for each bedgraph")
+    message("\t Adding rowid for each bedgraph") # nolint
     rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
 
         rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window,
@@ -398,32 +398,10 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
             tab$transcript, paste0("frame", tab$window),
             paste0("coord", tab$coord), sep = "_")
 
-
- chrom start.bg  end.bg width.bg strand.bg ctrl1fwd_score biotype.window
-1  chr1  6624861 6624900       40         *      2.7439091 protein-coding
-2  chr1  6624911 6624940       30         *      0.6859773 protein-coding
-3  chr1  6624941 6625030       90         *      0.0000000 protein-coding
-4  chr1  6624941 6625030       90         *      0.4573182 protein-coding
-5  chr1  6625031 6625100       70         *      2.0122000 protein-coding
-6  chr1  6625031 6625100       70         *      2.1036636 protein-coding
-  start.window end.window        transcript  gene strand.window window coord
-1      6624868    6624911 ENST00000054650.9 THAP3             +      1     1
-2      6624911    6624954 ENST00000054650.9 THAP3             +      2     2
-3      6624954    6624997 ENST00000054650.9 THAP3             +      3     3
-4      6624997    6625040 ENST00000054650.9 THAP3             +      4     4
-5      6625040    6625083 ENST00000054650.9 THAP3             +      5     5
-6      6625083    6625126 ENST00000054650.9 THAP3             +      6     6
-
         ## Inserting rowid col after transcript
-        test <- tab %>% add_column(rowid = rowidvec, .after = "transcript")
-     
-        res <- data.frame(chrom = tab$seqnames, start = tab$start,
-            end = tab$end, strand = tab$strand, gene = tab$gene,
-            biotype = tab$biotype, window = tab$window, coord = tab$coord,
-            transcript = tab$transcript, rowid = rowidvec,
-            tab[, grep("score", colnames(tab))])
-        colnames(res)[ncol(res)] <- colnames(tab)[grep("score", colnames(tab))]
-        return(res)
+        tab <- tab %>% tibble::add_column(rowid = rowidvec,
+            .after = "transcript")
+        return(tab)
     }, mc.cores = nbcpubg)
 
     message("\t Joining the elements of each bedgraph")
