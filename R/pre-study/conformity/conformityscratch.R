@@ -363,30 +363,6 @@ retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
 }
 
 
-
-##################
-# MAIN
-##################
-
-#########################################
-# PART 1: PREPROCESSING
-#########################################
-
-
-## Reading all windows bed
-allwindowsbed <- readRDS(allwindowspath)
-
-## Reading exptab, black list, and maptrack
-exptab <- read.csv(exptabpath, header = TRUE)
-expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-maptrackbed <- read.delim(maptrackpath, header = FALSE)
-
-bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
-    nbcputrans, allwindowsbed, expnamevec, windsize)
-
-!!!!!!!!!!!!!!
-
 createtablescores <- function(bedgraphlistwmean, nbcpubg) {
 
     ## Creating a rowid that will be used for merging
@@ -424,11 +400,34 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
     return(completeframedf)
 }
 
+
+
+##################
+# MAIN
+##################
+
+#########################################
+# PART 1: PREPROCESSING
+#########################################
+
+
+## Reading all windows bed
+allwindowsbed <- readRDS(allwindowspath)
+
+## Reading exptab, black list, and maptrack
+exptab <- read.csv(exptabpath, header = TRUE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
+    nbcputrans, allwindowsbed, expnamevec, windsize)
+
 message("Merging results of each bedgraph into a single table")
 finaltab <- createtablescores(bedgraphlistwmean, nbcpubg)
 saveRDS(finaltab, file = file.path(outputfolder, "finaltab.rds"))
 
-!!!!!!!!!!!
+
 
 ##################### TEST
 ## This is the ctrl rep1 fwd
