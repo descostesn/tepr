@@ -677,3 +677,31 @@ niccode_allexprsdfsviccoord[[1]] <- cbind(niccode_allexprsdfsviccoord[[1]], coor
 
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsviccoord, exptab,
     nbcpu = nbcputrans, verbose = TRUE)
+nbwindows <- niccode_resecdfvic[[2]]
+niccode_resecdfvic <- niccode_resecdfvic[[1]]
+
+
+
+  biotype.window chrom start.window end.window         transcript gene
+1 protein-coding  chr7    127588411  127588427 ENST00000000233.10 ARF5
+2 protein-coding  chr7    127588427  127588443 ENST00000000233.10 ARF5
+  strand.window window                       rowid ctrl1_score ctrl2_score
+1             +      1 ENST00000000233.10_ARF5_+_1           0           0
+2             +      2 ENST00000000233.10_ARF5_+_2           0           0
+  HS1_score HS2_score coord Fx_ctrl1_score Fx_ctrl2_score Fx_HS1_score
+1         0         0     1              0              0            0
+2         0         0     2              0              0            0
+  Fx_HS2_score
+1            0
+2            0
+
+ colnames(viccode_resecdfvic) <- c("biotype.window", "chrom", "start.window", "end.window"                 "transcript"            "gene"
+ [7] "strand.window"                "window"                "rowid"
+[10] "ctrl_rep1"             "ctrl_rep2"             "HS_rep1"
+[13] "HS_rep2"               "coord"                 "ctrl1_score"
+[16] "ctrl2_score" "HS1_score"   "HS2_score"
+[19] "Fx_ctrl1_score"    "Fx_ctrl2_score"    "Fx_HS1_score"
+[22] "Fx_HS2_score"
+
+ "ctrl_rep1"             "ctrl_rep2"             "HS_rep1"
+[13] "HS_rep2"        
