@@ -552,6 +552,116 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 #### genesECDF
 ####
 
+!!!!!!!!!!!!!!
+
+.checkunique <- function(x, xname) {
+        if (!isTRUE(all.equal(length(x), 1)))
+            stop("The element ", xname, # nolint
+                " should be unique, contact the developer.") # nolint
+}
+
+.createecdfmat <- function(scoremat, rounding, transtable, direction) {
+
+  ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
+    extendedcoordvec <- rep(coordvec, ceiling(x * rounding))
+    fx <- ecdf(extendedcoordvec)(coordvec)
+    return(fx)
+  }, rounding, transtable$coord, simplify = TRUE)
+  colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
+  colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_") # nolint
+  return(ecdfmat)
+}
+
+.checkdirection <- function(str, transtable) {
+
+  if (isTRUE(all.equal(str, "-"))) {
+    transtable <- transtable[order(transtable$coord), ]
+    directionfill <- "updown"
+  } else {
+    directionfill <- "downup"
+  }
+  return(list(transtable, directionfill))
+}
+
+.computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
+
+        ## Filters the score columns according to the strand of the transcript
+        str <- as.character(unique(transtable$strand.window))
+        .checkunique(str, "str")
+        colnamestr <- colnamevec[which(expdf$strand == str)]
+
+        ## If the strand is negative, re-order by coordinates
+        direclist <- .checkdirection(str, transtable)
+        transtable <- direclist[[1]]
+        directionfill <- direclist[[2]]
+
+        ## Building a matrix containing only the scores in the right direction
+        ## for each experiment. Filling the NA values with tidyr::fill.
+        scoremat <- transtable[, colnamestr]
+        scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
+          .direction = directionfill)
+
+        ## Replace the scores of transtable with the filled one
+        transtable[, colnamestr] <- scoremat
+
+        ## Retrieving the direction (fwd or rev) according to the transcript
+        ## strand. It will be used to change the column names of scoremat and
+        ## remove columns from transtab.
+        direction <- unique(expdf[which(expdf$strand == str), "direction"])
+        .checkunique(direction, "direction")
+        opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
+        .checkunique(opposedirect, "opposite direction") # nolint
+
+        ## For each column of the scoremat, compute ecdf
+        ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
+
+        ## Remove opposite strand from transtable and erase strand substring
+        transtable <- transtable[, -grep(opposedirect, colnames(transtable))]
+        colnames(transtable) <- gsub(direction, "", colnames(transtable))
+
+        res <- cbind(transtable, ecdfmat)
+        return(res)
+}
+
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
+  verbose = FALSE) {
+
+    ## Defining variables
+    maintable <- allexprsdfs[[1]]
+    exprstransnames <- allexprsdfs[[2]]
+
+    ## Filtering the main table to keep only the expressed transcripts
+    if (verbose) message("\t Filtering to keep only the expressed transcripts") # nolint
+    idx <- match(maintable$transcript, exprstransnames)
+    idxnoexpr <- which(is.na(idx))
+    if (isTRUE(all.equal(length(idxnoexpr), 0)))
+      warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+    else
+      maintable <- maintable[-idxnoexpr, ]
+
+    ## Splitting the table by each transcript to perform transcript specific
+    ## operations
+    if (verbose) message("\t Splitting the table by each transcript") # nolint
+    transdflist <- split(maintable, factor(maintable$transcript))
+    nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
+    .checkunique(nbrows, "nbrows")
+    colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
+      "_score")
+
+    ## Computing ecdf on each transcript
+    if (verbose) message("\t Computing ecdf on each transcript")
+    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
+        colnamevec, rounding) {
+        res <- .computeecdf(transtable, expdf, rounding, colnamevec)
+        return(res)
+    }, expdf, colnamevec, rounding, mc.cores = nbcpu)
+
+    concatdf <- dplyr::bind_rows(ecdflist)
+
+    return(list(concatdf, nbrows))
+}
+
+!!!!!!!!!!!!!!
 
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, exptab,
     nbcpu = nbcputrans, verbose = TRUE)
