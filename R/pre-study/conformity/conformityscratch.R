@@ -30,6 +30,8 @@ windsize <- 200
 #### downstream
 
 vicbigtsvpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv" # nolint
+nicbigtsvpath <- "/g/romebioinfo/tmp/comparewithscratch/finaltab.rds"
+oldnictsvpath <- "/g/romebioinfo/tmp/preprocessing/backup/completeframedf.rds"
 expthres <- 0.1
 outputfolder <- "/g/romebioinfo/tmp/comparewithscratch"
 
@@ -450,15 +452,39 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 # PART 2: DOWNSTREAM
 #########################################
 
+## Read the structure obtained with nic pre-processing code to adjust the
+## columns of vic tab to the downstream code
+bigtsvnic <- readRDS(nicbigtsvpath)
+oldbigtsvnic <- readRDS(oldnictsvpath)
+
+# chrom biotype.window start.window end.window        transcript
+# 1  chr1 protein-coding      6624868    6624911 ENST00000054650.9
+# 2  chr1 protein-coding      6624911    6624954 ENST00000054650.9
+#                                                                         rowid
+# 1 protein-coding_chr1_6624868_6624911_+_THAP3_ENST00000054650.9_frame1_coord1
+# 2 protein-coding_chr1_6624911_6624954_+_THAP3_ENST00000054650.9_frame2_coord2
+#    gene strand.window window coord ctrl1fwd_score ctrl1rev_score ctrl2fwd_score
+# 1 THAP3             +      1     1      2.7439091             NA       5.302834
+# 2 THAP3             +      2     2      0.6859773             NA       6.845477
+#   ctrl2rev_score HS1fwd_score HS1rev_score HS2fwd_score HS2rev_score
+# 1             NA     4.533872           NA     6.666301           NA
+# 2             NA     5.603660           NA     8.351600           NA
+
+
 ## This code tests the functions of downstream.R with the input table of
 ## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
-
 bigtsv <- read.table(vicbigtsvpath, header = FALSE)
-colnames(bigtsv) <- c("biotype", "seqnames", "start", "end", "transcript",
-    "gene", "strand", "window", "rowid", "ctrl1fwd", "ctrl1fwdscore",
-    "ctrl1rev", "ctrl1revscore", "ctrl2fwd", "ctrl2fwdscore", "ctrl2rev",
-    "ctrl2revscore", "HS1fwd", "HS1fwdscore", "HS1rev", "HS1revscore",
-    "HS2fwd", "HS2fwdscore", "HS2rev", "HS2revscore")
+colnames(bigtsv) <- c("biotype.window", "chrom", "start.window", "end.window", "transcript",
+    "gene", "strand.window", "window", "rowid", "ctrl1fwd", "ctrl1fwd_score",
+    "ctrl1rev", "ctrl1rev_score", "ctrl2fwd", "ctrl2fwd_score", "ctrl2rev",
+    "ctrl2rev_score", "HS1fwd", "HS1fwd_score", "HS1rev", "HS1rev_score",
+    "HS2fwd", "HS2fwd_score", "HS2rev", "HS2rev_score")
+
+## Remove unnecessary columns for the downstream code
+namecolvec <- c("ctrl1fwd$", "ctrl1rev$", "ctrl2fwd$", "ctrl2rev$", "HS1fwd$",
+    "HS1rev$", "HS2fwd$", "HS2rev$")
+idxnames <- sapply(namecolvec, grep, colnames(bigtsv))
+bigtsv <- bigtsv[, -idxnames]
 
 ## The function averageandfilterexprs has been copied to the terminal from downstream.R # nolint
 niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
