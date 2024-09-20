@@ -426,7 +426,7 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
 
 message("Merging results of each bedgraph into a single table")
 finaltab <- createtablescores(bedgraphlistwmean, nbcpubg)
-saveRDS(finaltab, file = file.path(robjoutputfold, "finaltab.rds"))
+saveRDS(finaltab, file = file.path(outputfolder, "finaltab.rds"))
 
 !!!!!!!!!!!
 
