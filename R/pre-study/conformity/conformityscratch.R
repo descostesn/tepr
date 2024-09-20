@@ -548,8 +548,11 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 
 
 
+####
+#### genesECDF
+####
 
-## The function genesECDF has been copied to the terminal from downstream.R
+
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, exptab,
     nbcpu = nbcputrans, verbose = TRUE)
 viccode_resecdfvic <- 
