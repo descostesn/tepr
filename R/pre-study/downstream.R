@@ -557,7 +557,7 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
     coor1 <- min(trans$start)
     coor2 <- max(trans$end)
-    return(data.frame(chr = trans$seqnames[1], coor1, coor2,
+    return(data.frame(chr = trans$chrom[1], coor1, coor2,
           strand = trans$strand[1], gene = trans$gene[1],
           transcript = trans$transcript[1], size = coor2 - coor1 + 1))
   }, mc.cores = nbcpu)
