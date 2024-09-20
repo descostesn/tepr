@@ -18,12 +18,12 @@ library("parallel")
 bgvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/protein_coding_score/ctrl_rep1.forward.window200.MANE.wmean.name.score" # nolint
 allbgnicpath <- "/g/romebioinfo/tmp/preprocessing/backup/bedgraphwmeanlist.rds"
 allwindowspath <- "/g/romebioinfo/tmp/preprocessing/allwindowsbed.rds"
-
+completedfpath <- "/g/romebioinfo/tmp/preprocessing/backup/completeframedf.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph.csv" # nolint
 blacklistshpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 maptrackpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 
-nbcpubg <- 1
+nbcpubg <- 8
 nbcputrans <- 20
 windsize <- 200
 
@@ -31,6 +31,7 @@ windsize <- 200
 
 vicbigtsvpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv" # nolint
 expthres <- 0.1
+outputfolder <- "/g/romebioinfo/tmp/comparewithscratch"
 
 
 
@@ -384,6 +385,41 @@ maptrackbed <- read.delim(maptrackpath, header = FALSE)
 bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
     nbcputrans, allwindowsbed, expnamevec, windsize)
 
+!!!!!!!!!!!!!!
+
+createtablescores <- function(bedgraphwmeanlist, nbcpubg) {
+
+    ## Creating a rowid that will be used for merging
+    message("\t Adding rowid for each bedgraph")
+    bedgraphwmeanlist <- parallel::mclapply(bedgraphwmeanlist, function(tab) {
+
+        rowidvec <- paste(tab$biotype, tab$seqnames, tab$start, tab$end,
+            tab$strand, tab$gene, tab$transcript, paste0("frame", tab$window),
+            paste0("coord", tab$coord), sep = "_")
+
+        ## Inserting rowid col after transcript
+        res <- data.frame(seqnames = tab$seqnames, start = tab$start,
+            end = tab$end, strand = tab$strand, gene = tab$gene,
+            biotype = tab$biotype, window = tab$window, coord = tab$coord,
+            transcript = tab$transcript, rowid = rowidvec,
+            tab[, grep("score", colnames(tab))])
+        colnames(res)[ncol(res)] <- colnames(tab)[grep("score", colnames(tab))]
+        return(res)
+    }, mc.cores = nbcpubg)
+
+    message("\t Joining the elements of each bedgraph")
+    completeframedf <- purrr::reduce(bedgraphwmeanlist, dplyr::full_join,
+        by = c("seqnames", "start", "end", "strand", "gene", "biotype",
+        "window", "coord", "transcript", "rowid"))
+
+    return(completeframedf)
+}
+
+message("Merging results of each bedgraph into a single table")
+finaltab <- createtablescores(bedgraphlistwmean, nbcpubg)
+saveRDS(finaltab, file = file.path(robjoutputfold, "finaltab.rds"))
+
+!!!!!!!!!!!
 
 ##################### TEST
 ## This is the ctrl rep1 fwd
