@@ -401,12 +401,17 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
         ## Inserting rowid col after transcript
         tab <- tab %>% tibble::add_column(rowid = rowidvec,
             .after = "transcript")
+
+        ## Remove bedgraph columns
+        tab <- tab[, -grep(".bg", colnames(tab))]
+
+        
         return(tab)
     }, mc.cores = nbcpubg)
 
     message("\t Joining the elements of each bedgraph")
     completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
-        by = c("seqnames", "start", "end", "strand", "gene", "biotype",
+        by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype",
         "window", "coord", "transcript", "rowid"))
 
     return(completeframedf)
