@@ -405,7 +405,14 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg) {
         ## Remove bedgraph columns
         tab <- tab[, -grep(".bg", colnames(tab))]
 
-        
+        ## Move the score column at the end of the table
+        colnamevec <- colnames(tab)
+        idxscore <- grep("_score", colnamevec)
+        if (!isTRUE(all.equal(length(idxscore), 1)))
+            stop("When creating the final table, the score column is not ",
+                "unique for a given bedgraph. This should not happen. Contact",
+                " the developer.")
+        tab <- dplyr::relocate(tab, colnamevec[idxscore], .after = "coord")
         return(tab)
     }, mc.cores = nbcpubg)
 
