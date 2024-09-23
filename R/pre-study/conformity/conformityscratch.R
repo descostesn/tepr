@@ -690,6 +690,9 @@ niccode_resecdfvic <- niccode_resecdfvic[[1]]
 viccode_resecdfvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/cugusi2023_ECDFScores_10_200.tsv"
 viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TRUE)
 
+if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
+    message("genesECDF is consistent")
+
 ## Adding the coordinate column
 idx <- match(niccode_allexprsdfsvic[[1]]$rowid, viccode_resecdfvic$id)
 if (!isTRUE(all.equal(nrow(niccode_allexprsdfsvic[[1]]), length(idx))))
