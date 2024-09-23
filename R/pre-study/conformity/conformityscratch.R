@@ -568,6 +568,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(transtable)
 }
 
+# transtable=transdflist[[2]]
 .computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
@@ -585,7 +586,8 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         ## Create the coordinate column and select scores having the righ
         ## orientation
         transtable <- .coordandfilter(str, transtable, nbrows)
-        colscorevec <- colnamevec[grep("_score", colnames(transtable))]
+        colnamevec <- colnames(transtable)
+        colscorevec <- colnamevec[grep("_score", colnamevec)]
 
         ## Filling the NA of the score columns of the right strand with
         ## tidyr::fill in the downup direction
@@ -593,18 +595,22 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
            .direction = "downup")
 
         ## Computing ecdf
-        suppressWarnings(df_long <- transtable %>% 
-            gather(key = "variable", value = "value", conditions))
+        suppressWarnings(dflong <- transtable %>%
+            tidyr::gather(key = "variable", value = "value", colscorevec))
+        dflong[, "value_round"] <- round(dflong$value * rounding)
+        ecdflist <- lapply(unique(dflong$variable), function(currentvar) {
+            dfsubset <- subset(dflong, subset = variable == currentvar) # nolint
+            dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
+                dfsubset$value_round), ]
+            funecdf <- ecdf(dfexpanded[, "coord"])
+            dfsubset$Fx <- funecdf(dfsubset$coord)
+            return(dfsubset)
+        })
+        resecdf <- dplyr::bind_rows(ecdflist)
 
 
 
- gather("key", "value", x, y, z)’ is equivalent to ‘df %>%
-     pivot_longer(c(x, y, z), names_to = "key", values_to = "value")’
-
-
-df_long2 <- bigDF %>%
-tidyr::pivot_longer(conditions, names_to = "variable", values_to = "value")
-
+ 
 !!!!!!!!!!!!!!
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
