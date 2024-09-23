@@ -541,18 +541,6 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
                 " should be unique, contact the developer.") # nolint
 }
 
-.createecdfmat <- function(scoremat, rounding, transtable, direction) {
-
-  ecdfmat <- apply(scoremat, 2, function(x, rounding, coordvec) {
-    extendedcoordvec <- rep(coordvec, round(x * rounding))
-    fx <- ecdf(extendedcoordvec)(coordvec)
-    return(fx)
-  }, rounding, transtable$coord, simplify = TRUE)
-  colnames(ecdfmat) <- gsub(direction, "", colnames(ecdfmat))
-  colnames(ecdfmat) <- paste("Fx", colnames(ecdfmat), sep = "_") # nolint
-  return(ecdfmat)
-}
-
 .coordandfilter <- function(str, transtable, nbrows) { # nolint
 
   if (isTRUE(all.equal(str, "minus"))) {
@@ -568,20 +556,26 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(transtable)
 }
 
+.extractstr <- function(transtable) {
+
+    str <- as.character(unique(transtable$strand))
+    .checkunique(str, "str")
+    if (isTRUE(all.equal(str, "+"))) {
+        str <- "plus"
+    } else if (isTRUE(all.equal(str, "-"))) {
+        str <- "minus"
+    } else {
+        stop("In .computeecdf, strand is neither plus or minus. This ",
+            "should not happen. Contact the developer.")
+    }
+    return(str)
+}
+
 # transtable=transdflist[[2]]
 .computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
 
-        ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand))
-        .checkunique(str, "str")
-        if (isTRUE(all.equal(str, "+"))) {
-            str <- "plus"
-        } else if (isTRUE(all.equal(str, "-"))) {
-            str <- "minus"
-        } else {
-            stop("In .computeecdf, strand is neither plus or minus. This ",
-                "should not happen. Contact the developer.")
-        }
+        ## Retrieving keyword plus or minus
+        str <- .extractstr(transtable)
 
         ## Create the coordinate column and select scores having the righ
         ## orientation
