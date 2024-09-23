@@ -507,27 +507,11 @@ allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
 # PART 2: DOWNSTREAM
 #########################################
 
-## Read the structure obtained with nic pre-processing code to adjust the
-## columns of vic tab to the downstream code
-# bigtsvnic <- readRDS(nicbigtsvpath)
-# oldbigtsvnic <- readRDS(oldnictsvpath)
 
 ## This code tests the functions of downstream.R with the input table of
 ## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
 bigtsv <- read.table(vicbigtsvpath, header = FALSE)
 expdf <- read.csv(expdfpath, header = TRUE)
-
-# colnames(bigtsv) <- c("biotype.window", "chrom", "start.window", "end.window", "transcript",
-#     "gene", "strand.window", "window", "rowid", "ctrl1fwd", "ctrl1fwd_score",
-#     "ctrl1rev", "ctrl1rev_score", "ctrl2fwd", "ctrl2fwd_score", "ctrl2rev",
-#     "ctrl2rev_score", "HS1fwd", "HS1fwd_score", "HS1rev", "HS1rev_score",
-#     "HS2fwd", "HS2fwd_score", "HS2rev", "HS2rev_score")
-
-## Remove unnecessary columns for the downstream code
-# namecolvec <- c("ctrl1fwd$", "ctrl1rev$", "ctrl2fwd$", "ctrl2rev$", "HS1fwd$",
-#     "HS1rev$", "HS2fwd$", "HS2rev$")
-# idxnames <- sapply(namecolvec, grep, colnames(bigtsv))
-# bigtsv <- bigtsv[, -idxnames]
 
 
 ####
@@ -537,20 +521,6 @@ expdf <- read.csv(expdfpath, header = TRUE)
 niccode_allexprsdfsvic <- averageandfilterexprs(expdf, bigtsv, expthres,
     verbose = TRUE)
 viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
-
-## Modify cols for comparaison
-# colnames(viccode_allexprsdfsvic[[1]]) <- c("biotype.window", "chrom",
-#     "start.window", "end.window", "transcript", "gene", "strand.window",
-#     "window", "rowid", "ctrl_rep1.plus", "ctrl1fwd_score", "ctrl_rep1.minus",
-#     "ctrl1rev_score", "ctrl_rep2.plus", "ctrl2fwd_score", "ctrl_rep2.minus",
-#     "ctrl2rev_score", "HS_rep1.plus", "HS1fwd_score", "HS_rep1.minus",
-#     "HS1rev_score", "HS_rep2.plus", "HS2fwd_score", "HS_rep2.minus",
-#     "HS2rev_score")
-# namecolvec <- c("ctrl_rep1.plus", "ctrl_rep1.minus", "ctrl_rep2.plus",
-#     "ctrl_rep2.minus", "HS_rep1.plus", "HS_rep1.minus", "HS_rep2.plus",
-#     "HS_rep2.minus")
-# idxnames <- sapply(namecolvec, grep, colnames(viccode_allexprsdfsvic[[1]]))
-# viccode_allexprsdfsvic[[1]] <- viccode_allexprsdfsvic[[1]][, -idxnames]
 
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
     message("table is equal after averageandfilterexprs")
