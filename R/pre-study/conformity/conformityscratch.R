@@ -592,17 +592,6 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         transtable <- transtable %>% tidyr::fill(tidyr::contains("score"),
             .direction = "downup")
 
-        ## Replace the scores of transtable with the filled one
-        transtable[, colscorestr] <- scoremat
-
-        ## Retrieving the direction (fwd or rev) according to the transcript
-        ## strand. It will be used to change the column names of scoremat and
-        ## remove columns from transtab.
-        direction <- unique(expdf[which(expdf$strand == str), "direction"])
-        .checkunique(direction, "direction")
-        opposedirect <- unique(expdf[which(expdf$strand != str), "direction"])
-        .checkunique(opposedirect, "opposite direction") # nolint
-
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
 
