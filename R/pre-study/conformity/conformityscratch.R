@@ -619,6 +619,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
+    maincolnamevec <- colnames(maintable)
 
     ## Filtering the main table to keep only the expressed transcripts
     if (verbose) message("\t Filtering to keep only the expressed transcripts") # nolint
@@ -639,10 +640,44 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        rounding, nbrows) {
+        rounding, nbrows, maincolnamevec) {
         resecdf <- .computeecdf(transtable, expdf, rounding, nbrows)
+        
+        
+        .formatcolumns <- function(resecdf) {
+            # getting rid of plus and minus
+  if (resecdf$strand[1]=="-") {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("plus", names(col_names), value = TRUE)
+    dataset_without_dropped <- resecdf %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".minus", "", .), contains(".minus"))
+    
+  } else {
+    # Drop columns containing "minus"
+    columns_to_drop <- grep("minus", names(col_names), value = TRUE)
+    dataset_without_dropped <- resecdf %>%
+      select(-all_of(columns_to_drop))
+    
+    # Modify column names by removing "_plus"
+    modified_dataset <- dataset_without_dropped %>%
+      rename_with(~gsub(".plus", "", .), contains(".plus"))
+    
+  }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
         return(res)
-    }, expdf, rounding, nbrows, mc.cores = nbcpu)
+    }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
