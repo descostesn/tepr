@@ -6,7 +6,7 @@ library("valr")
 library("utils")
 library("parallel")
 library("tidyr")
-
+library("tidyselect")
 
 ##################
 # PARAMETERS
