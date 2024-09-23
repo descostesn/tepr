@@ -581,17 +581,31 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
             stop("In .computeecdf, strand is neither plus or minus. This ",
                 "should not happen. Contact the developer.")
         }
-        colscorestr <- colscorevec[which(expdf$strand == str)]
 
         ## Create the coordinate column and select scores having the righ
         ## orientation
         transtable <- .coordandfilter(str, transtable, nbrows)
+        colscorevec <- colnamevec[grep("_score", colnames(transtable))]
 
         ## Filling the NA of the score columns of the right strand with
         ## tidyr::fill in the downup direction
         transtable <- transtable %>% tidyr::fill(tidyr::contains("score"),
-            .direction = "downup")
+           .direction = "downup")
 
+        ## Computing ecdf
+        suppressWarnings(df_long <- transtable %>% 
+            gather(key = "variable", value = "value", conditions))
+
+
+
+ gather("key", "value", x, y, z)’ is equivalent to ‘df %>%
+     pivot_longer(c(x, y, z), names_to = "key", values_to = "value")’
+
+
+df_long2 <- bigDF %>%
+tidyr::pivot_longer(conditions, names_to = "variable", values_to = "value")
+
+!!!!!!!!!!!!!!
         ## For each column of the scoremat, compute ecdf
         ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
 
@@ -627,16 +641,14 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
-    colnamevec <- colnames(maintable)
-    colscorevec <- colnamevec[grep("_score", colnamevec)]
 
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        colscorevec, rounding, nbrows) {
+        rounding, nbrows) {
         res <- .computeecdf(transtable, expdf, rounding, colscorevec, nbrows)
         return(res)
-    }, expdf, colscorevec, rounding, nbrows, mc.cores = nbcpu)
+    }, expdf, rounding, nbrows, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
