@@ -571,7 +571,6 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     return(str)
 }
 
-
 .computeecdf <- function(transtable, expdf, rounding, nbrows) { # nolint
 
         ## Retrieving keyword plus or minus
@@ -608,30 +607,34 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
             values_from = c("value", "value_round", "Fx")) %>%
             dplyr::select(., -tidyselect::contains("value_round"))
 
+        ## Removing strand from column names
+        res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
+                tidyselect::contains(paste0(".", str)))
+
         return(res)
 }
 
-.formatcolumns <- function(resecdf, maincolnamevec) { # nolint
+# .formatcolumns <- function(resecdf, maincolnamevec) { # nolint
 
-    ## getting rid of plus and minus
-    if (isTRUE(all.equal(resecdf$strand[1], "-"))) {
-        ## Drop columns containing "plus"
-        namedropvec <- grep("plus", maincolnamevec, value = TRUE)
-        df <- resecdf %>%
-            dplyr::select(-tidyselect::all_of(namedropvec))
-        df <- df %>% dplyr::rename_with(~gsub(".minus", "", .),
-                tidyselect::contains(".minus"))
-    } else {
-        ## Drop columns containing "minus"
-        namedropvec <- grep("minus", names(maincolnamevec),
-            value = TRUE)
-        df <- resecdf %>%
-            dplyr::select(-tidyselect::all_of(namedropvec))
-        df <- df %>% dplyr::rename_with(~gsub(".plus", "", .),
-            tidyselect::contains(".plus"))
-    }
-    return(df)
-}
+#     ## getting rid of plus and minus
+#     if (isTRUE(all.equal(resecdf$strand[1], "-"))) {
+#         ## Drop columns containing "plus"
+#         namedropvec <- grep("plus", maincolnamevec, value = TRUE)
+#         df <- resecdf %>%
+#             dplyr::select(-tidyselect::all_of(namedropvec))
+#         df <- df %>% dplyr::rename_with(~gsub(".minus", "", .),
+#                 tidyselect::contains(".minus"))
+#     } else {
+#         ## Drop columns containing "minus"
+#         namedropvec <- grep("minus", names(maincolnamevec),
+#             value = TRUE)
+#         df <- resecdf %>%
+#             dplyr::select(-tidyselect::all_of(namedropvec))
+#         df <- df %>% dplyr::rename_with(~gsub(".plus", "", .),
+#             tidyselect::contains(".plus"))
+#     }
+#     return(df)
+# }
 
 #allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
@@ -664,7 +667,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
         rounding, nbrows, maincolnamevec) {
 
         resecdf <- .computeecdf(transtable, expdf, rounding, nbrows)
-        res <- .formatcolumns(resecdf, maincolnamevec)
+        # res <- .formatcolumns(resecdf, maincolnamevec)
         return(res)
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
