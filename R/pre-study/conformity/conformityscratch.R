@@ -606,7 +606,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         res <- resecdf %>% tidyr::pivot_wider(.,
             names_from = "variable",
             values_from = c("value", "value_round", "Fx")) %>%
-            dplyr::select(., -contains("value_round")) 
+            dplyr::select(., -tidyselect::contains("value_round"))
   
 
  
