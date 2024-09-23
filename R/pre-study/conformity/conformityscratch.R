@@ -488,17 +488,26 @@ expdf <- read.csv(expdfpath, header = TRUE)
 
 averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
 
-    colnames(alldf) <- c("biotype", "chr", "coor1", "coor2", "transcript",
-        "gene", "strand", "window", "id",    ctrl_rep1.plus ctrl_rep1.plus_score
-1 ENST00000326734.2_FAM87B_+_1 ctrl_rep1.forward                    0
-    ctrl_rep1.minus ctrl_rep1.minus_score    ctrl_rep2.plus
-1 ctrl_rep1.reverse                    NA ctrl_rep2.forward
-  ctrl_rep2.plus_score   ctrl_rep2.minus ctrl_rep2.minus_score    HS_rep1.plus
-1                    0 ctrl_rep2.reverse                    NA HS_rep1.forward
-  HS_rep1.plus_score   HS_rep1.minus HS_rep1.minus_score    HS_rep2.plus
-1                  0 HS_rep1.reverse                  NA HS_rep2.forward
-  HS_rep2.plus_score   HS_rep2.minus HS_rep2.minus_score
-1                  0 HS_rep2.reverse                  NA
+
+    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+        "gene", "strand", "window", "id")
+    
+    expcolnames <- unlist(apply(alldf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }))
+
+ [1] "biotype"               "chr"                   "coor1"
+ [4] "coor2"                 "transcript"            "gene"
+ [7] "strand"                "window"                "id"
+[10] "ctrl_rep1.plus"        "ctrl_rep1.plus_score"  "ctrl_rep1.minus"
+[13] "ctrl_rep1.minus_score" "ctrl_rep2.plus"        "ctrl_rep2.plus_score"
+[16] "ctrl_rep2.minus"       "ctrl_rep2.minus_score" "HS_rep1.plus"
+[19] "HS_rep1.plus_score"    "HS_rep1.minus"         "HS_rep1.minus_score"
+[22] "HS_rep2.plus"          "HS_rep2.plus_score"    "HS_rep2.minus"
+[25] "HS_rep2.minus_score"
+
+
     scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
       "_score")
 
@@ -537,6 +546,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
     return(list(maintable = alldf, exptranlist = exptranstab))
 }
+
+
 
 niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
     verbose = TRUE)
