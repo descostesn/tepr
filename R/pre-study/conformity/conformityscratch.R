@@ -666,7 +666,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
         rounding, nbrows, maincolnamevec) {
 
-        resecdf <- .computeecdf(transtable, expdf, rounding, nbrows)
+        res <- .computeecdf(transtable, expdf, rounding, nbrows)
         # res <- .formatcolumns(resecdf, maincolnamevec)
         return(res)
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
