@@ -555,7 +555,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 
 .coordandfilter <- function(str, transtable) {
 
-  if (isTRUE(all.equal(str, "-"))) {
+  if (isTRUE(all.equal(str, "minus"))) {
     transtable <- transtable[order(transtable$coord), ]
     directionfill <- "updown"
   } else {
@@ -564,7 +564,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(list(transtable, directionfill))
 }
 
-.computeecdf <- function(transtable, expdf, rounding, colscorevec) { # nolint
+.computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
         str <- as.character(unique(transtable$strand))
@@ -643,10 +643,10 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        colscorevec, rounding) {
-        res <- .computeecdf(transtable, expdf, rounding, colscorevec)
+        colscorevec, rounding, nbrows) {
+        res <- .computeecdf(transtable, expdf, rounding, colscorevec, nbrows)
         return(res)
-    }, expdf, colscorevec, rounding, mc.cores = nbcpu)
+    }, expdf, colscorevec, rounding, nbrows, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
