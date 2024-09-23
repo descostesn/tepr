@@ -488,33 +488,21 @@ expdf <- read.csv(expdfpath, header = TRUE)
 
 averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
 
-
+    ## Adding column names to alldf
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
-    
-    expcolnames <- unlist(apply(alldf, 1, function(x) {
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
         res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
         return(c(res, paste(res, "score", sep = "_")))
-    }))
+    }, simplify = FALSE))
+    colnames(alldf) <- c(infocolnames, expcolnames)
 
- [1] "biotype"               "chr"                   "coor1"
- [4] "coor2"                 "transcript"            "gene"
- [7] "strand"                "window"                "id"
-[10] "ctrl_rep1.plus"        "ctrl_rep1.plus_score"  "ctrl_rep1.minus"
-[13] "ctrl_rep1.minus_score" "ctrl_rep2.plus"        "ctrl_rep2.plus_score"
-[16] "ctrl_rep2.minus"       "ctrl_rep2.minus_score" "HS_rep1.plus"
-[19] "HS_rep1.plus_score"    "HS_rep1.minus"         "HS_rep1.minus_score"
-[22] "HS_rep2.plus"          "HS_rep2.plus_score"    "HS_rep2.minus"
-[25] "HS_rep2.minus_score"
-
-
-    scorecolvec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
-      "_score")
+    scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
     dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
-        dplyr::summarize(gene = gene[1], strand = strand.window[1], # nolint
+        dplyr::summarize(gene = gene[1], strand = strand[1], # nolint
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
                 ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
@@ -523,10 +511,10 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
     if (verbose) message("\t Removing lines with values < expthres") # nolint
     dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
         expthres) {
-            if ((isTRUE(all.equal(strandname, "+")) &&
-                isTRUE(all.equal(directname, "rev"))) ||
-                (isTRUE(all.equal(strandname, "-")) &&
-                isTRUE(all.equal(directname, "fwd"))))
+            if ((isTRUE(all.equal(strandname, "plus")) &&
+                isTRUE(all.equal(directname, "reverse"))) ||
+                (isTRUE(all.equal(strandname, "minus")) &&
+                isTRUE(all.equal(directname, "forward"))))
                     stop("Strand and direction do not match, contact the ",
                         "developer")
             dfstrand <- dfbytranscript %>%
@@ -538,7 +526,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
                 dplyr::filter(dplyr::if_all(tidyselect::all_of(
                 tidyselect::contains("mean")), ~ . > expthres))
             return(dfstrand)
-        }, unique(expdf$strand), unique(expdf$direction),
+        }, unique(dfbytranscript$strand), unique(expdf$strand),
             MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
 
     exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
@@ -549,23 +537,23 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
 
 
-niccode_allexprsdfsvic <- averageandfilterexprs(exptab, bigtsv, expthres,
+niccode_allexprsdfsvic <- averageandfilterexprs(expdf, bigtsv, expthres,
     verbose = TRUE)
 viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
 
 ## Modify cols for comparaison
-colnames(viccode_allexprsdfsvic[[1]]) <- c("biotype.window", "chrom",
-    "start.window", "end.window", "transcript", "gene", "strand.window",
-    "window", "rowid", "ctrl_rep1.plus", "ctrl1fwd_score", "ctrl_rep1.minus",
-    "ctrl1rev_score", "ctrl_rep2.plus", "ctrl2fwd_score", "ctrl_rep2.minus",
-    "ctrl2rev_score", "HS_rep1.plus", "HS1fwd_score", "HS_rep1.minus",
-    "HS1rev_score", "HS_rep2.plus", "HS2fwd_score", "HS_rep2.minus",
-    "HS2rev_score")
-namecolvec <- c("ctrl_rep1.plus", "ctrl_rep1.minus", "ctrl_rep2.plus",
-    "ctrl_rep2.minus", "HS_rep1.plus", "HS_rep1.minus", "HS_rep2.plus",
-    "HS_rep2.minus")
-idxnames <- sapply(namecolvec, grep, colnames(viccode_allexprsdfsvic[[1]]))
-viccode_allexprsdfsvic[[1]] <- viccode_allexprsdfsvic[[1]][, -idxnames]
+# colnames(viccode_allexprsdfsvic[[1]]) <- c("biotype.window", "chrom",
+#     "start.window", "end.window", "transcript", "gene", "strand.window",
+#     "window", "rowid", "ctrl_rep1.plus", "ctrl1fwd_score", "ctrl_rep1.minus",
+#     "ctrl1rev_score", "ctrl_rep2.plus", "ctrl2fwd_score", "ctrl_rep2.minus",
+#     "ctrl2rev_score", "HS_rep1.plus", "HS1fwd_score", "HS_rep1.minus",
+#     "HS1rev_score", "HS_rep2.plus", "HS2fwd_score", "HS_rep2.minus",
+#     "HS2rev_score")
+# namecolvec <- c("ctrl_rep1.plus", "ctrl_rep1.minus", "ctrl_rep2.plus",
+#     "ctrl_rep2.minus", "HS_rep1.plus", "HS_rep1.minus", "HS_rep2.plus",
+#     "HS_rep2.minus")
+# idxnames <- sapply(namecolvec, grep, colnames(viccode_allexprsdfsvic[[1]]))
+# viccode_allexprsdfsvic[[1]] <- viccode_allexprsdfsvic[[1]][, -idxnames]
 
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
     message("table is equal after averageandfilterexprs")
