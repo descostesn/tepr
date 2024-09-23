@@ -564,12 +564,20 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(list(transtable, directionfill))
 }
 
-.computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
+.computeecdf <- function(transtable, expdf, rounding, colscorevec) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand.window))
+        str <- as.character(unique(transtable$strand))
         .checkunique(str, "str")
-        colnamestr <- colnamevec[which(expdf$strand == str)]
+        if (isTRUE(all.equal(str, "+"))) {
+            str <- "plus"
+        } else if (isTRUE(all.equal(str, "+"))) {
+            str <- "minus"
+        } else {
+            stop("In .computeecdf, strand is neither plus or minus. This ",
+                "should not happen. Contact the developer.")
+        }
+        colscorestr <- colscorevec[which(expdf$strand == str)]
 
         ## If the strand is negative, re-order by coordinates
         direclist <- .checkdirection(str, transtable)
@@ -578,12 +586,12 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 
         ## Building a matrix containing only the scores in the right direction
         ## for each experiment. Filling the NA values with tidyr::fill.
-        scoremat <- transtable[, colnamestr]
+        scoremat <- transtable[, colscorestr]
         scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
           .direction = directionfill)
 
         ## Replace the scores of transtable with the filled one
-        transtable[, colnamestr] <- scoremat
+        transtable[, colscorestr] <- scoremat
 
         ## Retrieving the direction (fwd or rev) according to the transcript
         ## strand. It will be used to change the column names of scoremat and
@@ -605,7 +613,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 }
 
 
-allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
+#allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   verbose = FALSE) {
 
@@ -630,7 +638,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     .checkunique(nbrows, "nbrows")
     colnamevec <- colnames(maintable)
     colscorevec <- colnamevec[grep("_score", colnamevec)]
-    
+
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
