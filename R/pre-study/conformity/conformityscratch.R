@@ -678,9 +678,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 
 !!!!!!!!!!!!!!
 
-
-
-
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, expdf, nbcpu = nbcputrans, verbose = TRUE)
 nbwindows <- niccode_resecdfvic[[2]]
 niccode_resecdfvic <- niccode_resecdfvic[[1]]
@@ -692,31 +689,4 @@ viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TR
 
 if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
     message("genesECDF is consistent")
-
-## Adding the coordinate column
-idx <- match(niccode_allexprsdfsvic[[1]]$rowid, viccode_resecdfvic$id)
-if (!isTRUE(all.equal(nrow(niccode_allexprsdfsvic[[1]]), length(idx))))
-    stop("Cannot retrieve coord")
-niccode_allexprsdfsviccoord <- niccode_allexprsdfsvic
-niccode_allexprsdfsviccoord[[1]] <- cbind(niccode_allexprsdfsviccoord[[1]], coord = viccode_resecdfvic$coord[idx])
-
-
-colnames(viccode_resecdfvic) <- c("biotype.window", "chrom", "start.window",
-    "end.window", "transcript", "gene", "strand.window", "window", "rowid",
-    "ctrl_rep1", "ctrl_rep2", "HS_rep1", "HS_rep2", "coord", "ctrl1_score",
-    "ctrl2_score", "HS1_score", "HS2_score", "Fx_ctrl1_score", "Fx_ctrl2_score",
-    "Fx_HS1_score", "Fx_HS2_score")
-
-namecolvec <- c("ctrl_rep1", "ctrl_rep2", "HS_rep1", "HS_rep2")
-
-idxnames <- sapply(namecolvec, grep, colnames(viccode_resecdfvic))
-viccode_resecdfvic <- viccode_resecdfvic[, -idxnames]
-reorderednames <- c("biotype.window", "chrom", "start.window",
-    "end.window", "transcript", "gene", "strand.window", "window", "rowid",
-    "ctrl1_score", "ctrl2_score", "HS1_score", "HS2_score", "coord",
-    "Fx_ctrl1_score", "Fx_ctrl2_score", "Fx_HS1_score", "Fx_HS2_score")
-viccode_resecdfvic <- viccode_resecdfvic[, reorderednames]
-
-if (isTRUE(all.equal(niccode_resecdfvic, viccode_resecdfvic)))
-    message("table is equal after genesECDF")
 
