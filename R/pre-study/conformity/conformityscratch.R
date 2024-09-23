@@ -604,6 +604,8 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         return(res)
 }
 
+
+allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   verbose = FALSE) {
 
@@ -626,16 +628,16 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
-    colnamevec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
+    colscorevec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
       "_score")
 
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
-        colnamevec, rounding) {
-        res <- .computeecdf(transtable, expdf, rounding, colnamevec)
+        colscorevec, rounding) {
+        res <- .computeecdf(transtable, expdf, rounding, colscorevec)
         return(res)
-    }, expdf, colnamevec, rounding, mc.cores = nbcpu)
+    }, expdf, colscorevec, rounding, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 
@@ -643,6 +645,13 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
 }
 
 !!!!!!!!!!!!!!
+
+
+
+
+niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, expdf, nbcpu = nbcputrans, verbose = TRUE)
+nbwindows <- niccode_resecdfvic[[2]]
+niccode_resecdfvic <- niccode_resecdfvic[[1]]
 
 ## Reading the result of ecdf that contains the column coord that is present in
 ## the input table of nic
@@ -656,10 +665,6 @@ if (!isTRUE(all.equal(nrow(niccode_allexprsdfsvic[[1]]), length(idx))))
 niccode_allexprsdfsviccoord <- niccode_allexprsdfsvic
 niccode_allexprsdfsviccoord[[1]] <- cbind(niccode_allexprsdfsviccoord[[1]], coord = viccode_resecdfvic$coord[idx])
 
-niccode_resecdfvic <- genesECDF(niccode_allexprsdfsviccoord, exptab,
-    nbcpu = nbcputrans, verbose = TRUE)
-nbwindows <- niccode_resecdfvic[[2]]
-niccode_resecdfvic <- niccode_resecdfvic[[1]]
 
 colnames(viccode_resecdfvic) <- c("biotype.window", "chrom", "start.window",
     "end.window", "transcript", "gene", "strand.window", "window", "rowid",
