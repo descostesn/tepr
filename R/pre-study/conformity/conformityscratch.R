@@ -585,9 +585,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 
         ## Create the coordinate column and select scores having the righ
         ## orientation
-        direclist <- .coordandfilter(str, transtable, nbrows)
-        transtable <- direclist[[1]]
-        directionfill <- direclist[[2]]
+        transtable <- .coordandfilter(str, transtable, nbrows)
 
         ## Building a matrix containing only the scores in the right direction
         ## for each experiment. Filling the NA values with tidyr::fill.
