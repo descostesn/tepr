@@ -553,15 +553,19 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(ecdfmat)
 }
 
-.coordandfilter <- function(str, transtable) {
+.coordandfilter <- function(str, transtable, nbrows) { # nolint
 
   if (isTRUE(all.equal(str, "minus"))) {
-    transtable <- transtable[order(transtable$coord), ]
-    directionfill <- "updown"
+    coordvec <- seq(from = nbrows, to = 1, by = -1)
+    transtable <- cbind(transtable, coord = coordvec)
+    transtable <- transtable[order(coordvec), ]
+    transtable <- transtable %>% dyplr::select(!dyplr::matches("plus"))
   } else {
-    directionfill <- "downup"
+    coordvec <- seq(from = 1, to = nbrows, by = 1)
+    transtable <- cbind(transtable, coord = coordvec)
+    transtable <- transtable %>% dyplr::select(!dyplr::matches("minus"))
   }
-  return(list(transtable, directionfill))
+  return(transtable)
 }
 
 .computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
@@ -571,7 +575,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         .checkunique(str, "str")
         if (isTRUE(all.equal(str, "+"))) {
             str <- "plus"
-        } else if (isTRUE(all.equal(str, "+"))) {
+        } else if (isTRUE(all.equal(str, "-"))) {
             str <- "minus"
         } else {
             stop("In .computeecdf, strand is neither plus or minus. This ",
@@ -581,7 +585,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 
         ## Create the coordinate column and select scores having the righ
         ## orientation
-        direclist <- .coordandfilter(str, transtable)
+        direclist <- .coordandfilter(str, transtable, nbrows)
         transtable <- direclist[[1]]
         directionfill <- direclist[[2]]
 
