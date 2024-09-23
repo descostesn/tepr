@@ -572,7 +572,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 }
 
 
-.computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
+.computeecdf <- function(transtable, expdf, rounding, nbrows) { # nolint
 
         ## Retrieving keyword plus or minus
         str <- .extractstr(transtable)
@@ -640,7 +640,7 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
         rounding, nbrows) {
-        res <- .computeecdf(transtable, expdf, rounding, colscorevec, nbrows)
+        resecdf <- .computeecdf(transtable, expdf, rounding, nbrows)
         return(res)
     }, expdf, rounding, nbrows, mc.cores = nbcpu)
 
