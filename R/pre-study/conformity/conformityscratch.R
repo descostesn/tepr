@@ -571,7 +571,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     return(str)
 }
 
-# transtable=transdflist[[2]]
+
 .computeecdf <- function(transtable, expdf, rounding, colscorevec, nbrows) { # nolint
 
         ## Retrieving keyword plus or minus
@@ -607,18 +607,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
             names_from = "variable",
             values_from = c("value", "value_round", "Fx")) %>%
             dplyr::select(., -tidyselect::contains("value_round"))
-  
 
- 
-!!!!!!!!!!!!!!
-        ## For each column of the scoremat, compute ecdf
-        ecdfmat <- .createecdfmat(scoremat, rounding, transtable, direction)
-
-        ## Remove opposite strand from transtable and erase strand substring
-        transtable <- transtable[, -grep(opposedirect, colnames(transtable))]
-        colnames(transtable) <- gsub(direction, "", colnames(transtable))
-
-        res <- cbind(transtable, ecdfmat)
         return(res)
 }
 
