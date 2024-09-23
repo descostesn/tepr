@@ -559,11 +559,11 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     coordvec <- seq(from = nbrows, to = 1, by = -1)
     transtable <- cbind(transtable, coord = coordvec)
     transtable <- transtable[order(coordvec), ]
-    transtable <- transtable %>% dyplr::select(!dyplr::matches("plus"))
+    transtable <- transtable %>% dplyr::select(!dplyr::matches("plus"))
   } else {
     coordvec <- seq(from = 1, to = nbrows, by = 1)
     transtable <- cbind(transtable, coord = coordvec)
-    transtable <- transtable %>% dyplr::select(!dyplr::matches("minus"))
+    transtable <- transtable %>% dplyr::select(!dplyr::matches("minus"))
   }
   return(transtable)
 }
@@ -587,11 +587,10 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         ## orientation
         transtable <- .coordandfilter(str, transtable, nbrows)
 
-        ## Building a matrix containing only the scores in the right direction
-        ## for each experiment. Filling the NA values with tidyr::fill.
-        scoremat <- transtable[, colscorestr]
-        scoremat <- scoremat %>% tidyr::fill(contains("score"), # nolint
-          .direction = directionfill)
+        ## Filling the NA of the score columns of the right strand with
+        ## tidyr::fill in the downup direction
+        transtable <- transtable %>% tidyr::fill(tidyr::contains("score"),
+            .direction = "downup")
 
         ## Replace the scores of transtable with the filled one
         transtable[, colscorestr] <- scoremat
