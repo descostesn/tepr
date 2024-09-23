@@ -553,7 +553,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
   return(ecdfmat)
 }
 
-.checkdirection <- function(str, transtable) {
+.coordandfilter <- function(str, transtable) {
 
   if (isTRUE(all.equal(str, "-"))) {
     transtable <- transtable[order(transtable$coord), ]
@@ -579,8 +579,9 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         }
         colscorestr <- colscorevec[which(expdf$strand == str)]
 
-        ## If the strand is negative, re-order by coordinates
-        direclist <- .checkdirection(str, transtable)
+        ## Create the coordinate column and select scores having the righ
+        ## orientation
+        direclist <- .coordandfilter(str, transtable)
         transtable <- direclist[[1]]
         directionfill <- direclist[[2]]
 
