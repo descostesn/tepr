@@ -628,9 +628,9 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     transdflist <- split(maintable, factor(maintable$transcript))
     nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
     .checkunique(nbrows, "nbrows")
-    colscorevec <- paste0(expdf$condition, expdf$replicate, expdf$direction,
-      "_score")
-
+    colnamevec <- colnames(maintable)
+    colscorevec <- colnamevec[grep("_score", colnamevec)]
+    
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
