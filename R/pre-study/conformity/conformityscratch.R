@@ -611,6 +611,27 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         return(res)
 }
 
+.formatcolumns <- function(resecdf, maincolnamevec) { # nolint
+
+    ## getting rid of plus and minus
+    if (isTRUE(all.equal(resecdf$strand[1], "-"))) {
+        ## Drop columns containing "plus"
+        namedropvec <- grep("plus", maincolnamevec, value = TRUE)
+        df <- resecdf %>%
+            dplyr::select(-tidyselect::all_of(namedropvec))
+        df <- df %>% dplyr::rename_with(~gsub(".minus", "", .),
+                tidyselect::contains(".minus"))
+    } else {
+        ## Drop columns containing "minus"
+        namedropvec <- grep("minus", names(maincolnamevec),
+            value = TRUE)
+        df <- resecdf %>%
+            dplyr::select(-tidyselect::all_of(namedropvec))
+        df <- df %>% dplyr::rename_with(~gsub(".plus", "", .),
+            tidyselect::contains(".plus"))
+    }
+    return(df)
+}
 
 #allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
@@ -641,41 +662,9 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     if (verbose) message("\t Computing ecdf on each transcript")
     ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
         rounding, nbrows, maincolnamevec) {
+
         resecdf <- .computeecdf(transtable, expdf, rounding, nbrows)
-        
-        
-        .formatcolumns <- function(resecdf) {
-            # getting rid of plus and minus
-  if (resecdf$strand[1]=="-") {
-    # Drop columns containing "minus"
-    columns_to_drop <- grep("plus", names(col_names), value = TRUE)
-    dataset_without_dropped <- resecdf %>%
-      select(-all_of(columns_to_drop))
-    
-    # Modify column names by removing "_plus"
-    modified_dataset <- dataset_without_dropped %>%
-      rename_with(~gsub(".minus", "", .), contains(".minus"))
-    
-  } else {
-    # Drop columns containing "minus"
-    columns_to_drop <- grep("minus", names(col_names), value = TRUE)
-    dataset_without_dropped <- resecdf %>%
-      select(-all_of(columns_to_drop))
-    
-    # Modify column names by removing "_plus"
-    modified_dataset <- dataset_without_dropped %>%
-      rename_with(~gsub(".plus", "", .), contains(".plus"))
-    
-  }
-        }
-        
-        
-        
-        
-        
-        
-        
-        
+        res <- .formatcolumns(resecdf, maincolnamevec)
         return(res)
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
