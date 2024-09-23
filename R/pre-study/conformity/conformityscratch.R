@@ -5,7 +5,7 @@ library("dplyr")
 library("valr")
 library("utils")
 library("parallel")
-
+library("tidyr")
 
 
 ##################
@@ -602,7 +602,12 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         })
         resecdf <- dplyr::bind_rows(ecdflist)
 
-
+        ## Shrink the results back to the transtable keeping ecdf columns
+        res <- resecdf %>% tidyr::pivot_wider(.,
+            names_from = "variable",
+            values_from = c("value", "value_round", "Fx")) %>%
+            dplyr::select(., -contains("value_round")) 
+  
 
  
 !!!!!!!!!!!!!!
