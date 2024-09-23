@@ -614,29 +614,6 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
         return(res)
 }
 
-# .formatcolumns <- function(resecdf, maincolnamevec) { # nolint
-
-#     ## getting rid of plus and minus
-#     if (isTRUE(all.equal(resecdf$strand[1], "-"))) {
-#         ## Drop columns containing "plus"
-#         namedropvec <- grep("plus", maincolnamevec, value = TRUE)
-#         df <- resecdf %>%
-#             dplyr::select(-tidyselect::all_of(namedropvec))
-#         df <- df %>% dplyr::rename_with(~gsub(".minus", "", .),
-#                 tidyselect::contains(".minus"))
-#     } else {
-#         ## Drop columns containing "minus"
-#         namedropvec <- grep("minus", names(maincolnamevec),
-#             value = TRUE)
-#         df <- resecdf %>%
-#             dplyr::select(-tidyselect::all_of(namedropvec))
-#         df <- df %>% dplyr::rename_with(~gsub(".plus", "", .),
-#             tidyselect::contains(".plus"))
-#     }
-#     return(df)
-# }
-
-#allexprsdfs=niccode_allexprsdfsvic;rounding = 10; nbcpu = nbcputrans; verbose = TRUE
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   verbose = FALSE) {
 
@@ -667,7 +644,6 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
         rounding, nbrows, maincolnamevec) {
 
         res <- .computeecdf(transtable, expdf, rounding, nbrows)
-        # res <- .formatcolumns(resecdf, maincolnamevec)
         return(res)
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
@@ -689,4 +665,3 @@ viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TR
 
 if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
     message("genesECDF is consistent")
-
