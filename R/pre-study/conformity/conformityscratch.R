@@ -999,7 +999,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
-      by = c("gene", "transcript", "strand"))
+      by = c("gene", "transcript", "strand", "window_size"))
     return(allauc)
 }
 
