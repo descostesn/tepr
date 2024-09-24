@@ -877,9 +877,11 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
         ## Retrieve the column names for each comparison
         idxctrl <- grep(controlcondname, condvec)
         .checkempty(idxctrl, controlcondname)
+        idxstress <- grep(stresscondname, condvec)
+        .checkempty(idxstress, stresscondname)
         name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
-        name2 <- paste0("mean_Fx_", condvec[-idxctrl])  # nolint
-        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",  # nolint
+        name2 <- paste0("mean_Fx_", condvec[idxstress])  # nolint
+        diffname <- paste0("Diff_meanFx_", condvec[idxstress], "_",  # nolint
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
@@ -896,8 +898,8 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 
         ## Build a one line data.frame with the proper col names
         ksdeltadaucdf <- data.frame(deltadauc, pvaldeltadaucks, statdeltadaucks)
-        colnames(ksdeltadaucdf) <- paste(colnames(ksdeltadaucdf), name2,
-            sep = "_")
+        prefixvec <- c("dAUC", "p_dAUC", "D_dAUC")
+        colnames(ksdeltadaucdf) <- paste(prefixvec, diffname, sep = "_")
 
         ## Retrieving transcript information
         infodf <- .returninfodf(transtab, nbwindows)
