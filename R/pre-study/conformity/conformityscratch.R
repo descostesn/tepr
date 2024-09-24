@@ -835,29 +835,15 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 
 
 !!!!!!!!!!!
-.returninfodf <- function(transtab, nbwindows = NULL) {
+.returninfodf <- function(transtab, nbwindows) { # nolint
 
-  transcript <- unique(transtab$transcript)
-  gene <- unique(transtab$gene)
-  strand <- unique(transtab$strand.window)
-        .checkunique(transcript, "transcript-dauc_allconditions") # nolint
-        .checkunique(gene, "gene-dauc_allconditions")  # nolint
-        .checkunique(strand, "strand-dauc_allconditions")  # nolint
-        infodf <- data.frame(transcript, gene, strand)
+    infodf <- transtab  %>%
+        dplyr::filter(window == round(nbwindows / 2))  %>%
+        dplyr::mutate(window_size = abs(coor2 - coor1), .keep = "all") %>% # nolint
+        dplyr::select("transcript", "gene", "strand", "window_size") %>%
+        dplyr::distinct()
 
-        if (!is.null(nbwindows)) {
-            if (isTRUE(all.equal(as.character(strand), "+"))) {
-                windsize <- floor(
-                    (transtab$end.window[nbwindows] -
-                    transtab$start.window[1]) / nbwindows)
-            } else {
-                windsize <- floor(
-                    (transtab$end.window[1] -
-                    transtab$start.window[nbwindows]) / nbwindows)
-            }
-            infodf <- cbind(infodf, windsize)
-        }
-        return(infodf)
+    return(infodf)
 }
 
 .checkempty <- function(idx, namestr) {
