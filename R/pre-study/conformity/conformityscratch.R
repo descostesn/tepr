@@ -1074,7 +1074,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
         }, scoremat, colnamestr)
 
         ## Retrieving total NA and transcript info
-        if (!isTRUE(all.equal(res[1], res[2])))
+        if (!isTRUE(all.equal(res[[1]], res[[2]])))
             stop("Number of NA is different between conditions. This should ",
                 "not happen. Contact the developer.")
         ## I drop the other NA columns because it is the same value for all the
@@ -1091,5 +1091,14 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 niccode_countnavic <- countna(niccode_allexprsdfsvic, expdf, nbcputrans)
-
 viccode_countnavic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/count_NA_res.rds") # nolint
+
+## For comparison only
+niccode_countnavictest <- niccode_countnavic[order(niccode_countnavic$gene), ]
+rownames(niccode_countnavictest) <- NULL
+viccode_countnavictest <- as.data.frame(viccode_countnavic)
+viccode_countnavictest <- viccode_countnavictest[order(viccode_countnavictest$gene), ]
+rownames(viccode_countnavictest) <- NULL
+
+if (isTRUE(all.equal(viccode_countnavictest, niccode_countnavictest)))
+    message("consistancy after countna")
