@@ -954,7 +954,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
   aucallconditions <- aucallconditions[, -idxdup]
 
   ## Correcting p-val with FDR
-  idxpvalvec <- grep("pvalaucks", colnames(aucallconditions))
+  idxpvalvec <- grep("p_AUC", colnames(aucallconditions))
   fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
     return(p.adjust(tab[, idxpval], method = "fdr"))
   }, aucallconditions)
