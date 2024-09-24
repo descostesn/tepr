@@ -694,7 +694,7 @@ if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
 
 .creatematdiff <- function(condvec, resmean) {
 
-  categoryvec <- c("Value", "Fx")
+  categoryvec <- c("value", "Fx")
   matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
     meancolnames <- paste("mean", currentcat, condvec, sep = "_")
 
