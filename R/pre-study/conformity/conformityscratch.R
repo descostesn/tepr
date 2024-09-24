@@ -861,10 +861,11 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
-    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS") {
+    controlcondname = "ctrl", stresscondname = "HS", dontcompare = NULL) {
 
     condvec <- unique(expdf$condition)
-    resdflist <- mclapply(bytranslist, function(transtab, condvec) {
+    resdflist <- mclapply(bytranslist, function(transtab, condvec,
+        controlcondname, stresscondname) {
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep(controlcondname, condvec)
@@ -897,7 +898,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
         ## Combining the two df as result
         resdf <- cbind(infodf, ksdeltadaucdf)
         return(resdf)
-    }, condvec, mc.cores = nbcpu)
+    }, condvec, controlcondname, stresscondname, mc.cores = nbcpu)
 
     resdf <- do.call("rbind", resdflist)
 
@@ -971,13 +972,16 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 }
 
 allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
-  dontcompare = NULL, verbose = TRUE) {
+  dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
+  verbose = TRUE) {
 
+    if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {}
+        
     if (verbose) message("\t Computing the differences (d or delta) of AUC")
     start_time <- Sys.time()
 #    !!!!!!!!!!!!!! ONLY EXECUTE IF TWO CONDITIONS
     daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcputrans)
+      nbcputrans, controlcondname, stresscondname)
     end_time <- Sys.time()
     if (verbose) message("\t\t ## Analysis performed in: ",
       end_time - start_time) # nolint
