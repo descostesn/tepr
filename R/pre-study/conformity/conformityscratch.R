@@ -1099,3 +1099,65 @@ rownames(viccode_countnavictest) <- NULL
 
 if (isTRUE(all.equal(viccode_countnavictest, niccode_countnavictest)))
     message("consistancy after countna")
+
+
+####
+#### kneeid
+####
+
+!!!!!!!!!!!!!!!!!
+.retrievekneeandmax <- function(condvec, transtable) { # nolint
+
+reslist <- lapply(condvec, function(cond, transtable) {
+    difffxname <- paste0("diff_Fx_", cond)
+    difffxvec <- transtable[, difffxname]
+    ## If equality of difference within the same gene it takes the closest
+    ## knee from the TSS # nolint
+    resrow <- transtable[which(difffxvec == max(difffxvec)), ] %>% # nolint
+        dplyr::slice_min(coord, n = 1) # nolint
+    res <- data.frame(resrow$coord, resrow[, difffxname])
+    colnames(res) <- c(paste0("knee_AUC_", cond), paste0("max_", difffxname))
+    return(res)
+}, transtable)
+
+return(reslist)
+}
+
+kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
+
+  condvec <- unique(expdf$condition)
+  bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
+      bycondreslist <- .retrievekneeandmax(condvec, transtable)
+       return(cbind(transcript = transtable$transcript[1],
+        do.call("cbind", bycondreslist)))
+    }, condvec, mc.cores = nbcputrans)
+  res <- do.call("rbind", bytransres)
+  return(res)
+}
+!!!!!!!!!!!!!!!!!!!!!!!
+
+bytranslistmean <- split(niccode_dfmeandiffvic,
+    factor(niccode_dfmeandiffvic$transcript))
+
+niccode_kneedfvic <- kneeid(bytranslistmean, expdf, nbcputrans)
+viccode_kneedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/KneeID_res.rds") # nolint
+
+## for comparison only
+rownames(niccode_kneedfvic) <- NULL
+
+print(all.equal(niccode_kneedfvic, viccode_kneedfvic))
+
+idxdiffctrl <- which(niccode_kneedfvic$knee_AUC_ctrl != viccode_kneedfvic$knee_AUC_ctrl) # nolint
+idxdiffHS <- which(niccode_kneedfvic$knee_AUC_HS != viccode_kneedfvic$knee_AUC_HS) # nolint
+
+message("The number of different knee in ctrl is: ", length(idxdiffctrl),
+    ". The value for nic is ", niccode_kneedfvic[idxdiffctrl, "knee_AUC_ctrl"],
+    " and the value for vic is ",
+    viccode_kneedfvic[idxdiffctrl, "knee_AUC_ctrl"])
+# The number of different knee in ctrl is: 1. The value for nic is 95 and the value for vic is 94 # nolint
+
+message("The number of different knee in ctrl is: ", length(idxdiffHS),
+    ". The value for nic is ", niccode_kneedfvic[idxdiffHS, "knee_AUC_HS"],
+    " and the value for vic is ",
+    viccode_kneedfvic[idxdiffHS, "knee_AUC_HS"])
+# The number of different knee in ctrl is: 1. The value for nic is 65 and the value for vic is 64
