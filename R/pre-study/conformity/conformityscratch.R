@@ -789,6 +789,11 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         return(meandiffres)
     }, resultsecdf, nbwindows, verbose)
     resmean <- do.call("cbind", rescondlist)
+
+#!!!!!!!!!!!!!  CODE TO REMOVE FOR THE FINAL FUNCTION
+        res <- cbind(resultsecdf, resmean)
+        return(res)
+
     ## Computing all differences on mean columns
     if (verbose) message("Commputing all differences on mean columns")
     matdiff <- .creatematdiff(condvec, resmean)
@@ -803,4 +808,14 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-dfmeandiff <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
+## IMPORTANT: For the sake of comparison with the code of vic, only the first
+## part of createmeandiff was executed by adding the following lines after
+## resmean:
+##        res <- cbind(resultsecdf, resmean)
+##        return(res)
+
+viccode_dfmeanvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_dfFX_res.rds") # nolint
+niccode_dfmeanvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
+
+if (isTRUE(all.equal(viccode_dfmeanvic, niccode_dfmeanvic)))
+    message("consistancy after dfmean")
