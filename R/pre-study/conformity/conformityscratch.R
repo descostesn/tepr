@@ -1058,7 +1058,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
   nabytranslist <- parallel::mclapply(transdflist,
     function(transtable, scorecolvec, condvec) {
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand.window))
+        str <- .extractstr(transtable)
         colnamestr <- scorecolvec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
 
@@ -1076,7 +1076,8 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
         ## Retrieving total NA and transcript info
         countna <- sum(res)
         info <- data.frame(gene = unique(transtable$gene),
-          transcript = unique(transtable$transcript), strand = str)
+          transcript = unique(transtable$transcript),
+          strand = unique(transtable$strand))
         return(cbind(info, countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
