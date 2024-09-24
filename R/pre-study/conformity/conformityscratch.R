@@ -825,30 +825,9 @@ if (isTRUE(all.equal(viccode_dfmeanvic, niccode_dfmeanvic)))
 viccode_dfmeandiffvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_Diff_mean_res.rds") # nolint
 niccode_dfmeandiffvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
 
+## Change the 'V' of 'value' to lower case in vic table
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS"
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_HS_ctrl")] <- "Diff_meanvalue_HS_ctrl"
+
 if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     message("consistancy after mean differences")
-
-> colnames(viccode_dfmeandiffvic)
- [1] "biotype"                "chr"                    "coor1"
- [4] "coor2"                  "transcript"             "gene"
- [7] "strand"                 "window"                 "id"
-[10] "ctrl_rep1"              "ctrl_rep2"              "HS_rep1"
-[13] "HS_rep2"                "coord"                  "value_ctrl_rep1_score"
-[16] "value_ctrl_rep2_score"  "value_HS_rep1_score"    "value_HS_rep2_score"
-[19] "Fx_ctrl_rep1_score"     "Fx_ctrl_rep2_score"     "Fx_HS_rep1_score"
-[22] "Fx_HS_rep2_score"       "mean_value_ctrl"        "mean_Fx_ctrl"
-[25] "diff_Fx_ctrl"           "mean_value_HS"          "mean_Fx_HS"
-[28] "diff_Fx_HS"             "Diff_meanValue_ctrl_HS" "Diff_meanValue_HS_ctrl"
-[31] "Diff_meanFx_ctrl_HS"    "Diff_meanFx_HS_ctrl"
-> colnames(niccode_dfmeandiffvic)
- [1] "biotype"                "chr"                    "coor1"
- [4] "coor2"                  "transcript"             "gene"
- [7] "strand"                 "window"                 "id"
-[10] "ctrl_rep1"              "ctrl_rep2"              "HS_rep1"
-[13] "HS_rep2"                "coord"                  "value_ctrl_rep1_score"
-[16] "value_ctrl_rep2_score"  "value_HS_rep1_score"    "value_HS_rep2_score"
-[19] "Fx_ctrl_rep1_score"     "Fx_ctrl_rep2_score"     "Fx_HS_rep1_score"
-[22] "Fx_HS_rep2_score"       "mean_value_ctrl"        "mean_Fx_ctrl"
-[25] "diff_Fx_ctrl"           "mean_value_HS"          "mean_Fx_HS"
-[28] "diff_Fx_HS"             "Diff_meanvalue_ctrl_HS" "Diff_meanvalue_HS_ctrl"
-[31] "Diff_meanFx_ctrl_HS"    "Diff_meanFx_HS_ctrl"
