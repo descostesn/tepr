@@ -982,6 +982,10 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
         warning("dAUC not performed, only one condition submitted.")
     }
 
+## !!!!!!!!!!!!!!! TO REMOVE FROM FINAL CODE
+        return(daucallcond)
+
+
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
     ## Calculate Mean Value over the full gene body in All conditions.
     if (verbose) message("\t Computing the Area Under Curve (AUC)")
@@ -1004,4 +1008,15 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
 
 bytranslistmean <- split(niccode_dfmeandiffvic,
     factor(niccode_dfmeandiffvic$transcript))
-allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+
+## IMPORTANT: Only the delta auc (first part) of the function allauc is executed
+## by adding return(daucallcond) in the function. This should be removed later.
+niccode_daucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+viccode_daucdfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/dAUC_allcondi_res.rds") # nolint
+
+# For comparison only
+rownames(niccode_daucdfvic) <- NULL
+names(viccode_daucdfvic$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
+
+if (isTRUE(all.equal(viccode_daucdfvic, niccode_daucdfvic)))
+    message("consistancy after dAUC")
