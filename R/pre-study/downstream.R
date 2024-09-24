@@ -391,8 +391,6 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     return(resdf)
 }
 
-
-
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
   currentcond) {
     auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
@@ -403,7 +401,8 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
     rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
     transinfo <- data.frame(transcript = transtab[1, "transcript"],
-                    gene = transtab[1, "gene"], strand = transtab[1, "strand.window"])
+                    gene = transtab[1, "gene"],
+                    strand = transtab[1, "strand.window"])
     aucdf <- cbind(transinfo, aucdf)
     return(aucdf)
 }
