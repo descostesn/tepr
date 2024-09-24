@@ -348,9 +348,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
-        name1 <- paste0("mean_Fx_", condvec[idxctrl])
-        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])  # nolint
+        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",  # nolint
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
@@ -387,7 +387,7 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     resdf <- cbind(resdf, fdrvec)
     colnamevec <- colnames(resdf)
     idxfdr <- which(colnamevec == "fdrvec")
-    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])
+    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])  # nolint
     return(resdf)
 }
 
