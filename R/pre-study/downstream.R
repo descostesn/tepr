@@ -320,9 +320,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
   transcript <- unique(transtab$transcript)
   gene <- unique(transtab$gene)
   strand <- unique(transtab$strand.window)
-        .checkunique(transcript, "transcript-dauc_allconditions")
-        .checkunique(gene, "gene-dauc_allconditions")
-        .checkunique(strand, "strand-dauc_allconditions")
+        .checkunique(transcript, "transcript-dauc_allconditions") # nolint
+        .checkunique(gene, "gene-dauc_allconditions")  # nolint
+        .checkunique(strand, "strand-dauc_allconditions")  # nolint
         infodf <- data.frame(transcript, gene, strand)
 
         if (!is.null(nbwindows)) {
