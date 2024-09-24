@@ -898,7 +898,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     resdf <- do.call("rbind", resdflist)
 
     ## Correct p-values using FDR
-    idx <- grep("pvaldeltadaucks", colnames(resdf))
+    idx <- grep("p_dAUC", colnames(resdf))
     fdrvec <- p.adjust(resdf[, idx], method = "fdr")
 
     resdf <- cbind(resdf, fdrvec)
