@@ -418,9 +418,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
       resauclist <- lapply(condvec, function(currentcond, transtab,
         cumulative) {
           ## Definition of column names
-          difffxname <- paste0("diff_Fx_", currentcond)
-          meanvalname <- paste0("mean_value_", currentcond)
-          meanfxname <- paste0("mean_Fx_", currentcond)
+          difffxname <- paste0("diff_Fx_", currentcond) # nolint
+          meanvalname <- paste0("mean_value_", currentcond) # nolint
+          meanfxname <- paste0("mean_Fx_", currentcond) # nolint
 
           ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
           resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
