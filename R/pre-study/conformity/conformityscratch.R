@@ -909,7 +909,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 }
 
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
-  currentcond) {
+  currentcond, nbwindows) {
     auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
     pvalaucks <- resks$p.value
     stataucks <- resks$statistic
@@ -918,11 +918,9 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     prefixvec <- c("AUC", "p_AUC", "D_AUC", "MeanValueFull")
     colnames(aucdf) <- paste(prefixvec, currentcond, sep = "_")
     rownames(aucdf) <- NULL
-    transinfo <- data.frame(transcript = transtab[1, "transcript"],
-                    gene = transtab[1, "gene"],
-                    strand = transtab[1, "strand"])
-    aucdf <- cbind(transinfo, aucdf)
-    return(aucdf)
+    transinfo <- .returninfodf(transtab, nbwindows)
+    res <- cbind(transinfo, aucdf)
+    return(res)
 }
 
 .auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
@@ -934,7 +932,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     nbwindows) {
       ## Computing AUC, pval, and stat for each condition
       resauclist <- lapply(condvec, function(currentcond, transtab,
-        cumulative) {
+        cumulative, nbwindows) {
           ## Definition of column names
           difffxname <- paste0("diff_Fx_", currentcond) # nolint
           meanvalname <- paste0("mean_value_", currentcond) # nolint
@@ -944,9 +942,9 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
           resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
           ## Build data.frame with auc information for the current transcript
           aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
-            currentcond)
+            currentcond, nbwindows)
           return(aucdf)
-      }, transtab, cumulative)
+      }, transtab, cumulative, nbwindows)
       aucdf <- do.call("cbind", resauclist)
       return(aucdf)
   }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
