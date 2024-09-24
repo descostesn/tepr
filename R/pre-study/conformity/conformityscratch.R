@@ -827,3 +827,182 @@ colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_m
 
 if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     message("consistancy after mean differences")
+
+
+####
+#### dAUC
+####
+
+
+!!!!!!!!!!!
+.returninfodf <- function(transtab, nbwindows = NULL) {
+
+  transcript <- unique(transtab$transcript)
+  gene <- unique(transtab$gene)
+  strand <- unique(transtab$strand.window)
+        .checkunique(transcript, "transcript-dauc_allconditions") # nolint
+        .checkunique(gene, "gene-dauc_allconditions")  # nolint
+        .checkunique(strand, "strand-dauc_allconditions")  # nolint
+        infodf <- data.frame(transcript, gene, strand)
+
+        if (!is.null(nbwindows)) {
+            if (isTRUE(all.equal(as.character(strand), "+"))) {
+                windsize <- floor(
+                    (transtab$end.window[nbwindows] -
+                    transtab$start.window[1]) / nbwindows)
+            } else {
+                windsize <- floor(
+                    (transtab$end.window[1] -
+                    transtab$start.window[nbwindows]) / nbwindows)
+            }
+            infodf <- cbind(infodf, windsize)
+        }
+        return(infodf)
+}
+
+.dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
+    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS") {
+
+    condvec <- unique(expdf$condition)
+    resdflist <- mclapply(bytranslist, function(transtab, condvec) {
+
+        ## Retrieve the column names for each comparison
+        idxctrl <- grep(controlcondname, condvec)
+        .checkempty <- function(idx, )
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])  # nolint
+        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",  # nolint
+          condvec[idxctrl])
+
+        ## Perform a kolmogorov-smirnoff test between the two columns
+        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+
+        ## Calculate the area under the curve of the difference of means
+        ## -> delta AUC
+        deltadauc <- pracma::trapz(transtab[, "coord"], transtab[, diffname])
+        ## Retrieve the p-value
+        pvaldeltadaucks <- resks$p.value
+        ## The KS test statistic is defined as the maximum value of the
+        ## difference between A and B’s cumulative distribution functions (CDF)
+        statdeltadaucks <- resks$statistic
+
+        ## Build a one line data.frame with the proper col names
+        ksdeltadaucdf <- data.frame(deltadauc, pvaldeltadaucks, statdeltadaucks)
+        colnames(ksdeltadaucdf) <- paste(colnames(ksdeltadaucdf), name2,
+            sep = "_")
+
+        ## Retrieving transcript information
+        infodf <- .returninfodf(transtab, nbwindows)
+
+        ## Combining the two df as result
+        resdf <- cbind(infodf, ksdeltadaucdf)
+        return(resdf)
+    }, condvec, mc.cores = nbcpu)
+
+    resdf <- do.call("rbind", resdflist)
+
+    ## Correct p-values using FDR
+    idx <- grep("pvaldeltadaucks", colnames(resdf))
+    fdrvec <- p.adjust(resdf[, idx], method = "fdr")
+
+    resdf <- cbind(resdf, fdrvec)
+    colnamevec <- colnames(resdf)
+    idxfdr <- which(colnamevec == "fdrvec")
+    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])  # nolint
+    return(resdf)
+}
+
+.buildaucdf <- function(transtab, difffxname, resks, meanvalname,
+  currentcond) {
+    auc <- pracma::trapz(transtab[, "coord"], transtab[, difffxname])
+    pvalaucks <- resks$p.value
+    stataucks <- resks$statistic
+    meanvaluefull <- mean(transtab[, meanvalname])
+    aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
+    colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
+    rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
+    transinfo <- data.frame(transcript = transtab[1, "transcript"],
+                    gene = transtab[1, "gene"],
+                    strand = transtab[1, "strand.window"])
+    aucdf <- cbind(transinfo, aucdf)
+    return(aucdf)
+}
+
+.auc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1) {
+
+  cumulative <- seq(1, nbwindows) / nbwindows
+  condvec <- unique(expdf$condition)
+
+  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative,
+    nbwindows) {
+      ## Computing AUC, pval, and stat for each condition
+      resauclist <- lapply(condvec, function(currentcond, transtab,
+        cumulative) {
+          ## Definition of column names
+          difffxname <- paste0("diff_Fx_", currentcond) # nolint
+          meanvalname <- paste0("mean_value_", currentcond) # nolint
+          meanfxname <- paste0("mean_Fx_", currentcond) # nolint
+
+          ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
+          resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
+          ## Build data.frame with auc information for the current transcript
+          aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
+            currentcond)
+          return(aucdf)
+      }, transtab, cumulative)
+      aucdf <- do.call("cbind", resauclist)
+      return(aucdf)
+  }, condvec, cumulative, nbwindows, mc.cores = nbcpu)
+
+  aucallconditions <- do.call("rbind", resdflist)
+  idxdup <- which(duplicated(colnames(aucallconditions)))
+  aucallconditions <- aucallconditions[, -idxdup]
+
+  ## Correcting p-val with FDR
+  idxpvalvec <- grep("pvalaucks", colnames(aucallconditions))
+  fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
+    return(p.adjust(tab[, idxpval], method = "fdr"))
+  }, aucallconditions)
+  fdrdf <- do.call("cbind", fdrlist)
+  colnames(fdrdf) <- paste0("adjFDR_", colnames(aucallconditions)[idxpvalvec]) # nolint
+
+  aucallconditions <- cbind(aucallconditions, fdrdf)
+  return(aucallconditions)
+}
+
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+  dontcompare = NULL, verbose = TRUE) {
+
+    if (verbose) message("\t Computing the differences (d or delta) of AUC")
+    start_time <- Sys.time()
+#    !!!!!!!!!!!!!! ONLY EXECUTE IF TWO CONDITIONS
+    daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds") # nolint
+
+    ## Calculate the Area Under Curve (AUC), All conditions vs y=x
+    ## Calculate Mean Value over the full gene body in All conditions.
+    if (verbose) message("\t Computing the Area Under Curve (AUC)")
+    start_time <- Sys.time()
+    aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
+      nbcpu = nbcputrans)
+    end_time <- Sys.time()
+    if (verbose) message("\t\t ## Analysis performed in: ",
+      end_time - start_time) # nolint
+    #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds") # nolint
+
+    ## Merging the two tables by transcript
+    if (verbose) message("Merging results")
+    allauc <- merge(aucallcond, daucallcond,
+      by = c("gene", "transcript", "strand.window"))
+    return(allauc)
+}
+
+!!!!!!!!!!!
+
+bytranslistmean <- split(niccode_dfmeandiffvic,
+    factor(niccode_dfmeandiffvic$transcript))
+allaucdf <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
