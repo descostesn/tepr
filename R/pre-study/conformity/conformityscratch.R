@@ -1037,3 +1037,53 @@ names(viccode_aucdfvic$D_AUC_ctrl) <- names(viccode_aucdfvic$D_AUC_HS) <- NULL
 
 if (isTRUE(all.equal(viccode_aucdfvic, niccode_aucdfvic)))
     message("consistancy after AUC")
+
+
+####
+#### countNA
+####
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
+
+  maintable <- allexprsdfs[[1]]
+  scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
+  condvec <- unique(expdf$condition)
+
+  ## Splitting the table by each transcript
+  if (verbose) message("\t Splitting the table by each transcript") # nolint
+  transdflist <- split(maintable, factor(maintable$transcript))
+
+  ## For each transcript
+  nabytranslist <- parallel::mclapply(transdflist,
+    function(transtable, scorecolvec, condvec) {
+        ## Filters the score columns according to the strand of the transcript
+        str <- as.character(unique(transtable$strand.window))
+        colnamestr <- scorecolvec[which(expdf$strand == str)]
+        scoremat <- transtable[, colnamestr]
+
+        ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
+        res <- sapply(condvec, function(c, m, n) {
+          idxcol <- grep(c, n)
+          if (!isTRUE(all.equal(length(idxcol), 1))) {
+            return(length(which(apply(m[, idxcol], 1,
+              function(x) all(is.na(x))))))
+          } else { ## Only one replicate
+            return(length(which(is.na(m[, idxcol]))))
+          }
+        }, scoremat, colnamestr)
+
+        ## Retrieving total NA and transcript info
+        countna <- sum(res)
+        info <- data.frame(gene = unique(transtable$gene),
+          transcript = unique(transtable$transcript), strand = str)
+        return(cbind(info, countna))
+    }, scorecolvec, condvec, mc.cores = nbcpu)
+
+  return(do.call("rbind", nabytranslist))
+}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+matnatrans <- countna(niccode_allexprsdfsvic, expdf, nbcputrans)
+
+viccode_countnavic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/count_NA_res.rds") # nolint
