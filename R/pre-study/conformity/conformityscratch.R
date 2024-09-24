@@ -915,11 +915,12 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     stataucks <- resks$statistic
     meanvaluefull <- mean(transtab[, meanvalname])
     aucdf <- data.frame(auc, pvalaucks, stataucks, meanvaluefull)
-    colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
-    rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
+    prefixvec <- c("AUC", "p_AUC", "D_AUC", "MeanValueFull")
+    colnames(aucdf) <- paste(prefixvec, currentcond, sep = "_")
+    rownames(aucdf) <- NULL
     transinfo <- data.frame(transcript = transtab[1, "transcript"],
                     gene = transtab[1, "gene"],
-                    strand = transtab[1, "strand.window"])
+                    strand = transtab[1, "strand"])
     aucdf <- cbind(transinfo, aucdf)
     return(aucdf)
 }
@@ -983,7 +984,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     }
 
 ## !!!!!!!!!!!!!!! TO REMOVE FROM FINAL CODE
-        return(daucallcond)
+##        return(daucallcond)
 
 
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
@@ -1000,7 +1001,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
-      by = c("gene", "transcript", "strand.window"))
+      by = c("gene", "transcript", "strand"))
     return(allauc)
 }
 
@@ -1020,3 +1021,8 @@ names(viccode_daucdfvic$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
 
 if (isTRUE(all.equal(viccode_daucdfvic, niccode_daucdfvic)))
     message("consistancy after dAUC")
+
+## IMPORTANT: Only the second part of allauc is executed here by skipping the
+## code when pasting in the terminal.
+
+viccode_aucdfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/AUC_allcondi_res.rds")
