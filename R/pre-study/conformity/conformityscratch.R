@@ -804,12 +804,6 @@ if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
 #### createmeandiff
 ####
 
-
-!!!!!!!!!!!!!!!!
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 ## IMPORTANT: For the sake of comparison with the code of vic, only the first
 ## part of createmeandiff was executed by adding the following lines after
 ## resmean:
@@ -828,8 +822,8 @@ viccode_dfmeandiffvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/c
 niccode_dfmeandiffvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
 
 ## Change the 'V' of 'value' to lower case in vic table
-colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS"
-colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_HS_ctrl")] <- "Diff_meanvalue_HS_ctrl"
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS" # nolint
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_HS_ctrl")] <- "Diff_meanvalue_HS_ctrl" # nolint
 
 if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
     message("consistancy after mean differences")
