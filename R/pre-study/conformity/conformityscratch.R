@@ -996,6 +996,9 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
       end_time - start_time) # nolint
     #saveRDS(aucallcond, "/g/romebioinfo/tmp/downstream/aucallcond.rds") # nolint
 
+## !!!!!!!!!!!!!!! TO REMOVE FROM FINAL CODE
+##        return(aucallcond)
+
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
@@ -1021,6 +1024,13 @@ if (isTRUE(all.equal(viccode_daucdfvic, niccode_daucdfvic)))
     message("consistancy after dAUC")
 
 ## IMPORTANT: Only the second part of allauc is executed here by skipping the
-## code when pasting in the terminal.
+## code when pasting in the terminal and adding return(aucallcond)
+niccode_aucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+viccode_aucdfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/AUC_allcondi_res.rds") # nolint
 
-viccode_aucdfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/AUC_allcondi_res.rds")
+# For comparison only
+rownames(niccode_aucdfvic) <- rownames(viccode_aucdfvic) <- NULL
+names(viccode_aucdfvic$D_AUC_ctrl) <- names(viccode_aucdfvic$D_AUC_HS) <- NULL
+
+if (isTRUE(all.equal(viccode_aucdfvic, niccode_aucdfvic)))
+    message("consistancy after AUC")
