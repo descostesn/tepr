@@ -860,6 +860,13 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
         return(infodf)
 }
 
+.checkempty <- function(idx, namestr) {
+
+    if (isTRUE(all.equal(length(idx), 0)))
+        stop("Your condition ", namestr, " was not found in the ",
+            "experiment table expdf. Please verify")
+}
+
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
     controlcondname = "ctrl", stresscondname = "HS", dontcompare = NULL) {
 
@@ -869,7 +876,7 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep(controlcondname, condvec)
-        .checkempty <- function(idx, )
+        .checkempty(idxctrl, controlcondname)
         name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
         name2 <- paste0("mean_Fx_", condvec[-idxctrl])  # nolint
         diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",  # nolint
