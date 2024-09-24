@@ -328,10 +328,12 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
         if (!is.null(nbwindows)) {
             if (isTRUE(all.equal(as.character(strand), "+"))) {
                 windsize <- floor(
-                    (transtab$end.window[nbwindows] - transtab$start.window[1]) / nbwindows)
+                    (transtab$end.window[nbwindows] -
+                    transtab$start.window[1]) / nbwindows)
             } else {
                 windsize <- floor(
-                    (transtab$end.window[1] - transtab$start.window[nbwindows]) / nbwindows)
+                    (transtab$end.window[1] -
+                    transtab$start.window[nbwindows]) / nbwindows)
             }
             infodf <- cbind(infodf, windsize)
         }
