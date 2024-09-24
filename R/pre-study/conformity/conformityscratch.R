@@ -1074,17 +1074,22 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
         }, scoremat, colnamestr)
 
         ## Retrieving total NA and transcript info
-        countna <- sum(res)
+        if (!isTRUE(all.equal(res[1], res[2])))
+            stop("Number of NA is different between conditions. This should ",
+                "not happen. Contact the developer.")
+        ## I drop the other NA columns because it is the same value for all the
+        ## conditions (NA depends on blacklist and unmmapable region)
+        countna <- res[1]
         info <- data.frame(gene = unique(transtable$gene),
           transcript = unique(transtable$transcript),
           strand = unique(transtable$strand))
-        return(cbind(info, countna))
+        return(cbind(info, Count_NA = countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
   return(do.call("rbind", nabytranslist))
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-matnatrans <- countna(niccode_allexprsdfsvic, expdf, nbcputrans)
+niccode_countnavic <- countna(niccode_allexprsdfsvic, expdf, nbcputrans)
 
 viccode_countnavic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/count_NA_res.rds") # nolint
