@@ -712,129 +712,6 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 }
 
 
-
-##################
-# MAIN
-##################
-
-#########################################
-# PART 1: PREPROCESSING
-#########################################
-
-
-## Reading all windows bed
-allwindowsbed <- readRDS(allwindowspath)
-
-## Reading exptab, black list, and maptrack
-exptab <- read.csv(exptabpath, header = TRUE)
-expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
-blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-maptrackbed <- read.delim(maptrackpath, header = FALSE)
-
-bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
-    nbcputrans, allwindowsbed, expnamevec, windsize)
-
-message("Merging results of each bedgraph into a single table")
-finaltab <- createtablescores(bedgraphlistwmean, nbcpubg)
-saveRDS(finaltab, file = file.path(outputfolder, "finaltab.rds"))
-
-
-
-##################### TEST
-## This is the ctrl rep1 fwd
-bgvic <- read.delim(bgvicpath, header = FALSE)
-
-## Selecting ctrl rep1 fwd
-allbgnic <- readRDS(allbgnicpath)
-names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
-bgnic <- allbgnic[["ctrl_rep1.forward"]]
-rm(allbgnic)
-gc()
-
-## Selecting the lines corresponding to the gene ARF5
-bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
-bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
-allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
-
-
-#########################################
-# PART 2: DOWNSTREAM
-#########################################
-
-
-## This code tests the functions of downstream.R with the input table of
-## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
-bigtsv <- read.table(vicbigtsvpath, header = FALSE)
-expdf <- read.csv(expdfpath, header = TRUE)
-
-
-####
-#### averageandfilterexprs
-####
-
-niccode_allexprsdfsvic <- averageandfilterexprs(expdf, bigtsv, expthres,
-    verbose = TRUE)
-viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
-
-if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
-    message("table is equal after averageandfilterexprs")
-
-if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
-    message("transcript list is equal after averageandfilterexprs")
-
-
-####
-#### genesECDF
-####
-
-niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, expdf, nbcpu = nbcputrans, verbose = TRUE) # nolint
-nbwindows <- niccode_resecdfvic[[2]]
-niccode_resecdfvic <- niccode_resecdfvic[[1]]
-
-## Reading the result of ecdf that contains the column coord that is present in
-## the input table of nic
-viccode_resecdfvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/cugusi2023_ECDFScores_10_200.tsv" # nolint
-viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TRUE) # nolint
-
-if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
-    message("genesECDF is consistent")
-
-
-####
-#### createmeandiff
-####
-
-## IMPORTANT: For the sake of comparison with the code of vic, only the first
-## part of createmeandiff was executed by adding the following lines after
-## resmean:
-##        res <- cbind(resultsecdf, resmean)
-##        return(res)
-
-viccode_dfmeanvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_dfFX_res.rds") # nolint
-niccode_dfmeanvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
-
-if (isTRUE(all.equal(viccode_dfmeanvic, niccode_dfmeanvic)))
-    message("consistancy after dfmean")
-
-## IMPORTANT: Now the whole function is executed (above lines are commented) to
-## compute the differences of means
-viccode_dfmeandiffvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_Diff_mean_res.rds") # nolint
-niccode_dfmeandiffvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
-
-## Change the 'V' of 'value' to lower case in vic table
-colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS" # nolint
-colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_HS_ctrl")] <- "Diff_meanvalue_HS_ctrl" # nolint
-
-if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
-    message("consistancy after mean differences")
-
-
-####
-#### dAUC
-####
-
-
-!!!!!!!!!!!
 .returninfodf <- function(transtab, nbwindows) { # nolint
 
     infodf <- transtab  %>%
@@ -1006,7 +883,129 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     return(allauc)
 }
 
-!!!!!!!!!!!
+
+
+
+##################
+# MAIN
+##################
+
+#########################################
+# PART 1: PREPROCESSING
+#########################################
+
+
+## Reading all windows bed
+allwindowsbed <- readRDS(allwindowspath)
+
+## Reading exptab, black list, and maptrack
+exptab <- read.csv(exptabpath, header = TRUE)
+expnamevec <- paste0(exptab$condition, exptab$replicate, exptab$direction)
+blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed, maptrackbed,
+    nbcputrans, allwindowsbed, expnamevec, windsize)
+
+message("Merging results of each bedgraph into a single table")
+finaltab <- createtablescores(bedgraphlistwmean, nbcpubg)
+saveRDS(finaltab, file = file.path(outputfolder, "finaltab.rds"))
+
+
+
+##################### TEST
+## This is the ctrl rep1 fwd
+bgvic <- read.delim(bgvicpath, header = FALSE)
+
+## Selecting ctrl rep1 fwd
+allbgnic <- readRDS(allbgnicpath)
+names(allbgnic) <- gsub(".bg","",basename(names(allbgnic)))
+bgnic <- allbgnic[["ctrl_rep1.forward"]]
+rm(allbgnic)
+gc()
+
+## Selecting the lines corresponding to the gene ARF5
+bgvicarf <- bgvic[which(bgvic$V6 == "ARF5"), ]
+bgnicarf <- bgvic[which(bgnic$gene == "ARF5"), ]
+allwindarf <- allwindowsbed[which(allwindowsbed$gene == "ARF5"), ]
+
+
+#########################################
+# PART 2: DOWNSTREAM
+#########################################
+
+
+## This code tests the functions of downstream.R with the input table of
+## victor: /g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv # nolint
+bigtsv <- read.table(vicbigtsvpath, header = FALSE)
+expdf <- read.csv(expdfpath, header = TRUE)
+
+
+####
+#### averageandfilterexprs
+####
+
+niccode_allexprsdfsvic <- averageandfilterexprs(expdf, bigtsv, expthres,
+    verbose = TRUE)
+viccode_allexprsdfsvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/results_main_table.rds") # nolint
+
+if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
+    message("table is equal after averageandfilterexprs")
+
+if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
+    message("transcript list is equal after averageandfilterexprs")
+
+
+####
+#### genesECDF
+####
+
+niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, expdf, nbcpu = nbcputrans, verbose = TRUE) # nolint
+nbwindows <- niccode_resecdfvic[[2]]
+niccode_resecdfvic <- niccode_resecdfvic[[1]]
+
+## Reading the result of ecdf that contains the column coord that is present in
+## the input table of nic
+viccode_resecdfvicpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/cugusi2023_ECDFScores_10_200.tsv" # nolint
+viccode_resecdfvic <- read.table(viccode_resecdfvicpath, sep = "\t", header = TRUE) # nolint
+
+if (isTRUE(all.equal(as.data.frame(niccode_resecdfvic), viccode_resecdfvic)))
+    message("genesECDF is consistent")
+
+
+####
+#### createmeandiff
+####
+
+## IMPORTANT: For the sake of comparison with the code of vic, only the first
+## part of createmeandiff was executed by adding the following lines after
+## resmean:
+##        res <- cbind(resultsecdf, resmean)
+##        return(res)
+
+viccode_dfmeanvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_dfFX_res.rds") # nolint
+niccode_dfmeanvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
+
+if (isTRUE(all.equal(viccode_dfmeanvic, niccode_dfmeanvic)))
+    message("consistancy after dfmean")
+
+## IMPORTANT: Now the whole function is executed (above lines are commented) to
+## compute the differences of means
+viccode_dfmeandiffvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_Diff_mean_res.rds") # nolint
+niccode_dfmeandiffvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
+
+## Change the 'V' of 'value' to lower case in vic table
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS" # nolint
+colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_HS_ctrl")] <- "Diff_meanvalue_HS_ctrl" # nolint
+
+if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
+    message("consistancy after mean differences")
+
+
+####
+#### dAUC
+####
+
 
 bytranslistmean <- split(niccode_dfmeandiffvic,
     factor(niccode_dfmeandiffvic$transcript))
@@ -1022,6 +1021,10 @@ names(viccode_daucdfvic$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
 
 if (isTRUE(all.equal(viccode_daucdfvic, niccode_daucdfvic)))
     message("consistancy after dAUC")
+
+####
+#### AUC
+####
 
 ## IMPORTANT: Only the second part of allauc is executed here by skipping the
 ## code when pasting in the terminal and adding return(aucallcond)
