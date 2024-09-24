@@ -975,17 +975,17 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
   dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
   verbose = TRUE) {
 
-    if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {}
-        
-    if (verbose) message("\t Computing the differences (d or delta) of AUC")
-    start_time <- Sys.time()
-#    !!!!!!!!!!!!!! ONLY EXECUTE IF TWO CONDITIONS
-    daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcputrans, controlcondname, stresscondname)
-    end_time <- Sys.time()
-    if (verbose) message("\t\t ## Analysis performed in: ",
-      end_time - start_time) # nolint
-    #saveRDS(dfaucallcond, "/g/romebioinfo/tmp/downstream/dfaucallcond.rds") # nolint
+    if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
+        if (verbose) message("\t Computing the differences (d or delta) of AUC")
+        start_time <- Sys.time()
+        daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
+          nbcputrans, controlcondname, stresscondname)
+        end_time <- Sys.time()
+        if (verbose) message("\t\t ## Analysis performed in: ",
+          end_time - start_time) # nolint
+    } else {
+        warning("dAUC not performed, only one condition submitted.")
+    }
 
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
     ## Calculate Mean Value over the full gene body in All conditions.
