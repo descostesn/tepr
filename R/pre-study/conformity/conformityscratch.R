@@ -1218,8 +1218,8 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
   return(updowndf)
 }
 
-# allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic
-# matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeanvic;nbcpu = nbcputrans
+# allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic;nbcpu = nbcputrans
+# matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeandiffvic
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, verbose = TRUE) {
 
@@ -1257,5 +1257,52 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 niccode_allaucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 
 completedf <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
-    niccode_countnavic, bytranslistmean, expdf, niccode_dfmeanvic,
+    niccode_countnavic, bytranslistmean, expdf, niccode_dfmeandiffvic,
     nbcpu = nbcputrans)
+
+
+[1] 3000400
+
+> colnames(Complete_summary)
+[29] "Diff_meanValue_ctrl_HS"            "Diff_meanValue_HS_ctrl"
+[31] "Diff_meanFx_ctrl_HS"               "Diff_meanFx_HS_ctrl"
+[33] "chr.y"                             "coor1.y"
+[35] "coor2.y"                           "size"
+[37] "window_size"                       "AUC_ctrl"
+[39] "p_AUC_ctrl"                        "D_AUC_ctrl"
+[41] "MeanValueFull_ctrl"                "AUC_HS"
+[43] "p_AUC_HS"                          "D_AUC_HS"
+[45] "MeanValueFull_HS"                  "adjFDR_p_AUC_ctrl"
+[47] "adjFDR_p_AUC_HS"                   "dAUC_Diff_meanFx_HS_ctrl"
+[49] "p_dAUC_Diff_meanFx_HS_ctrl"        "D_dAUC_Diff_meanFx_HS_ctrl"
+[51] "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl" "knee_AUC_ctrl"
+[53] "max_diff_Fx_ctrl"                  "knee_AUC_HS"
+[55] "max_diff_Fx_HS"                    "Count_NA"
+
+> colnames(complet)
+ [1] "gene"                              "transcript"
+ [3] "strand"                            "biotype"
+ [5] "chr.x"                             "coor1.x"
+ [7] "coor2.x"                           "window"
+ [9] "id"                                "ctrl_rep1"
+[11] "ctrl_rep2"                         "HS_rep1"
+[13] "HS_rep2"                           "coord"
+[15] "value_ctrl_rep1_score"             "value_ctrl_rep2_score"
+[17] "value_HS_rep1_score"               "value_HS_rep2_score"
+[19] "Fx_ctrl_rep1_score"                "Fx_ctrl_rep2_score"
+[21] "Fx_HS_rep1_score"                  "Fx_HS_rep2_score"
+[23] "mean_value_ctrl"                   "mean_Fx_ctrl"
+[25] "diff_Fx_ctrl"                      "mean_value_HS"
+[27] "mean_Fx_HS"                        "diff_Fx_HS"
+[29] "chr.y"                             "coor1.y"
+[31] "coor2.y"                           "size"
+[33] "window_size"                       "AUC_ctrl"
+[35] "p_AUC_ctrl"                        "D_AUC_ctrl"
+[37] "MeanValueFull_ctrl"                "AUC_HS"
+[39] "p_AUC_HS"                          "D_AUC_HS"
+[41] "MeanValueFull_HS"                  "adjFDR_p_AUC_ctrl"
+[43] "adjFDR_p_AUC_HS"                   "dAUC_Diff_meanFx_HS_ctrl"
+[45] "p_dAUC_Diff_meanFx_HS_ctrl"        "D_dAUC_Diff_meanFx_HS_ctrl"
+[47] "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl" "knee_AUC_ctrl"
+[49] "max_diff_Fx_ctrl"                  "knee_AUC_HS"
+[51] "max_diff_Fx_HS"                    "Count_NA"
