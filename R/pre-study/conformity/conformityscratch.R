@@ -1466,21 +1466,47 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
 viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/universegroupdf.rds") # nolint
 
-filterdf <- read.csv(filtertabpath, header = TRUE)
-checkfilter(filterdf, expdf)
+universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", # nolint
+    windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
+    meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
+    aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
+    outgrouppvalksthres = 0.2) {
 
-niccode_unigroupdf <- universegroup(niccode_completedfvic, expdf, filterdf,
-    verbose = TRUE)
-niccode_unigroupdfbackup <- niccode_unigroupdf
+    meanctrl <- paste("MeanValueFull", controlname, sep = "_")
+    meanstress <- paste("MeanValueFull", stressname, sep = "_")
+    pvaltheory <- paste("adjFDR_p_AUC", controlname, sep = "_")
+    aucctrl <- paste("AUC", controlname, sep = "_")
+    aucstress <- paste("AUC", stressname, sep = "_")
+    pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", stressname, "_", controlname)
 
-idx <- match(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
-niccode_unigroupdf <- niccode_unigroupdf[, idx]
+    ## Computing the Universe column
+    completedf <- completedf %>%
+        dplyr::mutate(Universe = ifelse(window_size > windsizethres & # nolint
+            Count_NA < countnathres & !!sym(meanctrl) > meanctrlthres & # nolint
+            !!sym(meanstress) > meanstressthres &
+            !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
+            dplyr::relocate(Universe, .before = 1)  # nolint
 
-all.equal(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
+    ## Computing the Group column
+    completedf <- completedf %>%
+        dplyr::mutate(
+            Group = ifelse(Universe == TRUE &
+                !!sym(aucstress) > aucstressthres &
+                -log10(!!sym(pvalks)) > attenuatedpvalksthres, "Attenuated",
+                NA),
+            Group = ifelse(Universe == TRUE &
+                !!sym(pvalks) > outgrouppvalksthres &
+                !!sym(aucctrl) > aucctrlthreshigher &
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup", Group)) %>% # nolint
+                dplyr::relocate(Group, .before = 2)
 
-niccode_unigroupdf[c(11512, 6423), ] <- viccode_unigroupdf[c(11512, 6423), ] # nolint
+    return(completedf)
+}
 
-mean_value_control_full <- "MeanValueFull_ctrl"
+niccode_unigroupdf <- universegroup(niccode_completedfvic)
+!!!!!!!!!!!!!!!
+
+meanctrl <- "MeanValueFull_ctrl"
 mean_value_stress <- "MeanValueFull_HS"
 p_value_theoritical<- "adjFDR_p_AUC_ctrl"
 AUC_ctrl <- "AUC_ctrl"
@@ -1488,7 +1514,7 @@ AUC_stress <- "AUC_HS"
 p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
 
 niccode_unigroupdf <- niccode_completedfvic %>%
-  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 & !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 & !!sym(meanctrl) > 0.5 & !!sym(mean_value_stress) > 0.5 &
                              !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%  relocate(Universe, .before = 1) 
 niccode_unigroupdf <- niccode_unigroupdf %>%
   mutate(
@@ -1496,15 +1522,20 @@ niccode_unigroupdf <- niccode_unigroupdf %>%
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group)  
   ) %>%  relocate(Group, .before = 2)
 
+# filterdf <- read.csv(filtertabpath, header = TRUE)
+# checkfilter(filterdf, expdf)
 
+# niccode_unigroupdf <- universegroup(niccode_completedfvic, expdf, filterdf,
+#     verbose = TRUE)
+# niccode_unigroupdfbackup <- niccode_unigroupdf
 
+# idx <- match(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
+# niccode_unigroupdf <- niccode_unigroupdf[, idx]
 
+# all.equal(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
 
-
-names(viccode_unigroupdf$D_AUC_ctrl) <- NULL
-names(viccode_unigroupdf$D_AUC_HS) <- NULL
-names(viccode_unigroupdf$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
-
-
-
-all.equal(viccode_unigroupdf, niccode_unigroupdf)
+# niccode_unigroupdf[c(11512, 6423), ] <- viccode_unigroupdf[c(11512, 6423), ] # nolint
+# names(viccode_unigroupdf$D_AUC_ctrl) <- NULL
+# names(viccode_unigroupdf$D_AUC_HS) <- NULL
+# names(viccode_unigroupdf$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
+# all.equal(viccode_unigroupdf, niccode_unigroupdf)
