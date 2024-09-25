@@ -2397,6 +2397,9 @@ saveRDS(AUC_KS_Knee_NA.df, file = "AUC_KS_Knee_NA.df.rds")
 tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA
 saveRDS(tst_df, file = "tst_df.rds")
 
+tst_dffilt <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, NA)
+saveRDS(tst_dffilt, file = "tst_dffilt.rds")
+
 message("The result of the attenuation function should be:")
 print(head(tst_df))
 ```
