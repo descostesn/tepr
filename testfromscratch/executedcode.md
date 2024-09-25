@@ -2721,6 +2721,9 @@ tst_df <- tst_df %>%
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group)  
   ) %>%  relocate(Group, .before = 2)
 
+universegroupdf <- tst_df
+saveRDS(universegroupdf, file = "universegroupdf.rds")
+
 ## Saving list of attenuated and outgroup transcripts for downstream analysis
 message("Saving list of attenuated and outgroup transcripts for downstream analysis")
 write.table(tst_df, 
