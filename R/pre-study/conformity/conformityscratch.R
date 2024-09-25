@@ -1185,6 +1185,18 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
 .computeupdown <- function(completbytrans, condvec, nbcpu) {
 
   updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+
+    arrange(coord) %>%
+    dplyr::reframe(transcript=transcript[1],
+                     !!sym(UPmean_cond) := 
+                       mean((!!sym(mean_value_condi_name))[coord <= !!sym(knee_column_name)]),
+                     !!sym(DOWNmean_cond) := 
+                       mean((!!sym(mean_value_condi_name))[coord >= !!sym(knee_column_name) & coord <= max(coord)])) %>%
+      select(transcript,!!sym(UPmean_cond),!!sym(DOWNmean_cond), !!sym(DOWNmean_cond)) %>%
+   distinct()
+    
+    ## Ordering by coordinates (security)
+    trans <- trans[order(trans$coord), ]
     ## For each condition
     updownlist <- lapply(condvec, function(cond, trans) {
       kneecolname <- paste0("knee_AUC_", cond)
