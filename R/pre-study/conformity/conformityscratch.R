@@ -1257,23 +1257,22 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       ## If significant is set to true, replace the attenuation values by
       ## replaceval in case the p_AUC_cond >= pval
       if (significant) {
-        sapply(condvec, function(cond, replaceval) {
-            pauccond <- paste0("p_AUC_", cond)
-            ## Replacing Attenuation value if KS test > threshold
+        if (verbose) message("Replacing non-significant attenuations by ",
+        replaceval)
+        invisible(sapply(condvec, function(cond, replaceval) {
+            pauccond <- paste0("^p_AUC_", cond)
+            ## Replacing Attenuation value if KS test > pval
             auckneenasumatt <<- auckneenasumatt %>%
-                dplyr::mutate(!!paste0("Attenuation_", cond) :=
-                    ifelse(.data[[pauccond]] >= pval, replaceval,
+                dplyr::mutate(!!paste0("Attenuation_", cond) := # nolint
+                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
                     .data[[paste0("Attenuation_", cond)]]))
-  
-  
-    
-  AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
-    mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[pauccond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold
-        }, replaceval)
+            ## Replacing knee values if KS test > pval
+            auckneenasumatt <<- auckneenasumatt %>%
+                dplyr::mutate(!!paste0("knee_AUC_", cond) := # nolint
+                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
+                    .data[[paste0("knee_AUC_", cond)]]))
+        }, replaceval))
       }
-
-
-
 
       return(auckneenasumatt)
 }
