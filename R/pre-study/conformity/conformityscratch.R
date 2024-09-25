@@ -1274,9 +1274,11 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
 
       ## Merging attenuation to the complete table
+      if (verbose) message("Merging attenuation to the complete table")
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
 
       ## Replace the attenuation values by replaceval if p_AUC_cond >= pval
+      if (verbose) message("Keeping significant attenuation")
       auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
             replaceval, verbose)
 
