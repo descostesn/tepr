@@ -1248,7 +1248,8 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
 # allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic;nbcpu = nbcputrans
 # matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeandiffvic
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
-  dfmeandiff, nbcpu = 1, replaceval = NA, pval = 0.1, verbose = TRUE) {
+  dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+  verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
@@ -1274,13 +1275,15 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
 
       ## Merging attenuation to the complete table
-      if (verbose) message("Merging attenuation to the complete table")
+      if (verbose) message("\t Merging attenuation to the complete table")
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
 
       ## Replace the attenuation values by replaceval if p_AUC_cond >= pval
-      if (verbose) message("Keeping significant attenuation")
-      auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
+      if (significant) {
+        if (verbose) message("\t Keeping significant attenuation")
+        auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
             replaceval, verbose)
+      }
 
       return(auckneenasumatt)
 }
@@ -1295,6 +1298,15 @@ niccode_completedfvic <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
     nbcpu = nbcputrans)
 
 viccode_completedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_df.rds") # nolint
+viccode_completedfvic <- as.data.frame(viccode_completedfvic)
+
+idx <- match(colnames(viccode_completedfvic), colnames(niccode_completedfvic))
+niccode_completedfvic <- niccode_completedfvic[, idx]
+
+niccode_completedfvic$knee_AUC_ctrl
+viccode_completedfvic$knee_AUC_ctrl
+
+all.equal(niccode_completedfvic, viccode_completedfvic)
 
 if (isTRUE(all.equal(niccode_completedfvic, viccode_completedfvic)))
     stop("consistancy after attenuation")
