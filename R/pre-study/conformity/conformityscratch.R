@@ -1464,3 +1464,6 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 !!!!!!!!!!!!!!!!
 
 viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/universegroupdf.rds") # nolint
+
+filtertab <- read.csv(filtertabpath, header = TRUE)
+checkfilter(filtertab, expdf)
