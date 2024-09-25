@@ -1464,8 +1464,6 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
 !!!!!!!!!!!!!!!!
 
-viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/universegroupdf.rds") # nolint
-
 universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", # nolint
     windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
     meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
@@ -1504,6 +1502,17 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
 }
 
 niccode_unigroupdf <- universegroup(niccode_completedfvic)
+viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/universegroupdf.rds") # nolint
+
+if (isTRUE(all.equal(table(viccode_unigroupdf$Universe),
+    table(niccode_unigroupdf$Universe))))
+    message("Universe column is consistant")
+
+if (isTRUE(all.equal(table(viccode_unigroupdf$Group),
+    table(niccode_unigroupdf$Group))))
+    message("Group column is consistant")
+
+
 !!!!!!!!!!!!!!!
 
 meanctrl <- "MeanValueFull_ctrl"
