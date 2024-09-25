@@ -1386,21 +1386,21 @@ checkfilter <- function(filterdf, expdf) {
     currentfeature <- as.character(currentfilter["feature"])
 
     if (isTRUE(all.equal(currentfeature, "countna"))) {
-      return(as.vector(completedf["countna"] < currentfilter["threshold"]))
+      return(as.vector(completedf["Count_NA"] < currentfilter["threshold"]))
 
     } else if (isTRUE(all.equal(currentfeature, "windowsize"))) {
-      return(as.vector(completedf["windsize"] > currentfilter["threshold"]))
+      return(as.vector(completedf["window_size"] > currentfilter["threshold"]))
 
     } else if (isTRUE(all.equal(currentfeature, "fullmean"))) {
-      colstr <- paste0("meanvaluefull_", currentfilter["condition"])
+      colstr <- paste0("MeanValueFull_", currentfilter["condition"])
       return(completedf[, colstr] > currentfilter["threshold"])
 
     } else if (isTRUE(all.equal(currentfeature, "pvalauc"))) {
-      colstr <- paste0("adjFDR_pvalaucks_", currentfilter["condition"]) # nolint
+      colstr <- paste0("adjFDR_p_AUC_", currentfilter["condition"]) # nolint
       return(completedf[, colstr] > currentfilter["threshold"])
 
     } else if (isTRUE(all.equal(currentfeature, "auc"))) {
-      colstr <- paste0("auc_", currentfilter["condition"])
+      colstr <- paste0("AUC_", currentfilter["condition"])
       if (!is.na(currentfilter["threshold2"]))
         res <- completedf[, colstr] > currentfilter["threshold"] &
           completedf[, colstr] < currentfilter["threshold2"]
@@ -1409,7 +1409,7 @@ checkfilter <- function(filterdf, expdf) {
       return(res)
     } else if (isTRUE(all.equal(currentfeature, "daucfdrlog10"))) {
       colnamevec <- colnames(completedf)
-      idx <- grep("adjFDR_pvaldeltadaucks_mean", colnamevec) # nolint
+      idx <- grep("adjFDR_p_dAUC_Diff_mean", colnamevec) # nolint
       .checkunique(idx)
       colstr <- colnamevec[idx]
       return(-log10(completedf[, colstr]) > currentfilter["threshold"])
@@ -1426,6 +1426,7 @@ checkfilter <- function(filterdf, expdf) {
   return(booleanmat)
 }
 
+# completedf=niccode_completedfvic
 universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
   ## Retrieving universe and group information
@@ -1465,8 +1466,8 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
 
 viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/universegroupdf.rds") # nolint
 
-filtertab <- read.csv(filtertabpath, header = TRUE)
-checkfilter(filtertab, expdf)
+filterdf <- read.csv(filtertabpath, header = TRUE)
+checkfilter(filterdf, expdf)
 
 niccode_unigroupdf <- universegroup(niccode_completedfvic, expdf, filterdf,
     verbose = TRUE)
