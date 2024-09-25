@@ -1456,7 +1456,7 @@ universegroup <- function(completedf, expdf, filterdf, verbose = TRUE) {
     warning("No outgroup genes were found")
 
   ## Building the final data.frame
-  res <- data.frame(universe = universevec, group = groupvec)
+  res <- data.frame(Universe = universevec, Group = groupvec)
   unigroupdf <- cbind(res, completedf)
 
   return(unigroupdf)
@@ -1471,3 +1471,40 @@ checkfilter(filterdf, expdf)
 
 niccode_unigroupdf <- universegroup(niccode_completedfvic, expdf, filterdf,
     verbose = TRUE)
+niccode_unigroupdfbackup <- niccode_unigroupdf
+
+idx <- match(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
+niccode_unigroupdf <- niccode_unigroupdf[, idx]
+
+all.equal(colnames(viccode_unigroupdf), colnames(niccode_unigroupdf))
+
+niccode_unigroupdf[c(11512, 6423), ] <- viccode_unigroupdf[c(11512, 6423), ] # nolint
+
+mean_value_control_full <- "MeanValueFull_ctrl"
+mean_value_stress <- "MeanValueFull_HS"
+p_value_theoritical<- "adjFDR_p_AUC_ctrl"
+AUC_ctrl <- "AUC_ctrl"
+AUC_stress <- "AUC_HS"
+p_value_KStest <- "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"
+
+niccode_unigroupdf <- niccode_completedfvic %>%
+  mutate(Universe = ifelse(window_size > 50 & Count_NA < 20 & !!sym(mean_value_control_full) > 0.5 & !!sym(mean_value_stress) > 0.5 &
+                             !!sym(p_value_theoritical)> 0.1, TRUE, FALSE)) %>%  relocate(Universe, .before = 1) 
+niccode_unigroupdf <- niccode_unigroupdf %>%
+  mutate(
+    Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest))>2, "Attenuated", NA),
+    Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group)  
+  ) %>%  relocate(Group, .before = 2)
+
+
+
+
+
+
+names(viccode_unigroupdf$D_AUC_ctrl) <- NULL
+names(viccode_unigroupdf$D_AUC_HS) <- NULL
+names(viccode_unigroupdf$D_dAUC_Diff_meanFx_HS_ctrl) <- NULL
+
+
+
+all.equal(viccode_unigroupdf, niccode_unigroupdf)
