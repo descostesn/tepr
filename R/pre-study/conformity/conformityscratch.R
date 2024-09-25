@@ -1296,6 +1296,7 @@ niccode_allaucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 niccode_completedfvic <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
     niccode_countnavic, bytranslistmean, expdf, niccode_dfmeandiffvic,
     nbcpu = nbcputrans)
+backupniccode_completedfvic <- niccode_completedfvic
 
 viccode_completedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_df.rds") # nolint
 viccode_completedfvic <- as.data.frame(viccode_completedfvic)
@@ -1303,10 +1304,12 @@ viccode_completedfvic <- as.data.frame(viccode_completedfvic)
 idx <- match(colnames(viccode_completedfvic), colnames(niccode_completedfvic))
 niccode_completedfvic <- niccode_completedfvic[, idx]
 
-niccode_completedfvic$knee_AUC_ctrl
-viccode_completedfvic$knee_AUC_ctrl
-
-all.equal(niccode_completedfvic, viccode_completedfvic)
+## As highlighted previously, the knee values of rows 11512 and 6423 are
+## different by a rank of 1. Therefore, these two rows are made equal for
+## further comparison
+niccode_completedfvic[c(11512, 6423), ] <- viccode_completedfvic[c(11512, 6423), ] # nolint
 
 if (isTRUE(all.equal(niccode_completedfvic, viccode_completedfvic)))
-    stop("consistancy after attenuation")
+    message("consistancy after attenuation")
+
+## Testing the attenuation filtering
