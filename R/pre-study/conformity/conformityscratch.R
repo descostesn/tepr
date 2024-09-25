@@ -1081,7 +1081,6 @@ if (isTRUE(all.equal(viccode_dfmeandiffvic, niccode_dfmeandiffvic)))
 #### dAUC
 ####
 
-
 bytranslistmean <- split(niccode_dfmeandiffvic,
     factor(niccode_dfmeandiffvic$transcript))
 
@@ -1161,3 +1160,102 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
     " and the value for vic is ",
     viccode_kneedfvic[idxdiffHS, "knee_AUC_HS"])
 # The number of different knee in ctrl is: 1. The value for nic is 65 and the value for vic is 64 # nolint
+
+
+
+####
+#### Attenuation
+####
+
+
+!!!!!!!!!!!!!!!
+
+.summarytrans <- function(bytransmeanlist, nbcpu) {
+  summarydflist <- mclapply(bytranslistmean, function(trans) {
+    coor1 <- min(trans$coor1)
+    coor2 <- max(trans$coor2)
+    return(data.frame(chr = trans$chr[1], coor1, coor2,
+          strand = trans$strand[1], gene = trans$gene[1],
+          transcript = trans$transcript[1], size = coor2 - coor1 + 1))
+  }, mc.cores = nbcpu)
+  summarydf <- do.call("rbind", summarydflist)
+  return(summarydf)
+}
+
+.computeupdown <- function(completbytrans, condvec, nbcpu) {
+
+  updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+    ## For each condition
+    updownlist <- lapply(condvec, function(cond, trans) {
+      kneecolname <- paste0("knee_AUC_", cond)
+      meancolname <- paste0("mean_value_", cond)
+
+      idxup <- which(trans$coord <= trans[, kneecolname])
+      if (isTRUE(all.equal(length(idxup), 0)))
+        stop("Problem in retrieving idxup, contact the developer.")
+      upmean <- mean(trans[idxup, meancolname])
+
+      idxdown <- which(trans$coord >= trans[, kneecolname] &
+                          trans$coord <= max(trans$coord))
+      if (isTRUE(all.equal(length(idxdown), 0)))
+        stop("Problem in retrieving idxdown, contact the developer.")
+      downmean <- mean(trans[idxdown, meancolname])
+
+      ## Calculating attenuation
+      att <- 100 - downmean / upmean * 100
+
+      res <- data.frame(trans$transcript[1], upmean, downmean, att)
+      colnames(res) <- c("transcript", paste0("upmean-", cond),
+              paste0("downmean-", cond), paste0("attenuation-", cond))
+      return(res)
+    }, trans)
+
+    return(do.call("cbind", updownlist))
+  }, condvec, mc.cores = nbcpu)
+
+  updowndf <- do.call("rbind", updownbytranslist)
+  updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+  return(updowndf)
+}
+
+# allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic
+# matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeanvic;nbcpu = nbcputrans
+attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
+  dfmeandiff, nbcpu = 1, verbose = TRUE) {
+
+      if (verbose) message("\t Merging tables")
+      allaucknee <- merge(allaucdf, kneedf, by = "transcript")
+      mergecolnames <- c("gene", "transcript", "strand")
+      allauckneena <- merge(allaucknee, matnatrans, by = mergecolnames)
+
+      if (verbose) message("\t Building summary")
+      summarydf <- .summarytrans(bytranslistmean, nbcpu)
+      if (verbose) message("\t Merging summary")
+      auckneenasum <- merge(summarydf, allauckneena, by = mergecolnames)
+
+      ## Merging the mean table with the previous one
+      if (verbose) message("\t Merging detailed mean table with summary")
+      complet <- merge(dfmeandiff, auckneenasum, by = mergecolnames)
+
+      ## Splitting the previous table by transcript
+      if (verbose) message("\t Splitting the previous table by transcript")
+      completbytrans <- split(complet, factor(complet$transcript))
+      condvec <- unique(expdf$condition)
+
+      ## For each transcript
+      if (verbose) message("\t Computing up and down mean")
+      updowndf <- .computeupdown(completbytrans, condvec, nbcpu)
+
+      ## Merging attenuation to the complete table
+      auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
+      return(auckneenasumatt)
+}
+
+!!!!!!!!!!!!!!!!
+
+## Recomputing both types of auc
+niccode_allaucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
+
+completedf <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
+    niccode_countnavic, bytranslistmean, expdf, niccode_dfmeanvic,
+    nbcpu = nbcputrans)
