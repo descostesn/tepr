@@ -1226,7 +1226,7 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
     verbose) {
 
         mat <- auckneenasumatt
-        if (verbose) message("Replacing non-significant attenuations by ",
+        if (verbose) message("\t\t Replacing non-significant attenuations by ",
             replaceval)
         invisible(sapply(condvec, function(cond, replaceval) {
             pauccond <- paste0("p_AUC_", cond)
@@ -1313,3 +1313,9 @@ if (isTRUE(all.equal(niccode_completedfvic, viccode_completedfvic)))
     message("consistancy after attenuation")
 
 ## Testing the attenuation filtering
+niccode_completedfvicfilt <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
+    niccode_countnavic, bytranslistmean, expdf, niccode_dfmeandiffvic,
+    nbcpu = nbcputrans, significant = TRUE)
+
+viccode_completedfvicfilt <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_dffilt.rds") # nolint
+viccode_completedfvicfilt <- as.data.frame(viccode_completedfvic)
