@@ -1209,8 +1209,8 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
       att <- 100 - downmean / upmean * 100
 
       res <- data.frame(trans$transcript[1], upmean, downmean, att)
-      colnames(res) <- c("transcript", paste0("upmean-", cond),
-              paste0("downmean-", cond), paste0("attenuation-", cond))
+      colnames(res) <- c("transcript", paste0("UP_mean_", cond),
+              paste0("DOWN_mean_", cond), paste0("Attenuation_", cond))
       return(res)
     }, trans)
 
@@ -1225,7 +1225,8 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
 # allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic;nbcpu = nbcputrans
 # matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeandiffvic
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
-  dfmeandiff, nbcpu = 1, verbose = TRUE) {
+  dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+  verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
@@ -1252,6 +1253,28 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
       ## Merging attenuation to the complete table
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
+
+      ## If significant is set to true, replace the attenuation values by
+      ## replaceval in case the p_AUC_cond >= pval
+      if (significant) {
+        sapply(condvec, function(cond, replaceval) {
+            pauccond <- paste0("p_AUC_", cond)
+            ## Replacing Attenuation value if KS test > threshold
+            auckneenasumatt <<- auckneenasumatt %>%
+                dplyr::mutate(!!paste0("Attenuation_", cond) :=
+                    ifelse(.data[[pauccond]] >= pval, replaceval,
+                    .data[[paste0("Attenuation_", cond)]]))
+  
+  
+    
+  AUC_KS_Knee_NA_DF <- AUC_KS_Knee_NA_DF %>%
+    mutate(!!paste0("knee_AUC_", cond) := ifelse(.data[[pauccond]] >= pval, NA, .data[[paste0("knee_AUC_", cond)]])) ## replacing the knee by NA is KS test > at threshold
+        }, replaceval)
+      }
+
+
+
+
       return(auckneenasumatt)
 }
 
