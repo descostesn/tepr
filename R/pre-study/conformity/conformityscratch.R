@@ -31,6 +31,7 @@ windsize <- 200
 
 vicbigtsvpath <- "/g/romebioinfo/Projects/tepr/testfromscratch/bedgraph255/dTAG_Cugusi_stranded_20230810.tsv" # nolint
 expdfpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
+filtertabpath <- "/g/romebioinfo/Projects/tepr/Dataset/filtertab.csv"
 nicbigtsvpath <- "/g/romebioinfo/tmp/comparewithscratch/finaltab.rds"
 oldnictsvpath <- "/g/romebioinfo/tmp/preprocessing/backup/completeframedf.rds"
 expthres <- 0.1
