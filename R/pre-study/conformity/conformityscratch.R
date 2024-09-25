@@ -1222,14 +1222,14 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
   return(updowndf)
 }
 
-.filterattenuation <- function(auckneenasumatt, condvec, pval, replaceval,
+.filterattenuation <- function(auckneenasumatt, condvec, pval, replaceval, # nolint
     verbose) {
 
         mat <- auckneenasumatt
         if (verbose) message("Replacing non-significant attenuations by ",
             replaceval)
         invisible(sapply(condvec, function(cond, replaceval) {
-            pauccond <- paste0("^p_AUC_", cond)
+            pauccond <- paste0("p_AUC_", cond)
             ## Replacing Attenuation value if KS test > pval
             mat <<- mat %>%
                 dplyr::mutate(!!paste0("Attenuation_", cond) := # nolint
@@ -1295,3 +1295,6 @@ niccode_completedfvic <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
     nbcpu = nbcputrans)
 
 viccode_completedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_df.rds") # nolint
+
+if (isTRUE(all.equal(niccode_completedfvic, viccode_completedfvic)))
+    stop("consistancy after attenuation")
