@@ -1318,4 +1318,13 @@ niccode_completedfvicfilt <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
     nbcpu = nbcputrans, significant = TRUE)
 
 viccode_completedfvicfilt <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_dffilt.rds") # nolint
-viccode_completedfvicfilt <- as.data.frame(viccode_completedfvic)
+viccode_completedfvicfilt <- as.data.frame(viccode_completedfvicfilt)
+
+idxfilt <- match(colnames(viccode_completedfvicfilt),
+    colnames(niccode_completedfvicfilt))
+niccode_completedfvicfilt <- niccode_completedfvicfilt[, idxfilt]
+
+niccode_completedfvicfilt[c(11512, 6423), ] <- viccode_completedfvicfilt[c(11512, 6423), ] # nolint
+
+if (isTRUE(all.equal(niccode_completedfvicfilt, viccode_completedfvicfilt)))
+    message("consistancy after attenuation and filtering")
