@@ -1222,6 +1222,29 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
   return(updowndf)
 }
 
+.filterattenuation <- function(auckneenasumatt, condvec, pval, replaceval,
+    verbose) {
+
+        mat <- auckneenasumatt
+        if (verbose) message("Replacing non-significant attenuations by ",
+            replaceval)
+        invisible(sapply(condvec, function(cond, replaceval) {
+            pauccond <- paste0("^p_AUC_", cond)
+            ## Replacing Attenuation value if KS test > pval
+            mat <<- mat %>%
+                dplyr::mutate(!!paste0("Attenuation_", cond) := # nolint
+                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
+                    .data[[paste0("Attenuation_", cond)]]))
+            ## Replacing knee values if KS test > pval
+            mat <<- mat %>%
+                dplyr::mutate(!!paste0("knee_AUC_", cond) := # nolint
+                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
+                    .data[[paste0("knee_AUC_", cond)]]))
+        }, replaceval))
+
+        return(mat)
+}
+
 # allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic;nbcpu = nbcputrans
 # matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeandiffvic
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
@@ -1257,21 +1280,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       ## If significant is set to true, replace the attenuation values by
       ## replaceval in case the p_AUC_cond >= pval
       if (significant) {
-        if (verbose) message("Replacing non-significant attenuations by ",
-        replaceval)
-        invisible(sapply(condvec, function(cond, replaceval) {
-            pauccond <- paste0("^p_AUC_", cond)
-            ## Replacing Attenuation value if KS test > pval
-            auckneenasumatt <<- auckneenasumatt %>%
-                dplyr::mutate(!!paste0("Attenuation_", cond) := # nolint
-                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
-                    .data[[paste0("Attenuation_", cond)]]))
-            ## Replacing knee values if KS test > pval
-            auckneenasumatt <<- auckneenasumatt %>%
-                dplyr::mutate(!!paste0("knee_AUC_", cond) := # nolint
-                    ifelse(.data[[pauccond]] >= pval, replaceval, # nolint
-                    .data[[paste0("knee_AUC_", cond)]]))
-        }, replaceval))
+        auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
+            replaceval, verbose)
       }
 
       return(auckneenasumatt)
