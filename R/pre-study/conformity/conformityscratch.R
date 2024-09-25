@@ -1248,8 +1248,7 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
 # allaucdf=niccode_allaucdfvic;kneedf=niccode_kneedfvic;nbcpu = nbcputrans
 # matnatrans=niccode_countnavic;dfmeandiff=niccode_dfmeandiffvic
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
-  dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
-  verbose = TRUE) {
+  dfmeandiff, nbcpu = 1, replaceval = NA, pval = 0.1, verbose = TRUE) {
 
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
@@ -1277,12 +1276,9 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
       ## Merging attenuation to the complete table
       auckneenasumatt <- merge(auckneenasum, updowndf, by = "transcript")
 
-      ## If significant is set to true, replace the attenuation values by
-      ## replaceval in case the p_AUC_cond >= pval
-      if (significant) {
-        auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
+      ## Replace the attenuation values by replaceval if p_AUC_cond >= pval
+      auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
             replaceval, verbose)
-      }
 
       return(auckneenasumatt)
 }
