@@ -1467,3 +1467,6 @@ viccode_unigroupdf <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/univ
 
 filtertab <- read.csv(filtertabpath, header = TRUE)
 checkfilter(filtertab, expdf)
+
+niccode_unigroupdf <- universegroup(niccode_completedfvic, expdf, filterdf,
+    verbose = TRUE)
