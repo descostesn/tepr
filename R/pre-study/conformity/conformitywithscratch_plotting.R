@@ -100,7 +100,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
     return(windsizefact)
 }
 
-plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
+plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
     digits = 2, middlewind = 100, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
@@ -157,9 +157,11 @@ plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
 ## Reading objects and files
 dfmeandiff <- readRDS(dfmeandiffpath)
 unigroupdf <- readRDS(unigroupdfpath)
+expdf <- read.csv(expdfpath, header = TRUE)
+
 
 ####
 #### plotecdf
 ####
 
-plotecdf(dfmeandiff, unigroupdf, "EGFR", colvec, outfold)
+plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold)
