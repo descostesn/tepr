@@ -49,8 +49,9 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 
 .valcolbuild <- function(condvec, repvec) {
     return(as.vector(sapply(condvec,
-        function(cond) { sapply(repvec, function(rep) {
-            paste0(cond, rep, "score") })})))
+        function(cond) {
+            sapply(repvec, function(rep) {
+            paste("value", cond, paste0("rep", rep), "score", sep = "_") })})))
 }
 
 .callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
