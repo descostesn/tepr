@@ -96,7 +96,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
         "number of windows equal to ", middlewind*2, "? If not, adjust the ",
         "parameter 'middlewind' to the half of the number of windows.")
     dfmid <- df[idxmiddle, ]
-    windsizefact <- (dfmid$end - dfmid$start) / 1000
+    windsizefact <- (dfmid$coor2 - dfmid$coor1) / 1000
     return(windsizefact)
 }
 
