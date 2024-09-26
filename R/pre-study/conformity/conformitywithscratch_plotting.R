@@ -89,7 +89,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
-    digits = 2, verbose = TRUE) {
+    digits = 2, middlewind = 100, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
@@ -104,8 +104,14 @@ plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
 
     if (verbose) message("\t Gathering statistics about each condition")
     ## Computing the window size factor
-    df100 <- df[which(df$coord == 100), ]
-    windsizefact <- (df100$end - df100$start) / 1000
+    idxmiddle <- which(df$coord == middlewind)
+    if (isTRUE(all.equal(length(idxmiddle), 0)))
+        stop("The window ", middlewind, " was not found. Did you define a ",
+        "number of windows equal to ", middlewind*2, "? If not, adjust the ",
+        "parameter 'middlewind' to the half of the number of windows.")
+    dfmid <- df[idxmiddle, ]
+    windsizefact <- (dfmid$end - dfmid$start) / 1000
+
     ## Retrieving auc, ks, and knee
     condvec <- unique(expdf$condition)
     restmp <- .subtextvline(condvec, geneinfo, digits)
