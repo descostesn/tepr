@@ -954,3 +954,5 @@ if (isTRUE(all.equal(table(viccode_unigroupdf$Universe),
 if (isTRUE(all.equal(table(viccode_unigroupdf$Group),
     table(niccode_unigroupdf$Group))))
     message("Group column is consistant")
+
+saveRDS(niccode_unigroupdf, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_unigroupdf.rds") # nolint
