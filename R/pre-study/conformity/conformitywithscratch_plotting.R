@@ -125,6 +125,7 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     restmp <- .subtextvline(condvec, geneinfo, digits, pval)
     subtext <- restmp[[1]]
     vlinedf <- restmp[[2]]
+    kneeval <- restmp[[3]]
 
     ## Building data.frame for plotting with fx and value
     if (verbose) message("\t Building df for plotting with fx and value")
