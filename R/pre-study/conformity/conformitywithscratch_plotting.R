@@ -93,7 +93,10 @@ plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
-    df <- dfmeandiff[which(dfmeandiff$gene == genename), ]
+    idxgene <- which(dfmeandiff$gene == genename)
+    if (isTRUE(all.equal(length(idxgene), 0)))
+        stop("The gene ", genename, " was not found")
+    df <- dfmeandiff[idxgene, ]
     geneinfo <- unigroupdf[which(unigroupdf$gene == genename), ]
 
     if (verbose) message("\t Gathering statistics about each condition")
