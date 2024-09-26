@@ -44,7 +44,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
     }, geneinfo, digits)
     subtext <- paste(sapply(reslist, "[", 1), collapse = "\n")
     vlinedf <- do.call("rbind", sapply(reslist, "[", 2))
-    return(list(subtext, vlinedf))
+    return(list(subtext, vlinedf, kneeval))
 }
 
 .valcolbuild <- function(condvec, repvec) {
@@ -75,15 +75,15 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
         ggplot2::geom_line(linewidth = 1, aes(x = linexvals)) +
         ggplot2::scale_color_manual(values = colvec)
 
-    g2 <- g1 + ggplot2::scale_y_continuous(sec.axis = sec_axis(~ . * ylimval,
-        name = "Transcription level")) +
+    g2 <- g1 + ggplot2::scale_y_continuous(sec.axis =
+        ggplot2::sec_axis(~ . * ylimval, name = "Transcription level")) +
         ggplot2::labs(x = "Distance from TSS (kb)",
              y = "Cumulative transcription density", title = genename,
              subtitle = subtext) + ggplot2::theme_classic()
 
     if (!isTRUE(all.equal(nrow(vlinedf), 0)))
         g2 <- g2 + ggplot2::geom_vline(data = vlinedf,
-            aes(xintercept = kneeval),
+            ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
 
     ggplot2::ggsave(filename = paste0(genename, ".pdf"),
