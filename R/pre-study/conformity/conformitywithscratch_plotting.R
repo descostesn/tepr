@@ -87,11 +87,13 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
             ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
 
-    if (plot)
+    if (plot) {
+        warning("You chose to plot the ecdf, the figure is not saved.")
         print(g2)
-    else
+    } else {
         ggplot2::ggsave(filename = paste0(genename, ".pdf"),
             plot = g2, device = "pdf", path = outfold)
+    }
 }
 
 .windowsizefactor <- function(df, middlewind) {
@@ -182,6 +184,45 @@ plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
 
 !!!!!!!!!!!!!
 
+.callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
+    geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
+    labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
+    outfold) {
+
+        ## Structure of the basic scatterplot
+        g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
+
+        if (isTRUE(all.equal(plottype, "pval"))) {
+
+            ## Adding highlight of the genes
+            g <- g + ggrepel::geom_label_repel(data = subset(df,
+                gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
+                point.padding = 0, segment.color = "black", max.overlaps = 50,
+                color = "red") +
+                ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
+                    mid = "grey", high = "darkgreen")
+        } else {
+            g <- g + geompointinfo3
+        }
+
+        ## Formatting functions
+        g <- g + ggplot2::xlim(axismin_x, axismax_x) +
+            ggplot2::ylim(axismin_y, axismax_y) +
+            ggplot2::labs(x = labelx, y = labely, legend = "-log10 p-value", # nolint
+                color = "-log10 p-value", title = maintitle, # nolint
+                subtitle = subtitle) +
+            ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
+            ggplot2::theme(legend.position = legendpos)
+
+        if (plot) {
+            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            print(g)
+        } else {
+            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
+                plot = g, device = formatname, path = outfold)
+        }
+}
+
 plotauc <- function(tab, genevec, # nolint
     auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
@@ -216,40 +257,10 @@ plotauc <- function(tab, genevec, # nolint
                     color = "#e9c46a", size = 1)
         }
 
-.callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2, plottype) {
-    ## Structure of the basic scatterplot
-        g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
-}
-        
-
-        if (isTRUE(all.equal(plottype, "pval"))) {
-            ## Adding highlight of the genes
-            g <- g + ggrepel::geom_label_repel(data = subset(df,
-                gene %in% genevec), aes(label = gene), box.padding = 0.55, # nolint
-                point.padding = 0, segment.color = "black", max.overlaps = 50,
-                color = "red") +
-                ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
-                    mid = "grey", high = "darkgreen")
-        } else {
-            g <- g + geompointinfo3
-        }
-
-        ## Formatting functions
-        g <- g + ggplot2::xlim(axismin_x, axismax_x) +
-            ggplot2::ylim(axismin_y, axismax_y) +
-            ggplot2::labs(x = labelx, y = labely, legend = "-log10 p-value",
-                color = "-log10 p-value", title = maintitle,
-                subtitle = subtitle) +
-            ggplot2::coord_fixed(ratio = 1) + ggplot2::theme_classic() +
-            ggplot2::theme(legend.position = legendpos)
-
-        if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.")
-            print(g)
-        } else {
-            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
-                plot = g, device = formatname, path = outfold)
-        }
+        .callggplotauc(df, aesvar, geompointinfo, geompointinfo2,
+            geompointinfo3, plottype, axismin_x, axismax_x, axismin_y,
+            axismax_y, labelx, labely, maintitle, subtitle, legendpos, plot,
+            outfile, formatname, outfold)
 }
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!
