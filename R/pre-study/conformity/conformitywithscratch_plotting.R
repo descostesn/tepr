@@ -55,7 +55,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 .callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold) {
+    outfold, genename) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -63,23 +63,23 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
     lineyvals <- dflongecdf$coord / max(dflongecdf$coord)
     areayvals <- dflongecdf$value / ylimval
 
-    g <- ggplot2::ggplot(dflongecdf, aes(x = coord, y = Fx,
-        color = conditions)) +
+    g <- ggplot2::ggplot(dflongecdf, ggplot2::aes(x = coord, y = Fx, # nolint
+        color = conditions)) + # nolint
         ggplot2::geom_line(aes(x = linexvals, y = lineyvals),
             linetype = "dashed", color = "red")
 
-    g1 <- g + ggplot2::geom_area(aes(x = linexvals, y = areayvals,
-        fill = conditions),
-        alpha = 0.1,linewidth=0.2, position = 'identity') +
-        scale_fill_manual(values = colvec) +
-        geom_line(linewidth = 1, aes(x = linexvals)) +
-        scale_color_manual(values = colvec)
+    g1 <- g + ggplot2::geom_area(ggplot2::aes(x = linexvals, y = areayvals,
+        fill = conditions), # nolint
+        alpha = 0.1, linewidth = 0.2, position = 'identity') + # nolint
+        ggplot2::scale_fill_manual(values = colvec) +
+        ggplot2::geom_line(linewidth = 1, aes(x = linexvals)) +
+        ggplot2::scale_color_manual(values = colvec)
 
     g2 <- g1 + ggplot2::scale_y_continuous(sec.axis = sec_axis(~ . * ylimval,
         name = "Transcription level")) +
-        labs(x = "Distance from TSS (kb)",
+        ggplot2::labs(x = "Distance from TSS (kb)",
              y = "Cumulative transcription density", title = genename,
-             subtitle = subtext) + theme_classic()
+             subtitle = subtext) + ggplot2::theme_classic()
 
     if (!isTRUE(all.equal(nrow(vlinedf), 0)))
         g2 <- g2 + ggplot2::geom_vline(data = vlinedf,
@@ -146,8 +146,9 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
 
     ## Plotting
-    if (verbose) message("\t Generating result to ", outfold)
-    .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold)
+    if (verbose) message("\t Generating ecdf plot to ", outfold)
+    .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
+        genename)
 }
 
 
