@@ -762,6 +762,7 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[1]], viccode_allexprsdfsvic[[1]])))
 if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
     message("transcript list is equal after averageandfilterexprs")
 
+saveRDS(niccode_allexprsdfsvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_allexprsdfsvic.rds") # nolint
 
 ####
 #### genesECDF
@@ -770,6 +771,8 @@ if (isTRUE(all.equal(niccode_allexprsdfsvic[[2]], viccode_allexprsdfsvic[[2]])))
 niccode_resecdfvic <- genesECDF(niccode_allexprsdfsvic, expdf, nbcpu = nbcputrans, verbose = TRUE) # nolint
 nbwindows <- niccode_resecdfvic[[2]]
 niccode_resecdfvic <- niccode_resecdfvic[[1]]
+
+saveRDS(niccode_resecdfvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_resecdfvic.rds") # nolint
 
 ## Reading the result of ecdf that contains the column coord that is present in
 ## the input table of nic
@@ -800,6 +803,8 @@ if (isTRUE(all.equal(viccode_dfmeanvic, niccode_dfmeanvic)))
 ## compute the differences of means
 viccode_dfmeandiffvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/concat_Diff_mean_res.rds") # nolint
 niccode_dfmeandiffvic <- createmeandiff(niccode_resecdfvic, expdf, nbwindows)
+
+saveRDS(niccode_dfmeandiffvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_dfmeandiffvic.rds") # nolint
 
 ## Change the 'V' of 'value' to lower case in vic table
 colnames(viccode_dfmeandiffvic)[which(colnames(viccode_dfmeandiffvic) == "Diff_meanValue_ctrl_HS")] <- "Diff_meanvalue_ctrl_HS" # nolint
@@ -873,6 +878,9 @@ bytranslistmean <- split(niccode_dfmeandiffvic,
 niccode_kneedfvic <- kneeid(bytranslistmean, expdf, nbcputrans)
 viccode_kneedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/KneeID_res.rds") # nolint
 
+saveRDS(bytranslistmean, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/bytranslistmean.rds") # nolint
+saveRDS(niccode_kneedfvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_kneedfvic.rds") # nolint
+
 ## for comparison only
 rownames(niccode_kneedfvic) <- NULL
 
@@ -903,10 +911,14 @@ message("The number of different knee in ctrl is: ", length(idxdiffHS),
 ## Recomputing both types of auc
 niccode_allaucdfvic <- allauc(bytranslistmean, expdf, nbwindows, nbcputrans)
 
+saveRDS(niccode_allaucdfvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_allaucdfvic.rds") # nolint
+
 niccode_completedfvic <- attenuation(niccode_allaucdfvic, niccode_kneedfvic,
     niccode_countnavic, bytranslistmean, expdf, niccode_dfmeandiffvic,
     nbcpu = nbcputrans)
 backupniccode_completedfvic <- niccode_completedfvic
+
+saveRDS(niccode_completedfvic, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_completedfvic.rds") # nolint
 
 viccode_completedfvic <- readRDS("/g/romebioinfo/Projects/tepr/testfromscratch/tst_df.rds") # nolint
 viccode_completedfvic <- as.data.frame(viccode_completedfvic)
@@ -939,6 +951,7 @@ niccode_completedfvicfilt[c(11512, 6423), ] <- viccode_completedfvicfilt[c(11512
 if (isTRUE(all.equal(niccode_completedfvicfilt, viccode_completedfvicfilt)))
     message("consistancy after attenuation and filtering")
 
+saveRDS(niccode_completedfvicfilt, file = "/g/romebioinfo/tmp/comparewithscratch-downstream/niccode_completedfvicfilt.rds") # nolint
 
 ####
 #### Universe and group
