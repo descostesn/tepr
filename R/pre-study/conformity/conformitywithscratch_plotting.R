@@ -24,24 +24,24 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 
     reslist <- lapply(condvec, function(cond, geneinfo, digits) {
 
-            ksname <- paste0("adjFDR_p_AUC_", cond)
-            ksval <- round(geneinfo[, ksname], digits)
-            aucval <- round(geneinfo[, paste0("AUC_", cond)], digits)
+        ksname <- paste0("adjFDR_p_AUC_", cond)
+        ksval <- round(geneinfo[, ksname], digits)
+        aucval <- round(geneinfo[, paste0("AUC_", cond)], digits)
 
-            if (ksval < pval) {
-                kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
-                kneeval <- round(kneeaucval * geneinfo$window_size / 1000,
-                    digits)
-                vlinecond <- data.frame(condition = cond, kneeval = kneeval)
-            } else {
-                kneeval <- "NA"
-                vlinecond <- data.frame(condition = character(),
-                    kneeval = numeric())
-            }
-            condtext <- paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
-                ", Knee (kb) = ", kneeval)
-            return(list(condtext, vlinecond))
-        }, geneinfo, digits)
+        if (ksval < pval) {
+            kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
+            kneeval <- round(kneeaucval * geneinfo$window_size / 1000,
+                digits)
+            vlinecond <- data.frame(condition = cond, kneeval = kneeval)
+        } else {
+            kneeval <- "NA"
+            vlinecond <- data.frame(condition = character(),
+                kneeval = numeric())
+        }
+        condtext <- paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
+            ", Knee (kb) = ", kneeval)
+        return(list(condtext, vlinecond))
+    }, geneinfo, digits)
     subtext <- paste(sapply(reslist, "[", 1), collapse = "\n")
     vlinedf <- do.call("rbind", sapply(reslist, "[", 2))
     return(list(subtext, vlinedf))
