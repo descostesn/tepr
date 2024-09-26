@@ -97,7 +97,10 @@ plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
     if (isTRUE(all.equal(length(idxgene), 0)))
         stop("The gene ", genename, " was not found")
     df <- dfmeandiff[idxgene, ]
-    geneinfo <- unigroupdf[which(unigroupdf$gene == genename), ]
+    idxinfo <- which(unigroupdf$gene == genename)
+    if (isTRUE(all.equal(length(idxinfo), 0)))
+        stop("The gene ", genename, " was not found in unigroupdf")
+    geneinfo <- unigroupdf[idxinfo, ]
 
     if (verbose) message("\t Gathering statistics about each condition")
     ## Computing the window size factor
