@@ -24,13 +24,14 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 
     reslist <- lapply(condvec, function(cond, geneinfo, digits) {
 
-            ksname <- paste0("adjFDR_pvalaucks_", cond)
+            ksname <- paste0("adjFDR_p_AUC_", cond)
             ksval <- round(geneinfo[, ksname], digits)
-            aucval <- round(geneinfo[, paste0("auc_", cond)], digits)
+            aucval <- round(geneinfo[, paste0("AUC_", cond)], digits)
 
             if (ksval < 0.01) {
                 kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
-                kneeval <- round(kneeaucval * geneinfo$windsize / 1000, digits)
+                kneeval <- round(kneeaucval * geneinfo$window_size / 1000,
+                    digits)
                 vlinecond <- data.frame(condition = cond, kneeval = kneeval)
             } else {
                 kneeval <- "NA"
