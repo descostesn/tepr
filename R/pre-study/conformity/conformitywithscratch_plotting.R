@@ -88,13 +88,13 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
         plot = g2, device = "pdf", path = outfold)
 }
 
-plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold, # nolint
+plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
     digits = 2, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
     df <- dfmeandiff[which(dfmeandiff$gene == genename), ]
-    geneinfo <- completedf[which(completedf$gene == genename), ]
+    geneinfo <- unigroupdf[which(unigroupdf$gene == genename), ]
 
     if (verbose) message("\t Gathering statistics about each condition")
     ## Computing the window size factor
