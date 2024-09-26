@@ -136,3 +136,12 @@ plotecdf <- function(dfmeandiff, completedf, genename, colvec, outfold, # nolint
 # MAIN
 ##################
 
+## Reading objects and files
+dfmeandiff <- readRDS(dfmeandiffpath)
+unigroupdf <- readRDS(unigroupdfpath)
+
+####
+#### plotecdf
+####
+
+plotecdf(dfmeandiff, unigroupdf, "EGFR", colvec, outfold)
