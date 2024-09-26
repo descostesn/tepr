@@ -182,7 +182,8 @@ plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
 
 !!!!!!!!!!!!!
 
-plotauc <- function(tab, auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS", # nolint
+plotauc <- function(tab, genevec, # nolint
+    auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
@@ -215,8 +216,11 @@ plotauc <- function(tab, auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS", #
                     color = "#e9c46a", size = 1)
         }
 
-        ## Structure of the basic scatterplot
+.callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2, plottype) {
+    ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
+}
+        
 
         if (isTRUE(all.equal(plottype, "pval"))) {
             ## Adding highlight of the genes
@@ -250,5 +254,5 @@ plotauc <- function(tab, auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS", #
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-plotauc(unigroupdf, plot = TRUE)
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+plotauc(unigroupdf, genevec, plot = TRUE)
