@@ -55,7 +55,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 .callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename) {
+    outfold, genename, kneeval) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -149,7 +149,7 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     ## Plotting
     if (verbose) message("\t Generating ecdf plot to ", outfold)
     .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename)
+        genename, kneeval)
 }
 
 
