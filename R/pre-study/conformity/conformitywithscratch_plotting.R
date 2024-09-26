@@ -40,10 +40,11 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
         }
         condtext <- paste0(cond, ": AUC = ", aucval, ", KS = ", ksval,
             ", Knee (kb) = ", kneeval)
-        return(list(condtext, vlinecond))
+        return(list(condtext, vlinecond, kneeval))
     }, geneinfo, digits)
     subtext <- paste(sapply(reslist, "[", 1), collapse = "\n")
     vlinedf <- do.call("rbind", sapply(reslist, "[", 2))
+    kneeval <- sapply(reslist, "[", 3)
     return(list(subtext, vlinedf, kneeval))
 }
 
@@ -55,7 +56,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 .callggplot <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename, kneeval) {
+    outfold, genename, kneeval, plot) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -86,8 +87,11 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
             ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
 
-    ggplot2::ggsave(filename = paste0(genename, ".pdf"),
-        plot = g2, device = "pdf", path = outfold)
+    if (plot)
+        print(g2)
+    else
+        ggplot2::ggsave(filename = paste0(genename, ".pdf"),
+            plot = g2, device = "pdf", path = outfold)
 }
 
 .windowsizefactor <- function(df, middlewind) {
@@ -103,7 +107,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
-    digits = 2, middlewind = 100, pval = 0.01, verbose = TRUE) {
+    digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
@@ -147,9 +151,9 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
 
     ## Plotting
-    if (verbose) message("\t Generating ecdf plot to ", outfold)
+    if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
     .callggplot(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename, kneeval)
+        genename, kneeval, plot)
 }
 
 
@@ -168,4 +172,5 @@ expdf <- read.csv(expdfpath, header = TRUE)
 #### plotecdf
 ####
 
-plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold)
+plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold, plot = TRUE)
+plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
