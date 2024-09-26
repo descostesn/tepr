@@ -20,7 +20,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 #FUNCTIONS
 ##################
 
-.subtextvline <- function(condvec, geneinfo, digits) {
+.subtextvline <- function(condvec, geneinfo, digits, pval) {
 
     reslist <- lapply(condvec, function(cond, geneinfo, digits) {
 
@@ -28,7 +28,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
             ksval <- round(geneinfo[, ksname], digits)
             aucval <- round(geneinfo[, paste0("AUC_", cond)], digits)
 
-            if (ksval < 0.01) {
+            if (ksval < pval) {
                 kneeaucval <- geneinfo[, paste0("knee_AUC_", cond)]
                 kneeval <- round(kneeaucval * geneinfo$window_size / 1000,
                     digits)
@@ -102,7 +102,7 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
 }
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
-    digits = 2, middlewind = 100, verbose = TRUE) {
+    digits = 2, middlewind = 100, pval = 0.01, verbose = TRUE) {
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
@@ -121,7 +121,7 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
 
     ## Retrieving auc, ks, and knee
     condvec <- unique(expdf$condition)
-    restmp <- .subtextvline(condvec, geneinfo, digits)
+    restmp <- .subtextvline(condvec, geneinfo, digits, pval)
     subtext <- restmp[[1]]
     vlinedf <- restmp[[2]]
 
