@@ -88,6 +88,18 @@ outfold <- "/g/romebioinfo/tmp/comparewithscratch-plotting"
         plot = g2, device = "pdf", path = outfold)
 }
 
+.windowsizefactor <- function(df, middlewind) {
+
+    idxmiddle <- which(df$coord == middlewind)
+    if (isTRUE(all.equal(length(idxmiddle), 0)))
+        stop("The window ", middlewind, " was not found. Did you define a ",
+        "number of windows equal to ", middlewind*2, "? If not, adjust the ",
+        "parameter 'middlewind' to the half of the number of windows.")
+    dfmid <- df[idxmiddle, ]
+    windsizefact <- (dfmid$end - dfmid$start) / 1000
+    return(windsizefact)
+}
+
 plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
     digits = 2, middlewind = 100, verbose = TRUE) {
 
@@ -104,13 +116,7 @@ plotecdf <- function(dfmeandiff, unigroupdf, genename, colvec, outfold, # nolint
 
     if (verbose) message("\t Gathering statistics about each condition")
     ## Computing the window size factor
-    idxmiddle <- which(df$coord == middlewind)
-    if (isTRUE(all.equal(length(idxmiddle), 0)))
-        stop("The window ", middlewind, " was not found. Did you define a ",
-        "number of windows equal to ", middlewind*2, "? If not, adjust the ",
-        "parameter 'middlewind' to the half of the number of windows.")
-    dfmid <- df[idxmiddle, ]
-    windsizefact <- (dfmid$end - dfmid$start) / 1000
+    windsizefact <- .windowsizefactor(df, middlewind)
 
     ## Retrieving auc, ks, and knee
     condvec <- unique(expdf$condition)
