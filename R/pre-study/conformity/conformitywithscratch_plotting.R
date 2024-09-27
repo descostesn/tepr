@@ -296,6 +296,27 @@ plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
 ####
 
 !!!!!!!!!!!
+
+.normalize_and_summarize <- function(transvec, dfmeandiff, unigroupdf, daucname,
+    auc_ctrlname, auc_stressname) {
+
+    ## Selecting full mean and AUC columns
+    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
+        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
+        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
+
+    ## Selecting coord and mean values
+    result <- dfmeandiff %>%
+        dplyr::filter(transcript %in% transvec) %>%
+        dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
+        dplyr::select(transcript, gene, coord, contains("mean_value"),
+        -contains("Full"))  %>% dplyr::group_by(coord) %>%
+        dplyr::summarise(dplyr::across(contains("mean_value"),
+        ~ mean(., na.rm = TRUE)))
+
+    return(result)
+}
+
 plotmetagenes <- function(unigroupdf, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS") {
@@ -305,8 +326,9 @@ plotmetagenes <- function(unigroupdf, plottype = "attenuation",
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
         stop("plot type should be one of: attenuation, outgroup, universe, all")
-    
-    checkcolvec <- c(daucname)
+
+    colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
+    .colnamecheck(colnamevec, unigroupdf)
 
     ## Selection of transcripts
     if (isTRUE(all.equal(plottype, "attenuation")))
@@ -321,28 +343,14 @@ plotmetagenes <- function(unigroupdf, plottype = "attenuation",
     if (isTRUE(all.equal(length(idx), 0)))
         stop("No transcripts were found for the criteria ", plottype)
 
-    transvec <- unigroupdf[idx, "transcript"]
+     transvec <- unigroupdf[idx, "transcript"]
+     df <- .normalize_and_summarize(transvec, dfmeandiff, unigroupdf, daucname,
+        auc_ctrlname, auc_stressname)
 }
 
 
 
 
-.normalize_and_summarize <- function(transvec, dfmeandiff, unigroupdf, daucname,
-    auc_ctrlname, auc_stressname) {
-
-    ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
-        contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
-  result <- dfmeandiff %>%
-    dplyr::filter(transcript %in% transvec) %>%
-    dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
-    dplyr::select(transcript, gene, coord, contains("mean_value"), -contains("Full"))  %>%
-    dplyr::group_by(coord) %>%
-    dplyr::summarise(dplyr::across(contains("mean_value"), ~ mean(., na.rm = TRUE)))
-  
-  return(result)
-}
 
 # Usage
 Attenuation_concat_df <- normalize_and_summarize(Attenuation_list, dfmeandiff)
