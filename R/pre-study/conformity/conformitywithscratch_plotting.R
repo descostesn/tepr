@@ -160,30 +160,6 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
 
 
 
-##################
-# MAIN
-##################
-
-## Reading objects and files
-dfmeandiff <- readRDS(dfmeandiffpath)
-unigroupdf <- readRDS(unigroupdfpath)
-expdf <- read.csv(expdfpath, header = TRUE)
-
-
-####
-#### plotecdf
-####
-
-plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold, plot = TRUE)
-plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
-
-
-####
-#### plotauc
-####
-
-!!!!!!!!!!!!!
-
 .callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
     geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
@@ -281,7 +257,29 @@ plotauc <- function(tab, genevec = NA, # nolint
             outfile, formatname, outfold)
 }
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+##################
+# MAIN
+##################
+
+## Reading objects and files
+dfmeandiff <- readRDS(dfmeandiffpath)
+unigroupdf <- readRDS(unigroupdfpath)
+expdf <- read.csv(expdfpath, header = TRUE)
+
+
+####
+#### plotecdf
+####
+
+plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold, plot = TRUE)
+plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
+
+
+####
+#### plotauc
+####
 
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(unigroupdf, genevec, plot = TRUE)
