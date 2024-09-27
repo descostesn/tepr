@@ -297,7 +297,7 @@ plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
 
 !!!!!!!!!!!
 
-.normalizeandsummarize <- function(transvec, dfmeandiff, unigroupdf, daucname,
+.normalizeandsummarize <- function(transvec, dfmeandiff, unigroupdf, daucname, # nolint
     auc_ctrlname, auc_stressname) {
 
     ## Selecting full mean and AUC columns
@@ -376,13 +376,12 @@ plotmetagenes <- function(unigroupdf, plottype = "attenuation",
                 plot = g, device = formatname, path = outfold)
         }
 }
-
-
-
-
 !!!!!!!!!!!!
 
-
+plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
+plotmetagenes(unigroupdf, "outgroup", plot = TRUE)
+plotmetagenes(unigroupdf, "universe", plot = TRUE)
+plotmetagenes(unigroupdf, "all", plot = TRUE)
 
 #This work also for single genes
 Attenuation_list<- unigroupdf %>% dplyr::filter(Group=="Attenuated") %>% dplyr::pull(transcript)
