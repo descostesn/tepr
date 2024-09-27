@@ -285,3 +285,82 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(unigroupdf, genevec, plot = TRUE)
 plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
     maintitle = "AUC Control vs HS", plot = TRUE, plottype = "groups")
+
+
+####
+#### metagene
+####
+
+!!!!!!!!!!!
+message("metagenes")
+#This work also for single genes
+Attenuation_list<- tst_df %>% filter(Group=="Attenuated") %>% pull(transcript)
+Outgroup_list<- tst_df %>% filter(Group=="Outgroup") %>% pull(transcript)
+Universe_list<- tst_df %>% filter(Universe==T) %>% pull(transcript)
+All_list<- tst_df  %>% pull(transcript)
+
+AUC_allcondi <- tst_df %>% select(transcript, gene, strand, contains("Full"), dAUC_Diff_meanFx_HS_ctrl, AUC_ctrl, AUC_HS, -contains(c("UP","DOWN")), window_size)
+
+normalize_and_summarize <- function(list) {
+  result <- concat_dfFX_res %>%
+    filter(transcript %in% list) %>%
+    left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
+    # mutate(
+    #  across(contains("mean_value"), ~ . / mean_value_control_full, .names = "Normal_{.col}")
+    # ) %>%
+    select(transcript, gene, coord, contains("mean_value"), -contains("Full"))  %>%
+    dplyr::group_by(coord) %>%
+    #   summarise(across(contains("Normal"), ~ mean(., na.rm = TRUE))) %>%
+    
+    summarise(across(contains("mean_value"), ~ mean(., na.rm = TRUE))) # %>%
+  
+  return(result)
+}
+
+# Usage
+Attenuation_concat_df <- normalize_and_summarize(Attenuation_list)
+Outgroup_concat_df <- normalize_and_summarize(Outgroup_list)
+Universe_concat_df <- normalize_and_summarize(Universe_list)
+ALL_concat_df <- normalize_and_summarize(All_list)
+
+
+## plotting:
+y="Transcription density"
+Attenuated_metagene <-  ggplot() +
+  geom_line(data=Attenuation_concat_df, aes(x=coord/2, y= mean_value_ctrl), color="#00AFBB", size=1.5)+
+  geom_line(data=Attenuation_concat_df, aes(x=coord/2, y= mean_value_HS), color="#FC4E07", size=1.5)+
+  theme_bw() +
+  ylim(0,7)+
+  #scale_x_continuous(limits = c(0, 200), breaks = seq(0, 100, by = 25)) +
+  labs(x="TSS to TTS")+
+  labs(title = "Attenuated genes", subtitle = length(Attenuation_list), y=y) +
+  theme(legend.position = "none", legend.box = "vertical")
+
+Outgroup_metagene <-   ggplot() +
+  geom_line(data=Outgroup_concat_df, aes(x=coord/2, y= mean_value_ctrl), color="#00AFBB", size=1.5)+
+  geom_line(data=Outgroup_concat_df, aes(x=coord/2, y= mean_value_HS), color="#FC4E07", size=1.5)+
+  theme_bw() +
+  ylim(0,7)+
+  labs(x="TSS to TTS")+
+  labs(title = "Outgroup genes", subtitle = length(Outgroup_list), y=y) +
+  theme(legend.position = "none", legend.box = "vertical")
+
+Universe_metagene <-   ggplot() +
+  geom_line(data=Universe_concat_df, aes(x=coord/2, y= mean_value_ctrl), color="#00AFBB", size=1.5)+
+  geom_line(data=Universe_concat_df, aes(x=coord/2, y= mean_value_HS), color="#FC4E07", size=1.5)+
+  theme_bw() +
+  ylim(0,7)+
+  labs(x="TSS to TTS")+
+  labs(title = "Universe genes", subtitle = length(Universe_list), y=y) +
+  theme(legend.position = "none", legend.box = "vertical")
+
+All_metagene <-   ggplot() +
+  geom_line(data=ALL_concat_df, aes(x=coord/2, y= mean_value_ctrl), color="#00AFBB", size=1.5)+
+  geom_line(data=ALL_concat_df, aes(x=coord/2, y= mean_value_HS), color="#FC4E07", size=1.5)+
+  theme_bw() +
+  ylim(0,7)+
+  labs(x="TSS to TTS")+
+  labs(title = "Universe genes", subtitle = length(All_list), y=y) +
+  theme(legend.position = "none", legend.box = "vertical")
+
+!!!!!!!!!!!!
