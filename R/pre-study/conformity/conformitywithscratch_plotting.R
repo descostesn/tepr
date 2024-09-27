@@ -187,12 +187,12 @@ plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
 .callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
     geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
-    outfold) {
+    outfold, genevec) {
 
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
 
-        if (isTRUE(all.equal(plottype, "pval"))) {
+        if (isTRUE(all.equal(plottype, "pval")) && !is.na(genevec)) {
 
             ## Adding highlight of the genes
             g <- g + ggrepel::geom_label_repel(data = subset(df,
@@ -223,18 +223,36 @@ plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
         }
 }
 
-plotauc <- function(tab, genevec, # nolint
+.checkplotaucparams <- function(plottype, auc_ctrlname, auc_stressname,
+    pvalkstestcolname, genevec, tab) {
+
+        if (!isTRUE(all.equal(plottype, "pval")) &&
+            !isTRUE(all.equal(plottype, "groups")))
+                stop("plottype should be equal to 'pval' or 'groups'.")
+
+        colnamecheckvec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
+        invisible(sapply(colnamecheckvec, function(currentcol, tab) {
+            idx <- grep(currentcol, colnames(tab))
+            if (isTRUE(all.equal(length(idx), 0)))
+                stop("The column ", currentcol, " does not exist in the ",
+                    "provided table.")
+        }, tab))
+
+        if (isTRUE(all.equal(plottype, "groups")) && !is.na(genevec[1]))
+            stop("The vector of genes is not necessary for plotting groups")
+}
+
+plotauc <- function(tab, genevec = NA, # nolint
     auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
     subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
     outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE,
-    universename = "universe", groupname = "group") {
+    universename = "Universe", groupname = "Group") {
 
-        if (!isTRUE(all.equal(plottype, "pval")) &&
-            !isTRUE(all.equal(plottype, "groups")))
-            stop("plottype should be equal to 'pval' or 'groups'.")
+        .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
+            pvalkstestcolname, genevec, tab)
 
         if (isTRUE(all.equal(plottype, "pval"))) {
             df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
@@ -245,9 +263,9 @@ plotauc <- function(tab, genevec, # nolint
             geompointinfo <- ggplot2::geom_point(size = 0.5)
             geompointinfo2 <- ggplot2::geom_density_2d()
         } else {
-            df <- tab %>% dplyr::filter(!!sym(universename)) # nolint
+            df <- tab %>% dplyr::filter(!!sym(universename) == FALSE) # nolint
             dfatt <- tab %>% dplyr::filter(!!sym(groupname) == "Attenuated") # nolint
-            dfoutgroup <- tab %>% filter(!!sym(groupname) == "Outgroup") # nolint
+            dfoutgroup <- tab %>% dplyr::filter(!!sym(groupname) == "Outgroup") # nolint
 
             aesvar <- ggplot2::aes(!!sym(auc_ctrlname), !!sym(auc_stressname)) # nolint
             geompointinfo <- ggplot2::geom_point(size = 0.5, color = "grey")
@@ -267,3 +285,5 @@ plotauc <- function(tab, genevec, # nolint
 
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(unigroupdf, genevec, plot = TRUE)
+plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
+    maintitle = "AUC Control vs HS", plot = TRUE, plottype = "groups")
