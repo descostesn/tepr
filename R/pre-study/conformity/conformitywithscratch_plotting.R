@@ -292,7 +292,8 @@ plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
 ####
 
 !!!!!!!!!!!
-message("metagenes")
+plotmetagenes <- function(unigroupdf, plottype = "attenuation") {}
+
 #This work also for single genes
 Attenuation_list<- unigroupdf %>% dplyr::filter(Group=="Attenuated") %>% dplyr::pull(transcript)
 Outgroup_list<- unigroupdf %>% dplyr::filter(Group=="Outgroup") %>% dplyr::pull(transcript)
