@@ -199,6 +199,15 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
         }
 }
 
+.colnamecheck <- function(colnamevec, tab) {
+            invisible(sapply(colnamevec, function(currentcol, tab) {
+            idx <- grep(currentcol, colnames(tab))
+            if (isTRUE(all.equal(length(idx), 0)))
+                stop("The column ", currentcol, " does not exist in the ",
+                    "provided table.")
+        }, tab))
+}
+
 .checkplotaucparams <- function(plottype, auc_ctrlname, auc_stressname,
     pvalkstestcolname, genevec, tab) {
 
@@ -206,13 +215,8 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
             !isTRUE(all.equal(plottype, "groups")))
                 stop("plottype should be equal to 'pval' or 'groups'.")
 
-        colnamecheckvec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
-        invisible(sapply(colnamecheckvec, function(currentcol, tab) {
-            idx <- grep(currentcol, colnames(tab))
-            if (isTRUE(all.equal(length(idx), 0)))
-                stop("The column ", currentcol, " does not exist in the ",
-                    "provided table.")
-        }, tab))
+        colnamevec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
+        .colnamecheck(colnamevec, tab)
 
         if (isTRUE(all.equal(plottype, "groups")) && !is.na(genevec[1]))
             stop("The vector of genes is not necessary for plotting groups")
@@ -292,13 +296,17 @@ plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
 ####
 
 !!!!!!!!!!!
-plotmetagenes <- function(unigroupdf, plottype = "attenuation") {
+plotmetagenes <- function(unigroupdf, plottype = "attenuation",
+    daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
+    auc_stressname = "AUC_HS") {
 
     if (!isTRUE(all.equal(plottype, "attenuation")) &&
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
         stop("plot type should be one of: attenuation, outgroup, universe, all")
+    
+    checkcolvec <- c(daucname)
 
     ## Selection of transcripts
     if (isTRUE(all.equal(plottype, "attenuation")))
@@ -316,18 +324,18 @@ plotmetagenes <- function(unigroupdf, plottype = "attenuation") {
     transvec <- unigroupdf[idx, "transcript"]
 }
 
-#This work also for single genes
-Attenuation_list<- unigroupdf %>% dplyr::filter(Group=="Attenuated") %>% dplyr::pull(transcript)
-Outgroup_list<- unigroupdf %>% dplyr::filter(Group=="Outgroup") %>% dplyr::pull(transcript)
-Universe_list<- unigroupdf %>% dplyr::filter(Universe==T) %>% dplyr::pull(transcript)
-All_list<- unigroupdf  %>% dplyr::pull(transcript)
 
-AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand, 
-contains("Full"), dAUC_Diff_meanFx_HS_ctrl, AUC_ctrl, AUC_HS, -contains(c("UP","DOWN")), window_size)
 
-normalize_and_summarize <- function(list, dfmeandiff) {
+
+.normalize_and_summarize <- function(transvec, dfmeandiff, unigroupdf, daucname,
+    auc_ctrlname, auc_stressname) {
+
+    ## Selecting full mean and AUC columns
+    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
+        contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
+        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
   result <- dfmeandiff %>%
-    dplyr::filter(transcript %in% list) %>%
+    dplyr::filter(transcript %in% transvec) %>%
     dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
     dplyr::select(transcript, gene, coord, contains("mean_value"), -contains("Full"))  %>%
     dplyr::group_by(coord) %>%
