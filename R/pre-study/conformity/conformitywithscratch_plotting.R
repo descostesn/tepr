@@ -294,34 +294,30 @@ plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
 !!!!!!!!!!!
 message("metagenes")
 #This work also for single genes
-Attenuation_list<- tst_df %>% filter(Group=="Attenuated") %>% pull(transcript)
-Outgroup_list<- tst_df %>% filter(Group=="Outgroup") %>% pull(transcript)
-Universe_list<- tst_df %>% filter(Universe==T) %>% pull(transcript)
-All_list<- tst_df  %>% pull(transcript)
+Attenuation_list<- unigroupdf %>% dplyr::filter(Group=="Attenuated") %>% dplyr::pull(transcript)
+Outgroup_list<- unigroupdf %>% dplyr::filter(Group=="Outgroup") %>% dplyr::pull(transcript)
+Universe_list<- unigroupdf %>% dplyr::filter(Universe==T) %>% dplyr::pull(transcript)
+All_list<- unigroupdf  %>% dplyr::pull(transcript)
 
-AUC_allcondi <- tst_df %>% select(transcript, gene, strand, contains("Full"), dAUC_Diff_meanFx_HS_ctrl, AUC_ctrl, AUC_HS, -contains(c("UP","DOWN")), window_size)
+AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand, 
+contains("Full"), dAUC_Diff_meanFx_HS_ctrl, AUC_ctrl, AUC_HS, -contains(c("UP","DOWN")), window_size)
 
-normalize_and_summarize <- function(list) {
-  result <- concat_dfFX_res %>%
-    filter(transcript %in% list) %>%
-    left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
-    # mutate(
-    #  across(contains("mean_value"), ~ . / mean_value_control_full, .names = "Normal_{.col}")
-    # ) %>%
-    select(transcript, gene, coord, contains("mean_value"), -contains("Full"))  %>%
+normalize_and_summarize <- function(list, dfmeandiff) {
+  result <- dfmeandiff %>%
+    dplyr::filter(transcript %in% list) %>%
+    dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
+    dplyr::select(transcript, gene, coord, contains("mean_value"), -contains("Full"))  %>%
     dplyr::group_by(coord) %>%
-    #   summarise(across(contains("Normal"), ~ mean(., na.rm = TRUE))) %>%
-    
-    summarise(across(contains("mean_value"), ~ mean(., na.rm = TRUE))) # %>%
+    dplyr::summarise(dplyr::across(contains("mean_value"), ~ mean(., na.rm = TRUE)))
   
   return(result)
 }
 
 # Usage
-Attenuation_concat_df <- normalize_and_summarize(Attenuation_list)
-Outgroup_concat_df <- normalize_and_summarize(Outgroup_list)
-Universe_concat_df <- normalize_and_summarize(Universe_list)
-ALL_concat_df <- normalize_and_summarize(All_list)
+Attenuation_concat_df <- normalize_and_summarize(Attenuation_list, dfmeandiff)
+Outgroup_concat_df <- normalize_and_summarize(Outgroup_list, dfmeandiff)
+Universe_concat_df <- normalize_and_summarize(Universe_list, dfmeandiff)
+ALL_concat_df <- normalize_and_summarize(All_list, dfmeandiff)
 
 
 ## plotting:
@@ -360,7 +356,7 @@ All_metagene <-   ggplot() +
   theme_bw() +
   ylim(0,7)+
   labs(x="TSS to TTS")+
-  labs(title = "Universe genes", subtitle = length(All_list), y=y) +
+  labs(title = "All genes", subtitle = length(All_list), y=y) +
   theme(legend.position = "none", legend.box = "vertical")
 
 !!!!!!!!!!!!
