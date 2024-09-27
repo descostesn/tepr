@@ -381,3 +381,25 @@ plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
 plotmetagenes(unigroupdf, "outgroup", plot = TRUE)
 plotmetagenes(unigroupdf, "universe", plot = TRUE)
 plotmetagenes(unigroupdf, "all", plot = TRUE)
+
+
+####
+#### histogram
+####
+
+!!!!!!!!!!!!!
+
+histo_per <- ggplot(tst_df %>% filter(Universe==TRUE & Group=="Attenuated"), aes(x=knee_AUC_HS/2)) +
+  geom_histogram(binwidth=5, fill = "grey", color = "black", boundary=0)+
+  xlim(0,100) + xlab("Distance TSS to knee (% of the gene)") +
+  theme_classic()
+
+histo_kb <- ggplot(tst_df %>% filter(Universe==TRUE & Group=="Attenuated"), aes(x=(knee_AUC_HS*window_size)/1000)) +
+  geom_histogram(binwidth=10, fill = "grey", color = "black", boundary=0)+
+  xlim(0, 350) + 
+  #scale_x_continuous(breaks = c(seq(0, 150, by = 50), 200), 
+  #                   labels = c(seq(0, 150, by = 50), ">200")) 
+  labs(x = "Distance TSS to knee (kb)", y = "Count", title = "TSS to knee position in kb for attenuated genes") +
+  theme_classic()   
+
+!!!!!!!!!!!!!
