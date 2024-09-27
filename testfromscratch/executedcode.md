@@ -2363,6 +2363,7 @@ if (exists("Replaced") && !is.na(Replaced)) {
   }
   }
 } else {
+    message("filtering attenuation")
     for (cond in Conditions) {
       p_AUC_cond <- paste0("p_AUC_", cond)
       print(p_AUC_cond)
@@ -2396,6 +2397,9 @@ print(head(AUC_KS_Knee_NA.df))
 saveRDS(AUC_KS_Knee_NA.df, file = "AUC_KS_Knee_NA.df.rds")
 tst_df <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, "NOT" ) #"NOT" (not replaced) or a number for attenuation (usually 0) or NA
 saveRDS(tst_df, file = "tst_df.rds")
+
+tst_dffilt <- Attenuation_fun(AUC_KS_Knee_NA.df, concat_Diff_mean_res, 0.1, NA)
+saveRDS(tst_dffilt, file = "tst_dffilt.rds")
 
 message("The result of the attenuation function should be:")
 print(head(tst_df))
@@ -2716,6 +2720,9 @@ tst_df <- tst_df %>%
     Group = ifelse(Universe == TRUE & !!sym(AUC_stress) > 15 & -log10(!!sym(p_value_KStest))>2, "Attenuated", NA),
     Group = ifelse(Universe == TRUE & !!sym(p_value_KStest)>0.2 & !!sym(AUC_ctrl) > -10 & !!sym(AUC_ctrl) < 15 , "Outgroup", Group)  
   ) %>%  relocate(Group, .before = 2)
+
+universegroupdf <- tst_df
+saveRDS(universegroupdf, file = "universegroupdf.rds")
 
 ## Saving list of attenuated and outgroup transcripts for downstream analysis
 message("Saving list of attenuated and outgroup transcripts for downstream analysis")

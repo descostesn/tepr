@@ -19,7 +19,7 @@ library("pracma")
 ##################
 
 
-alldfpath <- "/g/romebioinfo/tmp/preprocessing/completeframedf.rds"
+alldfpath <- "/g/romebioinfo/tmp/comparewithscratch/finaltab.rds"
 exptabpath <- "/g/romebioinfo/Projects/tepr/downloads/annotations/exptab.csv" # nolint
 filtertabpath <- "/g/romebioinfo/Projects/tepr/Dataset/filtertab.csv"
 
@@ -43,7 +43,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
     dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
-        dplyr::summarize(gene = gene[1], strand = strand[1], # nolint
+        dplyr::summarize(gene = gene[1], strand = strand.window[1], # nolint
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
                 ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
@@ -110,7 +110,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 .computeecdf <- function(transtable, expdf, rounding, colnamevec) { # nolint
 
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand))
+        str <- as.character(unique(transtable$strand.window))
         .checkunique(str, "str")
         colnamestr <- colnamevec[which(expdf$strand == str)]
 
@@ -319,19 +319,21 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
   transcript <- unique(transtab$transcript)
   gene <- unique(transtab$gene)
-  strand <- unique(transtab$strand)
-        .checkunique(transcript, "transcript-dauc_allconditions")
-        .checkunique(gene, "gene-dauc_allconditions")
-        .checkunique(strand, "strand-dauc_allconditions")
+  strand <- unique(transtab$strand.window)
+        .checkunique(transcript, "transcript-dauc_allconditions") # nolint
+        .checkunique(gene, "gene-dauc_allconditions")  # nolint
+        .checkunique(strand, "strand-dauc_allconditions")  # nolint
         infodf <- data.frame(transcript, gene, strand)
 
         if (!is.null(nbwindows)) {
             if (isTRUE(all.equal(as.character(strand), "+"))) {
                 windsize <- floor(
-                    (transtab$end[nbwindows] - transtab$start[1]) / nbwindows)
+                    (transtab$end.window[nbwindows] -
+                    transtab$start.window[1]) / nbwindows)
             } else {
                 windsize <- floor(
-                    (transtab$end[1] - transtab$start[nbwindows]) / nbwindows)
+                    (transtab$end.window[1] -
+                    transtab$start.window[nbwindows]) / nbwindows)
             }
             infodf <- cbind(infodf, windsize)
         }
@@ -346,9 +348,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
         ## Retrieve the column names for each comparison
         idxctrl <- grep("ctrl", condvec) # Cannot be empty, see checkexptab
-        name1 <- paste0("mean_Fx_", condvec[idxctrl])
-        name2 <- paste0("mean_Fx_", condvec[-idxctrl])
-        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",
+        name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
+        name2 <- paste0("mean_Fx_", condvec[-idxctrl])  # nolint
+        diffname <- paste0("Diff_meanFx_", condvec[-idxctrl], "_",  # nolint
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
@@ -385,11 +387,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     resdf <- cbind(resdf, fdrvec)
     colnamevec <- colnames(resdf)
     idxfdr <- which(colnamevec == "fdrvec")
-    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])
+    colnames(resdf)[idxfdr] <- paste0("adjFDR_", colnamevec[idx])  # nolint
     return(resdf)
 }
-
-
 
 .buildaucdf <- function(transtab, difffxname, resks, meanvalname,
   currentcond) {
@@ -401,7 +401,8 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     colnames(aucdf) <- paste(colnames(aucdf), currentcond, sep = "_")
     rownames(aucdf) <- paste(.returninfodf(transtab), collapse = "-")
     transinfo <- data.frame(transcript = transtab[1, "transcript"],
-                    gene = transtab[1, "gene"], strand = transtab[1, "strand"])
+                    gene = transtab[1, "gene"],
+                    strand = transtab[1, "strand.window"])
     aucdf <- cbind(transinfo, aucdf)
     return(aucdf)
 }
@@ -417,9 +418,9 @@ createmeandiff <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
       resauclist <- lapply(condvec, function(currentcond, transtab,
         cumulative) {
           ## Definition of column names
-          difffxname <- paste0("diff_Fx_", currentcond)
-          meanvalname <- paste0("mean_value_", currentcond)
-          meanfxname <- paste0("mean_Fx_", currentcond)
+          difffxname <- paste0("diff_Fx_", currentcond) # nolint
+          meanvalname <- paste0("mean_value_", currentcond) # nolint
+          meanfxname <- paste0("mean_Fx_", currentcond) # nolint
 
           ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
           resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
@@ -453,6 +454,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
 
     if (verbose) message("\t Computing the differences (d or delta) of AUC")
     start_time <- Sys.time()
+    !!!!!!!!!!!!!! ONLY EXECUTE IF TWO CONDITIONS
     daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
       nbcputrans)
     end_time <- Sys.time()
@@ -474,7 +476,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
-      by = c("gene", "transcript", "strand"))
+      by = c("gene", "transcript", "strand.window"))
     return(allauc)
 }
 
@@ -494,7 +496,7 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
   nabytranslist <- parallel::mclapply(transdflist,
     function(transtable, scorecolvec, condvec) {
         ## Filters the score columns according to the strand of the transcript
-        str <- as.character(unique(transtable$strand))
+        str <- as.character(unique(transtable$strand.window))
         colnamestr <- scorecolvec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
 
@@ -554,10 +556,10 @@ kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
 
 .summarytrans <- function(bytransmeanlist, nbcpu) {
   summarydflist <- mclapply(bytranslistmean, function(trans) {
-    coor1 <- min(trans$start)
-    coor2 <- max(trans$end)
-    return(data.frame(chr = trans$seqnames[1], coor1, coor2,
-          strand = trans$strand[1], gene = trans$gene[1],
+    coor1 <- min(trans$start.window)
+    coor2 <- max(trans$end.window)
+    return(data.frame(chr = trans$chrom[1], coor1, coor2,
+          strand = trans$strand.window[1], gene = trans$gene[1],
           transcript = trans$transcript[1], size = coor2 - coor1 + 1))
   }, mc.cores = nbcpu)
   summarydf <- do.call("rbind", summarydflist)
