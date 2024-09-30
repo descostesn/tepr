@@ -48,4 +48,5 @@ Collate:
     'countna.R',
     'kneeid.R',
     'attenuation.R',
-    'universegroup.R'
+    'universegroup.R',
+    'plotecdf.R'
