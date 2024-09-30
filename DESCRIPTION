@@ -36,7 +36,9 @@ Imports:
     dplyr,
     parallel,
     tidyr,
-    tidyselect
+    tidyselect,
+    ggplot2,
+    pracma
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R',
