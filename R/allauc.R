@@ -167,7 +167,14 @@
 #' results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
 #'
 #' @seealso
-#' genesECDF
+#' [genesECDF]
+#'
+#' @importFrom dplyr filter mutate select distinct
+#' @importFrom parallel mclapply
+#' @importFrom stats ks.test
+#' @importFrom stats p.adjust
+#' @importFrom utils message
+#' 
 #' @export
 
 allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
