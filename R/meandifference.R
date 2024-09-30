@@ -1,0 +1,129 @@
+.condcolidx <- function(currentcond, df) {
+    idxcond <- grep(currentcond, colnames(df))
+    if (isTRUE(all.equal(length(idxcond), 0)))
+        stop("Problem in function meandifference, condition not found in ",
+                "column names. Contact the developer.")
+    return(idxcond)
+}
+
+.idxscorefx <- function(df, idxcond) {
+    idxcondfx <- grep("Fx", colnames(df[idxcond]))
+    idxcondval <- grep("value_", colnames(df[idxcond]))
+    if (isTRUE(all.equal(length(idxcondfx), 0)) ||
+        isTRUE(all.equal(length(idxcondval), 0)))
+        stop("Problem in function meandifference, column Fx or val not found ",
+            "in column names. Contact the developer.")
+    idxcondlist <- list(value = idxcond[idxcondval],
+            Fx = idxcond[idxcondfx])
+    return(idxcondlist)
+}
+
+.creatematdiff <- function(condvec, resmean) {
+
+  categoryvec <- c("value", "Fx")
+  matdifflist <- lapply(categoryvec, function(currentcat, condvec, resmean) {
+    meancolnames <- paste("mean", currentcat, condvec, sep = "_")
+
+    ## Generating all combinations of elements (combn not good)
+    idxvec <- seq_len(length(condvec))
+    matidx <- matrix(c(idxvec, rev(idxvec)), ncol = 2)
+
+    ## Generating differences of columns
+    difflist <- apply(matidx, 2, function(idxvec, meancolnames, resmean,
+        currentcat, condvec) {
+          ## The function rowDiffs of the package matrixStats substracts the second argument to the first one. To respect the code just above, # nolint
+          ## The indexes must be inverted with rev: meancolnames[rev(idxvec)]] -> for instance, given the two columns "mean_value_HS" and "mean_value_ctrl" # nolint
+          ## as input, the function rowDiffs will do the subtraction "mean_value_ctrl" - "mean_value_HS" # nolint
+          res <- matrixStats::rowDiffs(as.matrix(
+            resmean[, meancolnames[rev(idxvec)]]))
+          colnamestr <- paste("Diff", paste0("mean", currentcat),
+            paste(condvec[idxvec], collapse = "_"), sep = "_")
+          res <- as.vector(res)
+          attr(res, "name") <- colnamestr
+          return(res)
+      }, meancolnames, resmean, currentcat, condvec, simplify = FALSE)
+
+      ## Combining vectors into a matrix and defining col names
+      diffmat <- do.call("cbind", difflist)
+      colnames(diffmat) <- sapply(difflist, function(x) attributes(x)$name)
+      return(diffmat)
+  }, condvec, resmean)
+
+  ## Building a matrix from the diff on values and Fx
+  matdiff <- do.call("cbind", matdifflist)
+  return(matdiff)
+}
+
+.meandiffscorefx <- function(idxcondlist, df, nbwindows, currentcond,
+    colnamevec, verbose) {
+
+        meandifflist <- mapply(function(idxvalvec, idxname, df, nbwindows,
+            currentcond, colnamevec, verbose) {
+            if (verbose) {
+              message("\t Calculating average and difference between ",
+                "replicates for columns '", idxname, "' of ", currentcond)
+              if (isTRUE(all.equal(length(idxvalvec), 1)))
+                warning("Only one replicate, copy scores to mean columns",
+                  immediate. = TRUE)
+            }
+
+            ## Calculating the column of mean scores for currentcond
+            ## The result is a data.frame made of a single column
+            if (length(idxvalvec) >= 2) {
+                meandf <- data.frame(rowMeans(df[, idxvalvec], na.rm = FALSE))
+            } else {
+                meandf <- as.data.frame(df[, idxvalvec])
+            }
+            colnames(meandf) <- paste0("mean_", idxname, "_", currentcond)
+
+            if (isTRUE(all.equal(idxname, "Fx"))) {
+                diffres <- meandf - df$coord / nbwindows
+                colnames(diffres) <- paste0("diff_", idxname, "_", currentcond)
+                res <- cbind(meandf, diffres)
+            } else {
+                res <- meandf
+            }
+            return(res)
+        }, idxcondlist, names(idxcondlist), MoreArgs = list(df, nbwindows,
+            currentcond, colnamevec, verbose), SIMPLIFY = FALSE)
+
+        return(meandifflist)
+}
+
+meandifference <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
+
+    ## for each condition, creates three columns:
+    ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
+    ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
+    condvec <- unique(expdf$condition)
+    rescondlist <- lapply(condvec, function(currentcond, df, nbwindows,
+      verbose) {
+
+        if (verbose) message("Merging columns for condition ", currentcond)
+        ## Retrieving columns having condition name as substring
+        idxcond <- .condcolidx(currentcond, df)
+        ## Separating idx of column names by scores and Fx
+        idxcondlist <- .idxscorefx(df, idxcond)
+
+        ## The difference is used to calculate the AUC later on
+        colnamevec <- colnames(df)
+        meandifflist <- .meandiffscorefx(idxcondlist, df, nbwindows,
+          currentcond, colnamevec, verbose)
+        names(meandifflist) <- NULL
+
+        meandiffres <- do.call("cbind", meandifflist)
+        return(meandiffres)
+    }, resultsecdf, nbwindows, verbose)
+    resmean <- do.call("cbind", rescondlist)
+
+    ## Computing all differences on mean columns
+    if (verbose) message("Commputing all differences on mean columns")
+    matdiff <- .creatematdiff(condvec, resmean)
+
+    res <- cbind(resmean, matdiff)
+    if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
+        stop("The results of mean and diff should have the same number of ",
+            "rows than resultsecdf, contact the developer")
+
+    return(cbind(resultsecdf, res))
+}
