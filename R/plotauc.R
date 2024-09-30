@@ -37,15 +37,6 @@
         }
 }
 
-.colnamecheck <- function(colnamevec, tab) {
-            invisible(sapply(colnamevec, function(currentcol, tab) {
-            idx <- grep(currentcol, colnames(tab))
-            if (isTRUE(all.equal(length(idx), 0)))
-                stop("The column ", currentcol, " does not exist in the ",
-                    "provided table.")
-        }, tab))
-}
-
 .checkplotaucparams <- function(plottype, auc_ctrlname, auc_stressname,
     pvalkstestcolname, genevec, tab) {
 
