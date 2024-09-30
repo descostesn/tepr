@@ -18,17 +18,21 @@
     return(result)
 }
 
-plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
-    daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
-    auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = "./") {
+.checkmetagenes <- function(plottype) {
 
     if (!isTRUE(all.equal(plottype, "attenuation")) &&
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
         stop("plot type should be one of: attenuation, outgroup, universe, all")
+}
 
+plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
+    daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
+    auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
+    outfold = "./") {
+
+    .checkmetagenes(plottype)
     colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
     .colnamecheck(colnamevec, unigroupdf)
 
