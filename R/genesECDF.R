@@ -1,9 +1,3 @@
-.checkunique <- function(x, xname) {
-        if (!isTRUE(all.equal(length(x), 1)))
-            stop("The element ", xname, # nolint
-                " should be unique, contact the developer.") # nolint
-}
-
 .coordandfilter <- function(str, transtable, nbrows) { # nolint
 
   if (isTRUE(all.equal(str, "minus"))) {
