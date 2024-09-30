@@ -56,6 +56,60 @@
         return(res)
 }
 
+#' Compute ECDF for Genes Based on Expression Data
+#'
+#' This function calculates the empirical cumulative distribution function
+#' (ECDF) for expressed genes across multiple transcripts. It processes the
+#' expression data to filter out non-expressed transcripts, compute ECDF values
+#' for each transcript, and combine the results into a unified data frame. The
+#' function operates in parallel for speed optimization.
+#'
+#' @param allexprsdfs A list of data frames where the first element is the main
+#'    expression data frame and the second element contains the names of the
+#'    expressed transcripts (see 'averageandfilterexprs').
+#' @param expdf A data frame containing experimental conditions and other
+#'    relevant information.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'    Default is \code{10}.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'    parallel computation. Default is \code{1}.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'    Default is \code{FALSE}.
+#'
+#' @return A list containing two elements:
+#' \item{concatdf}{A data frame with ECDF results for each transcript.}
+#' \item{nbrows}{An integer indicating the number of rows in each transcript
+#'  table.}
+#'
+#' @details
+#' The function performs several steps:
+#' \enumerate{
+#'   \item Filters the main expression table to retain only the expressed
+#'      transcripts.
+#'   \item Splits the data by each transcript.
+#'   \item For each transcript, computes ECDF values for the score columns
+#'      while respecting the strand orientation ("plus" or "minus").
+#'   \item Combines the ECDF results into a final data frame.
+#' }
+#'
+#' The function uses parallel processing to compute ECDF for each transcript
+#'  simultaneously, making it faster on systems with multiple CPU cores.
+#'
+#' @examples
+#' # Assuming allexprsdfs is a list of data frames and expdf contains the
+#' # conditions:
+#' # result <- genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 4,
+#'    verbose = TRUE)
+#'
+#' @importFrom parallel mclapply
+#' @importFrom dplyr bind_rows
+#' @importFrom tidyr fill pivot_wider
+#' @importFrom tidyselect contains
+#'
+#' @seealso
+#' [averageandfilterexprs]
+#' @export
+
 genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
   verbose = FALSE) {
 
