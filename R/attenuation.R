@@ -73,6 +73,62 @@
         return(mat)
 }
 
+#' Calculate Attenuation from AUC and Other Transcript Features
+#'
+#' This function computes the attenuation values for each window of each
+#' transcript based on the data frames obtained with the functions 'allauc',
+#' 'kneeid', and 'countna'.
+#'
+#' @param allaucdf A data frame containing AUC results for transcripts (see
+#'                 allauc).
+#' @param kneedf A data frame containing the inflection points (see kneeid).
+#' @param matnatrans A data frame containing the number of missing values per
+#'                   transcript (see countna).
+#' @param bytranslistmean A list of data frames with mean values by transcripts.
+#' @param expdf A data frame containing experimental conditions, must include
+#'              a column named 'condition'.
+#' @param dfmeandiff A data frame containing means and differences in mean
+#'                  values, if more than one condition. (see meandifference).
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'               parallel processing. The parallelization is done on
+#'               bytranslistmean whose number of elements is equal to the
+#'               number of lines provided as input of 'averageandfilterexprs'.
+#' @param significant A logical indicating whether to filter out non-significant
+#'                    attenuation values (default is FALSE).
+#' @param replaceval A value to replace non-significant attenuation values
+#'                   (default is NA).
+#' @param pval A numeric value specifying the p-value threshold for significance
+#'              (default is 0.1).
+#' @param verbose A logical value indicating whether to print progress messages
+#'                 (default is TRUE).
+#'
+#' @return A data frame containing the computed attenuation values along with
+#'         associated transcript information.
+#'
+#' @details The function merges several data frames to create a comprehensive
+#'          dataset for each transcript. It computes mean values for the "up"
+#'          and "down" segments of the transcript. The direction is determined
+#'          by comparing the coordinates to the knee values. up = coord < knee
+#'          and down = coord > knee. The up and down indexes are then retrieved
+#'          and the attenuation scores are computed as:
+#'              att <- 100 - downmean / upmean * 100
+#'
+#' @examples
+#' # Example usage of attenuation function
+#' result <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean,
+#'                       expdf, dfmeandiff, nbcpu = 4)
+#'
+#' @seealso
+#' [allauc()], [kneeid()], [countna()], [meandifference()]
+#'
+#' @importFrom dplyr filter mutate select
+#' @importFrom parallel mclapply
+#' @importFrom stats ks.test
+#' @importFrom stats p.adjust
+#' @importFrom utils message
+#'
+#' @export
+
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
   verbose = TRUE) {
