@@ -128,6 +128,48 @@
   return(aucallconditions)
 }
 
+
+#' Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+#'
+#' This function computes the Area Under Curve (AUC) and the differences of AUC
+#' between two conditions for a list of transcript data. It supports parallel
+#' computation for efficiency.
+#'
+#' @param bytranslistmean A list of data frames, each containing transcript
+#'                        level data with mean values for one or more
+#'                        conditions.
+#' @param expdf A data frame containing experimental conditions associated with
+#'              the transcript data. It should have a column named 'condition'.
+#' @param nbwindows An integer specifying the number of windows to consider for
+#'                  AUC calculations.
+#' @param nbcputrans An integer specifying the number of CPU cores to use for
+#'                    parallel processing on bytranslistmean.
+#' @param dontcompare An optional parameter to specify any conditions to exclude
+#'                    from the comparison.
+#' @param controlcondname A string specifying the name of the control condition
+#'                         (default is "ctrl").
+#' @param stresscondname A string specifying the name of the stress condition
+#'                        (default is "HS").
+#' @param verbose A logical value indicating whether to print progress messages
+#'                 (default is TRUE).
+#'
+#' @return A data frame containing the AUC and dAUC results for each transcript,
+#'         along with associated statistical information.
+#'
+#' @details The function first checks if exactly two conditions are present in
+#'          `expdf`. If so, it computes the differences in AUC between the two
+#'          conditions using a Kolmogorov-Smirnov test and calculates the AUC
+#'          for all conditions against a reference line (y=x). Results are
+#'          merged by transcript and include adjusted p-values.
+#'
+#' @examples
+#' # Example usage of allauc function
+#' results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+#'
+#' @seealso
+#' genesECDF
+#' @export
+
 allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
   dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
   verbose = TRUE) {
