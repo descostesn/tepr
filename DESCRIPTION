@@ -43,5 +43,5 @@ Collate:
     'meandifference.R',
     'allauc.R',
     'utils.R',
-    'countna.R'
-    
+    'countna.R',
+    'kneeid.R'
