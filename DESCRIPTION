@@ -39,4 +39,5 @@ Imports:
     tidyselect
 Collate:
     'averageandfilterexprs.R'
-    'genesECDF.R'
+    'genesECDF.R',
+    'meandifference.R'
