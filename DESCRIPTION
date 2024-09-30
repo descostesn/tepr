@@ -51,4 +51,5 @@ Collate:
     'universegroup.R',
     'plotecdf.R',
     'plotauc.R',
-    'plotmetagenes.R'
+    'plotmetagenes.R',
+    'plothistoknee.R'
