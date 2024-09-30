@@ -41,4 +41,5 @@ Collate:
     'averageandfilterexprs.R'
     'genesECDF.R',
     'meandifference.R',
-    'allauc.R'
+    'allauc.R',
+    'utils.R'
