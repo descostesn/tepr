@@ -49,4 +49,5 @@ Collate:
     'kneeid.R',
     'attenuation.R',
     'universegroup.R',
-    'plotecdf.R'
+    'plotecdf.R',
+    'plotauc.R'
