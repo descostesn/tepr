@@ -40,4 +40,5 @@ Imports:
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R',
-    'meandifference.R'
+    'meandifference.R',
+    'allauc.R'
