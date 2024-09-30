@@ -50,4 +50,5 @@ Collate:
     'attenuation.R',
     'universegroup.R',
     'plotecdf.R',
-    'plotauc.R'
+    'plotauc.R',
+    'plotmetagenes.R'
