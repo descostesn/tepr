@@ -42,4 +42,6 @@ Collate:
     'genesECDF.R',
     'meandifference.R',
     'allauc.R',
-    'utils.R'
+    'utils.R',
+    'countna.R'
+    
