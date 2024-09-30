@@ -1,3 +1,40 @@
+#' Count NA values per transcript and condition
+#'
+#' This function takes a list of expression data frames, a condition
+#' information data frame, and counts the number of NA values for each
+#' transcript based on strand and condition. NA represent missing scores that
+#' were filtered out from the black list and mappability track. The function
+#' operates in parallel on transcripts to speed up the process using multiple
+#' CPU cores.
+#'
+#' @param allexprsdfs A list of data frames containing expression data. The
+#'  first element is assumed to be the main table. The second element is a
+#'  vector of transcript names that passed the filtering of
+#'  'averageandfilterexprs'.
+#' @param expdf A data frame containing experimental conditions and strand
+#'  information. Must have columns \code{condition} and \code{strand}.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'  parallel computation on transcripts. The number of transcripts is equal to
+#'  the number of lines provided as input of 'averageandfilterexprs'.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{FALSE}.
+#'
+#' @return A data frame where each row corresponds to a transcript, along with
+#'  its associated gene, strand, and the count of NA values.
+#'
+#' @examples
+#' # Assuming allexprsdfs is a list of data frames and expdf contains the
+#' # conditions:
+#' # result <- countna(allexprsdfs, expdf, nbcpu = 4)
+#'
+#' @importFrom parallel mclapply
+#' @importFrom stats na.omit
+#'
+#' @seealso
+#' [averageandfilterexprs]
+#'
+#' @export
+
 countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
 
   maintable <- allexprsdfs[[1]]
