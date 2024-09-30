@@ -44,4 +44,5 @@ Collate:
     'allauc.R',
     'utils.R',
     'countna.R',
-    'kneeid.R'
+    'kneeid.R',
+    'attenuation.R'
