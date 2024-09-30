@@ -91,8 +91,8 @@
   cumulative <- seq(1, nbwindows) / nbwindows
   condvec <- unique(expdf$condition)
 
-  resdflist <- mclapply(bytranslist, function(transtab, condvec, cumulative,
-    nbwindows) {
+  resdflist <- parallel::mclapply(bytranslist, function(transtab, condvec,
+    cumulative, nbwindows) {
       ## Computing AUC, pval, and stat for each condition
       resauclist <- lapply(condvec, function(currentcond, transtab,
         cumulative, nbwindows) {
