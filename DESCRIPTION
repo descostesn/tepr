@@ -40,7 +40,7 @@ Imports:
     ggplot2,
     pracma
 Collate:
-    'averageandfilterexprs.R'
+    'averageandfilterexprs.R',
     'genesECDF.R',
     'meandifference.R',
     'allauc.R',
