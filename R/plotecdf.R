@@ -48,7 +48,7 @@
             linetype = "dashed", color = "red")
 
     g1 <- g + ggplot2::geom_area(ggplot2::aes(x = linexvals, y = areayvals,
-        fill = conditions), # nolint
+        fill = .data$conditions), # nolint
         alpha = 0.1, linewidth = 0.2, position = 'identity') + # nolint
         ggplot2::scale_fill_manual(values = colvec) +
         ggplot2::geom_line(linewidth = 1, aes(x = linexvals)) +
