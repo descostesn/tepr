@@ -40,16 +40,16 @@ Imports:
     ggplot2,
     pracma
 Collate:
-    'averageandfilterexprs.R',
-    'genesECDF.R',
-    'meandifference.R',
-    'allauc.R',
-    'utils.R',
-    'countna.R',
-    'kneeid.R',
-    'attenuation.R',
-    'universegroup.R',
-    'plotecdf.R',
-    'plotauc.R',
-    'plotmetagenes.R',
+    'averageandfilterexprs.R'
+    'genesECDF.R'
+    'meandifference.R'
+    'allauc.R'
+    'utils.R'
+    'countna.R'
+    'kneeid.R'
+    'attenuation.R'
+    'universegroup.R'
+    'plotecdf.R'
+    'plotauc.R'
+    'plotmetagenes.R'
     'plothistoknee.R'
