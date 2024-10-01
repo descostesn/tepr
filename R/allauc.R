@@ -63,7 +63,7 @@
 
     ## Correct p-values using FDR
     idx <- grep("p_dAUC", colnames(resdf))
-    fdrvec <- p.adjust(resdf[, idx], method = "fdr")
+    fdrvec <- stats::p.adjust(resdf[, idx], method = "fdr")
 
     resdf <- cbind(resdf, fdrvec)
     colnamevec <- colnames(resdf)
@@ -121,7 +121,7 @@
   ## Correcting p-val with FDR
   idxpvalvec <- grep("p_AUC", colnames(aucallconditions))
   fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
-    return(p.adjust(tab[, idxpval], method = "fdr"))
+    return(stats::p.adjust(tab[, idxpval], method = "fdr"))
   }, aucallconditions)
   fdrdf <- do.call("cbind", fdrlist)
   colnames(fdrdf) <- paste0("adjFDR_", colnames(aucallconditions)[idxpvalvec]) # nolint
