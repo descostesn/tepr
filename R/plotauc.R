@@ -59,7 +59,7 @@
 #'
 #' @param tab A data frame containing the AUC values for control and stress
 #'  conditions, and other columns required for plotting (e.g., p-values or
-#'  group memberships).
+#'  group memberships, see allauc).
 #' @param genevec A vector of gene names to highlight on the plot, applicable
 #'  when \code{plottype} is set to "pval". Default is \code{NA}.
 #' @param auc_ctrlname The column name in \code{tab} for the AUC under control
@@ -115,6 +115,9 @@
 #' # Assuming `tab` contains AUC values and p-values:
 #' # plotauc(tab, genevec = c("Gene1", "Gene2"), plottype = "pval")
 #'
+#' @seealso
+#' [allauc]
+#' 
 #' @importFrom dplyr arrange filter
 #' @importFrom ggplot2 ggplot aes geom_point geom_density_2d labs coord_fixed theme_classic theme xlim ylim ggsave
 #' @importFrom ggrepel geom_label_repel
