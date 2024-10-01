@@ -86,6 +86,65 @@
     return(windsizefact)
 }
 
+#' Plot Empirical Cumulative Distribution Function (ECDF)
+#'
+#' This function generates an ECDF plot to analyze transcription density
+#' relative to the distance from the transcription start site (TSS) across
+#' different conditions. The plot displays AUC values, Kolmogorov-Smirnov (KS)
+#' statistics, and knee points, with options to display or save the plot.
+#'
+#' @param dfmeandiff A data frame containing the mean differences of
+#'  transcription levels and cumulative distribution values (Fx) for different
+#'  windows around the TSS (see meandifference).
+#' @param unigroupdf A data frame containing gene-specific statistics, including
+#'  their belonging to Universe or Group (see universegroup).
+#' @param expdf A data frame with experimental conditions and replicates.
+#' @param genename A string specifying the name of the gene of interest to plot.
+#' @param colvec A vector of colors used to distinguish different conditions in
+#'  the plot.
+#' @param outfold A string specifying the output folder where the plot will be
+#'  saved if \code{plot = FALSE}. Default is the current directory.
+#' @param digits The number of decimal places to round the AUC and KS values.
+#'  Default is \code{2}.
+#' @param middlewind The index of the middle window representing the region
+#'  centered around the TSS. Default is \code{100}.
+#' @param pval A numeric value for the p-value threshold to determine the
+#'  significance of the KS test. Default is \code{0.01}.
+#' @param plot A logical flag indicating whether to display the plot
+#'  interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
+#'  \code{FALSE}.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
+#'
+#' @return An ECDF plot showing the transcription density across windows around
+#'  the TSS, with highlights for significant KS test results and knee points.
+#' The plot can either be displayed or saved as a file.
+#'
+#' @details
+#' The function processes data related to transcription levels and cumulative
+#' transcription density for a given gene across multiple experimental
+#' conditions. The ECDF plot is constructed with optional annotation of key
+#' statistics such as AUC values and significant KS test results. Knee points,
+#' representing significant changes in transcription density, are also displayed
+#' if the KS test passes the specified p-value threshold.
+#'
+#'
+#' @examples
+#' # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
+#' # data:
+#' # plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX",
+#' # colvec = c("blue", "red"))
+#'
+#' @seealso
+#' [meandifference], [universegroup]
+#'
+#' @importFrom ggplot2 ggplot aes geom_line geom_area geom_vline scale_fill_manual scale_color_manual labs theme_classic sec_axis ggsave
+#' @importFrom dplyr mutate filter
+#' @importFrom tidyr pivot_longer
+#' @importFrom tidyselect all_of
+#'
+#' @export
+
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
     digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE) {
 
