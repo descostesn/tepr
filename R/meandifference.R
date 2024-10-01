@@ -90,6 +90,39 @@
         return(meandifflist)
 }
 
+#' Compute Mean and Differences of Scores for Each Condition
+#'
+#' This function calculates the mean values, mean Fx (ECDF) and ECDF differences
+#' (Fx) for expression data, across different experimental conditions.
+#'
+#' @param resultsecdf A data frame containing ECDF results for each transcript
+#'  and condition (see genesECDF).
+#' @param expdf A data frame containing experimental information including a
+ #'   \code{condition} column.
+#' @param nbwindows An integer representing the number of windows (or segments)
+#'  in each transcript.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{FALSE}.
+#'
+#' @return A data frame that contains, for each condition:
+#' \itemize{
+#'   \item Mean values for the "value" and "Fx" columns (e.g.,
+#'    \code{mean_value_ctrl}, \code{mean_Fx_ctrl}).
+#'   \item Differences between the \code{Fx} column and coordinate ratios
+#'    (e.g., \code{diff_Fx_ctrl}).
+#' }
+#'
+#' @examples
+#' # Assuming resultsecdf is a data frame with ECDF results and expdf contains
+#' # conditions:
+#' # result <- meandifference(resultsecdf, expdf, nbwindows = 200,
+#'  verbose = TRUE)
+#'
+#' @importFrom dplyr bind_rows
+#' @importFrom matrixStats rowDiffs
+#'
+#' @export
+
 meandifference <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
 
     ## for each condition, creates three columns:
