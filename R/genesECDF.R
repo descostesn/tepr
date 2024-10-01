@@ -107,7 +107,7 @@
 #' @importFrom tidyr fill pivot_wider
 #' @importFrom tidyselect contains
 #' @importFrom rlang .data
-#' 
+#'
 #' @seealso
 #' [averageandfilterexprs]
 #' @export
