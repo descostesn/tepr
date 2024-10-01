@@ -51,6 +51,76 @@
             stop("The vector of genes is not necessary for plotting groups")
 }
 
+#' Plot AUC Comparison Between Conditions
+#'
+#' This function generates scatterplots comparing the area under the curve (AUC)
+#' for control and stress conditions, with an option to highlight specific genes
+#' or groups. The plot can be saved as a file or displayed interactively.
+#'
+#' @param tab A data frame containing the AUC values for control and stress
+#'  conditions, and other columns required for plotting (e.g., p-values or
+#'  group memberships).
+#' @param genevec A vector of gene names to highlight on the plot, applicable
+#'  when \code{plottype} is set to "pval". Default is \code{NA}.
+#' @param auc_ctrlname The column name in \code{tab} for the AUC under control
+#'  conditions. Default is \code{"AUC_ctrl"}.
+#' @param auc_stressname The column name in \code{tab} for the AUC under stress
+#'  conditions. Default is \code{"AUC_HS"}.
+#' @param pvalkstestcolname The column name in \code{tab} for the adjusted FDR
+#'  p-values from the KS test. Default is
+#'  \code{"adjFDR_p_dAUC_Diff_meanFx_HS_ctrl"}.
+#' @param labelx Label for the x-axis. Default is \code{"AUC in Control"}.
+#' @param labely Label for the y-axis. Default is \code{"AUC in Stress"}.
+#' @param axismin_x Minimum value for the x-axis. Default is \code{-10}.
+#' @param axismax_x Maximum value for the x-axis. Default is \code{100}.
+#' @param axismin_y Minimum value for the y-axis. Default is \code{-10}.
+#' @param axismax_y Maximum value for the y-axis. Default is \code{100}.
+#' @param maintitle Main title of the plot. Default is an empty string.
+#' @param subtitle Subtitle of the plot. Default is an empty string.
+#' @param legendpos Position of the legend. Default is \code{"bottom"}.
+#' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
+#'  \code{"pdf"}.
+#' @param outfold Output folder where the plot will be saved. Default is
+#'  \code{"./"}.
+#' @param outfile Name of the output file. Default is
+#'  \code{"AUCcompare_pval.pdf"}.
+#' @param plottype Type of plot to generate. Can be \code{"pval"} for p-value
+#'  based plots or \code{"groups"} for group-based plots. Default is
+#'  \code{"pval"}.
+#' @param plot A logical flag indicating whether to display the plot
+#'  interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
+#'  \code{FALSE}.
+#' @param universename Column name in \code{tab} representing the universe
+#'  group in group-based plots. Default is \code{"Universe"}.
+#' @param groupname Column name in \code{tab} representing specific groups in
+#'  group-based plots. Default is \code{"Group"}.
+#'
+#' @return A plot comparing AUC values between control and stress conditions,
+#'  either displayed or saved to a file.
+#'
+#' @details
+#' The function supports two plot types:
+#' \itemize{
+#'   \item \code{"pval"}: The plot highlights genes based on adjusted FDR
+#'  p-values and can highlight specific genes provided in \code{genevec}.
+#'   \item \code{"groups"}: The plot highlights predefined groups, such as
+#'  "Attenuated" and "Outgroup", within the data.
+#' }
+#' 
+#' If \code{plot = TRUE}, the plot is displayed interactively. If
+#'  \code{plot = FALSE}, the plot is saved to a file in the specified format and
+#'  output folder.
+#'
+#' @examples
+#' # Assuming `tab` contains AUC values and p-values:
+#' # plotauc(tab, genevec = c("Gene1", "Gene2"), plottype = "pval")
+#'
+#' @importFrom dplyr arrange filter
+#' @importFrom ggplot2 ggplot aes geom_point geom_density_2d labs coord_fixed theme_classic theme xlim ylim ggsave
+#' @importFrom ggrepel geom_label_repel
+#'
+#' @export
+
 plotauc <- function(tab, genevec = NA, # nolint
     auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
