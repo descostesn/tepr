@@ -15,6 +15,36 @@ reslist <- lapply(condvec, function(cond, transtable) {
 return(reslist)
 }
 
+#' Identify the Knee and Max ECDF Differences for Each Transcript
+#'
+#' This function identifies the knee point (i.e., point of maximum change) and
+#' the maximum difference in the empirical cumulative distribution function
+#' (ECDF) for each transcript, across different experimental conditions.
+#'
+#' @param transdflist A list of data frames where each data frame contains
+#'    transcript data with ECDF values for each condition.
+ #' @param expdf A data frame containing experimental information including a
+ #'   \code{condition} column.
+#' @param nbcputrans An integer specifying the number of CPU cores to use for
+#'  parallel computation. The parallelization is performed on the elements of
+#'  transdflist.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{FALSE}.
+#'
+#' @return A data frame where each row corresponds to a transcript and contains
+#'  the coordinates of the knee point and the maximum ECDF difference for each
+#'  condition.
+#'
+#' @examples
+#' # Assuming transdflist is a list of transcript data frames and expdf contains
+#' # conditions for each experiment:
+#' # result <- kneeid(transdflist, expdf, nbcputrans = 4, verbose = TRUE)
+#'
+#' @importFrom parallel mclapply
+#' @importFrom dplyr slice_min
+#'
+#' @export
+
 kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
 
   condvec <- unique(expdf$condition)
