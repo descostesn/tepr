@@ -38,7 +38,8 @@ Imports:
     tidyr,
     tidyselect,
     ggplot2,
-    pracma
+    pracma,
+    stats
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R'
