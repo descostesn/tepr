@@ -1,0 +1,149 @@
+.coordandfilter <- function(str, transtable, nbrows) { # nolint
+
+  if (isTRUE(all.equal(str, "minus"))) {
+    coordvec <- seq(from = nbrows, to = 1, by = -1)
+    transtable <- cbind(transtable, coord = coordvec)
+    transtable <- transtable[order(coordvec), ]
+    transtable <- transtable %>% dplyr::select(!dplyr::matches("plus"))
+  } else {
+    coordvec <- seq(from = 1, to = nbrows, by = 1)
+    transtable <- cbind(transtable, coord = coordvec)
+    transtable <- transtable %>% dplyr::select(!dplyr::matches("minus"))
+  }
+  return(transtable)
+}
+
+.computeecdf <- function(transtable, expdf, rounding, nbrows) { # nolint
+
+        ## Retrieving keyword plus or minus
+        str <- .extractstr(transtable)
+
+        ## Create the coordinate column and select scores having the righ
+        ## orientation
+        transtable <- .coordandfilter(str, transtable, nbrows)
+        colnamevec <- colnames(transtable)
+        colscorevec <- colnamevec[grep("_score", colnamevec)]
+
+        ## Filling the NA of the score columns of the right strand with
+        ## tidyr::fill in the downup direction
+        transtable <- transtable %>% tidyr::fill(tidyr::contains("score"),
+           .direction = "downup")
+
+        ## Computing ecdf
+        suppressWarnings(dflong <- transtable %>%
+            tidyr::gather(key = "variable", value = "value", colscorevec))
+        dflong[, "value_round"] <- round(dflong$value * rounding)
+        ecdflist <- lapply(unique(dflong$variable), function(currentvar) {
+            dfsubset <- subset(dflong, subset = variable == currentvar) # nolint
+            dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
+                dfsubset$value_round), ]
+            funecdf <- ecdf(dfexpanded[, "coord"])
+            dfsubset$Fx <- funecdf(dfsubset$coord)
+            return(dfsubset)
+        })
+        resecdf <- dplyr::bind_rows(ecdflist)
+
+        ## Shrink the results back to the transtable keeping ecdf columns
+        res <- resecdf %>% tidyr::pivot_wider(.,
+            names_from = "variable",
+            values_from = c("value", "value_round", "Fx")) %>%
+            dplyr::select(., -tidyselect::contains("value_round"))
+
+        ## Removing strand from column names
+        res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
+                tidyselect::contains(paste0(".", str)))
+
+        return(res)
+}
+
+#' Compute ECDF for Genes Based on Expression Data
+#'
+#' This function calculates the empirical cumulative distribution function
+#' (ECDF) for expressed genes across multiple transcripts. It processes the
+#' expression data to filter out non-expressed transcripts, compute ECDF values
+#' for each transcript, and combine the results into a unified data frame. The
+#' function operates in parallel for speed optimization.
+#'
+#' @param allexprsdfs A list of data frames where the first element is the main
+#'    expression data frame and the second element contains the names of the
+#'    expressed transcripts (see 'averageandfilterexprs').
+#' @param expdf A data frame containing experimental conditions and other
+#'    relevant information.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'    Default is \code{10}.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'    parallel computation. Default is \code{1}.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'    Default is \code{FALSE}.
+#'
+#' @return A list containing two elements:
+#' \item{concatdf}{A data frame with ECDF results for each transcript.}
+#' \item{nbrows}{An integer indicating the number of rows in each transcript
+#'  table.}
+#'
+#' @details
+#' The function performs several steps:
+#' \enumerate{
+#'   \item Filters the main expression table to retain only the expressed
+#'      transcripts.
+#'   \item Splits the data by each transcript.
+#'   \item For each transcript, computes ECDF values for the score columns
+#'      while respecting the strand orientation ("plus" or "minus").
+#'   \item Combines the ECDF results into a final data frame.
+#' }
+#'
+#' The function uses parallel processing to compute ECDF for each transcript
+#'  simultaneously, making it faster on systems with multiple CPU cores.
+#'
+#' @examples
+#' # Assuming allexprsdfs is a list of data frames and expdf contains the
+#' # conditions:
+#' # result <- genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 4,
+#'    verbose = TRUE)
+#'
+#' @importFrom parallel mclapply
+#' @importFrom dplyr bind_rows
+#' @importFrom tidyr fill pivot_wider
+#' @importFrom tidyselect contains
+#'
+#' @seealso
+#' [averageandfilterexprs]
+#' @export
+
+genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
+  verbose = FALSE) {
+
+    ## Defining variables
+    maintable <- allexprsdfs[[1]]
+    exprstransnames <- allexprsdfs[[2]]
+    maincolnamevec <- colnames(maintable)
+
+    ## Filtering the main table to keep only the expressed transcripts
+    if (verbose) message("\t Filtering to keep only the expressed transcripts") # nolint
+    idx <- match(maintable$transcript, exprstransnames)
+    idxnoexpr <- which(is.na(idx))
+    if (isTRUE(all.equal(length(idxnoexpr), 0)))
+      warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+    else
+      maintable <- maintable[-idxnoexpr, ]
+
+    ## Splitting the table by each transcript to perform transcript specific
+    ## operations
+    if (verbose) message("\t Splitting the table by each transcript") # nolint
+    transdflist <- split(maintable, factor(maintable$transcript))
+    nbrows <- unique(sapply(transdflist, nrow)) ## all transcripts have the same number of windows, no need to calculate it each time # nolint
+    .checkunique(nbrows, "nbrows")
+
+    ## Computing ecdf on each transcript
+    if (verbose) message("\t Computing ecdf on each transcript")
+    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
+        rounding, nbrows, maincolnamevec) {
+
+        res <- .computeecdf(transtable, expdf, rounding, nbrows)
+        return(res)
+    }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
+
+    concatdf <- dplyr::bind_rows(ecdflist)
+
+    return(list(concatdf, nbrows))
+}

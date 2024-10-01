@@ -1,0 +1,55 @@
+Package: tepr
+Title: Transcription elongation profile in R
+Version: 0.0.99
+Authors@R: c(
+    person("Victor", "Billon", email = "victor.billon@etu.univ-cotedazur.fr", role = "cre"),
+    person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "aut"),
+    person("Gael", "Cristofari", email = "gael.cristofari@cnrs.fr", role = "aut"))
+Description:
+    TepR (Transcription elongation profile in R) is a package for analyzing 
+    data from nascent RNA sequencing data (TT-seq, mNET-seq, PRO-seq, etc.).
+    The general principle relies on calculating the cumulative signal of nascent
+    RNA sequencing over the gene body of any given gene or transcription unit.
+    TePR can identify transcription attenuation sites by comparing profile to a
+    null model which assumes uniform read density over the entirety of the
+    transcriptional unit. It can also identify increased or diminished
+    transcription attenuation by comparing two conditions. Besides rigorous
+    statistical testing and high sensitivity, a major feature of TepR is its
+    ability to provide the elongation pattern of each individual gene, including
+    the position of the main attenuation point when such a phenomenon occurs.
+    Using TepR, users can visualize and refine genome-wide aggregated analyses
+    of elongation patterns to robustly identify effects specific to subsets of
+    genes. These metrics are suitable for internal comparisons (between genes
+    in each condition) and for studying elongation of the same gene in different
+    conditions or comparing it to a perfect theoretical uniform elongation. 
+Depends: R (>= 4.4)
+License: GPL-3
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+Suggests:
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    S4Vectors
+VignetteBuilder: knitr
+Imports:
+    dplyr,
+    parallel,
+    tidyr,
+    tidyselect,
+    ggplot2,
+    pracma
+Collate:
+    'averageandfilterexprs.R'
+    'genesECDF.R',
+    'meandifference.R',
+    'allauc.R',
+    'utils.R',
+    'countna.R',
+    'kneeid.R',
+    'attenuation.R',
+    'universegroup.R',
+    'plotecdf.R',
+    'plotauc.R',
+    'plotmetagenes.R',
+    'plothistoknee.R'
