@@ -34,7 +34,8 @@
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
-        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+        resks <- suppressWarnings(stats::ks.test(transtab[, name1],
+          transtab[, name2]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
@@ -102,7 +103,8 @@
           meanfxname <- paste0("mean_Fx_", currentcond) # nolint
 
           ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
-          resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
+          resks <- suppressWarnings(stats::ks.test(transtab[, meanfxname],
+            cumulative))
           ## Build data.frame with auc information for the current transcript
           aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
             currentcond, nbwindows)
