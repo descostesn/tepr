@@ -42,8 +42,8 @@
     lineyvals <- dflongecdf$coord / max(dflongecdf$coord)
     areayvals <- dflongecdf$value / ylimval
 
-    g <- ggplot2::ggplot(dflongecdf, ggplot2::aes(x = coord, y = Fx, # nolint
-        color = conditions)) + # nolint
+    g <- ggplot2::ggplot(dflongecdf, ggplot2::aes(x = .data$coord, y = .data$Fx,
+        color = .data$conditions)) + # nolint
         ggplot2::geom_line(aes(x = linexvals, y = lineyvals),
             linetype = "dashed", color = "red")
 
