@@ -125,7 +125,6 @@
 #' @importFrom parallel mclapply
 #' @importFrom stats ks.test
 #' @importFrom stats p.adjust
-#' @importFrom utils message
 #'
 #' @export
 
