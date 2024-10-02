@@ -29,7 +29,7 @@ return(reslist)
 #'  parallel computation. The parallelization is performed on the elements of
 #'  transdflist.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'  Defaults to \code{FALSE}.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A data frame where each row corresponds to a transcript and contains
 #'  the coordinates of the knee point and the maximum ECDF difference for each
@@ -47,7 +47,7 @@ return(reslist)
 #'
 #' @export
 
-kneeid <- function(transdflist, expdf, nbcputrans, verbose = FALSE) {
+kneeid <- function(transdflist, expdf, nbcputrans, verbose = TRUE) {
 
   condvec <- unique(expdf$condition)
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
