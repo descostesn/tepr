@@ -15,7 +15,7 @@
             by = c("transcript", "gene")) %>%
         dplyr::select(rlang::.data$transcript, rlang::.data$gene,
             rlang::.data$coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
+        -dplyr::contains("Full"))  %>% dplyr::group_by(rlang::.data$coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
         ~ mean(rlang::.data, na.rm = TRUE)))
 
