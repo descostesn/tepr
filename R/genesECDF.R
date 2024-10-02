@@ -38,7 +38,7 @@
               subset = rlang::.data$variable == currentvar)
             dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
                 dfsubset$value_round), ]
-            funecdf <- ecdf(dfexpanded[, "coord"])
+            funecdf <- stats::ecdf(dfexpanded[, "coord"])
             dfsubset$Fx <- funecdf(dfsubset$coord)
             return(dfsubset)
         })
@@ -108,7 +108,8 @@
 #' @importFrom tidyselect contains
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
-#'
+#' @importFrom stats ecdf
+#' 
 #' @seealso
 #' [averageandfilterexprs]
 #' @export
