@@ -134,9 +134,14 @@
 
 #' Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 #'
+#' @description
 #' This function computes the Area Under Curve (AUC) and the differences of AUC
 #' between two conditions for a list of transcript data. It supports parallel
 #' computation for efficiency.
+#'
+#' @usage
+#' allauc(bytranslistmean, expdf, nbwindows, nbcputrans, dontcompare = NULL,
+#' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more
