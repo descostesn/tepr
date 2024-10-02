@@ -78,4 +78,7 @@ resknee <- kneeid(bytranslistmean, expdf)
 ## Calculate Attenuation from AUC and Other Transcript Features
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
     resmeandiff)
+
+## Define Universe and Group of Genes Based on Expression Data
+res <- universegroup(resatt)
 ```
