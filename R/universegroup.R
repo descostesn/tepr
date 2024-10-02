@@ -1,11 +1,19 @@
 #' Define Universe and Group of Genes Based on Expression Data
 #'
+#' @description
 #' This function categorizes genes into a "Universe" and assigns them into
 #' groups such as "Attenuated" or "Outgroup" based on transcription data and
 #' thresholds. The universe is defined by thresholds for window size, missing
 #' data count, mean transcription levels, and p-values. Genes are further
 #' classified into groups based on conditions related to AUC and p-value
 #' thresholds.
+#'
+#' @usage
+#' universegroup(completedf, controlname = "ctrl", stressname = "HS",
+#' windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
+#' meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
+#' aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
+#' outgrouppvalksthres = 0.2, verbose = TRUE)
 #'
 #' @param completedf A data frame obtained with the function attenuation.
 #' @param controlname A string representing the control condition name. Default
