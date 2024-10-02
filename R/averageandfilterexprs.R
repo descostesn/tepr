@@ -5,6 +5,9 @@
 #' specified expression threshold. The function also renames the columns in the
 #' output data frame to include mean expression values.
 #'
+#' @usage
+#' averageandfilterexprs(expdf, alldf, expthres, verbose = TRUE)
+#'
 #' @param expdf A data frame containing expression data that should have
 #'              columns named 'condition', 'replicate', and 'strand'.
 #' @param alldf A data frame containing all transcript-related information,
