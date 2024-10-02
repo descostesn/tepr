@@ -1,5 +1,5 @@
 .summarytrans <- function(bytransmeanlist, nbcpu) {
-  summarydflist <- mclapply(bytransmeanlist, function(trans) {
+  summarydflist <- parallel::mclapply(bytransmeanlist, function(trans) {
     coor1 <- min(trans$coor1)
     coor2 <- max(trans$coor2)
     return(data.frame(chr = trans$chr[1], coor1, coor2,
@@ -12,7 +12,8 @@
 
 .computeupdown <- function(completbytrans, condvec, nbcpu) {
 
-  updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+  updownbytranslist <- parallel::mclapply(completbytrans,
+    function(trans, condvec) {
 
     ## Ordering by coordinates (security)
     trans <- trans[order(trans$coord), ]
