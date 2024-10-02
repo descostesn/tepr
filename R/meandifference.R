@@ -92,8 +92,12 @@
 
 #' Compute Mean and Differences of Scores for Each Condition
 #'
+#' @description
 #' This function calculates the mean values, mean Fx (ECDF) and ECDF differences
 #' (Fx) for expression data, across different experimental conditions.
+#'
+#' @usage
+#' meandifference(resultsecdf, expdf, nbwindows, verbose = TRUE)
 #'
 #' @param resultsecdf A data frame containing ECDF results for each transcript
 #'  and condition (see genesECDF).
