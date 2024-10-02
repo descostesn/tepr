@@ -10,9 +10,9 @@
 
             ## Adding highlight of the genes
             g <- g + ggrepel::geom_label_repel(data = subset(df,
-                gene %in% genevec), aes(label = .data$gene), box.padding = 0.55, # nolint
-                point.padding = 0, segment.color = "black", max.overlaps = 50,
-                color = "red") +
+                rlang::.data$gene %in% genevec), aes(label = .data$gene), # nolint
+                box.padding = 0.55, point.padding = 0,
+                segment.color = "black", max.overlaps = 50, color = "red") +
                 ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
                     mid = "grey", high = "darkgreen")
         } else {
@@ -122,6 +122,7 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_density_2d labs coord_fixed theme_classic theme xlim ylim ggsave
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @export
 
