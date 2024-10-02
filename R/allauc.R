@@ -140,7 +140,7 @@
 #' computation for efficiency.
 #'
 #' @usage
-#' allauc(bytranslistmean, expdf, nbwindows, nbcputrans, dontcompare = NULL,
+  #' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
 #' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
@@ -150,8 +150,8 @@
 #'              the transcript data. It should have a column named 'condition'.
 #' @param nbwindows An integer specifying the number of windows to consider for
 #'                  AUC calculations.
-#' @param nbcputrans An integer specifying the number of CPU cores to use for
-#'                    parallel processing on bytranslistmean.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'               parallel processing on bytranslistmean. (default is 1)
 #' @param dontcompare An optional parameter to specify any conditions to exclude
 #'                    from the comparison.
 #' @param controlcondname A string specifying the name of the control condition
@@ -172,7 +172,7 @@
 #'
 #' @examples
 #' # Example usage of allauc function
-#' # results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+#' # results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcpu = 4)
 #'
 #' @seealso
 #' [genesECDF]
@@ -185,7 +185,7 @@
 #'
 #' @export
 
-allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
   verbose = TRUE) {
 
@@ -193,7 +193,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
         start_time <- Sys.time()
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
-          nbcputrans, controlcondname, stresscondname)
+          nbcpu, controlcondname, stresscondname)
         end_time <- Sys.time()
         if (verbose) message("\t\t ## Analysis performed in: ",
           end_time - start_time) # nolint
@@ -206,7 +206,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     if (verbose) message("\t Computing the Area Under Curve (AUC)")
     start_time <- Sys.time()
     aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcpu = nbcputrans)
+      nbcpu = nbcpu)
     end_time <- Sys.time()
     if (verbose) message("\t\t ## Analysis performed in: ",
       end_time - start_time) # nolint
