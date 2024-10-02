@@ -102,7 +102,7 @@
 #' @param nbwindows An integer representing the number of windows (or segments)
 #'  in each transcript.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'  Defaults to \code{FALSE}.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A data frame that contains, for each condition:
 #' \itemize{
@@ -123,7 +123,7 @@
 #'
 #' @export
 
-meandifference <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
+meandifference <- function(resultsecdf, expdf, nbwindows, verbose = TRUE) {
 
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
