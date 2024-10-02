@@ -63,5 +63,10 @@ resecdf <- genesECDF(resallexprs, expdf)
 ## Compute Mean and Differences of Scores for Each Condition
 resmeandiff <- meandifference(resecdf, expdf, windsize)
 
+## Split the results by transcripts
+bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+resauc <- allauc(bytranslistmean, expdf, windsize, nbcpu, dontcompare = NULL,
+#' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
 ```
