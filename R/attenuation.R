@@ -76,9 +76,14 @@
 
 #' Calculate Attenuation from AUC and Other Transcript Features
 #'
+#' @description
 #' This function computes the attenuation values for each window of each
 #' transcript based on the data frames obtained with the functions 'allauc',
 #' 'kneeid', and 'countna'.
+#'
+#' @usage
+#' attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf, dfmeandiff,
+#' nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1, verbose = TRUE)
 #'
 #' @param allaucdf A data frame containing AUC results for transcripts (see
 #'                 allauc).
