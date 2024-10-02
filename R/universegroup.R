@@ -79,7 +79,7 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
 
     ## Computing the Universe column
     completedf <- completedf %>%
-        dplyr::mutate(rlang::.data$Universe = ifelse(
+        dplyr::mutate(Universe = ifelse(
             rlang::.data$window_size > windsizethres &
             rlang::.data$Count_NA < countnathres &
             !!sym(meanctrl) > meanctrlthres & # nolint
