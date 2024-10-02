@@ -1,8 +1,9 @@
 .returninfodf <- function(transtab, nbwindows) { # nolint
 
     infodf <- transtab  %>%
-        dplyr::filter(window == round(nbwindows / 2))  %>%
-        dplyr::mutate(window_size = abs(coor2 - coor1), .keep = "all") %>% # nolint
+        dplyr::filter(rlang::.data$window == round(nbwindows / 2))  %>%
+        dplyr::mutate(window_size = abs(rlang::.data$coor2 - rlang::.data$coor1), # nolint
+          .keep = "all") %>%
         dplyr::select("transcript", "gene", "strand", "window_size") %>%
         dplyr::distinct()
 
