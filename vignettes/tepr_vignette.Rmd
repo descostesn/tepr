@@ -57,6 +57,9 @@ transdf <- read.delim(system.file(extdata/cugusi_100.tsv), header = FALSE)
 ## Calculate Average Expression and Filter Transcript Data
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 
+## Count NA values per transcript and condition
+rescountna <- countna(resallexprs, expdf)
+
 ## Compute ECDF for Genes Based on Expression Data
 resecdf <- genesECDF(resallexprs, expdf)
 
