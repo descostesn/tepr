@@ -31,6 +31,7 @@
 #' @importFrom dplyr group_by summarize filter select bind_rows arrange pull
 #' @importFrom tidyselect all_of contains
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -49,11 +50,12 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
 
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
-    dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>% # nolint
-        dplyr::summarize(gene = gene[1], strand = strand[1], # nolint
+    dfbytranscript <- alldf %>% dplyr::group_by(rlang::.data$transcript) %>%
+        dplyr::summarize(gene = rlang::.data$gene[1],
+            strand = rlang::.data$strand[1],
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
-                ~ mean(., na.rm = TRUE), .names = "{.col}_mean")) # nolint
+                ~ mean(rlang::.data, na.rm = TRUE), .names = "{.col}_mean"))
 
     ## Remove a line if it contains only values < expthres (separating strands)
     if (verbose) message("\t Removing lines with values < expthres") # nolint
@@ -66,8 +68,9 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # n
                     stop("Strand and direction do not match, contact the ",
                         "developer")
             dfstrand <- dfbytranscript %>%
-                dplyr::filter(strand == strandname) %>% # nolint
-                dplyr::select(gene, transcript, strand, # nolint
+                dplyr::filter(rlang::.data$strand == strandname) %>%
+                dplyr::select(rlang::.data$gene, rlang::.data$transcript,
+                    rlang::.data$strand,
                 tidyselect::contains(directname))  %>%
                 dplyr::filter(dplyr::if_all(tidyselect::all_of(
                 tidyselect::contains("mean")), ~ !is.na(.))) %>%
