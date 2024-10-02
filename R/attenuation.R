@@ -126,6 +126,7 @@
 #' @importFrom stats ks.test
 #' @importFrom stats p.adjust
 #' @importFrom magrittr %>%
+#' @importFrom rlang :=
 #'
 #' @export
 
