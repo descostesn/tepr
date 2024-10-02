@@ -39,7 +39,10 @@ Imports:
     tidyselect,
     ggplot2,
     pracma,
-    stats
+    stats,
+    ggrepel,
+    matrixStats,
+    rlang
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R'
