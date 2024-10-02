@@ -38,6 +38,6 @@ output data frame to include mean expression values.
 }
 \examples{
 # Example usage of averageandfilterexprs
-result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
+# result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
 
 }

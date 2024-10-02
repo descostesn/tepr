@@ -59,7 +59,7 @@ The function first checks if exactly two conditions are present in
 }
 \examples{
 # Example usage of allauc function
-results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+# results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
 
 }
 \seealso{
