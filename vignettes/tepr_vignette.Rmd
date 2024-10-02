@@ -60,5 +60,8 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ## Compute ECDF for Genes Based on Expression Data
 resecdf <- genesECDF(resallexprs, expdf)
 
-##
+## Compute Mean and Differences of Scores for Each Condition
+resmeandiff <- meandifference(resecdf, expdf, windsize)
+
+
 ```
