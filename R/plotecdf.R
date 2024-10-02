@@ -142,6 +142,7 @@
 #' @importFrom dplyr mutate filter
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect all_of
+#' @importFrom magrittr %>%
 #'
 #' @export
 

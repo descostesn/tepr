@@ -77,10 +77,11 @@
 #'
 #' @seealso
 #' [universegroup], [meandifference]
-#' 
+#'
 #' @importFrom ggplot2 ggplot aes geom_line theme_bw ylim labs theme ggsave
 #' @importFrom dplyr filter select left_join group_by summarise contains across
 #' @importFrom rlang sym
+#' @importFrom magrittr %>%
 #'
 #' @export
 

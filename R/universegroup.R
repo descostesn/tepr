@@ -60,6 +60,7 @@
 #' [attenuation]
 #' @importFrom dplyr mutate relocate select filter
 #' @importFrom rlang sym
+#' @importFrom magrittr %>%
 #'
 #' @export
 

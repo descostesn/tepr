@@ -47,6 +47,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_histogram xlab xlim labs theme_classic ggsave
 #' @importFrom dplyr filter
+#' @importFrom magrittr %>%
 #'
 #' @export
 

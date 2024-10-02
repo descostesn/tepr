@@ -30,6 +30,7 @@
 #'
 #' @importFrom dplyr group_by summarize filter select bind_rows arrange pull
 #' @importFrom tidyselect all_of contains
+#' @importFrom magrittr %>%
 #'
 #' @export
 

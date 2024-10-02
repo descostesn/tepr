@@ -42,6 +42,7 @@ return(reslist)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr slice_min
+#' @importFrom magrittr %>%
 #'
 #' @export
 

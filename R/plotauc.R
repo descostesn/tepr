@@ -121,6 +121,7 @@
 #' @importFrom dplyr arrange filter
 #' @importFrom ggplot2 ggplot aes geom_point geom_density_2d labs coord_fixed theme_classic theme xlim ylim ggsave
 #' @importFrom ggrepel geom_label_repel
+#' @importFrom magrittr %>%
 #'
 #' @export
 

@@ -107,6 +107,7 @@
 #' @importFrom tidyr fill pivot_wider
 #' @importFrom tidyselect contains
 #' @importFrom rlang .data
+#' @importFrom magrittr %>%
 #'
 #' @seealso
 #' [averageandfilterexprs]
