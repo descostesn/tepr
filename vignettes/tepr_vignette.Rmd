@@ -6,7 +6,7 @@ author: |
         "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
 output:
-    BiocStyle::pdf_document: default
+    BiocStyle::pdf_document
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteIndexEntry{tepr}
