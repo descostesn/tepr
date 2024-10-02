@@ -1,8 +1,9 @@
 .returninfodf <- function(transtab, nbwindows) { # nolint
 
     infodf <- transtab  %>%
-        dplyr::filter(window == round(nbwindows / 2))  %>%
-        dplyr::mutate(window_size = abs(coor2 - coor1), .keep = "all") %>% # nolint
+        dplyr::filter(rlang::.data$window == round(nbwindows / 2))  %>%
+        dplyr::mutate(window_size = abs(rlang::.data$coor2 - rlang::.data$coor1), # nolint
+          .keep = "all") %>%
         dplyr::select("transcript", "gene", "strand", "window_size") %>%
         dplyr::distinct()
 
@@ -34,7 +35,8 @@
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
-        resks <- suppressWarnings(ks.test(transtab[, name1], transtab[, name2]))
+        resks <- suppressWarnings(stats::ks.test(transtab[, name1],
+          transtab[, name2]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
@@ -62,7 +64,7 @@
 
     ## Correct p-values using FDR
     idx <- grep("p_dAUC", colnames(resdf))
-    fdrvec <- p.adjust(resdf[, idx], method = "fdr")
+    fdrvec <- stats::p.adjust(resdf[, idx], method = "fdr")
 
     resdf <- cbind(resdf, fdrvec)
     colnamevec <- colnames(resdf)
@@ -102,7 +104,8 @@
           meanfxname <- paste0("mean_Fx_", currentcond) # nolint
 
           ## Perform a kolmogorov-smirnoff test between mean_Fx and cum.density
-          resks <- suppressWarnings(ks.test(transtab[, meanfxname], cumulative))
+          resks <- suppressWarnings(stats::ks.test(transtab[, meanfxname],
+            cumulative))
           ## Build data.frame with auc information for the current transcript
           aucdf <- .buildaucdf(transtab, difffxname, resks, meanvalname,
             currentcond, nbwindows)
@@ -119,7 +122,7 @@
   ## Correcting p-val with FDR
   idxpvalvec <- grep("p_AUC", colnames(aucallconditions))
   fdrlist <- lapply(idxpvalvec, function(idxpval, tab) {
-    return(p.adjust(tab[, idxpval], method = "fdr"))
+    return(stats::p.adjust(tab[, idxpval], method = "fdr"))
   }, aucallconditions)
   fdrdf <- do.call("cbind", fdrlist)
   colnames(fdrdf) <- paste0("adjFDR_", colnames(aucallconditions)[idxpvalvec]) # nolint
@@ -164,7 +167,7 @@
 #'
 #' @examples
 #' # Example usage of allauc function
-#' results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+#' # results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
 #'
 #' @seealso
 #' [genesECDF]
@@ -173,7 +176,7 @@
 #' @importFrom parallel mclapply
 #' @importFrom stats ks.test
 #' @importFrom stats p.adjust
-#' @importFrom utils message
+#' @importFrom magrittr %>%
 #'
 #' @export
 

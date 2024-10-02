@@ -2,18 +2,22 @@
     auc_ctrlname, auc_stressname) {
 
     ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
-        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
+    AUC_allcondi <- unigroupdf %>% dplyr::select(rlang::.data$transcript,
+        rlang::.data$gene, rlang::.data$strand, dplyr::contains("Full"),
+        !!sym(daucname), !!sym(auc_ctrlname),
+        !!sym(auc_stressname), -contains(c("UP", "DOWN")),
+        rlang::.data$window_size)
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
-        dplyr::filter(transcript %in% transvec) %>%
-        dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
-        dplyr::select(transcript, gene, coord, contains("mean_value"),
-        -contains("Full"))  %>% dplyr::group_by(coord) %>%
-        dplyr::summarise(dplyr::across(contains("mean_value"),
-        ~ mean(., na.rm = TRUE)))
+        dplyr::filter(rlang::.data$transcript %in% transvec) %>% #nolint
+        dplyr::left_join(rlang::.data, AUC_allcondi,
+            by = c("transcript", "gene")) %>%
+        dplyr::select(rlang::.data$transcript, rlang::.data$gene,
+            rlang::.data$coord, dplyr::contains("mean_value"),
+        -dplyr::contains("Full"))  %>% dplyr::group_by(rlang::.data$coord) %>%
+        dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
+        ~ mean(rlang::.data, na.rm = TRUE)))
 
     return(result)
 }
@@ -77,11 +81,13 @@
 #'
 #' @seealso
 #' [universegroup], [meandifference]
-#' 
+#'
 #' @importFrom ggplot2 ggplot aes geom_line theme_bw ylim labs theme ggsave
 #' @importFrom dplyr filter select left_join group_by summarise contains across
-#' @importFrom rlang sym
-#'
+#' @importFrom rlang sym .data
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
+#' 
 #' @export
 
 plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
@@ -119,10 +125,10 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
 
     ## plotting
     g <-  ggplot2::ggplot() +
-        ggplot2::geom_line(data = df, ggplot2::aes(x = coord / 2, # nolint
+        ggplot2::geom_line(data = df, ggplot2::aes(x = rlang::.data$coord / 2,
         y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
         ggplot2::geom_line(data = df,
-            aes(x = coord/2, y = !!sym(meanvalstress)),
+            aes(x = rlang::.data$coord / 2, y = !!sym(meanvalstress)),
             color = "#FC4E07", size = 1.5) +
         ggplot2::theme_bw() + ggplot2::ylim(0,7) +
         ggplot2::labs(x = "TSS to TTS", title = titleplot,

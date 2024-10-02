@@ -1,5 +1,5 @@
 .summarytrans <- function(bytransmeanlist, nbcpu) {
-  summarydflist <- mclapply(bytranslistmean, function(trans) {
+  summarydflist <- parallel::mclapply(bytransmeanlist, function(trans) {
     coor1 <- min(trans$coor1)
     coor2 <- max(trans$coor2)
     return(data.frame(chr = trans$chr[1], coor1, coor2,
@@ -12,7 +12,8 @@
 
 .computeupdown <- function(completbytrans, condvec, nbcpu) {
 
-  updownbytranslist <- mclapply(completbytrans, function(trans, condvec) {
+  updownbytranslist <- parallel::mclapply(completbytrans,
+    function(trans, condvec) {
 
     ## Ordering by coordinates (security)
     trans <- trans[order(trans$coord), ]
@@ -115,8 +116,8 @@
 #'
 #' @examples
 #' # Example usage of attenuation function
-#' result <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean,
-#'                       expdf, dfmeandiff, nbcpu = 4)
+#' #result <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean,
+#' #                      expdf, dfmeandiff, nbcpu = 4)
 #'
 #' @seealso
 #' [allauc()], [kneeid()], [countna()], [meandifference()]
@@ -125,7 +126,8 @@
 #' @importFrom parallel mclapply
 #' @importFrom stats ks.test
 #' @importFrom stats p.adjust
-#' @importFrom utils message
+#' @importFrom magrittr %>%
+#' @importFrom rlang :=
 #'
 #' @export
 

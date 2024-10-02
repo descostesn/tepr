@@ -6,7 +6,7 @@ reslist <- lapply(condvec, function(cond, transtable) {
     ## If equality of difference within the same gene it takes the closest
     ## knee from the TSS # nolint
     resrow <- transtable[which(difffxvec == max(difffxvec)), ] %>% # nolint
-        dplyr::slice_min(coord, n = 1) # nolint
+        dplyr::slice_min(rlang::.data$coord, n = 1) # nolint
     res <- data.frame(resrow$coord, resrow[, difffxname])
     colnames(res) <- c(paste0("knee_AUC_", cond), paste0("max_", difffxname))
     return(res)
@@ -42,6 +42,8 @@ return(reslist)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr slice_min
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @export
 

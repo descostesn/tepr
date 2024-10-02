@@ -34,20 +34,21 @@
             tidyr::gather(key = "variable", value = "value", colscorevec))
         dflong[, "value_round"] <- round(dflong$value * rounding)
         ecdflist <- lapply(unique(dflong$variable), function(currentvar) {
-            dfsubset <- subset(dflong, subset = variable == currentvar) # nolint
+            dfsubset <- subset(dflong,
+              subset = rlang::.data$variable == currentvar)
             dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
                 dfsubset$value_round), ]
-            funecdf <- ecdf(dfexpanded[, "coord"])
+            funecdf <- stats::ecdf(dfexpanded[, "coord"])
             dfsubset$Fx <- funecdf(dfsubset$coord)
             return(dfsubset)
         })
         resecdf <- dplyr::bind_rows(ecdflist)
 
         ## Shrink the results back to the transtable keeping ecdf columns
-        res <- resecdf %>% tidyr::pivot_wider(.,
+        res <- resecdf %>% tidyr::pivot_wider(rlang::.data,
             names_from = "variable",
             values_from = c("value", "value_round", "Fx")) %>%
-            dplyr::select(., -tidyselect::contains("value_round"))
+            dplyr::select(rlang::.data, -tidyselect::contains("value_round"))
 
         ## Removing strand from column names
         res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
@@ -99,13 +100,16 @@
 #' # Assuming allexprsdfs is a list of data frames and expdf contains the
 #' # conditions:
 #' # result <- genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 4,
-#'    verbose = TRUE)
+#' #   verbose = TRUE)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr bind_rows
 #' @importFrom tidyr fill pivot_wider
 #' @importFrom tidyselect contains
-#'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#' @importFrom stats ecdf
+#' 
 #' @seealso
 #' [averageandfilterexprs]
 #' @export

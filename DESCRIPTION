@@ -25,7 +25,7 @@ Description:
 Depends: R (>= 4.4)
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Suggests:
     knitr,
     rmarkdown,
@@ -38,18 +38,23 @@ Imports:
     tidyr,
     tidyselect,
     ggplot2,
-    pracma
+    pracma,
+    stats,
+    ggrepel,
+    matrixStats,
+    rlang,
+    magrittr
 Collate:
     'averageandfilterexprs.R'
-    'genesECDF.R',
-    'meandifference.R',
-    'allauc.R',
-    'utils.R',
-    'countna.R',
-    'kneeid.R',
-    'attenuation.R',
-    'universegroup.R',
-    'plotecdf.R',
-    'plotauc.R',
-    'plotmetagenes.R',
+    'genesECDF.R'
+    'meandifference.R'
+    'allauc.R'
+    'utils.R'
+    'countna.R'
+    'kneeid.R'
+    'attenuation.R'
+    'universegroup.R'
+    'plotecdf.R'
+    'plotauc.R'
+    'plotmetagenes.R'
     'plothistoknee.R'

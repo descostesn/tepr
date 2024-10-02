@@ -42,13 +42,13 @@
     lineyvals <- dflongecdf$coord / max(dflongecdf$coord)
     areayvals <- dflongecdf$value / ylimval
 
-    g <- ggplot2::ggplot(dflongecdf, ggplot2::aes(x = coord, y = Fx, # nolint
-        color = conditions)) + # nolint
+    g <- ggplot2::ggplot(dflongecdf, ggplot2::aes(x = .data$coord, y = .data$Fx,
+        color = .data$conditions)) + # nolint
         ggplot2::geom_line(aes(x = linexvals, y = lineyvals),
             linetype = "dashed", color = "red")
 
     g1 <- g + ggplot2::geom_area(ggplot2::aes(x = linexvals, y = areayvals,
-        fill = conditions), # nolint
+        fill = .data$conditions), # nolint
         alpha = 0.1, linewidth = 0.2, position = 'identity') + # nolint
         ggplot2::scale_fill_manual(values = colvec) +
         ggplot2::geom_line(linewidth = 1, aes(x = linexvals)) +
@@ -142,7 +142,8 @@
 #' @importFrom dplyr mutate filter
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect all_of
-#'
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @export
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
@@ -180,11 +181,13 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     dflongfx <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
         values_to = "Fx") %>%
-        dplyr::mutate(conditions = gsub("Fx_|_score", "", conditions)) # nolint
+        dplyr::mutate(conditions = gsub("Fx_|_score", "",
+            rlang::.data$conditions))
     dflongval <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(valcolvec), names_to = "conditions",
         values_to = "value") %>%
-        dplyr::mutate(conditions = gsub("value_|_score", "", conditions)) # nolint
+        dplyr::mutate(conditions = gsub("value_|_score", "",
+            rlang::.data$conditions))
     ## merging
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)

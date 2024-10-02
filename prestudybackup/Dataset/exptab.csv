@@ -1,9 +1,0 @@
-condition,replicate,direction,strand,path
-ctrl,1,fwd,+,/g/romebioinfo/Projects/tepr/downloads/bigwigs/ctrl_rep1.forward.bw
-ctrl,1,rev,-,/g/romebioinfo/Projects/tepr/downloads/bigwigs/ctrl_rep1.reverse.bw
-ctrl,2,fwd,+,/g/romebioinfo/Projects/tepr/downloads/bigwigs/ctrl_rep2.forward.bw
-ctrl,2,rev,-,/g/romebioinfo/Projects/tepr/downloads/bigwigs/ctrl_rep2.reverse.bw
-HS,1,fwd,+,/g/romebioinfo/Projects/tepr/downloads/bigwigs/HS_rep1.forward.bw
-HS,1,rev,-,/g/romebioinfo/Projects/tepr/downloads/bigwigs/HS_rep1.reverse.bw
-HS,2,fwd,+,/g/romebioinfo/Projects/tepr/downloads/bigwigs/HS_rep2.forward.bw
-HS,2,rev,-,/g/romebioinfo/Projects/tepr/downloads/bigwigs/HS_rep2.reverse.bw

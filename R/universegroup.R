@@ -59,7 +59,8 @@
 #' @seealso
 #' [attenuation]
 #' @importFrom dplyr mutate relocate select filter
-#' @importFrom rlang sym
+#' @importFrom rlang sym .data
+#' @importFrom magrittr %>%
 #'
 #' @export
 
@@ -78,24 +79,27 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
 
     ## Computing the Universe column
     completedf <- completedf %>%
-        dplyr::mutate(Universe = ifelse(window_size > windsizethres & # nolint
-            Count_NA < countnathres & !!sym(meanctrl) > meanctrlthres & # nolint
+        dplyr::mutate(Universe = ifelse(
+            rlang::.data$window_size > windsizethres &
+            rlang::.data$Count_NA < countnathres &
+            !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(Universe, .before = 1)  # nolint
+            dplyr::relocate(rlang::.data$Universe, .before = 1)  # nolint
 
     ## Computing the Group column
     completedf <- completedf %>%
         dplyr::mutate(
-            Group = ifelse(Universe == TRUE &
+            Group = ifelse(rlang::.data$Universe == TRUE &
                 !!sym(aucstress) > aucstressthres &
                 -log10(!!sym(pvalks)) > attenuatedpvalksthres, "Attenuated",
                 NA),
-            Group = ifelse(Universe == TRUE &
+            Group = ifelse(rlang::.data$Universe == TRUE &
                 !!sym(pvalks) > outgrouppvalksthres &
                 !!sym(aucctrl) > aucctrlthreshigher &
-                !!sym(aucctrl) < aucctrlthreslower, "Outgroup", Group)) %>% # nolint
-                dplyr::relocate(Group, .before = 2)
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
+                    rlang::.data$Group)) %>%
+                dplyr::relocate(rlang::.data$Group, .before = 2)
 
     return(completedf)
 }
