@@ -4,11 +4,13 @@ title: |
         Transcription elongation profile in R"
 author: |
         "Victor Billon, Nicolas Descostes, and Gael Cristofari"
+package: tepr
 output:
     BiocStyle::pdf_document: default
 vignette: >
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteIndexEntry{tepr}
+    %\VignetteEncoding{UTF-8}
 ---
 
 
