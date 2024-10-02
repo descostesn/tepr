@@ -17,7 +17,7 @@
             rlang::.data$coord, dplyr::contains("mean_value"),
         -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(., na.rm = TRUE)))
+        ~ mean(rlang::.data, na.rm = TRUE)))
 
     return(result)
 }
