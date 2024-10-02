@@ -79,13 +79,13 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
 
     ## Computing the Universe column
     completedf <- completedf %>%
-        dplyr::mutate(Universe = ifelse(
+        dplyr::mutate(rlang::.data$Universe = ifelse(
             rlang::.data$window_size > windsizethres &
             rlang::.data$Count_NA < countnathres &
             !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(Universe, .before = 1)  # nolint
+            dplyr::relocate(rlang::.data$Universe, .before = 1)  # nolint
 
     ## Computing the Group column
     completedf <- completedf %>%
