@@ -36,6 +36,6 @@ This function calculates the mean values, mean Fx (ECDF) and ECDF differences
 # Assuming resultsecdf is a data frame with ECDF results and expdf contains
 # conditions:
 # result <- meandifference(resultsecdf, expdf, nbwindows = 200,
- verbose = TRUE)
+# verbose = TRUE)
 
 }
