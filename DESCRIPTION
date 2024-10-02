@@ -42,7 +42,8 @@ Imports:
     stats,
     ggrepel,
     matrixStats,
-    rlang
+    rlang,
+    magrittr
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R'
