@@ -16,7 +16,7 @@
 #'                 threshold will be filtered out from the returned transcript
 #'                 vector.
 #' @param verbose A logical value indicating whether to print progress messages
-#'                 (default is FALSE).
+#'                 (default is TRUE).
 #'
 #' @return A list containing:
 #'         \item{maintable}{The original data frame containing all transcript
@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' # Example usage of averageandfilterexprs
-#' # result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
+#' # result <- averageandfilterexprs(expdf, alldf, expthres = 10)
 #'
 #' @importFrom dplyr group_by summarize filter select bind_rows arrange pull
 #' @importFrom tidyselect all_of contains
@@ -35,7 +35,7 @@
 #'
 #' @export
 
-averageandfilterexprs <- function(expdf, alldf, expthres, verbose = FALSE) { # nolint
+averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # nolint
 
     ## Adding column names to alldf
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
