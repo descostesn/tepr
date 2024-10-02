@@ -8,11 +8,12 @@
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
-        dplyr::filter(transcript %in% transvec) %>%
-        dplyr::left_join(., AUC_allcondi, by = c("transcript", "gene")) %>%
-        dplyr::select(transcript, gene, coord, contains("mean_value"),
-        -contains("Full"))  %>% dplyr::group_by(coord) %>%
-        dplyr::summarise(dplyr::across(contains("mean_value"),
+        dplyr::filter(rlang::.data$transcript %in% transvec) %>% #nolint
+        dplyr::left_join(rlang::.data, AUC_allcondi,
+            by = c("transcript", "gene")) %>%
+        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
+        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
+        dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
         ~ mean(., na.rm = TRUE)))
 
     return(result)
@@ -80,7 +81,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes geom_line theme_bw ylim labs theme ggsave
 #' @importFrom dplyr filter select left_join group_by summarise contains across
-#' @importFrom rlang sym
+#' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
 #'
 #' @export
