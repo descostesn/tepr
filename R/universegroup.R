@@ -97,8 +97,9 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
             Group = ifelse(rlang::.data$Universe == TRUE &
                 !!sym(pvalks) > outgrouppvalksthres &
                 !!sym(aucctrl) > aucctrlthreshigher &
-                !!sym(aucctrl) < aucctrlthreslower, "Outgroup", Group)) %>% # nolint
-                dplyr::relocate(Group, .before = 2)
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
+                    rlang::.data$Group)) %>%
+                dplyr::relocate(rlang::.data$Group, .before = 2)
 
     return(completedf)
 }
