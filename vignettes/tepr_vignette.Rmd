@@ -40,5 +40,25 @@ Please submit issues or questions on Github for a most efficient communication.
 ## Quick start
 
 The example below shows a complete run of the package using two experiments,
-the scores being limited to chromosome Y.
+the analysis is limited to 100 transcripts.
 
+```{r quickstart, eval = FALSE}
+
+library(tepr)
+
+## Parameters
+expthres <- 0.1
+windsize <- 200
+
+## Read input tables
+expdf <- read.csv(system.file("extdata/exptab.csv"))
+transdf <- read.delim(system.file(extdata/cugusi_100.tsv), header = FALSE)
+
+## Calculate Average Expression and Filter Transcript Data
+resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
+
+## Compute ECDF for Genes Based on Expression Data
+resecdf <- genesECDF(resallexprs, expdf)
+
+##
+```
