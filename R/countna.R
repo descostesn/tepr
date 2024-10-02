@@ -19,7 +19,7 @@
 #'  the number of lines provided as input of 'averageandfilterexprs'.
 #'  Defaults to 1.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'  Defaults to \code{FALSE}.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A data frame where each row corresponds to a transcript, along with
 #'  its associated gene, strand, and the count of NA values.
@@ -37,7 +37,7 @@
 #'
 #' @export
 
-countna <- function(allexprsdfs, expdf, nbcpu = 1, verbose = FALSE) {
+countna <- function(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE) {
 
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
