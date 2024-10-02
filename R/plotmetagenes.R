@@ -86,7 +86,8 @@
 #' @importFrom dplyr filter select left_join group_by summarise contains across
 #' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
-#'
+#' @importFrom rlang .data
+#' 
 #' @export
 
 plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
@@ -124,10 +125,10 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
 
     ## plotting
     g <-  ggplot2::ggplot() +
-        ggplot2::geom_line(data = df, ggplot2::aes(x = coord / 2, # nolint
+        ggplot2::geom_line(data = df, ggplot2::aes(x = rlang::.data$coord / 2,
         y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
         ggplot2::geom_line(data = df,
-            aes(x = coord/2, y = !!sym(meanvalstress)),
+            aes(x = rlang::.data$coord / 2, y = !!sym(meanvalstress)),
             color = "#FC4E07", size = 1.5) +
         ggplot2::theme_bw() + ggplot2::ylim(0,7) +
         ggplot2::labs(x = "TSS to TTS", title = titleplot,
