@@ -17,9 +17,13 @@ return(reslist)
 
 #' Identify the Knee and Max ECDF Differences for Each Transcript
 #'
+#' @description
 #' This function identifies the knee point (i.e., point of maximum change) and
 #' the maximum difference in the empirical cumulative distribution function
 #' (ECDF) for each transcript, across different experimental conditions.
+#'
+#' @usage
+#' kneeid(transdflist, expdf, nbcpu = 1, verbose = TRUE)
 #'
 #' @param transdflist A list of data frames where each data frame contains
 #'    transcript data with ECDF values for each condition.
