@@ -25,7 +25,7 @@ Description:
 Depends: R (>= 4.4)
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Suggests:
     knitr,
     rmarkdown,
