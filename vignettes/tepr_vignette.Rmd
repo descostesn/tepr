@@ -74,4 +74,8 @@ resauc <- allauc(bytranslistmean, expdf, nbwindows)
 
 ## Identify the Knee and Max ECDF Differences for Each Transcript
 resknee <- kneeid(bytranslistmean, expdf)
+
+## Calculate Attenuation from AUC and Other Transcript Features
+resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+    resmeandiff)
 ```
