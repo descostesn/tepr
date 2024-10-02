@@ -54,7 +54,7 @@ The function uses parallel processing to compute ECDF for each transcript
 # Assuming allexprsdfs is a list of data frames and expdf contains the
 # conditions:
 # result <- genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 4,
-   verbose = TRUE)
+#   verbose = TRUE)
 
 }
 \seealso{
