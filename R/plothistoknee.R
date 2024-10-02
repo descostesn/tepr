@@ -48,7 +48,7 @@
 #' @importFrom ggplot2 ggplot aes geom_histogram xlab xlim labs theme_classic ggsave
 #' @importFrom dplyr filter
 #' @importFrom magrittr %>%
-#'
+#' @importFrom rlang .data
 #' @export
 
 plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # nolint
@@ -68,7 +68,8 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             if (is.na(binwidthval)) binwidthval <- 5
             gtypelabs <- ggplot2::xlab("Distance TSS to knee (% of the gene)")
         } else {
-            gtypeaes <- ggplot2::aes(x = (!!sym(kneename) * window_size) / 1000)
+            gtypeaes <- ggplot2::aes(x = (!!sym(kneename) *
+                rlang::.data$window_size) / 1000)
             if (is.na(xlimvec)) xlimvec <- c(0, 350)
             if (is.na(binwidthval)) binwidthval <- 10
             gtypelabs <- ggplot2::labs(x = "Distance TSS to knee (kb)",
