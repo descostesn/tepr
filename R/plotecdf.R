@@ -143,7 +143,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect all_of
 #' @importFrom magrittr %>%
-#'
+#' @importFrom rlang .data
 #' @export
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
@@ -181,11 +181,13 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     dflongfx <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
         values_to = "Fx") %>%
-        dplyr::mutate(conditions = gsub("Fx_|_score", "", conditions)) # nolint
+        dplyr::mutate(conditions = gsub("Fx_|_score", "",
+            rlang::.data$conditions))
     dflongval <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(valcolvec), names_to = "conditions",
         values_to = "value") %>%
-        dplyr::mutate(conditions = gsub("value_|_score", "", conditions)) # nolint
+        dplyr::mutate(conditions = gsub("value_|_score", "",
+            rlang::.data$conditions))
     ## merging
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
