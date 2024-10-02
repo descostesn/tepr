@@ -32,6 +32,8 @@
 #'  the p-value (from KS test) for defining attenuated genes. Default is 2.
 #' @param outgrouppvalksthres A numeric threshold for the maximum KS p-value
 #'  used to define the outgroup. Default is 0.2.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A modified data frame with two additional columns: \code{Universe},
 #'  indicating whether each gene is part of the universe, and \code{Group},
@@ -68,7 +70,7 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
     meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
     aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2) {
+    outgrouppvalksthres = 0.2, verbose = TRUE) {
 
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
     meanstress <- paste("MeanValueFull", stressname, sep = "_")
@@ -78,6 +80,7 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", stressname, "_", controlname)
 
     ## Computing the Universe column
+    if (verbose) message("Computing the Universe column")
     completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
             rlang::.data$window_size > windsizethres &
@@ -88,6 +91,7 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
             dplyr::relocate(rlang::.data$Universe, .before = 1)  # nolint
 
     ## Computing the Group column
+    if (verbose) message("Computing the Group column")
     completedf <- completedf %>%
         dplyr::mutate(
             Group = ifelse(rlang::.data$Universe == TRUE &
