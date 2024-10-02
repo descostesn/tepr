@@ -71,4 +71,7 @@ bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 resauc <- allauc(bytranslistmean, expdf, nbwindows)
+
+## Identify the Knee and Max ECDF Differences for Each Transcript
+resknee <- kneeid(bytranslistmean, expdf)
 ```
