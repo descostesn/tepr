@@ -75,7 +75,7 @@
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
 #'    Default is \code{10}.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'    Default is \code{FALSE}.
+#'    Default is \code{TRUE}.
 #'
 #' @return A list containing two elements:
 #' \item{concatdf}{A data frame with ECDF results for each transcript.}
@@ -115,7 +115,7 @@
 #' @export
 
 genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
-  verbose = FALSE) {
+  verbose = TRUE) {
 
     ## Defining variables
     maintable <- allexprsdfs[[1]]
