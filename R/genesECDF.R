@@ -70,10 +70,10 @@
 #'    expressed transcripts (see 'averageandfilterexprs').
 #' @param expdf A data frame containing experimental conditions and other
 #'    relevant information.
-#' @param rounding An integer specifying the rounding factor for computing ECDF.
-#'    Default is \code{10}.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'    parallel computation. Default is \code{1}.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'    Default is \code{10}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'    Default is \code{FALSE}.
 #'
@@ -114,7 +114,7 @@
 #' [averageandfilterexprs]
 #' @export
 
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
+genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
   verbose = FALSE) {
 
     ## Defining variables
