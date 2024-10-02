@@ -116,7 +116,7 @@
 #' # Assuming resultsecdf is a data frame with ECDF results and expdf contains
 #' # conditions:
 #' # result <- meandifference(resultsecdf, expdf, nbwindows = 200,
-#'  verbose = TRUE)
+#' # verbose = TRUE)
 #'
 #' @importFrom dplyr bind_rows
 #' @importFrom matrixStats rowDiffs
