@@ -4,19 +4,8 @@
 \alias{attenuation}
 \title{Calculate Attenuation from AUC and Other Transcript Features}
 \usage{
-attenuation(
-  allaucdf,
-  kneedf,
-  matnatrans,
-  bytranslistmean,
-  expdf,
-  dfmeandiff,
-  nbcpu = 1,
-  significant = FALSE,
-  replaceval = NA,
-  pval = 0.1,
-  verbose = TRUE
-)
+attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf, dfmeandiff,
+nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1, verbose = TRUE)
 }
 \arguments{
 \item{allaucdf}{A data frame containing AUC results for transcripts (see

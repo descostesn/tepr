@@ -4,7 +4,7 @@
 \alias{averageandfilterexprs}
 \title{Calculate Average Expression and Filter Transcript Data}
 \usage{
-averageandfilterexprs(expdf, alldf, expthres, verbose = FALSE)
+averageandfilterexprs(expdf, alldf, expthres, verbose = TRUE)
 }
 \arguments{
 \item{expdf}{A data frame containing expression data that should have
@@ -21,7 +21,7 @@ threshold will be filtered out from the returned transcript
 vector.}
 
 \item{verbose}{A logical value indicating whether to print progress messages
-(default is FALSE).}
+(default is TRUE).}
 }
 \value{
 A list containing:
@@ -38,6 +38,6 @@ output data frame to include mean expression values.
 }
 \examples{
 # Example usage of averageandfilterexprs
-# result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
+# result <- averageandfilterexprs(expdf, alldf, expthres = 10)
 
 }

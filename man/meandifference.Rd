@@ -4,7 +4,7 @@
 \alias{meandifference}
 \title{Compute Mean and Differences of Scores for Each Condition}
 \usage{
-meandifference(resultsecdf, expdf, nbwindows, verbose = FALSE)
+meandifference(resultsecdf, expdf, nbwindows, verbose = TRUE)
 }
 \arguments{
 \item{resultsecdf}{A data frame containing ECDF results for each transcript
@@ -17,7 +17,7 @@ and condition (see genesECDF).}
 in each transcript.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages.
-Defaults to \code{FALSE}.}
+Defaults to \code{TRUE}.}
 }
 \value{
 A data frame that contains, for each condition:

@@ -4,7 +4,7 @@
 \alias{genesECDF}
 \title{Compute ECDF for Genes Based on Expression Data}
 \usage{
-genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 1, verbose = FALSE)
+genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, verbose = TRUE)
 }
 \arguments{
 \item{allexprsdfs}{A list of data frames where the first element is the main
@@ -14,14 +14,14 @@ expressed transcripts (see 'averageandfilterexprs').}
 \item{expdf}{A data frame containing experimental conditions and other
 relevant information.}
 
-\item{rounding}{An integer specifying the rounding factor for computing ECDF.
-Default is \code{10}.}
-
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. Default is \code{1}.}
 
+\item{rounding}{An integer specifying the rounding factor for computing ECDF.
+Default is \code{10}.}
+
 \item{verbose}{A logical flag indicating whether to print progress messages.
-Default is \code{FALSE}.}
+Default is \code{TRUE}.}
 }
 \value{
 A list containing two elements:

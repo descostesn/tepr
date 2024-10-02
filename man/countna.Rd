@@ -4,7 +4,7 @@
 \alias{countna}
 \title{Count NA values per transcript and condition}
 \usage{
-countna(allexprsdfs, expdf, nbcpu, verbose = FALSE)
+countna(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE)
 }
 \arguments{
 \item{allexprsdfs}{A list of data frames containing expression data. The
@@ -17,10 +17,11 @@ information. Must have columns \code{condition} and \code{strand}.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation on transcripts. The number of transcripts is equal to
-the number of lines provided as input of 'averageandfilterexprs'.}
+the number of lines provided as input of 'averageandfilterexprs'.
+Defaults to 1.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages.
-Defaults to \code{FALSE}.}
+Defaults to \code{TRUE}.}
 }
 \value{
 A data frame where each row corresponds to a transcript, along with
