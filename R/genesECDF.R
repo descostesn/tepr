@@ -59,11 +59,15 @@
 
 #' Compute ECDF for Genes Based on Expression Data
 #'
+#' @description
 #' This function calculates the empirical cumulative distribution function
 #' (ECDF) for expressed genes across multiple transcripts. It processes the
 #' expression data to filter out non-expressed transcripts, compute ECDF values
 #' for each transcript, and combine the results into a unified data frame. The
 #' function operates in parallel for speed optimization.
+#'
+#' @usage
+#' genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, verbose = TRUE)
 #'
 #' @param allexprsdfs A list of data frames where the first element is the main
 #'    expression data frame and the second element contains the names of the
@@ -109,7 +113,7 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 #' @importFrom stats ecdf
-#' 
+#'
 #' @seealso
 #' [averageandfilterexprs]
 #' @export
