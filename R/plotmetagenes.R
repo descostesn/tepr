@@ -11,7 +11,8 @@
         dplyr::filter(rlang::.data$transcript %in% transvec) %>% #nolint
         dplyr::left_join(rlang::.data, AUC_allcondi,
             by = c("transcript", "gene")) %>%
-        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
+        dplyr::select(rlang::.data$transcript, rlang::.data$gene,
+            rlang::.data$coord, dplyr::contains("mean_value"),
         -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
         ~ mean(., na.rm = TRUE)))
