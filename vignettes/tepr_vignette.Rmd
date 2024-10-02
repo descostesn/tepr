@@ -67,6 +67,5 @@ resmeandiff <- meandifference(resecdf, expdf, windsize)
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, windsize, nbcpu, dontcompare = NULL,
-#' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
+resauc <- allauc(bytranslistmean, expdf, nbwindows)
 ```
