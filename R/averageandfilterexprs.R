@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' # Example usage of averageandfilterexprs
-#' result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
+#' # result <- averageandfilterexprs(expdf, alldf, expthres = 10, verbose = TRUE)
 #'
 #' @importFrom dplyr group_by summarize filter select bind_rows arrange pull
 #' @importFrom tidyselect all_of contains

@@ -116,8 +116,8 @@
 #'
 #' @examples
 #' # Example usage of attenuation function
-#' result <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean,
-#'                       expdf, dfmeandiff, nbcpu = 4)
+#' #result <- attenuation(allaucdf, kneedf, matnatrans, bytranslistmean,
+#' #                      expdf, dfmeandiff, nbcpu = 4)
 #'
 #' @seealso
 #' [allauc()], [kneeid()], [countna()], [meandifference()]
