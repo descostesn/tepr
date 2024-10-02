@@ -1,5 +1,6 @@
 #' Count NA values per transcript and condition
 #'
+#' @description
 #' This function takes a list of expression data frames, a condition
 #' information data frame, and counts the number of NA values for each
 #' transcript based on strand and condition. NA represent missing scores that
@@ -16,6 +17,7 @@
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
+#'  Defaults to 1.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{FALSE}.
 #'
@@ -35,7 +37,7 @@
 #'
 #' @export
 
-countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
+countna <- function(allexprsdfs, expdf, nbcpu = 1, verbose = FALSE) {
 
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
