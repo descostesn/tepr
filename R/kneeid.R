@@ -25,9 +25,9 @@ return(reslist)
 #'    transcript data with ECDF values for each condition.
  #' @param expdf A data frame containing experimental information including a
  #'   \code{condition} column.
-#' @param nbcputrans An integer specifying the number of CPU cores to use for
+#' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation. The parallelization is performed on the elements of
-#'  transdflist.
+#'  transdflist. Defaults to 1.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{TRUE}.
 #'
@@ -38,7 +38,7 @@ return(reslist)
 #' @examples
 #' # Assuming transdflist is a list of transcript data frames and expdf contains
 #' # conditions for each experiment:
-#' # result <- kneeid(transdflist, expdf, nbcputrans = 4, verbose = TRUE)
+#' # result <- kneeid(transdflist, expdf, nbcpu = 4, verbose = TRUE)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr slice_min
@@ -47,14 +47,14 @@ return(reslist)
 #'
 #' @export
 
-kneeid <- function(transdflist, expdf, nbcputrans, verbose = TRUE) {
+kneeid <- function(transdflist, expdf, nbcpu = 1, verbose = TRUE) {
 
   condvec <- unique(expdf$condition)
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
       bycondreslist <- .retrievekneeandmax(condvec, transtable)
        return(cbind(transcript = transtable$transcript[1],
         do.call("cbind", bycondreslist)))
-    }, condvec, mc.cores = nbcputrans)
+    }, condvec, mc.cores = nbcpu)
   res <- do.call("rbind", bytransres)
   return(res)
 }
