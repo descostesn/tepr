@@ -8,6 +8,9 @@
 #' operates in parallel on transcripts to speed up the process using multiple
 #' CPU cores.
 #'
+#' @usage
+#' countna(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE)
+#'
 #' @param allexprsdfs A list of data frames containing expression data. The
 #'  first element is assumed to be the main table. The second element is a
 #'  vector of transcript names that passed the filtering of
