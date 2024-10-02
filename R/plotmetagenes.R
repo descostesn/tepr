@@ -2,9 +2,11 @@
     auc_ctrlname, auc_stressname) {
 
     ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
-        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
+    AUC_allcondi <- unigroupdf %>% dplyr::select(rlang::.data$transcript,
+        rlang::.data$gene, rlang::.data$strand, dplyr::contains("Full"),
+        !!sym(daucname), !!sym(auc_ctrlname),
+        !!sym(auc_stressname), -contains(c("UP", "DOWN")),
+        rlang::.data$window_size)
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
