@@ -1,0 +1,9 @@
+condition,replicate,direction,strand,path
+ctrl,1,forward,plus,bedgraphs/ctrl_rep1.forward.bg
+ctrl,1,reverse,minus,bedgraphs/ctrl_rep1.reverse.bg
+ctrl,2,forward,plus,bedgraphs/ctrl_rep2.forward.bg
+ctrl,2,reverse,minus,bedgraphs/ctrl_rep2.reverse.bg
+HS,1,forward,plus,bedgraphs/HS_rep1.forward.bg
+HS,1,reverse,minus,bedgraphs/HS_rep1.reverse.bg
+HS,2,forward,plus,bedgraphs/HS_rep2.forward.bg
+HS,2,reverse,minus,bedgraphs/HS_rep2.reverse.bg
