@@ -48,14 +48,14 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
         return(c(res, paste(res, "score", sep = "_")))
     }, simplify = FALSE))
     colnames(alldf) <- c(infocolnames, expcolnames)
+    globalVariables(colnames(alldf))
 
     scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
     dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>%
-        dplyr::summarize(gene = rlang::.data$gene[1],
-            strand = rlang::.data$strand[1],
+        dplyr::summarize(gene = gene[1], strand[1],
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
                 ~ mean(rlang::.data, na.rm = TRUE), .names = "{.col}_mean"))
