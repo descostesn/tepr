@@ -34,9 +34,7 @@ or comparing it to a perfect theoretical uniform elongation.
 
 Please submit issues or questions on Github for a most efficient communication.
 
-# Standard workflow
-
-## Quick start
+# Quick start
 
 The example below shows a complete run of the package using two experiments,
 the analysis is limited to 100 transcripts.
@@ -64,7 +62,7 @@ rescountna <- countna(resallexprs, expdf)
 ## Compute ECDF for Genes Based on Expression Data
 resecdflist <- genesECDF(resallexprs, expdf)
 resecdf <- resecdflist[[1]]
-windsize <- resecdflist[[2]]
+nbwindows <- resecdflist[[2]]
 
 ## Compute Mean and Differences of Scores for Each Condition
 resmeandiff <- meandifference(resecdf, expdf, windsize)
@@ -85,3 +83,28 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 ## Define Universe and Group of Genes Based on Expression Data
 res <- universegroup(resatt)
 ```
+
+# Data
+
+## Description
+
+For a complete analysis, we will use the data of Cugusi *et al* [REF]. To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells (REF). We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
+
+## Download
+
+The bedgraph files, mappability track and black list necessary for performing the entire analysis can be downloaded from zenodo:
+
+```{bash raw-files, eval = FALSE}
+
+TO DO
+```
+
+If one would like to skip the preprocessing, the result file can be downloaded with:
+
+```{bash cugusi-table, eval = FALSE}
+
+TO DO
+```
+
+## Pre-processing
+
