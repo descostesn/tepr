@@ -53,7 +53,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
 
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
-    dfbytranscript <- alldf %>% dplyr::group_by(rlang::.data$transcript) %>%
+    dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>%
         dplyr::summarize(gene = rlang::.data$gene[1],
             strand = rlang::.data$strand[1],
             dplyr::across(
