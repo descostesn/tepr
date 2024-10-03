@@ -32,31 +32,32 @@
 
 
 
-library(dplyr)
-library(purrr)
+joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg",
+    protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
+    outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE) {
 
-workingdir <- "bedgraph255"
-outtsv <- "dTAG_Cugusi_stranded_20230810.tsv"
-window <- 200
-protscoredir <- "protein_coding_score"
-lncscoredir <- "lncRNA_score"
-bgpattern <- "*.bg"
+        ## Defining vectors for protein-coding and lncRNA files
+        scoredirvec <- c(protscoredir, lncscoredir)
 
-## Retrieving all bedgraph files
-if (verbose) message("Retrieving all bedgraph file paths")
-bedgraphfiles <- list.files(workingdir, pattern = bgpattern, full.names = TRUE)
+        ## Retrieving all bedgraph files
+        if (verbose) message("Retrieving all bedgraph file paths")
+        bedgraphfiles <- list.files(workingdir, pattern = bgpattern,
+            full.names = TRUE)
 
-## Defining vectors for protein-coding and lncRNA files
-scoredirvec <- c(protscoredir, lncscoredir)
+        ## Joining protein coding and lncRNA
+        if (verbose) message("Joining protein coding and lncRNA")
+        joineddflist <- lapply(scoredirvec, function(scoredir, bedgraphfiles,
+            window) {
 
-joineddflist <- lappy(scoredirvec, function(scoredir, bedgraphfiles, window) {
+                if (verbose) message("\t processing ", scoredir)
 
-    files <- bedgraphfiles %>% purrr::map(~{
-        filename <- tools::file_path_sans_ext(basename(.))
-        file.path(scoredir, paste0(filename, ".window", window,
-            ".MANE.wmean.name.score"))
-    })
-    # reading all the files
+                files <- bedgraphfiles %>% purrr::map(~{
+                    filename <- tools::file_path_sans_ext(basename(.))
+                    file.path(scoredir, paste0(filename, ".window", window,
+                        ".MANE.wmean.name.score"))})
+
+                # Reading all the files
+                if (verbose)
     colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
         "strand", "window", "id", "dataset", "score")
     dflist <- lapply(files, read.delim, header = FALSE, sep = "\t",
@@ -64,7 +65,7 @@ joineddflist <- lappy(scoredirvec, function(scoredir, bedgraphfiles, window) {
         stringsAsFactors = FALSE)
 
     # joining all the files
-    joincolvec <- c("biotype" , "chr", "coor1", "coor2", "transcript", "gene",
+    joincolvec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
         "strand", "window", "id")
     ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
     joineddf <- purrr::reduce(dflist, dplyr::left_join, by = joincolvec) %>%
@@ -74,3 +75,11 @@ joineddflist <- lappy(scoredirvec, function(scoredir, bedgraphfiles, window) {
 
 }, bedgraphfiles, window)
 
+
+}
+
+
+# joining all the files
+bounddf <- purrr::reduce(joineddflist, dplyr::bind_rows)
+
+write.table(bounddf, file = file.path(workingdir, outtsv), sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
