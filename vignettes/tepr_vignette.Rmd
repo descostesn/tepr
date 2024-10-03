@@ -127,10 +127,18 @@ TO DO
 
 ## Pre-processing
 
+To perform the pre-processing steps, we provide a conda environment that can be activated with:
+
+```{bash conda, eval = FALSE}
+TO DO
+```
+
 Retrieve the protein-coding and long non-coding RNA (lncRNA) annotations from the gencode file:
 
 ```{bash protcod-lncrna, eval = FALSE}
 #!/usr/bin/sh
+
+cd data/
 
 ## Building the protein-coding bed file
 grep -w transcript gencode.v43.basic.annotation.gtf | grep -w MANE_Select > MANE_Select.protein_coding.gtf
@@ -143,3 +151,24 @@ awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sor
 rm MANE_Select.protein_coding.gtf Ensembl_canonical_TSL123.lncRNA.gtf
 ```
 
+Remove the black list and make windows for protein-coding and lncRNA files:
+
+```{bash remove, eval = FALSE}
+#!/usr/bin/sh
+
+WORKING="."
+blacklist="hg38-blacklist.v2.bed"
+window=200
+
+mkdir makewindow
+
+## Removing black list and computes windows for protein-coding annotations
+ANNOTATION="MANE_Select.protein_coding.bed"
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed
+echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed
+
+## Removing black list and computes windows for lncRNA annotations
+ANNOTATION="Ensembl_canonical_TSL123.lncRNA.bed"
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+```
