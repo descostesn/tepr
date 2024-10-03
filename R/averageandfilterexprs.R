@@ -48,17 +48,17 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
         return(c(res, paste(res, "score", sep = "_")))
     }, simplify = FALSE))
     colnames(alldf) <- c(infocolnames, expcolnames)
-    globalVariables(colnames(alldf))
 
     scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
     ## Calculate the average expression per transcript (over each frame)
     if (verbose) message("\t Calculating average expression per transcript") # nolint
-    dfbytranscript <- alldf %>% dplyr::group_by(transcript) %>%
-        dplyr::summarize(gene = gene[1], strand[1],
+    dfbytranscript <- alldf %>% dplyr::group_by(.data$transcript) %>%
+        dplyr::summarize(gene = .data$gene[1],
+            strand = .data$strand[1],
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
-                ~ mean(rlang::.data, na.rm = TRUE), .names = "{.col}_mean"))
+                ~ mean(.data, na.rm = TRUE), .names = "{.col}_mean"))
 
     ## Remove a line if it contains only values < expthres (separating strands)
     if (verbose) message("\t Removing lines with values < expthres") # nolint
