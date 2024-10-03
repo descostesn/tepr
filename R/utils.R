@@ -38,8 +38,8 @@ library(purrr)
 workingdir <- "bedgraph255"
 outtsv <- "dTAG_Cugusi_stranded_20230810.tsv"
 window <- 200
-!protscoredir <- "protein_coding_score"
-!lncscoredir <- "lncRNA_score"
+protscoredir <- "protein_coding_score"
+lncscoredir <- "lncRNA_score"
 bgpattern <- "*.bg"
 
 ## Retrieving all bedgraph files
@@ -74,9 +74,3 @@ joineddflist <- lappy(scoredirvec, function(scoredir, bedgraphfiles, window) {
 
 }, bedgraphfiles, window)
 
-
-
-! write.table(joineddf, file = write_file_protein_coding, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
-! write.table(joineddf, file = write_file_lncRNA, sep = "\t", row.names = FALSE, col.names = FALSE, quote = F)
- rm(dflist)
- rm(joineddf)
