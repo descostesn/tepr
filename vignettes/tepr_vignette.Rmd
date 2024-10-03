@@ -179,7 +179,7 @@ For each bedgraph file, remove the black list and mappability track, and retriev
 #!/usr/bin/zsh
 
 ext="bg"
-WORKING="./bedgraph255"
+WORKING="."
 window=200
 umapk50="k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
 blacklist="hg38-blacklist.v2.bed"
@@ -229,3 +229,4 @@ do
     done
 done
 ```
+
