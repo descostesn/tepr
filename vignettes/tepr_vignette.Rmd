@@ -187,12 +187,14 @@ blacklist="hg38-blacklist.v2.bed"
 windowfiles=["makewindow/v43.MANE_protein.window${window}.bed" "makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"]
 annotationsfiles=["MANE_Select.protein_coding.bed" "Ensembl_canonical_TSL123.lncRNA.bed"]
 namesvec=["protein-coding" "lncRNA"]
+outputfolders=["protein_coding_score" "lncRNA_score"]
 
 for i in ${#windowfiles[@]};
 do
     echo "Processing "${namesvec[$i]}
     windowfile=${windowfiles[$i]}
     annofile=${annotationsfiles[$i]}
+    outfoldname=${outputfolders[$i]}
 
     mkdir $WORKING/withzeros
     mkdir $WORKING/mapHigh
@@ -211,7 +213,7 @@ do
 
         echo "removing blacklist region"
         bedtools intersect -a $WORKING/${filename}.$ext -b <( \
-        awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION \
+        awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $annofile \
         | bedtools intersect -a stdin -b $blacklist -v) \
         | sort -k1,1 -k2,2n > $WORKING/withzeros/${filename}.nonzeros.$ext
 
@@ -220,10 +222,10 @@ do
         | awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > $WORKING/mapHigh/${filename}.0.8.$ext
 
         echo "scoring windows"
-        bedmap --echo --wmean --delim "\t" $windowS $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
+        bedmap --echo --wmean --delim "\t" $windowfile $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
 
-        mkdir $WORKING/protein_coding_score
-        mv $WORKING/*.score $WORKING/protein_coding_score/
+        mkdir $WORKING/$outfoldname
+        mv $WORKING/*.score $WORKING/$outfoldname/
         rm -r $WORKING/withzeros $WORKING/mapHigh
         echo "done"
     done
