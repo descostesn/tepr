@@ -91,27 +91,27 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     if (verbose) message("Computing the Universe column")
     completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
-            rlang::.data$window_size > windsizethres &
-            rlang::.data$Count_NA < countnathres &
+            .data$window_size > windsizethres &
+            .data$Count_NA < countnathres &
             !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(rlang::.data$Universe, .before = 1)  # nolint
+            dplyr::relocate(.data$Universe, .before = 1)  # nolint
 
     ## Computing the Group column
     if (verbose) message("Computing the Group column")
     completedf <- completedf %>%
         dplyr::mutate(
-            Group = ifelse(rlang::.data$Universe == TRUE &
+            Group = ifelse(.data$Universe == TRUE &
                 !!sym(aucstress) > aucstressthres &
                 -log10(!!sym(pvalks)) > attenuatedpvalksthres, "Attenuated",
                 NA),
-            Group = ifelse(rlang::.data$Universe == TRUE &
+            Group = ifelse(.data$Universe == TRUE &
                 !!sym(pvalks) > outgrouppvalksthres &
                 !!sym(aucctrl) > aucctrlthreshigher &
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
-                    rlang::.data$Group)) %>%
-                dplyr::relocate(rlang::.data$Group, .before = 2)
+                    .data$Group)) %>%
+                dplyr::relocate(.data$Group, .before = 2)
 
     return(completedf)
 }

@@ -182,12 +182,12 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
         cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
         values_to = "Fx") %>%
         dplyr::mutate(conditions = gsub("Fx_|_score", "",
-            rlang::.data$conditions))
+            .data$conditions))
     dflongval <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(valcolvec), names_to = "conditions",
         values_to = "value") %>%
         dplyr::mutate(conditions = gsub("value_|_score", "",
-            rlang::.data$conditions))
+            .data$conditions))
     ## merging
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)

@@ -35,7 +35,7 @@
         dflong[, "value_round"] <- round(dflong$value * rounding)
         ecdflist <- lapply(unique(dflong$variable), function(currentvar) {
             dfsubset <- subset(dflong,
-              subset = rlang::.data$variable == currentvar)
+              subset = .data$variable == currentvar)
             dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
                 dfsubset$value_round), ]
             funecdf <- stats::ecdf(dfexpanded[, "coord"])
@@ -45,10 +45,10 @@
         resecdf <- dplyr::bind_rows(ecdflist)
 
         ## Shrink the results back to the transtable keeping ecdf columns
-        res <- resecdf %>% tidyr::pivot_wider(rlang::.data,
+        res <- resecdf %>% tidyr::pivot_wider(.data,
             names_from = "variable",
             values_from = c("value", "value_round", "Fx")) %>%
-            dplyr::select(rlang::.data, -tidyselect::contains("value_round"))
+            dplyr::select(.data, -tidyselect::contains("value_round"))
 
         ## Removing strand from column names
         res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),

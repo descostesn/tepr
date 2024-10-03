@@ -71,9 +71,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
                     stop("Strand and direction do not match, contact the ",
                         "developer")
             dfstrand <- dfbytranscript %>%
-                dplyr::filter(rlang::.data$strand == strandname) %>%
-                dplyr::select(rlang::.data$gene, rlang::.data$transcript,
-                    rlang::.data$strand,
+                dplyr::filter(.data$strand == strandname) %>%
+                dplyr::select(.data$gene, .data$transcript, .data$strand,
                 tidyselect::contains(directname))  %>%
                 dplyr::filter(dplyr::if_all(tidyselect::all_of(
                 tidyselect::contains("mean")), ~ !is.na(.))) %>%
@@ -84,8 +83,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
             MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
 
     exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
-        dplyr::arrange(rlang::.data$transcript) %>%
-        dplyr::pull(rlang::.data$transcript)
+        dplyr::arrange(.data$transcript) %>%
+        dplyr::pull(.data$transcript)
 
     return(list(maintable = alldf, exptranlist = exptranstab))
 }

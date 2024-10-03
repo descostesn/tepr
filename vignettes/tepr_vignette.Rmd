@@ -46,12 +46,14 @@ the analysis is limited to 100 transcripts.
 library(tepr)
 
 ## Parameters
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
 expthres <- 0.1
 windsize <- 200
 
 ## Read input tables
-expdf <- read.csv(system.file("extdata/exptab.csv"))
-transdf <- read.delim(system.file(extdata/cugusi_100.tsv), header = FALSE)
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
 
 ## Calculate Average Expression and Filter Transcript Data
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)

@@ -69,7 +69,7 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             gtypelabs <- ggplot2::xlab("Distance TSS to knee (% of the gene)")
         } else {
             gtypeaes <- ggplot2::aes(x = (!!sym(kneename) *
-                rlang::.data$window_size) / 1000)
+                .data$window_size) / 1000)
             if (is.na(xlimvec)) xlimvec <- c(0, 350)
             if (is.na(binwidthval)) binwidthval <- 10
             gtypelabs <- ggplot2::labs(x = "Distance TSS to knee (kb)",

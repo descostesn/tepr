@@ -2,22 +2,22 @@
     auc_ctrlname, auc_stressname) {
 
     ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(rlang::.data$transcript,
-        rlang::.data$gene, rlang::.data$strand, dplyr::contains("Full"),
+    AUC_allcondi <- unigroupdf %>% dplyr::select(.data$transcript,
+        .data$gene, .data$strand, dplyr::contains("Full"),
         !!sym(daucname), !!sym(auc_ctrlname),
         !!sym(auc_stressname), -contains(c("UP", "DOWN")),
-        rlang::.data$window_size)
+        .data$window_size)
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
-        dplyr::filter(rlang::.data$transcript %in% transvec) %>% #nolint
-        dplyr::left_join(rlang::.data, AUC_allcondi,
+        dplyr::filter(.data$transcript %in% transvec) %>% #nolint
+        dplyr::left_join(.data, AUC_allcondi,
             by = c("transcript", "gene")) %>%
-        dplyr::select(rlang::.data$transcript, rlang::.data$gene,
-            rlang::.data$coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(rlang::.data$coord) %>%
+        dplyr::select(.data$transcript, .data$gene,
+            .data$coord, dplyr::contains("mean_value"),
+        -dplyr::contains("Full"))  %>% dplyr::group_by(.data$coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(rlang::.data, na.rm = TRUE)))
+        ~ mean(.data, na.rm = TRUE)))
 
     return(result)
 }
@@ -125,10 +125,10 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
 
     ## plotting
     g <-  ggplot2::ggplot() +
-        ggplot2::geom_line(data = df, ggplot2::aes(x = rlang::.data$coord / 2,
+        ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
         y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
         ggplot2::geom_line(data = df,
-            aes(x = rlang::.data$coord / 2, y = !!sym(meanvalstress)),
+            aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
             color = "#FC4E07", size = 1.5) +
         ggplot2::theme_bw() + ggplot2::ylim(0,7) +
         ggplot2::labs(x = "TSS to TTS", title = titleplot,
