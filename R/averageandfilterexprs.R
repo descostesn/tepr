@@ -72,7 +72,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
                         "developer")
             dfstrand <- dfbytranscript %>%
                 dplyr::filter(.data$strand == strandname) %>%
-                dplyr::select(.data$gene, .data$transcript, .data$strand,
+                dplyr::select(gene, transcript, strand,
                 tidyselect::contains(directname))  %>%
                 dplyr::filter(dplyr::if_all(tidyselect::all_of(
                 tidyselect::contains("mean")), ~ !is.na(.))) %>%
