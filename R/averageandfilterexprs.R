@@ -58,7 +58,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
             strand = .data$strand[1],
             dplyr::across(
                 tidyselect::all_of(scorecolvec),
-                ~ mean(.data, na.rm = TRUE), .names = "{.col}_mean"))
+                ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
 
     ## Remove a line if it contains only values < expthres (separating strands)
     if (verbose) message("\t Removing lines with values < expthres") # nolint
