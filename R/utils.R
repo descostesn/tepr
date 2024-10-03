@@ -36,8 +36,6 @@ library(dplyr)
 library(purrr)
 
 workingdir <- "bedgraph255"
-outprotcod <- "protCoding_dTAG_Cugusi_stranded_20230810.tsv"
-outlncrna <- "lncRNA_dTAG_Cugusi_stranded_20230810.tsv"
 outtsv <- "dTAG_Cugusi_stranded_20230810.tsv"
 window <- 200
 !protscoredir <- "protein_coding_score"
