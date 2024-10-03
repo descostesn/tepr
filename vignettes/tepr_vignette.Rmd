@@ -62,7 +62,9 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 rescountna <- countna(resallexprs, expdf)
 
 ## Compute ECDF for Genes Based on Expression Data
-resecdf <- genesECDF(resallexprs, expdf)
+resecdflist <- genesECDF(resallexprs, expdf)
+resecdf <- resecdflist[[1]]
+windsize <- resecdflist[[2]]
 
 ## Compute Mean and Differences of Scores for Each Condition
 resmeandiff <- meandifference(resecdf, expdf, windsize)
