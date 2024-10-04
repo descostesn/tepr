@@ -138,9 +138,6 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 }
 
 
-
-!!!!!!!!!!!!!!
-
 #' Check Validity of Experiment Table
 #'
 #' @description
