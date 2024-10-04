@@ -288,6 +288,7 @@ In order to study changes in patterns of nascent RNA, the first step is to filte
 
 ```{r averageandfilterexprs}
 ## Calculate Average Expression and Filter Transcript Data
+expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ```
 
@@ -297,6 +298,10 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ## Print the first 10 expressed transcripts
 head(resallexprs[[2]])
 ```
+
+
+## Count NA values per transcript and condition
+
 
 !!!!!!!!!!!!!!!!!!!
 
