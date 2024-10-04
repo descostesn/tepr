@@ -276,6 +276,13 @@ expdf <- read.csv(exppath)
 head(expdf)
 ```
 
+You can verify the conformity of the table with the utility function `checkexptab`. Note that this verification step is also performed by `averageandfilterexprs`.
+
+```{r checkexptab}
+checkexptab(expdf)
+```
+
+
 !!!!!!!!!!!!!!!!!!!
 
 ```{r quickstart, eval = FALSE}
