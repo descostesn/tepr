@@ -58,7 +58,7 @@
 #' @param verbose Logical flag to enable verbose output during the function
 #'  execution. Defaults to `TRUE`.
 #'
-#' @return Writes a combined data frame to a TSV file, and returns no value.
+#' @return The data.frame with the complete set of annotations and scores.
 #'
 #' @importFrom purrr map reduce
 #' @importFrom tools file_path_sans_ext
@@ -130,4 +130,5 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
             if (verbose) message("Writing the result table to ", outfile)
             write.table(bounddf, file = outfile, sep = "\t", row.names = FALSE,
                 col.names = FALSE, quote = FALSE)
+            return(boundf)
 }
