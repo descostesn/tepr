@@ -29,9 +29,6 @@
 }
 
 
-
-
-
 joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg",
     protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
     outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE) {
@@ -78,11 +75,14 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg",
 
             }, bedgraphfiles, window)
 
+            ## Merging protein-coding and lncRNA annotations
+            if (verbose) message("Merging protein-coding and lncRNA ",
+                "annotations")
+            bounddf <- purrr::reduce(joineddflist, dplyr::bind_rows)
 
+            ## Writting result table
+            outfile <- file.path(workingdir, outtsv)
+            if (verbose) message("Writing the result table to ", outfile)
+            write.table(bounddf, file = outfile, sep = "\t", row.names = FALSE,
+                col.names = FALSE, quote = FALSE)
 }
-
-
-# joining all the files
-bounddf <- purrr::reduce(joineddflist, dplyr::bind_rows)
-
-write.table(bounddf, file = file.path(workingdir, outtsv), sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
