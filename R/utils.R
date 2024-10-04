@@ -190,7 +190,7 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 checkexptab <- function(exptab) {
 
     colnamevec <- c("condition", "replicate", "direction", "strand")
-    if (!isTRUE(all.equal(sort(colnames(exptab)), colnamevec)))
+    if (!isTRUE(all.equal(sort(colnames(exptab)), sort(colnamevec))))
         stop("The experiment table should have the columns: ",
             "'condition', 'replicate', 'direction', 'strand'")
 
