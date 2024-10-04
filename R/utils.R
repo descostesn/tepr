@@ -136,3 +136,27 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
                 col.names = FALSE, quote = FALSE)
             return(bounddf)
 }
+
+
+
+!!!!!!!!!!!!!!
+
+
+checkexptab <- function(exptab) {
+
+    colnamevec <- c("condition", "replicate", "direction", "strand")
+    if (!isTRUE(all.equal(sort(colnames(exptab)), colnamevec)))
+        stop("The experiment table should have the columns: ",
+            "'condition', 'replicate', 'direction', 'strand'")
+
+    directionvec <- unique(exptab$direction)
+    if (!isTRUE(all.equal(length(directionvec), 2)) ||
+        !isTRUE(all.equal(directionvec, c("forward", "reverse"))))
+        stop("Only two values are allowed for the column direction of the",
+            "experiment table, 'forward' and 'reverse'")
+
+    strandvec <- unique(exptab$strand)
+    if (!isTRUE(all.equal(strandvec, c("plus", "minus"))))
+        stop("The strand column of the experiment table should only contain",
+            " 'plus' and 'minus'.")
+}
