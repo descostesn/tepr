@@ -232,3 +232,10 @@ do
 done
 ```
 
+The package provides a `joinfiles` function to generate the final table that is used as input below. Running the function from the data folder, the default parameters can be used:
+
+```{r mergefiles, eval = FALSE}
+library(tepr)
+
+alltsv <- joinfiles()
+```
