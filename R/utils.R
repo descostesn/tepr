@@ -141,6 +141,54 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 
 !!!!!!!!!!!!!!
 
+#' Check Validity of Experiment Table
+#'
+#' @description
+#' The `checkexptab` function verifies the structure and content of an
+#' experiment table to ensure it meets specific formatting requirements. It
+#' checks for the presence of required columns, and validates that the
+#' `direction` and `strand` columns contain only allowable values.
+#'
+#' @usage
+#' checkexptab(exptab)
+#'
+#' @param exptab A data frame representing the experiment table. The table must
+#' contain the following columns: `"condition"`, `"replicate"`, `"direction"`,
+#' and `"strand"`.
+#'
+#' @return
+#' If the experiment table is valid, the function returns `NULL`. If the table
+#' is invalid, the function throws an error specifying the issue.
+#'
+#' @details
+#' The function performs the following checks:
+#' - The column names of `exptab` must match exactly: `"condition"`,
+#'  `"replicate"`, `"direction"`, and `"strand"`.
+#' - The `direction` column must contain only `"forward"` and `"reverse"`.
+#' - The `strand` column must contain only `"plus"` and `"minus"`.
+#'
+#' @examples
+#' \dontrun{
+#'   # Create a valid experiment table
+#'   exptab <- data.frame(
+#'     condition = c("cond1", "cond2"),
+#'     replicate = c(1, 1),
+#'     direction = c("forward", "reverse"),
+#'     strand = c("plus", "minus")
+#'   )
+#'   checkexptab(exptab)  # Should pass without errors
+#'
+#'   # Invalid experiment table (wrong column names)
+#'   invalid_exptab <- data.frame(
+#'     cond = c("cond1", "cond2"),
+#'     rep = c(1, 1),
+#'     dir = c("forward", "reverse"),
+#'     str = c("+", "-")
+#'   )
+#'   checkexptab(invalid_exptab)  # Will throw an error
+#' }
+#'
+#' @export
 
 checkexptab <- function(exptab) {
 
