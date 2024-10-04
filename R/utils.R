@@ -55,6 +55,8 @@
 #'  `"lncRNA_score"`.
 #' @param outtsv The output TSV filename where the merged data will be saved.
 #'  Defaults to `"dTAG_Cugusi_stranded_20230810.tsv"`.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'    parallel computation. Default is \code{1}.
 #' @param verbose Logical flag to enable verbose output during the function
 #'  execution. Defaults to `TRUE`.
 #'
@@ -64,6 +66,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom dplyr left_join bind_rows filter
 #' @importFrom utils read.delim write.table
+#' @importFrom parallel mclapply
 #'
 #' @examples
 #' \dontrun{
@@ -76,7 +79,7 @@
 
 joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # nolint
     protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
-    outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE) {
+    outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE) {
 
         ## Defining vectors for protein-coding and lncRNA files
         scoredirvec <- c(protscoredir, lncscoredir)
@@ -89,7 +92,7 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
         ## Joining protein coding and lncRNA
         if (verbose) message("Joining protein coding and lncRNA")
         joineddflist <- lapply(scoredirvec, function(scoredir, bedgraphfiles,
-            window) {
+            window, nbcpu) {
 
                 if (verbose) message("\t processing ", scoredir)
 
@@ -103,9 +106,10 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
                 colnamevec <- c("biotype", "chr", "coor1", "coor2",
                     "transcript", "gene", "strand", "window", "id",
                     "dataset", "score")
-                    dflist <- lapply(files, read.delim, header = FALSE,
-                        sep = "\t", na.strings = "NAN", dec = ".",
-                        col.names = colnamevec, stringsAsFactors = FALSE)
+                    dflist <- parallel::mclapply(files, read.delim,
+                        header = FALSE, sep = "\t", na.strings = "NAN",
+                        dec = ".", col.names = colnamevec,
+                        stringsAsFactors = FALSE, mc.cores = nbcpu)
 
                 ## Joining all files
                 if (verbose) message("\t Joining all files")
@@ -118,7 +122,7 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 
                 return(joineddf)
 
-            }, bedgraphfiles, window)
+            }, bedgraphfiles, window, nbcpu)
 
             ## Merging protein-coding and lncRNA annotations
             if (verbose) message("Merging protein-coding and lncRNA ",
