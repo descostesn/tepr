@@ -362,7 +362,13 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 head(resmeandiff)
 ```
 
+To avoid code duplication in the following steps, we transform the above results
+into a list which elements contain a given transcript:
 
+```{r splitmeans}
+## Split the results by transcripts
+bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+```
 
 !!!!!!!!!!!!!!!!!!!
 
