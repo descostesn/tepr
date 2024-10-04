@@ -40,6 +40,9 @@
 
 averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # nolint
 
+    ## Verify the conformity of the experiment table
+    checkexptab(expdf)
+
     ## Adding column names to alldf
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
