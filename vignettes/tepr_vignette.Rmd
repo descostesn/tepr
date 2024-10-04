@@ -238,4 +238,82 @@ The package provides a `joinfiles` function to generate the final table that is 
 library(tepr)
 
 alltsv <- joinfiles()
+
+## Performing type conversion
+idxvec <- c(8, 11, 13, 15, 17, 19, 21, 23, 25)
+invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx])))
+```
+
+# Standard workflow
+
+To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. Note that parallelization is encouraged on the complete dataset. We used 20 cpus.
+
+
+## Input files
+
+The first table that you need contains information about each experiment along with scores, for each protein-coding and lncRNA annotations retrieved following the steps described in the `Pre-processing` section. Below is a reduced table limited to 100 transcripts. The column names are defined automatically by the function `averageandfilterexprs` later on. For ease of reading, we define them manually here.
+
+```{r reading-anno-scores}
+library(tepr)
+
+transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
+transdf <- read.delim(transpath, header = FALSE)
+colnames(transdf) <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
+    "strand", "window", "id", "ctrl_rep1.plus", "ctrl_rep1.plus_score",
+    "ctrl_rep1.minus", "ctrl_rep1.minus_score", "ctrl_rep2.plus",
+    "ctrl_rep2.plus_score", "ctrl_rep2.minus", "ctrl_rep2.minus_score",
+    "HS_rep1.plus", "HS_rep1.plus_score", "HS_rep1.minus",
+    "HS_rep1.minus_score", "HS_rep2.plus", "HS_rep2.plus_score",
+    "HS_rep2.minus", "HS_rep2.minus_score")
+head(transdf)
+```
+
+The second table contains information about each replicate:
+
+```{r reading-anno-scores}
+!!!!!!!!!!!!!!!!!!!
+
+```{r quickstart, eval = FALSE}
+
+library(tepr)
+
+## Parameters
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+
+expthres <- 0.1
+windsize <- 200
+
+## Read input tables
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+
+## Calculate Average Expression and Filter Transcript Data
+resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
+
+## Count NA values per transcript and condition
+rescountna <- countna(resallexprs, expdf)
+
+## Compute ECDF for Genes Based on Expression Data
+resecdflist <- genesECDF(resallexprs, expdf)
+resecdf <- resecdflist[[1]]
+nbwindows <- resecdflist[[2]]
+
+## Compute Mean and Differences of Scores for Each Condition
+resmeandiff <- meandifference(resecdf, expdf, windsize)
+
+## Split the results by transcripts
+bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+resauc <- allauc(bytranslistmean, expdf, nbwindows)
+
+## Identify the Knee and Max ECDF Differences for Each Transcript
+resknee <- kneeid(bytranslistmean, expdf)
+
+## Calculate Attenuation from AUC and Other Transcript Features
+resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+    resmeandiff)
+
+## Define Universe and Group of Genes Based on Expression Data
+res <- universegroup(resatt)
 ```
