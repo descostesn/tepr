@@ -319,7 +319,10 @@ Cumulative Distribution Function. The ECDF will enable us to answer the question
 the TSS?*. In other words, this statistics enables to identify a specific locus
 from where transcription decreases. Indeed, if the cumulative transcription
 density stops increasing, it means that the windows after the locus have small
-values (see plotecdf for a visual).
+values (see plotecdf for a visual). In the following steps, the ECDF is used to
+compute the difference with the cumulative distribution (see `meananddifference`),
+which is subsequently used to calculate the area under the curve (AUC, see
+`allauc`) and the inflection point or *knee* (see `kneeid`).
 
 ```{r ecdf}
 resecdflist <- genesECDF(resallexprs, expdf)
@@ -345,16 +348,16 @@ print(nbwindows)
 ## Compute Mean and Differences of Scores for Each Condition
 
 The function `meandifference` computes two types of statistics, mean values of
-replicates if provided and difference with the cumulative distribution
-respectively. The mean values between replicates implies that one column
-`mean_value` per condition will be returned.
-The `mean_value` column(s) are necessary to calculate the attenuation scores
-later on (see `attenuation`). They are also used to computes a difference with
-the cumulative distribution that we call *diff_Fx*. The *diff_Fx* statistics
-enables to calculate the area under the curve (AUC, see `allauc`) and the
-inflection point or *knee* (see `kneeid`).
+scores and ecdf for each replicate (if provided) and difference of mean ecdf
+with the cumulative distribution respectively. The mean values between
+replicates implies that one column `mean_value` per condition will be returned.
+The score `mean_value` column(s) are necessary to calculate the attenuation
+scores later on (see `attenuation`). The ecdf `mean_value` are used to computes
+a difference with the cumulative distribution that we call *diff_Fx*. The
+*diff_Fx* statistics enables to calculate the area under the curve (AUC, see
+`allauc`) and the inflection point or *knee* (see `kneeid`).
 
-The difference is defined as: *diff_Fx = mean - cumvec / nbwindows*
+The difference is defined as: *diff_Fx = meanECDF - cumvec / nbwindows*
 
 ```{r meandifference}
 windsize <- 200
@@ -369,6 +372,11 @@ into a list which elements contain a given transcript:
 ## Split the results by transcripts
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 ```
+
+
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+
+For each condition (if more than one), 
 
 !!!!!!!!!!!!!!!!!!!
 
