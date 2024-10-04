@@ -302,6 +302,13 @@ head(resallexprs[[2]])
 
 ## Count NA values per transcript and condition
 
+During the pre-processing, scores falling in intervals belonging to the black list or to low mappability regions of the genome are replaced by NA. The function `countna` enables to retrieve the number of "missing" scores per transcript. This table can be used for further filtering of the data.
+
+```{r countna}
+## Count NA values per transcript and condition
+rescountna <- countna(resallexprs, expdf)
+head(rescountna)
+```
 
 !!!!!!!!!!!!!!!!!!!
 
