@@ -270,7 +270,12 @@ head(transdf)
 
 The second table contains information about each replicate:
 
-```{r reading-anno-scores}
+```{r reading-exptab}
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+expdf <- read.csv(exppath)
+head(expdf)
+```
+
 !!!!!!!!!!!!!!!!!!!
 
 ```{r quickstart, eval = FALSE}
