@@ -56,24 +56,27 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg",
                     file.path(scoredir, paste0(filename, ".window", window,
                         ".MANE.wmean.name.score"))})
 
-                # Reading all the files
-                if (verbose)
-    colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
-        "strand", "window", "id", "dataset", "score")
-    dflist <- lapply(files, read.delim, header = FALSE, sep = "\t",
-        na.strings = "NAN", dec = ".", col.names = colnamevec,
-        stringsAsFactors = FALSE)
+                ## Reading all files
+                if (verbose) message("\t Reading all files")
+                colnamevec <- c("biotype", "chr", "coor1", "coor2",
+                    "transcript", "gene", "strand", "window", "id",
+                    "dataset", "score")
+                    dflist <- lapply(files, read.delim, header = FALSE,
+                        sep = "\t", na.strings = "NAN", dec = ".",
+                        col.names = colnamevec, stringsAsFactors = FALSE)
 
-    # joining all the files
-    joincolvec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
-        "strand", "window", "id")
-    ## the last filter remove the PAR genes (pseudoautosomal genes both in X and Y)
-    joineddf <- purrr::reduce(dflist, dplyr::left_join, by = joincolvec) %>%
-        dplyr::filter(strand != "Y")
+                ## Joining all files
+                if (verbose) message("\t Joining all files")
+                joincolvec <- c("biotype", "chr", "coor1", "coor2",
+                    "transcript", "gene", "strand", "window", "id")
+                ## the last filter remove the PAR genes (pseudoautosomal genes
+                ## both in X and Y)
+                joineddf <- purrr::reduce(dflist, dplyr::left_join,
+                    by = joincolvec) %>% dplyr::filter(strand != "Y")
 
-    return(joineddf)
+                return(joineddf)
 
-}, bedgraphfiles, window)
+            }, bedgraphfiles, window)
 
 
 }
