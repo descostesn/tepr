@@ -102,7 +102,7 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
                         ".MANE.wmean.name.score"))})
 
                 ## Reading all files
-                if (verbose) message("\t Reading all files")
+                if (verbose) message("\t\t Reading all files")
                 colnamevec <- c("biotype", "chr", "coor1", "coor2",
                     "transcript", "gene", "strand", "window", "id",
                     "dataset", "score")
@@ -112,7 +112,7 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
                         stringsAsFactors = FALSE, mc.cores = nbcpu)
 
                 ## Joining all files
-                if (verbose) message("\t Joining all files")
+                if (verbose) message("\t\t Joining all files")
                 joincolvec <- c("biotype", "chr", "coor1", "coor2",
                     "transcript", "gene", "strand", "window", "id")
                 ## the last filter remove the PAR genes (pseudoautosomal genes
