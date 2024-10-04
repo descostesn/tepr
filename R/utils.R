@@ -28,8 +28,53 @@
         }, tab))
 }
 
+#' Join Bedgraph Files for Protein-Coding and lncRNA Data
+#'
+#' @description
+#' The `joinfiles` function processes bedgraph files located in the specified
+#' working directory, joins data related to protein-coding and lncRNA
+#' annotations, and outputs a combined result as a TSV file. The function
+#' retrieves bedgraph files matching a specific pattern, processes the files to
+#' create windows-based summaries, and merges annotations for protein-coding and
+#' lncRNA biotypes. The resulting data is written to an output file.
+#'
+#' @usage
+#' joinfiles(workingdir = ".", window = 200, bgpattern = "*.bg",
+#'   protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
+#'   outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE)
+#'
+#' @param workingdir The directory containing bedgraph files. Defaults to the
+#'  current working directory (`"."`).
+#' @param window The window size used for joining the score files. Defaults to
+#'  200.
+#' @param bgpattern A file pattern to identify bedgraph files. Defaults to
+#'  `"*.bg"`.
+#' @param protscoredir Directory containing the protein-coding score files.
+#'  Defaults to `"protein_coding_score"`.
+#' @param lncscoredir Directory containing the lncRNA score files. Defaults to
+#'  `"lncRNA_score"`.
+#' @param outtsv The output TSV filename where the merged data will be saved.
+#'  Defaults to `"dTAG_Cugusi_stranded_20230810.tsv"`.
+#' @param verbose Logical flag to enable verbose output during the function
+#'  execution. Defaults to `TRUE`.
+#'
+#' @return Writes a combined data frame to a TSV file, and returns no value.
+#'
+#' @importFrom purrr map reduce
+#' @importFrom tools file_path_sans_ext
+#' @importFrom dplyr left_join bind_rows filter
+#' @importFrom utils read.delim write.table
+#'
+#' @examples
+#' \dontrun{
+#'   joinfiles(workingdir = "data", window = 100, bgpattern = "*.bedgraph",
+#'     protscoredir = "prot_scores", lncscoredir = "lnc_scores",
+#'     outtsv = "results.tsv")
+#' }
+#'
+#' @export
 
-joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg",
+joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # nolint
     protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
     outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE) {
 
