@@ -3,6 +3,7 @@
 export(allauc)
 export(attenuation)
 export(averageandfilterexprs)
+export(checkexptab)
 export(countna)
 export(genesECDF)
 export(joinfiles)
