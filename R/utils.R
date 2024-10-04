@@ -134,5 +134,5 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
             if (verbose) message("Writing the result table to ", outfile)
             write.table(bounddf, file = outfile, sep = "\t", row.names = FALSE,
                 col.names = FALSE, quote = FALSE)
-            return(boundf)
+            return(bounddf)
 }
