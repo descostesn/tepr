@@ -310,6 +310,38 @@ rescountna <- countna(resallexprs, expdf)
 head(rescountna)
 ```
 
+## Compute ECDF for Genes Based on Expression Data
+
+This function calculates the empirical cumulative distribution function (ECDF)
+for expressed genes across transcripts. An ECDF is an estimator of the
+Cumulative Distribution Function. The ECDF will enable us to answer the question:
+*What is the transcription density of windows located at less than X kb from
+the TSS?*. In other words, this statistics enables to identify a specific locus
+from where transcription decreases. Indeed, if the cumulative transcription
+density stops increasing, it means that the windows after the locus have small
+values (see plotecdf for a visual).
+
+```{r ecdf}
+resecdflist <- genesECDF(resallexprs, expdf)
+```
+
+The genesECDF function returns a list which first element is the main table
+with additional ecdf columns denoted with the `Fx` prefix.
+
+```{r resecdf}
+resecdf <- resecdflist[[1]]
+head(resecdf)
+```
+
+The second element returns the number of windows per transcript that we set to
+200.
+
+```{r nbwindows}
+nbwindows <- resecdflist[[2]]
+print(nbwindows)
+```
+
+
 !!!!!!!!!!!!!!!!!!!
 
 ```{r quickstart, eval = FALSE}
