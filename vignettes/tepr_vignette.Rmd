@@ -65,7 +65,7 @@ resecdf <- resecdflist[[1]]
 nbwindows <- resecdflist[[2]]
 
 ## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, windsize)
+resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 
 ## Split the results by transcripts
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
@@ -342,6 +342,27 @@ print(nbwindows)
 ```
 
 
+## Compute Mean and Differences of Scores for Each Condition
+
+The function `meandifference` computes two types of statistics, mean values of
+replicates if provided and difference with the cumulative distribution
+respectively. The mean values between replicates implies that one column
+`mean_value` per condition will be returned.
+The `mean_value` column(s) are necessary to calculate the attenuation scores
+later on (see `attenuation`). They are also used to computes a difference with
+the cumulative distribution that we call *diff_Fx*. The *diff_Fx* statistics
+enables to calculate the area under the curve (AUC, see `allauc`) and the
+inflection point or *knee* (see `kneeid`).
+
+The difference is defined as: *diff_Fx = mean - cumvec / nbwindows*
+
+```{r meandifference}
+windsize <- 200
+resmeandiff <- meandifference(resecdf, expdf, nbwindows)
+head(resmeandiff)
+```
+
+
 !!!!!!!!!!!!!!!!!!!
 
 ```{r quickstart, eval = FALSE}
@@ -370,7 +391,7 @@ resecdf <- resecdflist[[1]]
 nbwindows <- resecdflist[[2]]
 
 ## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, windsize)
+resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 
 ## Split the results by transcripts
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
