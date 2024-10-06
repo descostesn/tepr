@@ -376,7 +376,29 @@ bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 
-For each condition (if more than one), 
+For each condition (if more than one), the Area Under the Curve (AUC) of
+*diff_Fx* (see previous section) is computed with a trapezoidal approximation
+(see pracma::trapz):
+
+*AUC = pracma::trapz(transcoord, diff_Fx)*
+
+with transcoord being the positions along the transcript and *diff_Fx* the
+difference with the cumulative distribution.
+
+The AUC values enable the comparison of the nascent-rna signal with a constant 
+distribution (no attenuation of signal, x = y), or the difference in signal
+distribution between two conditions. The difference of AUC is estimated by a
+Kolmogorov-Smirnov test and the adjusted p-value is also provided. Finally,
+results are returned by transcript along with a mean value that is called
+*MeanValueFull*. 
+
+```{r allauc}
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+resauc <- allauc(bytranslistmean, expdf, nbwindows)
+print(head(resauc))
+```
+
+
 
 !!!!!!!!!!!!!!!!!!!
 
