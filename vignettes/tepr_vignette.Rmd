@@ -508,17 +508,34 @@ colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 ```
 
+### AUC
+
+The AUC values between conditions can be compared either by highlighting the
+two conditions on the plot:
+
+```{r plotaucgroups}
+plotauc(res, plottype = "groups", plot = TRUE)
+```
+
+The plot on the complete dataset gives:
+
+TO DO
+
+It is also possible to compare the AUC by coloring points according to the
+Kolmogorov-Smirnov test adjusted p-values and to indicate graphically the points
+corresponding to a group of genes:
+
+```
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+plotauc(unigroupdf, genevec, plot = TRUE)
+```
+
+The plot on the complete dataset gives:
+
+TO DO
+
 
 !!!!!!!!!!!!!!!!!!!
-
-
-####
-#### plotecdf
-####
-
-plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold, plot = TRUE)
-plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
-
 
 ####
 #### plotauc
