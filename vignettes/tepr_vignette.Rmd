@@ -432,6 +432,29 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 
 ## Define Universe and Group of Genes Based on Expression Data
 
+Before further downstream analysis, the list of transcript to study must be
+defined. tepr selects a transcript if it has:
+
+1) Windows long enough
+2) Not too many missing values
+3) A mean expression value high enough
+4) A significant Kolmogorov-Smirnov test
+
+Analytically it gives:
+
+```{r uniselect, eval = FALSE}
+window_size > windsizethreshold &
+Count_NA < countnathreshold &
+meanctrl > meanctrlthreshold &
+meanstress > meanstressthreshold &
+pvaladj > pvalthreshold
+```
+
+What a satisfying threshold for each criterion is depends on the experiments.
+The user can adjust the different threshold along the analysis. A transcript
+satisfying the above criterion is defined as belonging to the `Universe` of the
+transcripts to analyze (Universe column contains TRUE).
+
 
 !!!!!!!!!!!!!!!!!!!
 
