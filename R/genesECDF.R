@@ -119,8 +119,9 @@
 #' @export
 
 genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
-  verbose = TRUE) {
+  showtime = FALSE, verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
@@ -152,6 +153,11 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
 
     return(list(concatdf, nbrows))
 }
