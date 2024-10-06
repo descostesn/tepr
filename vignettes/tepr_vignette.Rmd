@@ -263,6 +263,12 @@ exppath <- system.file("extdata", "exptab.csv", package="tepr")
 ## Reading input files
 transdf <- read.delim(transpath, header = FALSE) 
 expdf <- read.csv(exppath)
+
+## Calculate Average Expression and Filter Transcript Data
+expthres <- 0.1
+resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
+
+
 ```
 
 
