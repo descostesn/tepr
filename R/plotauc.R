@@ -83,7 +83,7 @@
 #' @param outfold Output folder where the plot will be saved. Default is
 #'  \code{"./"}.
 #' @param outfile Name of the output file. Default is
-#'  \code{"AUCcompare_pval.pdf"}.
+#'  \code{"AUCcompare_pval"}.
 #' @param plottype Type of plot to generate. Can be \code{"pval"} for p-value
 #'  based plots or \code{"groups"} for group-based plots. Default is
 #'  \code{"pval"}.
@@ -132,7 +132,7 @@ plotauc <- function(tab, genevec = NA, # nolint
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
     subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
-    outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE,
+    outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
     universename = "Universe", groupname = "Group") {
 
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
