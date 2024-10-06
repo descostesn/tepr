@@ -146,8 +146,13 @@
 #' @importFrom rlang .data
 #' @export
 
-plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
-    digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE) {
+plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
+    outfold = NA, digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+    verbose = TRUE) {
+
+    if (is.na(outfold) && !plot)
+        stop("The outfold should be defined to save the figure. Otherwise ",
+            "set plot = TRUE")
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
