@@ -319,7 +319,12 @@ resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
 ## Identify the Knee and Max ECDF Differences for Each Transcript
 resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
 
-                 ## Analysis performed in: 0.186897993087769 (seconds)
+                 ## Analysis performed in: 11.8020555973053
+
+## Calculate Attenuation from AUC and Other Transcript Features
+resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+    resmeandiff, nbcpu = 20, showtime = TRUE)
+
 ```
 
 
