@@ -466,54 +466,30 @@ Analytically it gives:
 
 ```{r attselect, eval = FALSE}
 Universe == TRUE &
-aucstress > aucstressthres &
--log10(pvalks) > attenuatedpvalksthres
+aucstress > aucstressthreshold &
+-log10(pvalks) > attenuatedpvalksthreshold
+```
+
+A transcript is considered as not attenuated ("Outgroup") if:
+
+1) The Kolmogorov-Smirnov adjusted p-value is above a threshold
+2) The control AUC is between two user-defined thresholds.
+
+Analytically it gives:
+
+```{r outgroup, eval = FALSE}
+pvalks > outgrouppvalksthreshold &
+aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
+```
+
+The columns `Universe` and `Group` are computed with:
+
+```{r universegroup}
+## Define Universe and Group of Genes Based on Expression Data
+res <- universegroup(resatt)
+print(head(res))
 ```
 
 
 !!!!!!!!!!!!!!!!!!!
 
-```{r quickstart, eval = FALSE}
-
-library(tepr)
-
-## Parameters
-exppath <-  system.file("extdata", "exptab.csv", package="tepr")
-
-expthres <- 0.1
-windsize <- 200
-
-## Read input tables
-expdf <- read.csv(exppath)
-transdf <- read.delim(transpath, header = FALSE)
-
-## Calculate Average Expression and Filter Transcript Data
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
-
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf)
-
-## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf)
-resecdf <- resecdflist[[1]]
-nbwindows <- resecdflist[[2]]
-
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows)
-
-## Split the results by transcripts
-bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, nbwindows)
-
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf)
-
-## Calculate Attenuation from AUC and Other Transcript Features
-resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff)
-
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt)
-```
