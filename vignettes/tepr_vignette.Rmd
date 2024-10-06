@@ -578,7 +578,7 @@ The columns `Universe` and `Group` are computed with:
 ```{r universegroup}
 ## Define Universe and Group of Genes Based on Expression Data
 res <- universegroup(resatt)
-print(head(res))
+print(head(res, 2))
 ```
 
 ## Plotting
