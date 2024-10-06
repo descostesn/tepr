@@ -334,6 +334,12 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
          Merging attenuation to the complete table
                  ## Analysis performed in: 1.17459278106689 (minutes)
 
+## Define Universe and Group of Genes Based on Expression Data
+res <- universegroup(resatt, showtime = TRUE)
+
+         Computing the Universe column
+         Computing the Group column
+                          ## Analysis performed in: 0.0214207172393799 (seconds)
 ```
 
 
