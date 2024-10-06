@@ -289,10 +289,16 @@ resecdf <- resecdflist[[1]]
 nbwindows <- resecdflist[[2]]
 
 ## Compute Mean and Differences of Scores for Each Condition
-windsize <- 200
-resmeandiff <- meandifference(resecdf, expdf, nbwindows)
+resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
 
-
+         Merging columns for condition ctrl
+         Calculating average and difference between replicates for columns 'value' of ctrl
+         Calculating average and difference between replicates for columns 'Fx' of ctrl
+         Merging columns for condition HS
+         Calculating average and difference between replicates for columns 'value' of HS
+         Calculating average and difference between replicates for columns 'Fx' of HS
+         Commputing all differences on mean columns
+                 ## Analysis performed in: 0.953349590301514
 ```
 
 
