@@ -325,6 +325,7 @@ resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
     resmeandiff, nbcpu = 20, showtime = TRUE)
 
+
 ```
 
 
@@ -509,6 +510,7 @@ The three values *att*, *downmean*, and *upmean* are provided by the columns
 ## Calculate Attenuation from AUC and Other Transcript Features
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
     resmeandiff)
+print(head(resatt))
 ```
 
 ## Define Universe and Group of Genes Based on Expression Data
