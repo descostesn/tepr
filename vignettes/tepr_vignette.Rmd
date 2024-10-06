@@ -250,13 +250,15 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## Note on processing the complete datset
 
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the files "dTAG_Cugusi_stranded_20230810.tsv" and "exptab.csv" are in the current folder. The composition of the experiment table is indicated in the next section.
+Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. The composition of the experiment table is indicated in the next section.
 
 The time of computation for each function is indicated:
 
 ```{r completedataset, eval = FALSE}
+library(tepr)
+
 transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
-exppath <- "exptab.csv"
+exppath <- system.file("extdata", "exptab.csv", package="tepr")
 
 ## Reading input files
 transdf <- read.delim(transpath, header = FALSE) 
@@ -286,7 +288,7 @@ head(transdf)
 The second table contains information about each replicate:
 
 ```{r reading-exptab}
-exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+exppath <- system.file("extdata", "exptab.csv", package="tepr")
 expdf <- read.csv(exppath)
 head(expdf)
 ```
