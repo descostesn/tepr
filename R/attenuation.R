@@ -83,7 +83,8 @@
 #'
 #' @usage
 #' attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf, dfmeandiff,
-#' nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1, verbose = TRUE)
+#' nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+#' showtime = FALSE, verbose = TRUE)
 #'
 #' @param allaucdf A data frame containing AUC results for transcripts (see
 #'                 allauc).

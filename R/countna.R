@@ -9,7 +9,7 @@
 #' CPU cores.
 #'
 #' @usage
-#' countna(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE)
+#' countna(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 #'
 #' @param allexprsdfs A list of data frames containing expression data. The
 #'  first element is assumed to be the main table. The second element is a
@@ -21,6 +21,9 @@
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
 #'  Defaults to 1.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{TRUE}.
 #'

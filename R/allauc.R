@@ -141,7 +141,8 @@
 #'
 #' @usage
 #' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
-#' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
+#' controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+#' verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more

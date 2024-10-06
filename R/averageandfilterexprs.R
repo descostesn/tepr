@@ -6,7 +6,8 @@
 #' output data frame to include mean expression values.
 #'
 #' @usage
-#' averageandfilterexprs(expdf, alldf, expthres, verbose = TRUE)
+#' averageandfilterexprs(expdf, alldf, expthres, showtime = FALSE,
+#' verbose = TRUE)
 #'
 #' @param expdf A data frame containing expression data that should have
 #'              columns named 'condition', 'replicate', and 'strand'.
