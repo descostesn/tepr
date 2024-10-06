@@ -140,7 +140,7 @@
 #' computation for efficiency.
 #'
 #' @usage
-  #' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
+#' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
 #' controlcondname = "ctrl", stresscondname = "HS", verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
@@ -151,18 +151,18 @@
 #' @param nbwindows An integer specifying the number of windows to consider for
 #'                  AUC calculations.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
-#'               parallel processing on bytranslistmean. (default is 1)
+#'               parallel processing on bytranslistmean. Defaults to \code{1}.
 #' @param dontcompare An optional parameter to specify any conditions to exclude
-#'                    from the comparison.
+#'                    from the comparison. Defaults to \code{NULL}.
 #' @param controlcondname A string specifying the name of the control condition
-#'                         (default is "ctrl").
-#' @param stresscondname A string specifying the name of the stress condition
-#'                        (default is "HS").
+#'                         Defaults to \code{"ctrl"}.
+#' @param stresscondname A string specifying the name of the stress condition.
+#'                        Defaults to \code{"HS"}.
 #' @param showtime A logical value indicating if the duration of the function
 #'                  processing should be indicated before ending. Defaults to
 #'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
-#'                 (default is TRUE).
+#'                 Defaults to \code{TRUE}.
 #'
 #' @return A data frame containing the AUC and dAUC results for each transcript,
 #'         along with associated statistical information.
