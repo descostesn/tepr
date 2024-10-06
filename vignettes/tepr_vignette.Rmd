@@ -299,6 +299,12 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
          Calculating average and difference between replicates for columns 'Fx' of HS
          Commputing all differences on mean columns
                  ## Analysis performed in: 0.953349590301514
+
+## Split the results by transcripts
+start_time <- Sys.time()
+bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time)
 ```
 
 
