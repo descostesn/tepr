@@ -40,8 +40,10 @@
 #'
 #' @export
 
-countna <- function(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE) {
+countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
+  verbose = TRUE) {
 
+  if (showtime) start_time <- Sys.time()
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
   condvec <- unique(expdf$condition)
@@ -81,6 +83,11 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, verbose = TRUE) {
           strand = unique(transtable$strand))
         return(cbind(info, Count_NA = countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
+
+  if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+  }
 
   return(do.call("rbind", nabytranslist))
 }
