@@ -340,6 +340,17 @@ res <- universegroup(resatt, showtime = TRUE)
          Computing the Universe column
          Computing the Group column
                           ## Analysis performed in: 0.0214207172393799 (seconds)
+
+## Plotting and saving to current folder
+colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = "./")
+
+plotauc(res, plottype = "groups", plot = TRUE)
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+plotauc(res, genevec, plot = TRUE)
+plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
+plothistoknee(res, plot = TRUE)
+plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
 
 
