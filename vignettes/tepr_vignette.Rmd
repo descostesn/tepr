@@ -250,11 +250,19 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## Note on processing the complete datset
 
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The time of computation for each function is indicated:
+Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the files "dTAG_Cugusi_stranded_20230810.tsv" and "exptab.csv" are in the current folder. The composition of the experiment table is indicated in the next section.
+
+The time of computation for each function is indicated:
 
 ```{r completedataset, eval = FALSE}
+transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
+exppath <- "exptab.csv"
 
+## Reading input files
+transdf <- read.delim(transpath, header = FALSE) 
+expdf <- read.csv(exppath)
 ```
+
 
 ## Input files
 
