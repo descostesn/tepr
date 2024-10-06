@@ -4,7 +4,7 @@
 \alias{kneeid}
 \title{Identify the Knee and Max ECDF Differences for Each Transcript}
 \usage{
-kneeid(transdflist, expdf, nbcpu = 1, verbose = TRUE)
+kneeid(transdflist, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{transdflist}{A list of data frames where each data frame contains
@@ -16,6 +16,10 @@ transcript data with ECDF values for each condition.}
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. The parallelization is performed on the elements of
 transdflist. Defaults to 1.}
+
+\item{showtime}{A logical value indicating if the duration of the function
+processing should be indicated before ending. Defaults to
+\code{FALSE}.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages.
 Defaults to \code{TRUE}.}

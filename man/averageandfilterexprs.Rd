@@ -4,7 +4,8 @@
 \alias{averageandfilterexprs}
 \title{Calculate Average Expression and Filter Transcript Data}
 \usage{
-averageandfilterexprs(expdf, alldf, expthres, verbose = TRUE)
+averageandfilterexprs(expdf, alldf, expthres, showtime = FALSE,
+verbose = TRUE)
 }
 \arguments{
 \item{expdf}{A data frame containing expression data that should have
@@ -20,8 +21,12 @@ Transcripts with average expression values below this
 threshold will be filtered out from the returned transcript
 vector.}
 
+\item{showtime}{A logical value indicating if the duration of the function
+processing should be indicated before ending. Defaults to
+\code{FALSE}.}
+
 \item{verbose}{A logical value indicating whether to print progress messages
-(default is TRUE).}
+Defaults to \code{TRUE}.}
 }
 \value{
 A list containing:

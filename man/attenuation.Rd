@@ -5,7 +5,8 @@
 \title{Calculate Attenuation from AUC and Other Transcript Features}
 \usage{
 attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf, dfmeandiff,
-nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1, verbose = TRUE)
+nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+showtime = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{allaucdf}{A data frame containing AUC results for transcripts (see
@@ -27,19 +28,24 @@ values, if more than one condition. (see meandifference).}
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel processing. The parallelization is done on
 bytranslistmean whose number of elements is equal to the
-number of lines provided as input of 'averageandfilterexprs'.}
+number of lines provided as input of 'averageandfilterexprs'.
+Defaults to \code{1}.}
 
 \item{significant}{A logical indicating whether to filter out non-significant
-attenuation values (default is FALSE).}
+attenuation values. Defaults to \code{FALSE}.}
 
 \item{replaceval}{A value to replace non-significant attenuation values
-(default is NA).}
+Defaults to \code{NA}.}
 
 \item{pval}{A numeric value specifying the p-value threshold for significance
-(default is 0.1).}
+Defaults to \code{0.1}.}
+
+\item{showtime}{A logical value indicating if the duration of the function
+processing should be indicated before ending. Defaults to
+\code{FALSE}.}
 
 \item{verbose}{A logical value indicating whether to print progress messages
-(default is TRUE).}
+Defaults to \code{TRUE}.}
 }
 \value{
 A data frame containing the computed attenuation values along with

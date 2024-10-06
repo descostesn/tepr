@@ -10,7 +10,7 @@ plotecdf(
   expdf,
   genename,
   colvec,
-  outfold,
+  outfold = NA,
   digits = 2,
   middlewind = 100,
   pval = 0.01,
@@ -34,7 +34,7 @@ their belonging to Universe or Group (see universegroup).}
 the plot.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
-saved if \code{plot = FALSE}. Default is the current directory.}
+saved if \code{plot = FALSE}. Default is \code{NA}.}
 
 \item{digits}{The number of decimal places to round the AUC and KS values.
 Default is \code{2}.}
