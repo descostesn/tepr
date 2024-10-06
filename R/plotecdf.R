@@ -34,7 +34,7 @@
 }
 
 .callggplotecdf <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename, kneeval, plot) {
+    outfold, genename, kneeval, plot, formatname) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -69,8 +69,8 @@
         warning("You chose to plot the ecdf, the figure is not saved.")
         print(g2)
     } else {
-        ggplot2::ggsave(filename = paste0(genename, ".pdf"),
-            plot = g2, device = "pdf", path = outfold)
+        ggplot2::ggsave(filename = paste0(genename, ".", formatname),
+            plot = g2, device = formatname, path = outfold)
     }
 }
 
@@ -118,6 +118,9 @@
 #' @param plot A logical flag indicating whether to display the plot
 #'  interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
 #'  \code{FALSE}.
+#' @param formatname String of the format of the saved plot. Possible values are
+#'  "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", and "svg".
+#'  Default is \code{"pdf"}.
 #' @param verbose A logical flag indicating whether to display detailed
 #'  messages about the function's progress. Default is \code{TRUE}.
 #'
@@ -153,7 +156,7 @@
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
     outfold = NA, digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
-    verbose = TRUE) {
+    formatname = "pdf", verbose = TRUE) {
 
     if (is.na(outfold) && !plot)
         stop("The outfold should be defined to save the figure. Otherwise ",
@@ -205,5 +208,5 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
     ## Plotting
     if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
     .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename, kneeval, plot)
+        genename, kneeval, plot, formatname)
 }
