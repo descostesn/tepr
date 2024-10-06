@@ -88,10 +88,15 @@
 
 #' Plot Empirical Cumulative Distribution Function (ECDF)
 #'
+#' @description
 #' This function generates an ECDF plot to analyze transcription density
 #' relative to the distance from the transcription start site (TSS) across
 #' different conditions. The plot displays AUC values, Kolmogorov-Smirnov (KS)
 #' statistics, and knee points, with options to display or save the plot.
+#'
+#' @usage
+#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = NA,
+#' digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
 #'  transcription levels and cumulative distribution values (Fx) for different
