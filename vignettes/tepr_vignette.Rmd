@@ -554,12 +554,24 @@ function also enables to select the transcripts categorized as "outgroup",
 all the transcripts belonging to the "universe", or all the transcripts of the
 initial table ("all").
 
+### Histogram
+
+One can visualize the distance of the knees from the TSS by percentage:
+
+```{r kneepercent}
+plothistoknee(unigroupdf, plot = TRUE)
+```
+
+The plot on the complete dataset gives:
+
+TO DO
+
 !!!!!!!!!!!!!!!!!!!
 
 
-####
-#### histogram
-####
 
-plothistoknee(unigroupdf, plottype = "percent", plot = TRUE)
+
+
+
+
 plothistoknee(unigroupdf, plottype = "kb", plot = TRUE)
