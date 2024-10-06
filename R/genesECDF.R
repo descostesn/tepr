@@ -67,7 +67,8 @@
 #' function operates in parallel for speed optimization.
 #'
 #' @usage
-#' genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, verbose = TRUE)
+#' genesECDF(allexprsdfs, expdf, nbcpu = 1, rounding = 10,
+#' showtime = FALSE, verbose = TRUE)
 #'
 #' @param allexprsdfs A list of data frames where the first element is the main
 #'    expression data frame and the second element contains the names of the
@@ -78,6 +79,9 @@
 #'    parallel computation. Default is \code{1}.
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
 #'    Default is \code{10}.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'    Default is \code{TRUE}.
 #'
