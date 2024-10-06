@@ -490,6 +490,59 @@ res <- universegroup(resatt)
 print(head(res))
 ```
 
+## Plotting
+
+tepr enables the visualization of the cumulative transcription density along a
+selected transcription unit (`plotecdf`); the comparison of the AUC between two
+conditions (`plotauc`); the average transcription density of a user-selected
+collection of transcripts (`plotmetagenes`); and of the histogram of the
+distance of the knees to the transcription start sites (TSS).
+
+### ECDF
+
+The visualization of the ecdf distribution for a particular transcript (or gene)
+can be obtained with:
+
+```{r plotecdf}
+colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
+```
+
 
 !!!!!!!!!!!!!!!!!!!
 
+
+####
+#### plotecdf
+####
+
+plotecdf(dfmeandiff, unigroupdf, expdf, "EGFR", colvec, outfold, plot = TRUE)
+plotecdf(dfmeandiff, unigroupdf, expdf, "MARCHF6", colvec, outfold, plot = TRUE)
+
+
+####
+#### plotauc
+####
+
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+plotauc(unigroupdf, genevec, plot = TRUE)
+plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
+    maintitle = "AUC Control vs HS", plot = TRUE, plottype = "groups")
+
+
+####
+#### metagene
+####
+
+plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
+plotmetagenes(unigroupdf, "outgroup", plot = TRUE)
+plotmetagenes(unigroupdf, "universe", plot = TRUE)
+plotmetagenes(unigroupdf, "all", plot = TRUE)
+
+
+####
+#### histogram
+####
+
+plothistoknee(unigroupdf, plottype = "percent", plot = TRUE)
+plothistoknee(unigroupdf, plottype = "kb", plot = TRUE)
