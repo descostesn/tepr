@@ -559,14 +559,19 @@ initial table ("all").
 One can visualize the distance of the knees from the TSS by percentage:
 
 ```{r kneepercent}
-plothistoknee(unigroupdf, plot = TRUE)
+plothistoknee(res, plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
 
 TO DO
 
-!!!!!!!!!!!!!!!!!!!
+The distance can also be visualised in kilobases (kb) by changing the *plottype*
+parameter:
+
+```{r kneekb}
+plothistoknee(res, plottype = "kb", plot = TRUE)
+```
 
 
 
@@ -574,4 +579,5 @@ TO DO
 
 
 
-plothistoknee(unigroupdf, plottype = "kb", plot = TRUE)
+
+
