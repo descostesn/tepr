@@ -197,12 +197,8 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
-        start_time <- Sys.time()
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
           nbcpu, controlcondname, stresscondname)
-        end_time <- Sys.time()
-        if (verbose) message("\t\t ## Analysis performed in: ",
-          end_time - start_time) # nolint
     } else {
         warning("dAUC not performed, only one condition submitted.")
     }
@@ -210,12 +206,8 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
     ## Calculate Mean Value over the full gene body in All conditions.
     if (verbose) message("\t Computing the Area Under Curve (AUC)")
-    start_time <- Sys.time()
     aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
       nbcpu = nbcpu)
-    end_time <- Sys.time()
-    if (verbose) message("\t\t ## Analysis performed in: ",
-      end_time - start_time) # nolint
 
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
