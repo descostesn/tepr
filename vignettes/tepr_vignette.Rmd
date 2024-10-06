@@ -311,7 +311,10 @@ message("\t\t ## Analysis performed in: ", end_time - start_time)
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
 
-
+         Computing the differences (d or delta) of AUC
+         Computing the Area Under Curve (AUC)
+         Merging results
+                 ## Analysis performed in: 27.2096176147461 (seconds)
 ```
 
 
