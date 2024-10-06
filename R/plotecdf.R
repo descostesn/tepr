@@ -103,7 +103,7 @@
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot.
 #' @param outfold A string specifying the output folder where the plot will be
-#'  saved if \code{plot = FALSE}. Default is the current directory.
+#'  saved if \code{plot = FALSE}. Default is \code{NA}.
 #' @param digits The number of decimal places to round the AUC and KS values.
 #'  Default is \code{2}.
 #' @param middlewind The index of the middle window representing the region
