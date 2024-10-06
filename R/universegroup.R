@@ -13,7 +13,7 @@
 #' windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
 #' meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
 #' aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-#' outgrouppvalksthres = 0.2, verbose = TRUE)
+#' outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE)
 #'
 #' @param completedf A data frame obtained with the function attenuation.
 #' @param controlname A string representing the control condition name. Default
@@ -40,6 +40,9 @@
 #'  the p-value (from KS test) for defining attenuated genes. Default is 2.
 #' @param outgrouppvalksthres A numeric threshold for the maximum KS p-value
 #'  used to define the outgroup. Default is 0.2.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{TRUE}.
 #'
@@ -78,8 +81,9 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
     meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
     aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, verbose = TRUE) {
+    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
     meanstress <- paste("MeanValueFull", stressname, sep = "_")
     pvaltheory <- paste("adjFDR_p_AUC", controlname, sep = "_")
@@ -112,6 +116,11 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
                     .data$Group)) %>%
                 dplyr::relocate(.data$Group, .before = 2)
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
 
     return(completedf)
 }
