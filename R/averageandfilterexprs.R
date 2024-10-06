@@ -18,6 +18,9 @@
 #'                 Transcripts with average expression values below this
 #'                 threshold will be filtered out from the returned transcript
 #'                 vector.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
 #'                 (default is TRUE).
 #'
