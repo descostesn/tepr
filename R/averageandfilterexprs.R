@@ -22,7 +22,7 @@
 #'                  processing should be indicated before ending. Defaults to
 #'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
-#'                 (default is TRUE).
+#'                 Defaults to \code{TRUE}.
 #'
 #' @return A list containing:
 #'         \item{maintable}{The original data frame containing all transcript
