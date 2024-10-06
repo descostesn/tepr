@@ -315,6 +315,11 @@ resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
          Computing the Area Under Curve (AUC)
          Merging results
                  ## Analysis performed in: 27.2096176147461 (seconds)
+
+## Identify the Knee and Max ECDF Differences for Each Transcript
+resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
+
+                 ## Analysis performed in: 0.186897993087769 (seconds)
 ```
 
 
@@ -481,6 +486,7 @@ The function returns the position (*Knee_AUC*) and the value (*diff_Fx*) of the
 knee.
 
 ```{r knee}
+## Identify the Knee and Max ECDF Differences for Each Transcript
 resknee <- kneeid(bytranslistmean, expdf)
 print(head(resknee))
 ```
