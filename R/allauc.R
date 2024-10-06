@@ -158,6 +158,9 @@
 #'                         (default is "ctrl").
 #' @param stresscondname A string specifying the name of the stress condition
 #'                        (default is "HS").
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
 #'                 (default is TRUE).
 #'
@@ -187,7 +190,9 @@
 
 allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-  verbose = TRUE) {
+  showtime = FALSE, verbose = TRUE) {
+
+    if (showtime) start_time <- Sys.time()
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
@@ -215,5 +220,10 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
       by = c("gene", "transcript", "strand", "window_size"))
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
     return(allauc)
 }
