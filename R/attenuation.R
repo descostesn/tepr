@@ -105,6 +105,9 @@
 #'                   (default is NA).
 #' @param pval A numeric value specifying the p-value threshold for significance
 #'              (default is 0.1).
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
 #'                 (default is TRUE).
 #'
