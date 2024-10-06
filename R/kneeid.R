@@ -23,7 +23,7 @@ return(reslist)
 #' (ECDF) for each transcript, across different experimental conditions.
 #'
 #' @usage
-#' kneeid(transdflist, expdf, nbcpu = 1, verbose = TRUE)
+#' kneeid(transdflist, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 #'
 #' @param transdflist A list of data frames where each data frame contains
 #'    transcript data with ECDF values for each condition.
@@ -32,6 +32,9 @@ return(reslist)
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation. The parallelization is performed on the elements of
 #'  transdflist. Defaults to 1.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{TRUE}.
 #'
@@ -51,8 +54,10 @@ return(reslist)
 #'
 #' @export
 
-kneeid <- function(transdflist, expdf, nbcpu = 1, verbose = TRUE) {
+kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
+  verbose = TRUE) {
 
+  if (showtime) start_time <- Sys.time()
   condvec <- unique(expdf$condition)
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
       bycondreslist <- .retrievekneeandmax(condvec, transtable)
@@ -60,5 +65,11 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, verbose = TRUE) {
         do.call("cbind", bycondreslist)))
     }, condvec, mc.cores = nbcpu)
   res <- do.call("rbind", bytransres)
+
+  if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+  }
+
   return(res)
 }
