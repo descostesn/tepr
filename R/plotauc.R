@@ -53,9 +53,20 @@
 
 #' Plot AUC Comparison Between Conditions
 #'
+#' @description
 #' This function generates scatterplots comparing the area under the curve (AUC)
 #' for control and stress conditions, with an option to highlight specific genes
 #' or groups. The plot can be saved as a file or displayed interactively.
+#'
+#' @usage
+#' plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+#' auc_stressname = "AUC_HS", 
+#' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+#' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
+#' axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
+#' subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
+#' outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
+#' universename = "Universe", groupname = "Group")
 #'
 #' @param tab A data frame containing the AUC values for control and stress
 #'  conditions, and other columns required for plotting (e.g., p-values or
