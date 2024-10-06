@@ -268,6 +268,21 @@ expdf <- read.csv(exppath)
 expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
 
+         Calculating average expression per transcript
+         Removing lines with values < expthres
+                 ## Analysis performed in: 7.67012810707092
+
+## Count NA values per transcript and condition
+rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
+
+         Splitting the table by each transcript
+                 ## Analysis performed in: 25.9511797428131
+
+## Compute ECDF for Genes Based on Expression Data
+resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
+
+resecdf <- resecdflist[[1]]
+nbwindows <- resecdflist[[2]]
 
 ```
 
@@ -348,6 +363,7 @@ which is subsequently used to calculate the area under the curve (AUC, see
 `allauc`) and the inflection point or *knee* (see `kneeid`).
 
 ```{r ecdf}
+## Compute ECDF for Genes Based on Expression Data
 resecdflist <- genesECDF(resallexprs, expdf)
 ```
 
