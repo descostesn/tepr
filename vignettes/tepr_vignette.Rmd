@@ -246,8 +246,15 @@ invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx
 
 # Standard workflow
 
-To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. Note that parallelization is encouraged on the complete dataset. We used 20 cpus.
+To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`.
 
+## Note on processing the complete datset
+
+Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The time of computation for each function is indicated:
+
+```{r completedataset, eval = FALSE}
+
+```
 
 ## Input files
 
