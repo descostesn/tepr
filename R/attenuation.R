@@ -138,8 +138,9 @@
 
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
-  verbose = TRUE) {
+  showtime = FALSE, verbose = TRUE) {
 
+      if (showtime) start_time <- Sys.time()
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
@@ -172,6 +173,11 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
         if (verbose) message("\t Keeping significant attenuation")
         auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
             replaceval, verbose)
+      }
+
+      if (showtime) {
+        end_time <- Sys.time()
+        message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
       }
 
       return(auckneenasumatt)
