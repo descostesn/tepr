@@ -527,7 +527,7 @@ corresponding to a group of genes:
 
 ```
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(unigroupdf, genevec, plot = TRUE)
+plotauc(res, genevec, plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -535,26 +535,26 @@ The plot on the complete dataset gives:
 TO DO
 
 
-!!!!!!!!!!!!!!!!!!!
+### Metagenes
 
-####
-#### plotauc
-####
+The average transcription density along a meta-transcript or a meta-gene can be
+visualized with:
 
-genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(unigroupdf, genevec, plot = TRUE)
-plotauc(unigroupdf, legendpos = "none", subtitle = "Genes selected for Unibind",
-    maintitle = "AUC Control vs HS", plot = TRUE, plottype = "groups")
-
-
-####
-#### metagene
-####
-
+```{r metageneplot}
 plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
-plotmetagenes(unigroupdf, "outgroup", plot = TRUE)
-plotmetagenes(unigroupdf, "universe", plot = TRUE)
-plotmetagenes(unigroupdf, "all", plot = TRUE)
+```
+
+The plot on the complete dataset gives:
+
+TO DO
+
+Note that the second parameter tells to plot the distribution for the
+transcripts identified as "attenuated" by the function `universegroup`. The
+function also enables to select the transcripts categorized as "outgroup",
+all the transcripts belonging to the "universe", or all the transcripts of the
+initial table ("all").
+
+!!!!!!!!!!!!!!!!!!!
 
 
 ####
