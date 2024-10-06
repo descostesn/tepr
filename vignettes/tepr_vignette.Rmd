@@ -270,19 +270,28 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
 
          Calculating average expression per transcript
          Removing lines with values < expthres
-                 ## Analysis performed in: 7.67012810707092
+                 ## Analysis performed in: 7.67012810707092 (seconds)
 
 ## Count NA values per transcript and condition
 rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
 
          Splitting the table by each transcript
-                 ## Analysis performed in: 25.9511797428131
+                 ## Analysis performed in: 25.9511797428131 (seconds)
 
 ## Compute ECDF for Genes Based on Expression Data
 resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
 
+         Filtering to keep only the expressed transcripts
+         Splitting the table by each transcript
+         Computing ecdf on each transcript
+                 ## Analysis performed in: 1.23920369148254 (minutes)
 resecdf <- resecdflist[[1]]
 nbwindows <- resecdflist[[2]]
+
+## Compute Mean and Differences of Scores for Each Condition
+windsize <- 200
+resmeandiff <- meandifference(resecdf, expdf, nbwindows)
+
 
 ```
 
@@ -399,7 +408,7 @@ a difference with the cumulative distribution that we call *diff_Fx*. The
 The difference is defined as: *diff_Fx = meanECDF - cumvec / nbwindows*
 
 ```{r meandifference}
-windsize <- 200
+## Compute Mean and Differences of Scores for Each Condition
 resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 head(resmeandiff)
 ```
