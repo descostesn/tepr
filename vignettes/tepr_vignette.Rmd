@@ -298,13 +298,20 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
          Calculating average and difference between replicates for columns 'value' of HS
          Calculating average and difference between replicates for columns 'Fx' of HS
          Commputing all differences on mean columns
-                 ## Analysis performed in: 0.953349590301514
+                 ## Analysis performed in: 0.953349590301514 (seconds)
 
 ## Split the results by transcripts
 start_time <- Sys.time()
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 end_time <- Sys.time()
 message("\t\t ## Analysis performed in: ", end_time - start_time)
+
+                ## Analysis performed in: 6.54691791534424 (seconds)
+
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
+
+
 ```
 
 
