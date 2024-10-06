@@ -20,7 +20,7 @@
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
-#'  Defaults to 1.
+#'  Defaults to \code{1}.
 #' @param showtime A logical value indicating if the duration of the function
 #'                  processing should be indicated before ending. Defaults to
 #'                  \code{FALSE}.
