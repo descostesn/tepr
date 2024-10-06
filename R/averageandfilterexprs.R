@@ -38,8 +38,10 @@
 #'
 #' @export
 
-averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # nolint
+averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # nolint
+    verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     ## Verify the conformity of the experiment table
     checkexptab(expdf)
 
@@ -89,5 +91,9 @@ averageandfilterexprs <- function(expdf, alldf, expthres, verbose = TRUE) { # no
         dplyr::arrange(.data$transcript) %>%
         dplyr::pull(.data$transcript)
 
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
     return(list(maintable = alldf, exptranlist = exptranstab))
 }
