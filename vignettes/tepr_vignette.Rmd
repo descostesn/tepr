@@ -455,6 +455,21 @@ The user can adjust the different threshold along the analysis. A transcript
 satisfying the above criterion is defined as belonging to the `Universe` of the
 transcripts to analyze (Universe column contains TRUE).
 
+The transcript of the Universe are further divided into `Group`. A transcript
+belongs to the "attenuated" group if:
+
+1) It belongs to the Universe
+2) The Area Under the Curve is high enough
+3) The `-log10` of the adjust p-value of the Kolmogorov-Smirnov test is above x.
+
+Analytically it gives:
+
+```{r attselect, eval = FALSE}
+Universe == TRUE &
+aucstress > aucstressthres &
+-log10(pvalks) > attenuatedpvalksthres
+```
+
 
 !!!!!!!!!!!!!!!!!!!
 
