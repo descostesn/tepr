@@ -415,6 +415,21 @@ resknee <- kneeid(bytranslistmean, expdf)
 print(head(resknee))
 ```
 
+## Calculate Attenuation from AUC and Other Transcript Features
+
+The attenuation is the goal value for which the different statistics were
+previously computed. The `attenuation` function calculates the mean value of all
+window mean scores before and after the knee location. It then provides an
+"attenuation score" with the formula: *att <- 100 - downmean / upmean * 100*.
+The three values *att*, *downmean*, and *upmean* are provided by the columns
+"UP_mean_", "DOWN_mean_", and "Attenuation_".
+
+```{r attenuation}
+## Calculate Attenuation from AUC and Other Transcript Features
+resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+    resmeandiff)
+```
+
 
 !!!!!!!!!!!!!!!!!!!
 
