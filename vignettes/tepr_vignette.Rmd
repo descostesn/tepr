@@ -349,7 +349,7 @@ plotauc(res, plottype = "groups", outfile = "AUCcompare_group", formatname = "pn
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval", formatname = "png")
 
-plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
+plotmetagenes(res, "attenuation", plot = TRUE)
 
 plothistoknee(res, plot = TRUE)
 plothistoknee(res, plottype = "kb", plot = TRUE)
