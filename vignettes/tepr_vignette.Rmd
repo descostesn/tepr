@@ -441,7 +441,7 @@ with additional ecdf columns denoted with the `Fx` prefix.
 
 ```{r resecdf}
 resecdf <- resecdflist[[1]]
-head(as.data.frame(resecdf))
+print(head(as.data.frame(resecdf), 3))
 ```
 
 The second element returns the number of windows per transcript that we set to
