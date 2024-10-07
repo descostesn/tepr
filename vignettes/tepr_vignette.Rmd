@@ -686,3 +686,7 @@ parameter:
 ```{r kneekb}
 plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
+
+The plot on the complete dataset gives:
+
+<img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
