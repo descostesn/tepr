@@ -32,6 +32,8 @@
 #' @param groupname A string specifying the name of the column in
 #'  \code{unigroupdf} that defines the group classification of genes. Default is
 #'  \code{"Group"}.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
 #'
 #' @return A histogram showing the distribution of the distance from the TSS to
 #'  the knee point for attenuated genes. The plot can either be displayed
@@ -52,7 +54,7 @@
 #' @export
 
 plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # nolint
-    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = "./",
+    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
     formatname = "pdf", universename = "Universe", groupname = "Group",
     verbose = TRUE) {
 
