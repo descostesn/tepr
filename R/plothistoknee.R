@@ -53,7 +53,8 @@
 
 plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # nolint
     binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = "./",
-    formatname = "pdf", universename = "Universe", groupname = "Group") {
+    formatname = "pdf", universename = "Universe", groupname = "Group",
+    verbose = TRUE) {
 
         if (!isTRUE(all.equal(plottype, "percent")) &&
             !isTRUE(all.equal(plottype, "kb")))
@@ -88,8 +89,9 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             warning("You chose to plot the auc, the figure is not saved.") # nolint
             print(g)
        } else {
-            outfile <- paste0("histo_", plottype)
-            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
+            outfile <- paste0("histo_", plottype, ".", formatname)
+            if (verbose) message("Saving plot to ", file.path(outfold, outfile))
+            ggplot2::ggsave(filename = outfile,
                 plot = g, device = formatname, path = outfold)
         }
 }
