@@ -62,7 +62,7 @@
 #'
 #' @usage
 #' plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
-#' auc_stressname = "AUC_HS", 
+#' auc_stressname = "AUC_HS",
 #' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 #' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
 #' axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
