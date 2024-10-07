@@ -91,7 +91,7 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
        } else {
             outfile <- paste0("histo_", plottype, ".", formatname)
             if (verbose) message("Saving plot to ", file.path(outfold, outfile))
-            ggplot2::ggsave(filename = outfile,
-                plot = g, device = formatname, path = outfold)
+            ggplot2::ggsave(filename = outfile, plot = g, device = formatname,
+                path = outfold)
         }
 }
