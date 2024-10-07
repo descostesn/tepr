@@ -34,7 +34,7 @@
 }
 
 .callggplotecdf <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename, kneeval, plot) {
+    outfold, genename, kneeval, plot, formatname, verbose) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -69,8 +69,10 @@
         warning("You chose to plot the ecdf, the figure is not saved.")
         print(g2)
     } else {
-        ggplot2::ggsave(filename = paste0(genename, ".pdf"),
-            plot = g2, device = "pdf", path = outfold)
+        if (verbose) message("\t\t Saving figure to ", file.path(outfold,
+            paste0(genename, ".", formatname)))
+        ggplot2::ggsave(filename = paste0(genename, ".", formatname),
+            plot = g2, device = formatname, path = outfold)
     }
 }
 
@@ -88,10 +90,15 @@
 
 #' Plot Empirical Cumulative Distribution Function (ECDF)
 #'
+#' @description
 #' This function generates an ECDF plot to analyze transcription density
 #' relative to the distance from the transcription start site (TSS) across
 #' different conditions. The plot displays AUC values, Kolmogorov-Smirnov (KS)
 #' statistics, and knee points, with options to display or save the plot.
+#'
+#' @usage
+#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = NA,
+#' digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
 #'  transcription levels and cumulative distribution values (Fx) for different
@@ -103,7 +110,7 @@
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot.
 #' @param outfold A string specifying the output folder where the plot will be
-#'  saved if \code{plot = FALSE}. Default is the current directory.
+#'  saved if \code{plot = FALSE}. Default is \code{NA}.
 #' @param digits The number of decimal places to round the AUC and KS values.
 #'  Default is \code{2}.
 #' @param middlewind The index of the middle window representing the region
@@ -113,6 +120,9 @@
 #' @param plot A logical flag indicating whether to display the plot
 #'  interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
 #'  \code{FALSE}.
+#' @param formatname String of the format of the saved plot. Possible values are
+#'  "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", and "svg".
+#'  Default is \code{"pdf"}.
 #' @param verbose A logical flag indicating whether to display detailed
 #'  messages about the function's progress. Default is \code{TRUE}.
 #'
@@ -146,8 +156,13 @@
 #' @importFrom rlang .data
 #' @export
 
-plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, # nolint
-    digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE) {
+plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
+    outfold = NA, digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+    formatname = "pdf", verbose = TRUE) {
+
+    if (is.na(outfold) && !plot)
+        stop("The outfold should be defined to save the figure. Otherwise ",
+            "set plot = TRUE")
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
@@ -182,12 +197,12 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
         cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
         values_to = "Fx") %>%
         dplyr::mutate(conditions = gsub("Fx_|_score", "",
-            rlang::.data$conditions))
+            .data$conditions))
     dflongval <- df %>% tidyr::pivot_longer(
         cols = tidyselect::all_of(valcolvec), names_to = "conditions",
         values_to = "value") %>%
         dplyr::mutate(conditions = gsub("value_|_score", "",
-            rlang::.data$conditions))
+            .data$conditions))
     ## merging
     commoncols <- intersect(names(dflongfx), names(dflongval))
     dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
@@ -195,5 +210,5 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold, #
     ## Plotting
     if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
     .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename, kneeval, plot)
+        genename, kneeval, plot, formatname, verbose)
 }

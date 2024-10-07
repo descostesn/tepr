@@ -92,8 +92,13 @@
 
 #' Compute Mean and Differences of Scores for Each Condition
 #'
+#' @description
 #' This function calculates the mean values, mean Fx (ECDF) and ECDF differences
 #' (Fx) for expression data, across different experimental conditions.
+#'
+#' @usage
+#' meandifference(resultsecdf, expdf, nbwindows, showtime = FALSE,
+#' verbose = TRUE)
 #'
 #' @param resultsecdf A data frame containing ECDF results for each transcript
 #'  and condition (see genesECDF).
@@ -101,8 +106,11 @@
  #'   \code{condition} column.
 #' @param nbwindows An integer representing the number of windows (or segments)
 #'  in each transcript.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'  Defaults to \code{FALSE}.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A data frame that contains, for each condition:
 #' \itemize{
@@ -123,8 +131,10 @@
 #'
 #' @export
 
-meandifference <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
+meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
+  verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
@@ -157,6 +167,11 @@ meandifference <- function(resultsecdf, expdf, nbwindows, verbose = FALSE) {
     if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
         stop("The results of mean and diff should have the same number of ",
             "rows than resultsecdf, contact the developer")
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
 
     return(cbind(resultsecdf, res))
 }

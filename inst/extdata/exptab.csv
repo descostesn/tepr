@@ -1,0 +1,9 @@
+condition,replicate,direction,strand
+ctrl,1,forward,plus
+ctrl,1,reverse,minus
+ctrl,2,forward,plus
+ctrl,2,reverse,minus
+HS,1,forward,plus
+HS,1,reverse,minus
+HS,2,forward,plus
+HS,2,reverse,minus

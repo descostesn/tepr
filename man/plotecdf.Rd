@@ -4,19 +4,8 @@
 \alias{plotecdf}
 \title{Plot Empirical Cumulative Distribution Function (ECDF)}
 \usage{
-plotecdf(
-  dfmeandiff,
-  unigroupdf,
-  expdf,
-  genename,
-  colvec,
-  outfold,
-  digits = 2,
-  middlewind = 100,
-  pval = 0.01,
-  plot = FALSE,
-  verbose = TRUE
-)
+plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = NA,
+digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{dfmeandiff}{A data frame containing the mean differences of
@@ -34,7 +23,7 @@ their belonging to Universe or Group (see universegroup).}
 the plot.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
-saved if \code{plot = FALSE}. Default is the current directory.}
+saved if \code{plot = FALSE}. Default is \code{NA}.}
 
 \item{digits}{The number of decimal places to round the AUC and KS values.
 Default is \code{2}.}
@@ -48,6 +37,10 @@ significance of the KS test. Default is \code{0.01}.}
 \item{plot}{A logical flag indicating whether to display the plot
 interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
 \code{FALSE}.}
+
+\item{formatname}{String of the format of the saved plot. Possible values are
+"eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", and "svg".
+Default is \code{"pdf"}.}
 
 \item{verbose}{A logical flag indicating whether to display detailed
 messages about the function's progress. Default is \code{TRUE}.}

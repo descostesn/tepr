@@ -1,16 +1,16 @@
 .callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
     geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
-    outfold, genevec) {
+    outfold, genevec, verbose) {
 
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
 
-        if (isTRUE(all.equal(plottype, "pval")) && !is.na(genevec)) {
+        if (isTRUE(all.equal(plottype, "pval")) && !is.na(genevec[1])) {
 
             ## Adding highlight of the genes
             g <- g + ggrepel::geom_label_repel(data = subset(df,
-                rlang::.data$gene %in% genevec), aes(label = .data$gene), # nolint
+                gene %in% genevec), aes(label = .data$gene), # nolint
                 box.padding = 0.55, point.padding = 0,
                 segment.color = "black", max.overlaps = 50, color = "red") +
                 ggplot2::scale_color_gradient2(midpoint = 0, low = "white",
@@ -32,6 +32,8 @@
             warning("You chose to plot the auc, the figure is not saved.") # nolint
             print(g)
         } else {
+            if (verbose) message("\t\t Saving plot to ", file.path(outfold,
+                paste0(outfile, ".", formatname)))
             ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
                 plot = g, device = formatname, path = outfold)
         }
@@ -53,9 +55,20 @@
 
 #' Plot AUC Comparison Between Conditions
 #'
+#' @description
 #' This function generates scatterplots comparing the area under the curve (AUC)
 #' for control and stress conditions, with an option to highlight specific genes
 #' or groups. The plot can be saved as a file or displayed interactively.
+#'
+#' @usage
+#' plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+#' auc_stressname = "AUC_HS",
+#' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+#' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
+#' axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
+#' subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = ".",
+#' outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
+#' universename = "Universe", groupname = "Group", verbose = TRUE)
 #'
 #' @param tab A data frame containing the AUC values for control and stress
 #'  conditions, and other columns required for plotting (e.g., p-values or
@@ -81,9 +94,9 @@
 #' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
 #'  \code{"pdf"}.
 #' @param outfold Output folder where the plot will be saved. Default is
-#'  \code{"./"}.
+#'  \code{"."}.
 #' @param outfile Name of the output file. Default is
-#'  \code{"AUCcompare_pval.pdf"}.
+#'  \code{"AUCcompare_pval"}.
 #' @param plottype Type of plot to generate. Can be \code{"pval"} for p-value
 #'  based plots or \code{"groups"} for group-based plots. Default is
 #'  \code{"pval"}.
@@ -94,6 +107,8 @@
 #'  group in group-based plots. Default is \code{"Universe"}.
 #' @param groupname Column name in \code{tab} representing specific groups in
 #'  group-based plots. Default is \code{"Group"}.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
 #'
 #' @return A plot comparing AUC values between control and stress conditions,
 #'  either displayed or saved to a file.
@@ -106,7 +121,7 @@
 #'   \item \code{"groups"}: The plot highlights predefined groups, such as
 #'  "Attenuated" and "Outgroup", within the data.
 #' }
-#' 
+#'
 #' If \code{plot = TRUE}, the plot is displayed interactively. If
 #'  \code{plot = FALSE}, the plot is saved to a file in the specified format and
 #'  output folder.
@@ -131,9 +146,9 @@ plotauc <- function(tab, genevec = NA, # nolint
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
-    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
-    outfile = "AUCcompare_pval.pdf", plottype = "pval", plot = FALSE,
-    universename = "Universe", groupname = "Group") {
+    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = ".",
+    outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
+    universename = "Universe", groupname = "Group", verbose = TRUE) {
 
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
             pvalkstestcolname, genevec, tab)
@@ -162,5 +177,5 @@ plotauc <- function(tab, genevec = NA, # nolint
         .callggplotauc(df, aesvar, geompointinfo, geompointinfo2,
             geompointinfo3, plottype, axismin_x, axismax_x, axismin_y,
             axismax_y, labelx, labely, maintitle, subtitle, legendpos, plot,
-            outfile, formatname, outfold)
+            outfile, formatname, outfold, genevec, verbose)
 }

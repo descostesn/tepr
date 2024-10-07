@@ -4,16 +4,9 @@
 \alias{allauc}
 \title{Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data}
 \usage{
-allauc(
-  bytranslistmean,
-  expdf,
-  nbwindows,
-  nbcputrans,
-  dontcompare = NULL,
-  controlcondname = "ctrl",
-  stresscondname = "HS",
-  verbose = TRUE
-)
+allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
+controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+verbose = TRUE)
 }
 \arguments{
 \item{bytranslistmean}{A list of data frames, each containing transcript
@@ -26,20 +19,24 @@ the transcript data. It should have a column named 'condition'.}
 \item{nbwindows}{An integer specifying the number of windows to consider for
 AUC calculations.}
 
-\item{nbcputrans}{An integer specifying the number of CPU cores to use for
-parallel processing on bytranslistmean.}
+\item{nbcpu}{An integer specifying the number of CPU cores to use for
+parallel processing on bytranslistmean. Defaults to \code{1}.}
 
 \item{dontcompare}{An optional parameter to specify any conditions to exclude
-from the comparison.}
+from the comparison. Defaults to \code{NULL}.}
 
 \item{controlcondname}{A string specifying the name of the control condition
-(default is "ctrl").}
+Defaults to \code{"ctrl"}.}
 
-\item{stresscondname}{A string specifying the name of the stress condition
-(default is "HS").}
+\item{stresscondname}{A string specifying the name of the stress condition.
+Defaults to \code{"HS"}.}
+
+\item{showtime}{A logical value indicating if the duration of the function
+processing should be indicated before ending. Defaults to
+\code{FALSE}.}
 
 \item{verbose}{A logical value indicating whether to print progress messages
-(default is TRUE).}
+Defaults to \code{TRUE}.}
 }
 \value{
 A data frame containing the AUC and dAUC results for each transcript,
@@ -59,7 +56,7 @@ The function first checks if exactly two conditions are present in
 }
 \examples{
 # Example usage of allauc function
-# results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+# results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcpu = 4)
 
 }
 \seealso{

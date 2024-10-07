@@ -76,9 +76,15 @@
 
 #' Calculate Attenuation from AUC and Other Transcript Features
 #'
+#' @description
 #' This function computes the attenuation values for each window of each
 #' transcript based on the data frames obtained with the functions 'allauc',
 #' 'kneeid', and 'countna'.
+#'
+#' @usage
+#' attenuation(allaucdf, kneedf, matnatrans, bytranslistmean, expdf, dfmeandiff,
+#' nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+#' showtime = FALSE, verbose = TRUE)
 #'
 #' @param allaucdf A data frame containing AUC results for transcripts (see
 #'                 allauc).
@@ -94,14 +100,18 @@
 #'               parallel processing. The parallelization is done on
 #'               bytranslistmean whose number of elements is equal to the
 #'               number of lines provided as input of 'averageandfilterexprs'.
+#'               Defaults to \code{1}.
 #' @param significant A logical indicating whether to filter out non-significant
-#'                    attenuation values (default is FALSE).
+#'                    attenuation values. Defaults to \code{FALSE}.
 #' @param replaceval A value to replace non-significant attenuation values
-#'                   (default is NA).
+#'                   Defaults to \code{NA}.
 #' @param pval A numeric value specifying the p-value threshold for significance
-#'              (default is 0.1).
+#'              Defaults to \code{0.1}.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
-#'                 (default is TRUE).
+#'                 Defaults to \code{TRUE}.
 #'
 #' @return A data frame containing the computed attenuation values along with
 #'         associated transcript information.
@@ -133,8 +143,9 @@
 
 attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
-  verbose = TRUE) {
+  showtime = FALSE, verbose = TRUE) {
 
+      if (showtime) start_time <- Sys.time()
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
@@ -167,6 +178,11 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
         if (verbose) message("\t Keeping significant attenuation")
         auckneenasumatt <- .filterattenuation(auckneenasumatt, condvec, pval,
             replaceval, verbose)
+      }
+
+      if (showtime) {
+        end_time <- Sys.time()
+        message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
       }
 
       return(auckneenasumatt)

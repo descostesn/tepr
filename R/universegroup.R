@@ -1,11 +1,19 @@
 #' Define Universe and Group of Genes Based on Expression Data
 #'
+#' @description
 #' This function categorizes genes into a "Universe" and assigns them into
 #' groups such as "Attenuated" or "Outgroup" based on transcription data and
 #' thresholds. The universe is defined by thresholds for window size, missing
 #' data count, mean transcription levels, and p-values. Genes are further
 #' classified into groups based on conditions related to AUC and p-value
 #' thresholds.
+#'
+#' @usage
+#' universegroup(completedf, controlname = "ctrl", stressname = "HS",
+#' windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
+#' meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
+#' aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
+#' outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE)
 #'
 #' @param completedf A data frame obtained with the function attenuation.
 #' @param controlname A string representing the control condition name. Default
@@ -32,6 +40,11 @@
 #'  the p-value (from KS test) for defining attenuated genes. Default is 2.
 #' @param outgrouppvalksthres A numeric threshold for the maximum KS p-value
 #'  used to define the outgroup. Default is 0.2.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A modified data frame with two additional columns: \code{Universe},
 #'  indicating whether each gene is part of the universe, and \code{Group},
@@ -68,8 +81,9 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
     meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
     aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2) {
+    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
     meanstress <- paste("MeanValueFull", stressname, sep = "_")
     pvaltheory <- paste("adjFDR_p_AUC", controlname, sep = "_")
@@ -78,28 +92,35 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
     pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", stressname, "_", controlname)
 
     ## Computing the Universe column
+    if (verbose) message("Computing the Universe column")
     completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
-            rlang::.data$window_size > windsizethres &
-            rlang::.data$Count_NA < countnathres &
+            .data$window_size > windsizethres &
+            .data$Count_NA < countnathres &
             !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(rlang::.data$Universe, .before = 1)  # nolint
+            dplyr::relocate(.data$Universe, .before = 1)  # nolint
 
     ## Computing the Group column
+    if (verbose) message("Computing the Group column")
     completedf <- completedf %>%
         dplyr::mutate(
-            Group = ifelse(rlang::.data$Universe == TRUE &
+            Group = ifelse(.data$Universe == TRUE &
                 !!sym(aucstress) > aucstressthres &
                 -log10(!!sym(pvalks)) > attenuatedpvalksthres, "Attenuated",
                 NA),
-            Group = ifelse(rlang::.data$Universe == TRUE &
+            Group = ifelse(.data$Universe == TRUE &
                 !!sym(pvalks) > outgrouppvalksthres &
                 !!sym(aucctrl) > aucctrlthreshigher &
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
-                    rlang::.data$Group)) %>%
-                dplyr::relocate(rlang::.data$Group, .before = 2)
+                    .data$Group)) %>%
+                dplyr::relocate(.data$Group, .before = 2)
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
 
     return(completedf)
 }

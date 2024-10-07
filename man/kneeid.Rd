@@ -4,7 +4,7 @@
 \alias{kneeid}
 \title{Identify the Knee and Max ECDF Differences for Each Transcript}
 \usage{
-kneeid(transdflist, expdf, nbcputrans, verbose = FALSE)
+kneeid(transdflist, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{transdflist}{A list of data frames where each data frame contains
@@ -13,12 +13,16 @@ transcript data with ECDF values for each condition.}
 \item{expdf}{A data frame containing experimental information including a
 \code{condition} column.}
 
-\item{nbcputrans}{An integer specifying the number of CPU cores to use for
+\item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. The parallelization is performed on the elements of
-transdflist.}
+transdflist. Defaults to 1.}
+
+\item{showtime}{A logical value indicating if the duration of the function
+processing should be indicated before ending. Defaults to
+\code{FALSE}.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages.
-Defaults to \code{FALSE}.}
+Defaults to \code{TRUE}.}
 }
 \value{
 A data frame where each row corresponds to a transcript and contains
@@ -33,6 +37,6 @@ the maximum difference in the empirical cumulative distribution function
 \examples{
 # Assuming transdflist is a list of transcript data frames and expdf contains
 # conditions for each experiment:
-# result <- kneeid(transdflist, expdf, nbcputrans = 4, verbose = TRUE)
+# result <- kneeid(transdflist, expdf, nbcpu = 4, verbose = TRUE)
 
 }

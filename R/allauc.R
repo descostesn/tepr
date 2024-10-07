@@ -1,8 +1,8 @@
 .returninfodf <- function(transtab, nbwindows) { # nolint
 
     infodf <- transtab  %>%
-        dplyr::filter(rlang::.data$window == round(nbwindows / 2))  %>%
-        dplyr::mutate(window_size = abs(rlang::.data$coor2 - rlang::.data$coor1), # nolint
+        dplyr::filter(.data$window == round(nbwindows / 2))  %>%
+        dplyr::mutate(window_size = abs(.data$coor2 - .data$coor1), # nolint
           .keep = "all") %>%
         dplyr::select("transcript", "gene", "strand", "window_size") %>%
         dplyr::distinct()
@@ -134,9 +134,15 @@
 
 #' Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 #'
+#' @description
 #' This function computes the Area Under Curve (AUC) and the differences of AUC
 #' between two conditions for a list of transcript data. It supports parallel
 #' computation for efficiency.
+#'
+#' @usage
+#' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
+#' controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+#' verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more
@@ -145,16 +151,19 @@
 #'              the transcript data. It should have a column named 'condition'.
 #' @param nbwindows An integer specifying the number of windows to consider for
 #'                  AUC calculations.
-#' @param nbcputrans An integer specifying the number of CPU cores to use for
-#'                    parallel processing on bytranslistmean.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'               parallel processing on bytranslistmean. Defaults to \code{1}.
 #' @param dontcompare An optional parameter to specify any conditions to exclude
-#'                    from the comparison.
+#'                    from the comparison. Defaults to \code{NULL}.
 #' @param controlcondname A string specifying the name of the control condition
-#'                         (default is "ctrl").
-#' @param stresscondname A string specifying the name of the stress condition
-#'                        (default is "HS").
+#'                         Defaults to \code{"ctrl"}.
+#' @param stresscondname A string specifying the name of the stress condition.
+#'                        Defaults to \code{"HS"}.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical value indicating whether to print progress messages
-#'                 (default is TRUE).
+#'                 Defaults to \code{TRUE}.
 #'
 #' @return A data frame containing the AUC and dAUC results for each transcript,
 #'         along with associated statistical information.
@@ -167,7 +176,7 @@
 #'
 #' @examples
 #' # Example usage of allauc function
-#' # results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcputrans = 4)
+#' # results <- allauc(bytranslistmean, expdf, nbwindows = 100, nbcpu = 4)
 #'
 #' @seealso
 #' [genesECDF]
@@ -180,18 +189,16 @@
 #'
 #' @export
 
-allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
+allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-  verbose = TRUE) {
+  showtime = FALSE, verbose = TRUE) {
+
+    if (showtime) start_time <- Sys.time()
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
-        start_time <- Sys.time()
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
-          nbcputrans, controlcondname, stresscondname)
-        end_time <- Sys.time()
-        if (verbose) message("\t\t ## Analysis performed in: ",
-          end_time - start_time) # nolint
+          nbcpu, controlcondname, stresscondname)
     } else {
         warning("dAUC not performed, only one condition submitted.")
     }
@@ -199,16 +206,17 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcputrans,
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
     ## Calculate Mean Value over the full gene body in All conditions.
     if (verbose) message("\t Computing the Area Under Curve (AUC)")
-    start_time <- Sys.time()
     aucallcond <- .auc_allconditions(bytranslistmean, expdf, nbwindows,
-      nbcpu = nbcputrans)
-    end_time <- Sys.time()
-    if (verbose) message("\t\t ## Analysis performed in: ",
-      end_time - start_time) # nolint
+      nbcpu = nbcpu)
 
     ## Merging the two tables by transcript
     if (verbose) message("Merging results")
     allauc <- merge(aucallcond, daucallcond,
       by = c("gene", "transcript", "strand", "window_size"))
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
     return(allauc)
 }

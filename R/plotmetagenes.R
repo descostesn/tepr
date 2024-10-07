@@ -2,22 +2,19 @@
     auc_ctrlname, auc_stressname) {
 
     ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(rlang::.data$transcript,
-        rlang::.data$gene, rlang::.data$strand, dplyr::contains("Full"),
-        !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")),
-        rlang::.data$window_size)
+    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
+        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
+        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
-        dplyr::filter(rlang::.data$transcript %in% transvec) %>% #nolint
-        dplyr::left_join(rlang::.data, AUC_allcondi,
+        dplyr::filter(transcript %in% transvec) %>% #nolint
+        dplyr::left_join(., AUC_allcondi,
             by = c("transcript", "gene")) %>%
-        dplyr::select(rlang::.data$transcript, rlang::.data$gene,
-            rlang::.data$coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(rlang::.data$coord) %>%
+        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
+        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(rlang::.data, na.rm = TRUE)))
+        ~ mean(., na.rm = TRUE)))
 
     return(result)
 }
@@ -33,10 +30,17 @@
 
 #' Plot Metagenes for Gene Groups
 #'
+#' @description
 #' This function plots metagene profiles based on transcript data, comparing
 #' transcription density across conditions (e.g., control vs. stress). The
 #' function allows the user to plot metagenes for different gene groups such as
 #' attenuated genes, outgroup genes, the entire universe of genes, or all genes.
+#'
+#' @usage
+#' plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
+#' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
+#' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = ".",
+#' verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level information, including
 #'  group classifications and dAUC data for different conditions (see
@@ -60,6 +64,8 @@
 #'  Default is \code{"pdf"}.
 #' @param outfold A string specifying the output folder where the plot will be
 #'  saved if \code{plot = FALSE}. Default is the current directory.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
 #'
 #' @return A metagene plot comparing transcription density across conditions
 #'  (e.g., control vs. stress) for the selected group of genes. The plot can
@@ -87,13 +93,13 @@
 #' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-#' 
+#'
 #' @export
 
 plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = "./") {
+    outfold = ".", verbose = TRUE) {
 
     .checkmetagenes(plottype)
     colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
@@ -125,10 +131,10 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
 
     ## plotting
     g <-  ggplot2::ggplot() +
-        ggplot2::geom_line(data = df, ggplot2::aes(x = rlang::.data$coord / 2,
+        ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
         y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
         ggplot2::geom_line(data = df,
-            aes(x = rlang::.data$coord / 2, y = !!sym(meanvalstress)),
+            aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
             color = "#FC4E07", size = 1.5) +
         ggplot2::theme_bw() + ggplot2::ylim(0,7) +
         ggplot2::labs(x = "TSS to TTS", title = titleplot,
@@ -140,6 +146,8 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
         print(g)
     } else {
         outfile <- paste0("metagene_", plottype)
+        if (verbose) message("\t\t Saving plot to ", file.path(outfold,
+            paste0(outfile, ".", formatname)))
         ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
                 plot = g, device = formatname, path = outfold)
         }

@@ -1,11 +1,15 @@
 #' Count NA values per transcript and condition
 #'
+#' @description
 #' This function takes a list of expression data frames, a condition
 #' information data frame, and counts the number of NA values for each
 #' transcript based on strand and condition. NA represent missing scores that
 #' were filtered out from the black list and mappability track. The function
 #' operates in parallel on transcripts to speed up the process using multiple
 #' CPU cores.
+#'
+#' @usage
+#' countna(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 #'
 #' @param allexprsdfs A list of data frames containing expression data. The
 #'  first element is assumed to be the main table. The second element is a
@@ -16,8 +20,12 @@
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
+#'  Defaults to \code{1}.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'  Defaults to \code{FALSE}.
+#'  Defaults to \code{TRUE}.
 #'
 #' @return A data frame where each row corresponds to a transcript, along with
 #'  its associated gene, strand, and the count of NA values.
@@ -35,8 +43,10 @@
 #'
 #' @export
 
-countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
+countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
+  verbose = TRUE) {
 
+  if (showtime) start_time <- Sys.time()
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
   condvec <- unique(expdf$condition)
@@ -76,6 +86,11 @@ countna <- function(allexprsdfs, expdf, nbcpu, verbose = FALSE) {
           strand = unique(transtable$strand))
         return(cbind(info, Count_NA = countna))
     }, scorecolvec, condvec, mc.cores = nbcpu)
+
+  if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+  }
 
   return(do.call("rbind", nabytranslist))
 }

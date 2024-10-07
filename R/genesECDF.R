@@ -35,7 +35,7 @@
         dflong[, "value_round"] <- round(dflong$value * rounding)
         ecdflist <- lapply(unique(dflong$variable), function(currentvar) {
             dfsubset <- subset(dflong,
-              subset = rlang::.data$variable == currentvar)
+              subset = variable == currentvar)
             dfexpanded <- dfsubset[rep(seq_len(nrow(dfsubset)),
                 dfsubset$value_round), ]
             funecdf <- stats::ecdf(dfexpanded[, "coord"])
@@ -45,10 +45,10 @@
         resecdf <- dplyr::bind_rows(ecdflist)
 
         ## Shrink the results back to the transtable keeping ecdf columns
-        res <- resecdf %>% tidyr::pivot_wider(rlang::.data,
+        res <- resecdf %>% tidyr::pivot_wider(.,
             names_from = "variable",
             values_from = c("value", "value_round", "Fx")) %>%
-            dplyr::select(rlang::.data, -tidyselect::contains("value_round"))
+            dplyr::select(., -tidyselect::contains("value_round"))
 
         ## Removing strand from column names
         res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
@@ -59,23 +59,31 @@
 
 #' Compute ECDF for Genes Based on Expression Data
 #'
+#' @description
 #' This function calculates the empirical cumulative distribution function
 #' (ECDF) for expressed genes across multiple transcripts. It processes the
 #' expression data to filter out non-expressed transcripts, compute ECDF values
 #' for each transcript, and combine the results into a unified data frame. The
 #' function operates in parallel for speed optimization.
 #'
+#' @usage
+#' genesECDF(allexprsdfs, expdf, nbcpu = 1, rounding = 10,
+#' showtime = FALSE, verbose = TRUE)
+#'
 #' @param allexprsdfs A list of data frames where the first element is the main
 #'    expression data frame and the second element contains the names of the
 #'    expressed transcripts (see 'averageandfilterexprs').
 #' @param expdf A data frame containing experimental conditions and other
 #'    relevant information.
-#' @param rounding An integer specifying the rounding factor for computing ECDF.
-#'    Default is \code{10}.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'    parallel computation. Default is \code{1}.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'    Default is \code{10}.
+#' @param showtime A logical value indicating if the duration of the function
+#'                  processing should be indicated before ending. Defaults to
+#'                  \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'    Default is \code{FALSE}.
+#'    Default is \code{TRUE}.
 #'
 #' @return A list containing two elements:
 #' \item{concatdf}{A data frame with ECDF results for each transcript.}
@@ -109,14 +117,15 @@
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 #' @importFrom stats ecdf
-#' 
+#'
 #' @seealso
 #' [averageandfilterexprs]
 #' @export
 
-genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
-  verbose = FALSE) {
+genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
+  showtime = FALSE, verbose = TRUE) {
 
+    if (showtime) start_time <- Sys.time()
     ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
@@ -148,6 +157,11 @@ genesECDF <- function(allexprsdfs, expdf, rounding = 10, nbcpu = 1, # nolint
     }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+    }
 
     return(list(concatdf, nbrows))
 }

@@ -4,18 +4,10 @@
 \alias{plothistoknee}
 \title{Plot Histogram of Distance from TSS to Knee Point}
 \usage{
-plothistoknee(
-  unigroupdf,
-  plottype = "percent",
-  xlimvec = NA,
-  binwidthval = NA,
-  kneename = "knee_AUC_HS",
-  plot = FALSE,
-  outfold = "./",
-  formatname = "pdf",
-  universename = "Universe",
-  groupname = "Group"
-)
+plothistoknee(unigroupdf, plottype = "percent", xlimvec = NA,
+binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+formatname = "pdf", universename = "Universe", groupname = "Group",
+verbose = TRUE)
 }
 \arguments{
 \item{unigroupdf}{A data frame containing gene-level statistics, including
@@ -54,6 +46,9 @@ Default is \code{"pdf"}.}
 \item{groupname}{A string specifying the name of the column in
 \code{unigroupdf} that defines the group classification of genes. Default is
 \code{"Group"}.}
+
+\item{verbose}{A logical flag indicating whether to display detailed
+messages about the function's progress. Default is \code{TRUE}.}
 }
 \value{
 A histogram showing the distribution of the distance from the TSS to
