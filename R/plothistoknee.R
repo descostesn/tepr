@@ -1,9 +1,16 @@
 #' Plot Histogram of Distance from TSS to Knee Point
 #'
+#' @description
 #' This function generates a histogram showing the distribution of the distance
 #' from the transcription start site (TSS) to the knee point for attenuated
 #' genes. The distance can be plotted either as a percentage of the gene length
 #' or in kilobases (kb).
+#'
+#' @usage
+#' plothistoknee(unigroupdf, plottype = "percent", xlimvec = NA,
+#' binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+#' formatname = "pdf", universename = "Universe", groupname = "Group",
+#' verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level statistics, including
 #'  knee point data and group classification (see universegroup).
@@ -51,6 +58,7 @@
 #' @importFrom dplyr filter
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#'
 #' @export
 
 plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # nolint
