@@ -503,7 +503,7 @@ results are returned by transcript along with a mean value that is called
 ```{r allauc}
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 resauc <- allauc(bytranslistmean, expdf, nbwindows)
-print(head(resauc))
+print(head(resauc, 3))
 ```
 
 ## Identify the Knee and Max ECDF Differences for Each Transcript
