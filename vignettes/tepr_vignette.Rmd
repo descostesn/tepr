@@ -633,7 +633,7 @@ plotauc(res, plottype = "groups", plot = TRUE)
 
 The plot on the complete dataset gives:
 
-TO DO
+<img src="pictures/AUCcompare_group.png" alt="AUC group plot" width="400"/>
 
 It is also possible to compare the AUC by coloring points according to the
 Kolmogorov-Smirnov test adjusted p-values and to indicate graphically the points
