@@ -537,7 +537,7 @@ The three values *att*, *downmean*, and *upmean* are provided by the columns
 ## Calculate Attenuation from AUC and Other Transcript Features
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
     resmeandiff)
-print(head(resatt))
+print(head(resatt, 3))
 ```
 
 ## Define Universe and Group of Genes Based on Expression Data
