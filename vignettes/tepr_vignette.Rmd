@@ -470,7 +470,7 @@ The difference is defined as: *diff_Fx = meanECDF - cumvec / nbwindows*
 ```{r meandifference}
 ## Compute Mean and Differences of Scores for Each Condition
 resmeandiff <- meandifference(resecdf, expdf, nbwindows)
-head(resmeandiff)
+print(head(resmeandiff, 3))
 ```
 
 To avoid code duplication in the following steps, we transform the above results
