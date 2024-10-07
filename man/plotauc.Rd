@@ -9,7 +9,7 @@ auc_stressname = "AUC_HS",
 pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
 axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
-subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
+subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = ".",
 outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
 universename = "Universe", groupname = "Group", verbose = TRUE)
 }
@@ -53,7 +53,7 @@ p-values from the KS test. Default is
 \code{"pdf"}.}
 
 \item{outfold}{Output folder where the plot will be saved. Default is
-\code{"./"}.}
+\code{"."}.}
 
 \item{outfile}{Name of the output file. Default is
 \code{"AUCcompare_pval"}.}

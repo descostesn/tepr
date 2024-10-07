@@ -6,7 +6,7 @@
 \usage{
 plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
 daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
-auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = "./",
+auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = ".",
 verbose = TRUE)
 }
 \arguments{
