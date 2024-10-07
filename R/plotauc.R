@@ -144,7 +144,7 @@ plotauc <- function(tab, genevec = NA, # nolint
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
     subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
     outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
-    universename = "Universe", groupname = "Group") {
+    universename = "Universe", groupname = "Group", verbose = TRUE) {
 
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
             pvalkstestcolname, genevec, tab)
@@ -173,5 +173,5 @@ plotauc <- function(tab, genevec = NA, # nolint
         .callggplotauc(df, aesvar, geompointinfo, geompointinfo2,
             geompointinfo3, plottype, axismin_x, axismax_x, axismin_y,
             axismax_y, labelx, labely, maintitle, subtitle, legendpos, plot,
-            outfile, formatname, outfold)
+            outfile, formatname, outfold, genevec, verbose)
 }
