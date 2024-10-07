@@ -68,7 +68,7 @@
 #' axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
 #' subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
 #' outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
-#' universename = "Universe", groupname = "Group")
+#' universename = "Universe", groupname = "Group", verbose = TRUE)
 #'
 #' @param tab A data frame containing the AUC values for control and stress
 #'  conditions, and other columns required for plotting (e.g., p-values or
@@ -107,6 +107,8 @@
 #'  group in group-based plots. Default is \code{"Universe"}.
 #' @param groupname Column name in \code{tab} representing specific groups in
 #'  group-based plots. Default is \code{"Group"}.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
 #'
 #' @return A plot comparing AUC values between control and stress conditions,
 #'  either displayed or saved to a file.
