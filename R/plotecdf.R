@@ -34,7 +34,7 @@
 }
 
 .callggplotecdf <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename, kneeval, plot, formatname) {
+    outfold, genename, kneeval, plot, formatname, verbose) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -69,6 +69,8 @@
         warning("You chose to plot the ecdf, the figure is not saved.")
         print(g2)
     } else {
+        if (verbose) message("\t\t Saving figure to ", file.path(outfold,
+            paste0(genename, ".", formatname)))
         ggplot2::ggsave(filename = paste0(genename, ".", formatname),
             plot = g2, device = formatname, path = outfold)
     }
@@ -208,5 +210,5 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
     ## Plotting
     if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
     .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename, kneeval, plot, formatname)
+        genename, kneeval, plot, formatname, verbose)
 }
