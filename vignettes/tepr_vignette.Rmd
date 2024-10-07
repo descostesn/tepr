@@ -678,7 +678,7 @@ plothistoknee(res, plot = TRUE)
 
 The plot on the complete dataset gives:
 
-TO DO
+<img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
 
 The distance can also be visualised in kilobases (kb) by changing the *plottype*
 parameter:
