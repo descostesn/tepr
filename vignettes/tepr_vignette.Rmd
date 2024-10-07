@@ -349,7 +349,7 @@ plotauc(res, plottype = "groups", outfile = "AUCcompare_group", formatname = "pn
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval", formatname = "png")
 
-plotmetagenes(res, "attenuation", plot = TRUE)
+plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
 
 plothistoknee(res, plot = TRUE)
 plothistoknee(res, plottype = "kb", plot = TRUE)
@@ -651,7 +651,7 @@ The average transcription density along a meta-transcript or a meta-gene can be
 visualized with:
 
 ```{r metageneplot}
-plotmetagenes(unigroupdf, "attenuation", plot = TRUE)
+plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -682,12 +682,3 @@ parameter:
 ```{r kneekb}
 plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
-
-
-
-
-
-
-
-
-
