@@ -660,7 +660,7 @@ plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
 
 The plot on the complete dataset gives:
 
-TO DO
+<img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
 
 Note that the second parameter tells to plot the distribution for the
 transcripts identified as "attenuated" by the function `universegroup`. The
