@@ -8,14 +8,13 @@
 
     ## Selecting coord and mean values
     result <- dfmeandiff %>%
-        dplyr::filter(.data$transcript %in% transvec) %>% #nolint
-        dplyr::left_join(.data, AUC_allcondi,
+        dplyr::filter(transcript %in% transvec) %>% #nolint
+        dplyr::left_join(., AUC_allcondi,
             by = c("transcript", "gene")) %>%
-        dplyr::select(.data$transcript, .data$gene,
-            .data$coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(.data$coord) %>%
+        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
+        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
         dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(.data, na.rm = TRUE)))
+        ~ mean(., na.rm = TRUE)))
 
     return(result)
 }
