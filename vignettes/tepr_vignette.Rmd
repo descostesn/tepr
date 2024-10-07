@@ -646,7 +646,7 @@ plotauc(res, genevec, plot = TRUE)
 
 The plot on the complete dataset gives:
 
-TO DO
+<img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
 
 
 ### Metagenes
