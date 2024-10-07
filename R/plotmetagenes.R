@@ -145,9 +145,9 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
         warning("You chose to plot the auc, the figure is not saved.") # nolint
         print(g)
     } else {
+        outfile <- paste0("metagene_", plottype)
         if (verbose) message("\t\t Saving plot to ", file.path(outfold,
             paste0(outfile, ".", formatname)))
-        outfile <- paste0("metagene_", plottype)
         ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
                 plot = g, device = formatname, path = outfold)
         }
