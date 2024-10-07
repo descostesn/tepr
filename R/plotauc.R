@@ -1,7 +1,7 @@
 .callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
     geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
-    outfold, genevec) {
+    outfold, genevec, verbose) {
 
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
@@ -32,6 +32,8 @@
             warning("You chose to plot the auc, the figure is not saved.") # nolint
             print(g)
         } else {
+            if (verbose) message("\t\t Saving plot to ", file.path(outfold,
+                paste0(outfile, ".", formatname)))
             ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
                 plot = g, device = formatname, path = outfold)
         }
