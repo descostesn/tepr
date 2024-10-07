@@ -30,10 +30,17 @@
 
 #' Plot Metagenes for Gene Groups
 #'
+#' @description
 #' This function plots metagene profiles based on transcript data, comparing
 #' transcription density across conditions (e.g., control vs. stress). The
 #' function allows the user to plot metagenes for different gene groups such as
 #' attenuated genes, outgroup genes, the entire universe of genes, or all genes.
+#'
+#' @usage
+#' plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
+#' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
+#' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = "./",
+#' verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level information, including
 #'  group classifications and dAUC data for different conditions (see
