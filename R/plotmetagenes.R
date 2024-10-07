@@ -64,6 +64,8 @@
 #'  Default is \code{"pdf"}.
 #' @param outfold A string specifying the output folder where the plot will be
 #'  saved if \code{plot = FALSE}. Default is the current directory.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
 #'
 #' @return A metagene plot comparing transcription density across conditions
 #'  (e.g., control vs. stress) for the selected group of genes. The plot can
@@ -91,7 +93,7 @@
 #' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-#' 
+#'
 #' @export
 
 plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
