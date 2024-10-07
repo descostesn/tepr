@@ -14,7 +14,7 @@ vignette: >
 # Introduction
 
 TepR (Transcription elongation profile in R) is a package for analyzing data
-from nascent RNA sequencing data (TT-seq, mNET-seq, PRO-seq, etc.).
+from nascent RNA sequencing technologies (TT-seq, mNET-seq, PRO-seq, etc.).
 The general principle relies on calculating the cumulative signal of nascent RNA
 sequencing over the gene body of any given gene or transcription unit. TePR can
 identify transcription attenuation sites by comparing profile to a null model
@@ -248,7 +248,7 @@ invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx
 
 To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`.
 
-## Note on processing the complete datset
+## Note on processing the complete dataset
 
 Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. The composition of the experiment table is indicated in the next section.
 
