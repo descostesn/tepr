@@ -4,29 +4,14 @@
 \alias{plotauc}
 \title{Plot AUC Comparison Between Conditions}
 \usage{
-plotauc(
-  tab,
-  genevec = NA,
-  auc_ctrlname = "AUC_ctrl",
-  auc_stressname = "AUC_HS",
-  pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
-  labelx = "AUC in Control",
-  labely = "AUC in Stress",
-  axismin_x = -10,
-  axismax_x = 100,
-  axismin_y = -10,
-  axismax_y = 100,
-  maintitle = "",
-  subtitle = "",
-  legendpos = "bottom",
-  formatname = "pdf",
-  outfold = "./",
-  outfile = "AUCcompare_pval.pdf",
-  plottype = "pval",
-  plot = FALSE,
-  universename = "Universe",
-  groupname = "Group"
-)
+plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+auc_stressname = "AUC_HS", 
+pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
+axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
+subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = "./",
+outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
+universename = "Universe", groupname = "Group")
 }
 \arguments{
 \item{tab}{A data frame containing the AUC values for control and stress
@@ -71,7 +56,7 @@ p-values from the KS test. Default is
 \code{"./"}.}
 
 \item{outfile}{Name of the output file. Default is
-\code{"AUCcompare_pval.pdf"}.}
+\code{"AUCcompare_pval"}.}
 
 \item{plottype}{Type of plot to generate. Can be \code{"pval"} for p-value
 based plots or \code{"groups"} for group-based plots. Default is
