@@ -406,7 +406,7 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 `resallexprs` is a list which first element contains `transdf` with added column names. The column names are built from `expdf`. The second element contains a vector of the transcripts considered as expressed. This vector will be used for further downstream analyses.
 
 ```{r exprsvec}
-## Print the first 10 expressed transcripts
+## Print the first 6 expressed transcripts
 head(resallexprs[[2]])
 ```
 
@@ -533,7 +533,8 @@ print(head(resknee))
 The attenuation is the goal value for which the different statistics were
 previously computed. The `attenuation` function calculates the mean value of all
 window mean scores before and after the knee location. It then provides an
-"attenuation score" with the formula: *att <- 100 - downmean / upmean * 100*.
+"attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x
+for multiplication).
 The three values *att*, *downmean*, and *upmean* are provided by the columns
 "UP_mean_", "DOWN_mean_", and "Attenuation_".
 
@@ -569,12 +570,12 @@ The user can adjust the different threshold along the analysis. A transcript
 satisfying the above criterion is defined as belonging to the `Universe` of the
 transcripts to analyze (Universe column contains TRUE).
 
-The transcript of the Universe are further divided into `Group`. A transcript
-belongs to the "attenuated" group if:
+The transcripts of the Universe are further divided into `Group`. A transcript
+belongs to the "Attenuated" group if:
 
 1) It belongs to the Universe
 2) The Area Under the Curve is high enough
-3) The `-log10` of the adjust p-value of the Kolmogorov-Smirnov test is above x.
+3) The `-log10` of the adjust p-value of the Kolmogorov-Smirnov test is above threshold.
 
 Analytically it gives:
 
@@ -584,7 +585,7 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
-A transcript is considered as not attenuated ("Outgroup") if:
+A transcript is considered as non-attenuated ("Outgroup") if:
 
 1) The Kolmogorov-Smirnov adjusted p-value is above a threshold
 2) The control AUC is between two user-defined thresholds.
@@ -596,6 +597,7 @@ pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
+Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA.
 The columns `Universe` and `Group` are computed with:
 
 ```{r universegroup}
@@ -603,6 +605,7 @@ The columns `Universe` and `Group` are computed with:
 res <- universegroup(resatt)
 print(head(res, 2))
 ```
+
 
 ## Plotting
 
@@ -624,7 +627,7 @@ plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 
 ### AUC
 
-The AUC values between conditions can be compared either by highlighting the
+The AUC values between conditions can be compared by highlighting the
 two conditions on the plot:
 
 ```{r plotaucgroups}
@@ -636,10 +639,10 @@ The plot on the complete dataset gives:
 <img src="pictures/AUCcompare_group.png" alt="AUC group plot" width="400"/>
 
 It is also possible to compare the AUC by coloring points according to the
-Kolmogorov-Smirnov test adjusted p-values and to indicate graphically the points
-corresponding to a group of genes:
+Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the
+points corresponding to a group of genes:
 
-```
+```{r plotaucpval}
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, genevec, plot = TRUE)
 ```
