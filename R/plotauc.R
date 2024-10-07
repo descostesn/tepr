@@ -6,7 +6,7 @@
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
 
-        if (isTRUE(all.equal(plottype, "pval")) && !is.na(genevec)) {
+        if (isTRUE(all.equal(plottype, "pval")) && !is.na(genevec[1])) {
 
             ## Adding highlight of the genes
             g <- g + ggrepel::geom_label_repel(data = subset(df,
