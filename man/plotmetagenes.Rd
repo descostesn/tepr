@@ -4,17 +4,10 @@
 \alias{plotmetagenes}
 \title{Plot Metagenes for Gene Groups}
 \usage{
-plotmetagenes(
-  unigroupdf,
-  dfmeandiff,
-  plottype = "attenuation",
-  daucname = "dAUC_Diff_meanFx_HS_ctrl",
-  auc_ctrlname = "AUC_ctrl",
-  auc_stressname = "AUC_HS",
-  plot = FALSE,
-  formatname = "pdf",
-  outfold = "./"
-)
+plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
+daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
+auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = "./",
+verbose = TRUE)
 }
 \arguments{
 \item{unigroupdf}{A data frame containing gene-level information, including
@@ -47,6 +40,9 @@ Default is \code{"pdf"}.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
 saved if \code{plot = FALSE}. Default is the current directory.}
+
+\item{verbose}{A logical flag indicating whether to display detailed
+messages about the function's progress. Default is \code{TRUE}.}
 }
 \value{
 A metagene plot comparing transcription density across conditions
