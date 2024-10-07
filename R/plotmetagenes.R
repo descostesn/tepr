@@ -90,7 +90,7 @@
 plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = "./") {
+    outfold = "./", verbose = TRUE) {
 
     .checkmetagenes(plottype)
     colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
@@ -136,6 +136,8 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
         warning("You chose to plot the auc, the figure is not saved.") # nolint
         print(g)
     } else {
+        if (verbose) message("\t\t Saving plot to ", file.path(outfold,
+            paste0(outfile, ".", formatname)))
         outfile <- paste0("metagene_", plottype)
         ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
                 plot = g, device = formatname, path = outfold)
