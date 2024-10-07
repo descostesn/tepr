@@ -371,7 +371,7 @@ colnames(transdf) <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
     "HS_rep1.plus", "HS_rep1.plus_score", "HS_rep1.minus",
     "HS_rep1.minus_score", "HS_rep2.plus", "HS_rep2.plus_score",
     "HS_rep2.minus", "HS_rep2.minus_score")
-head(transdf)
+print(head(transdf, 3))
 ```
 
 The second table contains information about each replicate:
