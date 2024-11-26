@@ -61,4 +61,10 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     lncrna <- .grepsequential(removevec, lncrna, invert = TRUE)
     lncrnabed <- .sortedbedformat(lncrna)
 
+    ## Combine the annotations
+    if (verbose) message("\t Combine the annotations")
+    protcodbed <- cbind(protcodbed, biotype = "protein-coding")
+    lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
+    allannobed <- rbind(protcodbed, lncrnabed)
+
 }
