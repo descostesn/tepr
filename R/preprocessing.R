@@ -11,6 +11,18 @@
     return(gentab)
 }
 
+.sortedbedformat <- function(gencode) {
+    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start
+    infolist <- strsplit(gencode$V9, ";")
+    namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
+    ensnamevec <- gsub(" transcript_id ", "", sapply(infolist, "[", 2)) # nolint
+    gencodebed <- cbind(gencode[, c(1, 4, 5)], ensnamevec, namevec,
+        gencode[, 7])
+    colnames(gencodebed) <- c("chrom", "start", "end", "ensembl", "symbol",
+        "strand")
+    return(gencodebed)
+}
+
 
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     verbose = TRUE) {
@@ -35,9 +47,9 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     ## transcript of the protein coding gene. This will be the MANE_Select
     ## transcript if there is one, or a transcript chosen by an Ensembl
     ## algorithm otherwise.
-    if (verbose) message("Selecting Ensembl_canonical transcripts")
+    if (verbose) message("\t Selecting Ensembl_canonical transcripts and ",
+        "sorting")
     gencodeprotcod <- .grepsequential("MANE_Select", gencode)
-
-
+    protcodbed <- .sortedbedformat(gencodeprotcod)
 
 }
