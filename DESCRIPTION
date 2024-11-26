@@ -43,7 +43,8 @@ Imports:
     matrixStats,
     rlang,
     magrittr,
-    purrr
+    purrr,
+    rtracklayer
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R'
