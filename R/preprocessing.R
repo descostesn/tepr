@@ -67,4 +67,8 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     lncrnabed <- cbind(lncrnabed, biotype = "lncRNA")
     allannobed <- rbind(protcodbed, lncrnabed)
 
+    if (!is.na(saveobjectpath))
+        saveRDS(allannobed, file.path(saveobjectpath, "allannobed.rds"))
+
+    return(allannobed)
 }
