@@ -52,4 +52,13 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     gencodeprotcod <- .grepsequential("MANE_Select", gencode)
     protcodbed <- .sortedbedformat(gencodeprotcod)
 
+    ## Selecting long non-coding transcripts
+    if (verbose) message("\t Selecting long non-coding transcripts and ",
+        "sorting")
+    lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
+    removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
+                "transcript_support_level 4")
+    lncrna <- .grepsequential(removevec, lncrna, invert = TRUE)
+    lncrnabed <- .sortedbedformat(lncrna)
+
 }
