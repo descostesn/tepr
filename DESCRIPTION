@@ -45,7 +45,8 @@ Imports:
     magrittr,
     purrr,
     rtracklayer,
-    GenomicRanges
+    GenomicRanges,
+    GenomeInfoDb
 Collate:
     'averageandfilterexprs.R'
     'genesECDF.R'
