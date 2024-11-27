@@ -263,6 +263,30 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(resmap)
 }
 
+.uniqueformatcolnames <- function(currenttrans) {
+
+    ## Verifying uniformity of chrom, transcript, and genes
+    uniquechrom <- as.character(unique(currenttrans$chrom))
+    uniquetrans <- as.character(unique(currenttrans$transcript.window))
+    uniquegene <- as.character(unique(currenttrans$gene.window))
+
+    if (!isTRUE(all.equal(length(uniquechrom), 1)) ||
+        !isTRUE(all.equal(length(uniquetrans), 1)) ||
+        !isTRUE(all.equal(length(uniquegene), 1)))
+            stop("chrom, transcript, and genes should be unique, this should", # nolint
+                " not happen. Contact the developper.") # nolint
+
+    ## Renaming window and coord columns removing the suffix
+    colnamevec <- colnames(currenttrans)
+    colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
+    colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord"
+    colnames(currenttrans)[which(colnamevec == "gene.window")] <- "gene"
+    colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript" # nolint
+
+    return(list(currenttrans, uniquechrom, uniquetrans, uniquegene))
+
+}
+
 .arrangewindows <- function(currenttrans, windsize, allwindstrand,
     currentname) {
 
