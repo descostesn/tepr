@@ -390,6 +390,23 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(wmeanvec)
 }
 
+.replaceframeswithwmean <- function(currenttrans, dupidx, windsize, transname,
+    dupframenbvec, colscore, wmeanvec) {
+
+        ## Remove duplicated frames and replace scores by wmean
+        currenttrans <- currenttrans[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+            stop("The number of frames should be equal to windsize: ",
+                windsize, " for transcript ", transname)
+        idxscorereplace <- match(dupframenbvec, currenttrans$window)
+        if (!isTRUE(all.equal(dupframenbvec,
+            currenttrans$window[idxscorereplace])))
+            stop("Problem in replacing scores by wmean, contact the developer.")
+        currenttrans[idxscorereplace, colscore] <- wmeanvec
+
+        return(currenttrans)
+}
+
 .missingandwmean <- function(resmap, windsize, allwindstrand, currentname,
     nbcputrans) {
 
