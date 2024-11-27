@@ -77,15 +77,15 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
 ###########################
 
-.makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, verbose = TRUE) {
+.makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, verbose) {
 
     ## Filtering out intervals smaller than nbwindows
     idxsmall <- which((expbed$end - expbed$start) < nbwindows)
     lsmall <- length(idxsmall)
     if (!isTRUE(all.equal(lsmall, 0))) {
-        message("Excluding ", lsmall, "/", nrow(expbed), " annotations that ",
-        "are too short.")
-        expbed <- expbed[-idxsmall,]
+        message("\t Excluding ", lsmall, "/", nrow(expbed),
+            " annotations that are too short.")
+        expbed <- expbed[-idxsmall, ]
     }
 
     ## Splitting each transcript into "nbwindows" windows
@@ -106,8 +106,8 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     idxpar <- grep("PAR_Y", allannobed$ensembl)
     if (!isTRUE(all.equal(length(idxpar), 0)))
         allannobed <- allannobed[-idxpar, ]
-    allwindowsbed <- .makewindowsbedtools(expbed = allannobed,
-        nbwindows = windsize, nbcputrans = nbcputrans, verbose)
+    allwindowsbed <- .makewindowsbedtools(allannobed, windsize, nbcputrans,
+        verbose)
 
     if (!is.na(saveobjectpath))
         saveRDS(allwindowsbed, file.path(saveobjectpath, "allwindowsbed.rds"))
