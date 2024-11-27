@@ -77,6 +77,63 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
 ###########################
 
+.divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
+
+    cl <- parallel::makeCluster(nbcputrans)
+    windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
+        function(i, expbed, windcoordvec, nbwindows) {
+
+            currentanno <- expbed[i, ]
+
+            ## Retrieve the necessary gene information
+            currentstart <- currentanno$start
+            currentend <- currentanno$end
+            currentstrand <- currentanno$strand
+            windowvec <- windcoordvec
+
+            ## Compute the vector with the size of each window
+            !!.windsizevec <- function()
+            lgene <- currentend - currentstart
+            windowsize <- round(lgene / nbwindows)
+            missingbp <- lgene %% nbwindows
+            windsizevec <- rep(windowsize, nbwindows)
+            ## Add the missing nb of bp (that is ignore by tile) in the last
+            ## element of windsizevec
+            if (!isTRUE(all.equal(missingbp, 0)))
+                windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+
+            ## Building the start and end vectors using the cummulative sum
+            cumsumvec <- cumsum(c(currentstart, windsizevec))
+            startvec <- cumsumvec[-length(cumsumvec)]
+            endvec <- cumsumvec[-1]
+            if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
+                stop("Problem in the calculation of windows")
+
+            ## Inverting start, end, and window vectors if strand is negative
+            if (isTRUE(all.equal(currentstrand, "-"))) {
+                startvec <- rev(startvec)
+                endvec <- rev(endvec)
+                windowvec <- rev(windcoordvec)
+            }
+
+            ## Build the result data.frame containing the coordinates of each
+            ## frame alongside window and coord numbers
+            res <- data.frame(biotype = currentanno$biotype,
+                chr = currentanno$chrom, coor1 = startvec,
+                coor2 = endvec,  transcript = currentanno$ensembl,
+                gene = currentanno$symbol, strand = currentstrand,
+                window = windowvec, coord = windcoordvec)
+            return(res)}, expbed, windcoordvec, nbwindows)
+    stopCluster(cl)
+    nbwindcheck <- unique(sapply(windflist, nrow))
+    if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
+        !isTRUE(all.equal(nbwindcheck, 200)))
+        stop("Problem in the nb of windows per transcript retrieved")
+    windf <- do.call("rbind", windflist)
+
+    return(windf)
+}
+
 .makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, verbose) {
 
     ## Filtering out intervals smaller than nbwindows
