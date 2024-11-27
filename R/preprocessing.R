@@ -566,15 +566,9 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptab, nbcputrans,
 
 #######################################
 
+.createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
 
-createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA,
-    verbose = TRUE) {
-
-    if (verbose) message("Merging results of each bedgraph into a single table")
-
-    ## Creating a rowid that will be used for merging
-    if (verbose) message("\t Adding rowid for each bedgraph")
-    rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
+        rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
 
         rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window,
             tab$end.window, tab$strand.window, tab$gene,
@@ -598,6 +592,18 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA,
         tab <- dplyr::relocate(tab, colnamevec[idxscore], .after = "coord")
         return(tab)
     }, mc.cores = nbcpubg)
+
+    return(rowidreslist)
+}
+
+createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA, # nolint
+    verbose = TRUE) {
+
+    if (verbose) message("Merging results of each bedgraph into a single table")
+
+    ## Creating a rowid that will be used for merging
+    if (verbose) message("\t Adding rowid for each bedgraph")
+    rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
 
     if (verbose) message("\t Joining the elements of each bedgraph")
     completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
