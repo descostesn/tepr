@@ -1,6 +1,6 @@
 ## For different strings provided in the vector "valvec", perform the filtering
 ## of gentab on each string using the result of the previous filtering
-.grepsequential <- function(valvec, gentab, invert = FALSE, verbose = FALSE) {
+.grepsequential <- function(valvec, gentab, verbose, invert = FALSE) {
     invisible(sapply(valvec, function(val) {
         idx <- grep(val, gentab$V9, invert = invert)
         if (verbose)
@@ -49,16 +49,17 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     ## algorithm otherwise.
     if (verbose) message("\t Selecting Ensembl_canonical transcripts and ",
         "sorting")
-    gencodeprotcod <- .grepsequential("MANE_Select", gencode)
+    gencodeprotcod <- .grepsequential("MANE_Select", gencode, verbose)
     protcodbed <- .sortedbedformat(gencodeprotcod)
 
     ## Selecting long non-coding transcripts
     if (verbose) message("\t Selecting long non-coding transcripts and ",
         "sorting")
-    lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
+    lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode,
+        verbose)
     removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
-    lncrna <- .grepsequential(removevec, lncrna, invert = TRUE)
+    lncrna <- .grepsequential(removevec, lncrna, verbose, invert = TRUE)
     lncrnabed <- .sortedbedformat(lncrna)
 
     ## Combine the annotations
@@ -76,6 +77,27 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
 ###########################
 
+.makewindowsbedtools <- function(expbed, nbwindows, nbcputrans, verbose = TRUE) {
+
+    ## Filtering out intervals smaller than nbwindows
+    idxsmall <- which((expbed$end - expbed$start) < nbwindows)
+    lsmall <- length(idxsmall)
+    if (!isTRUE(all.equal(lsmall, 0))) {
+        message("Excluding ", lsmall, "/", nrow(expbed), " annotations that ",
+        "are too short.")
+        expbed <- expbed[-idxsmall,]
+    }
+
+    ## Splitting each transcript into "nbwindows" windows
+    if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
+        nbwindows, " windows data.frame")
+    windcoordvec <- seq_len(nbwindows)
+    winddf <- .divideannoinwindows(expbed, windcoordvec, nbwindows,
+        nbcputrans)
+
+    return(winddf)
+}
+
 makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     saveobjectpath = NA) {
 
@@ -84,8 +106,8 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     idxpar <- grep("PAR_Y", allannobed$ensembl)
     if (!isTRUE(all.equal(length(idxpar), 0)))
         allannobed <- allannobed[-idxpar, ]
-    allwindowsbed <- makewindowsbedtools(expbed = allannobed,
-        nbwindows = windsize, nbcputrans = nbcputrans)
+    allwindowsbed <- .makewindowsbedtools(expbed = allannobed,
+        nbwindows = windsize, nbcputrans = nbcputrans, verbose)
 
     if (!is.na(saveobjectpath))
         saveRDS(allwindowsbed, file.path(saveobjectpath, "allwindowsbed.rds"))
