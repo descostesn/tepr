@@ -208,3 +208,32 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
 
     return(allwindowsbed)
 }
+
+
+######################
+
+## Retrieving the values of the bedgraph files, removing black lists and keeping
+## scores landing on high mappability intervals
+blacklisthighmap <- function(maptrackpath, blacklistshpath, exptab, nbcputrans,
+    allwindowsbed, windsize, saveobjectpath = NA, verbose = TRUE) {
+
+        if (verbose) message("Reading the black list and mappability track")
+        blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+        maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+        if (!is.na(saveobjectpath)) {
+            if (verbose) message("Saving mappability track as an rds object")
+            saveRDS(maptrackbed, file.path(saveobjectpath, "maptrackbed.rds"))
+        }
+
+        if (verbose) message("Removing scores within black list intervals, ",
+            "keeping those on high mappability regions, and computing ",
+            "weighted means.")
+        expnamevec <- paste0(exptab$condition, exptab$replicate,
+            exptab$direction)
+        bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed,
+            maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize)
+
+        return(bedgraphlistwmean)
+}
+
