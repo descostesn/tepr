@@ -77,6 +77,21 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
 ###########################
 
+.windsizevec <- function(currentstart, currentend, nbwindows) {
+
+    lgene <- currentend - currentstart
+    windowsize <- round(lgene / nbwindows)
+    missingbp <- lgene %% nbwindows
+    windsizevec <- rep(windowsize, nbwindows)
+
+    ## Add the missing nb of bp (that is ignore by tile) in the last
+    ## element of windsizevec
+    if (!isTRUE(all.equal(missingbp, 0)))
+        windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+
+    return(windsizevec)
+}
+
 .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
 
     cl <- parallel::makeCluster(nbcputrans)
@@ -92,15 +107,9 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
             windowvec <- windcoordvec
 
             ## Compute the vector with the size of each window
-            !!.windsizevec <- function()
-            lgene <- currentend - currentstart
-            windowsize <- round(lgene / nbwindows)
-            missingbp <- lgene %% nbwindows
-            windsizevec <- rep(windowsize, nbwindows)
-            ## Add the missing nb of bp (that is ignore by tile) in the last
-            ## element of windsizevec
-            if (!isTRUE(all.equal(missingbp, 0)))
-                windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+            windsizevec <- .windsizevec(currentstart, currentend, nbwindows)
+            
+            
 
             ## Building the start and end vectors using the cummulative sum
             cumsumvec <- cumsum(c(currentstart, windsizevec))
