@@ -237,6 +237,16 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(valtib)
 }
 
+.removeblacklist <- function(allwindstrand, valtib, currentstrand,
+    blacklisttib) {
+        ## Retrieving scores on annotations of strand
+        suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
+                suffix = c("", ".window")))
+        ## Removing black list
+        resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
+        return(resblack)
+}
+
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose) {
 
