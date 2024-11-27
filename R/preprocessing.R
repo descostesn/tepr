@@ -105,11 +105,9 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
             currentend <- currentanno$end
             currentstrand <- currentanno$strand
             windowvec <- windcoordvec
-
+!!!!!!!!!!!!!!!
             ## Compute the vector with the size of each window
             windsizevec <- .windsizevec(currentstart, currentend, nbwindows)
-            
-            
 
             ## Building the start and end vectors using the cummulative sum
             cumsumvec <- cumsum(c(currentstart, windsizevec))
@@ -124,7 +122,7 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
                 endvec <- rev(endvec)
                 windowvec <- rev(windcoordvec)
             }
-
+!!!!!!!!!!!!!
             ## Build the result data.frame containing the coordinates of each
             ## frame alongside window and coord numbers
             res <- data.frame(biotype = currentanno$biotype,
@@ -132,7 +130,10 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
                 coor2 = endvec,  transcript = currentanno$ensembl,
                 gene = currentanno$symbol, strand = currentstrand,
                 window = windowvec, coord = windcoordvec)
-            return(res)}, expbed, windcoordvec, nbwindows)
+
+            return(res)
+        }, expbed, windcoordvec, nbwindows)
+
     stopCluster(cl)
     nbwindcheck <- unique(sapply(windflist, nrow))
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
