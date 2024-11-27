@@ -212,6 +212,21 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
 
 ######################
 
+.convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
+
+    colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
+            "transcript", "gene", "strand", "window", "coord")
+    allwindtib <- tibble::as_tibble(allwindowsbed)
+
+    colnames(blacklistbed) <- c("chrom", "start", "end", "type")
+    blacklisttib <- tibble::as_tibble(blacklistbed)
+
+    colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
+    maptracktib <- tibble::as_tibble(maptrackbed)
+
+    return(list(allwindtib, blacklisttib, maptracktib))
+}
+
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose) {
 
