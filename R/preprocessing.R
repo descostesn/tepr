@@ -247,6 +247,22 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
         return(resblack)
 }
 
+.retrieveonhighmap <- function(resblack, maptracktib, currentchrom) { # nolint
+
+    ## Keeping scores on high mappability track
+    resmap <-  valr::bed_intersect(resblack,
+        maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
+        suffix = c(".bg", ".maphigh"))
+    colnames(resmap) <- gsub(".window.bg", ".window", colnames(resmap))
+
+    ## Removing mapping columns and duplicates
+    resmap <- resmap[, -grep(".maphigh|.overlap|.source", colnames(resmap))]
+    resmap <- resmap %>% dplyr::distinct(chrom, start.bg, end.bg, # nolint
+        start.window, end.window, .keep_all = TRUE) # nolint
+    invisible(gc())
+    return(resmap)
+}
+
 .processingbychrom <- function(maptracktib, allwindstrand, currentname,
     resblack, nbcputrans, windsize, verbose) {
 
