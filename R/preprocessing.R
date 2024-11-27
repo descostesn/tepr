@@ -212,6 +212,55 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
 
 ######################
 
+.retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
+    nbcputrans, allwindowsbed, expnamevec, windsize, verbose) {
+
+        if (verbose) message("\t Converting annotations' windows, blacklist,",
+            " and mappability track to tibble")
+        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
+        allwindtib <- tibres[[1]]
+        blacklisttib <- tibres[[2]]
+        maptracktib <- tibres[[3]]
+
+        ## Looping on each experiment bg file
+        if (verbose) message("\t For each bedgraph file")
+        bedgraphlistwmean <- mapply(function(currentpath, currentname,
+            currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
+            nbcputrans, verbose) {
+
+            ## Retrieving bedgraph values
+            if (verbose) message("\t\t Retrieving begraph values for ",
+                currentname)
+            valtib <- .retrievebgval(currentpath, verbose)
+
+            ## Keeping window coordinates on the correct strand
+            if (verbose) message("\t\t Retrieving coordinates on strand ",
+                currentstrand)
+            allwindstrand <- allwindtib %>%
+                dplyr::filter(strand == as.character(currentstrand)) # nolint
+
+            ## Overlapping scores with anno on correct strand and remove
+            ## blacklist
+            if (verbose) message("\t\t Keeping scores outside blacklist ",
+                "intervals")
+            resblack <- .removeblacklist(allwindstrand, valtib, currentstrand,
+                blacklisttib)
+            rm(valtib)
+            invisible(gc())
+
+            ## Processing by chromosomes because of size limits, the mappability
+            ## track has too many rows. Formatting scores, keeping those on
+            ## high mappability, filling missing windows, and compute wmean
+            resallchrom <- .processingbychrom(maptracktib, allwindstrand,
+                currentname, resblack, nbcputrans, verbose)
+            return(resallchrom)
+        }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
+        blacklisttib, maptracktib, windsize, nbcputrans, verbose),
+        SIMPLIFY = FALSE)
+
+        return(bedgraphlistwmean)
+}
+
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptab, nbcputrans,
@@ -231,9 +280,9 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptab, nbcputrans,
             "weighted means.")
         expnamevec <- paste0(exptab$condition, exptab$replicate,
             exptab$direction)
-        bedgraphlistwmean <- retrieveandfilterfrombg(exptab, blacklistbed,
-            maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize)
+        bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
+            maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
+            verbose)
 
         return(bedgraphlistwmean)
 }
-
