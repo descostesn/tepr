@@ -115,41 +115,53 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
         return(list(startvec, endvec, windowvec))
 }
 
-.divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
+.computewindflist <- function(nbcputrans, expbed, windcoordvec, nbwindows) {
 
     cl <- parallel::makeCluster(nbcputrans)
     windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
-        function(i, expbed, windcoordvec, nbwindows) {
+    function(i, expbed, windcoordvec, nbwindows) {
 
-            currentanno <- expbed[i, ]
+        ## Retrieve the necessary gene information
+        currentanno <- expbed[i, ]
+        currentstart <- currentanno$start
+        currentend <- currentanno$end
+        currentstrand <- currentanno$strand
+        windowvec <- windcoordvec
 
-            ## Retrieve the necessary gene information
-            currentstart <- currentanno$start
-            currentend <- currentanno$end
-            currentstrand <- currentanno$strand
-            windowvec <- windcoordvec
+        ## Compute the vector with the size of each window
+        ## Building the start and end vectors using the cummulative sum
+        ## Inverting start, end, and window vectors if strand is negative
+        res <- .buildveccumsum(currentstart, currentend, nbwindows,
+            currentstrand, windcoordvec)
+        startvec <- res[[1]]
+        endvec <- res[[2]]
+        windowvec <- res[[3]]
 
-            ## Compute the vector with the size of each window
-            ## Building the start and end vectors using the cummulative sum
-            ## Inverting start, end, and window vectors if strand is negative
-            res <- .buildveccumsum(currentstart, currentend, nbwindows,
-                currentstrand, windcoordvec)
-            startvec <- res[[1]]
-            endvec <- res[[2]]
-            windowvec <- res[[3]]
+        ## Build the result data.frame containing the coordinates of each
+        ## frame alongside window and coord numbers
+        res <- data.frame(biotype = currentanno$biotype,
+            chr = currentanno$chrom, coor1 = startvec,
+            coor2 = endvec,  transcript = currentanno$ensembl,
+            gene = currentanno$symbol, strand = currentstrand,
+            window = windowvec, coord = windcoordvec)
 
-            ## Build the result data.frame containing the coordinates of each
-            ## frame alongside window and coord numbers
-            res <- data.frame(biotype = currentanno$biotype,
-                chr = currentanno$chrom, coor1 = startvec,
-                coor2 = endvec,  transcript = currentanno$ensembl,
-                gene = currentanno$symbol, strand = currentstrand,
-                window = windowvec, coord = windcoordvec)
+        return(res)
+    }, expbed, windcoordvec, nbwindows)
+    parallel::stopCluster(cl)
 
-            return(res)
-        }, expbed, windcoordvec, nbwindows)
+    return(windflist)
+}
 
-    stopCluster(cl)
+.divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
+
+    ## Retrieve the necessary gene information
+    ## Compute the vector with the size of each window
+    ## Building the start and end vectors using the cummulative sum
+    ## Inverting start, end, and window vectors if strand is negative
+    ## Build the result data.frame containing the coordinates of each
+    ## frame alongside window and coord numbers
+    windflist <- .computewindflist(nbcputrans, expbed, windcoordvec, nbwindows)
+
     nbwindcheck <- unique(sapply(windflist, nrow))
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
         !isTRUE(all.equal(nbwindcheck, 200)))
