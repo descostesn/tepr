@@ -92,6 +92,29 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     return(windsizevec)
 }
 
+.buildveccumsum <- function(currentstart, currentend, nbwindows, currentstrand,
+    windcoordvec) {
+
+        ## Compute the vector with the size of each window
+        windsizevec <- .windsizevec(currentstart, currentend, nbwindows)
+
+        ## Building the start and end vectors using the cummulative sum
+        cumsumvec <- cumsum(c(currentstart, windsizevec))
+        startvec <- cumsumvec[-length(cumsumvec)]
+        endvec <- cumsumvec[-1]
+        if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
+            stop("Problem in the calculation of windows")
+
+        ## Inverting start, end, and window vectors if strand is negative
+        if (isTRUE(all.equal(currentstrand, "-"))) {
+            startvec <- rev(startvec)
+            endvec <- rev(endvec)
+            windowvec <- rev(windcoordvec)
+        }
+
+        return(list(startvec, endvec, windowvec))
+}
+
 .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
 
     cl <- parallel::makeCluster(nbcputrans)
@@ -105,24 +128,16 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
             currentend <- currentanno$end
             currentstrand <- currentanno$strand
             windowvec <- windcoordvec
-!!!!!!!!!!!!!!!
+
             ## Compute the vector with the size of each window
-            windsizevec <- .windsizevec(currentstart, currentend, nbwindows)
-
             ## Building the start and end vectors using the cummulative sum
-            cumsumvec <- cumsum(c(currentstart, windsizevec))
-            startvec <- cumsumvec[-length(cumsumvec)]
-            endvec <- cumsumvec[-1]
-            if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
-                stop("Problem in the calculation of windows")
-
             ## Inverting start, end, and window vectors if strand is negative
-            if (isTRUE(all.equal(currentstrand, "-"))) {
-                startvec <- rev(startvec)
-                endvec <- rev(endvec)
-                windowvec <- rev(windcoordvec)
-            }
-!!!!!!!!!!!!!
+            res <- .buildveccumsum(currentstart, currentend, nbwindows,
+                currentstrand, windcoordvec)
+            startvec <- res[[1]]
+            endvec <- res[[2]]
+            windowvec <- res[[3]]
+
             ## Build the result data.frame containing the coordinates of each
             ## frame alongside window and coord numbers
             res <- data.frame(biotype = currentanno$biotype,
