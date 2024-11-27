@@ -72,3 +72,23 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
     return(allannobed)
 }
+
+
+###########################
+
+makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
+    saveobjectpath = NA) {
+
+    ## Making windows for all annotations
+    if (verbose) message("Making windows for all annotations")
+    idxpar <- grep("PAR_Y", allannobed$ensembl)
+    if (!isTRUE(all.equal(length(idxpar), 0)))
+        allannobed <- allannobed[-idxpar, ]
+    allwindowsbed <- makewindowsbedtools(expbed = allannobed,
+        nbwindows = windsize, nbcputrans = nbcputrans)
+
+    if (!is.na(saveobjectpath))
+        saveRDS(allwindowsbed, file.path(saveobjectpath, "allwindowsbed.rds"))
+
+    return(allwindowsbed)
+}
