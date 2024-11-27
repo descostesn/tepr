@@ -263,6 +263,32 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(resmap)
 }
 
+.arrangewindows <- function(currenttrans, windsize, allwindstrand,
+    currentname) {
+
+    res <- .uniqueformatcolnames(currenttrans)
+    currenttrans <- res[[1]]
+    uniquechrom <- res[[2]]
+    uniquetrans <- res[[3]]
+    uniquegene <- res[[4]]
+
+    ## Identifying the missing window in currenttrans
+    idx <- match(seq_len(windsize), unique(currenttrans$window))
+    idxnavec <- which(is.na(idx))
+
+    ## If some windows are missing
+    if (!isTRUE(all.equal(length(idxnavec), 0)))
+        currenttrans <- .retrievemissingwind(idxnavec,
+            allwindstrand, currenttrans, uniquechrom,
+            uniquetrans, uniquegene)
+
+    idxscore <- which(colnames(currenttrans) == "score.bg")
+    scorename <- paste0(currentname, "_score") # nolint
+    colnames(currenttrans)[idxscore] <- scorename
+
+    return(list(currenttrans, uniquetrans))
+}
+
 .missingandwmean <- function(resmap, windsize, allwindstrand, currentname,
     nbcputrans) {
 
