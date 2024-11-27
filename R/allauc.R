@@ -21,7 +21,7 @@
     controlcondname = "ctrl", stresscondname = "HS", dontcompare = NULL) {
 
     condvec <- unique(expdf$condition)
-    resdflist <- mclapply(bytranslist, function(transtab, condvec,
+    resdflist <- parallel::mclapply(bytranslist, function(transtab, condvec,
         controlcondname, stresscondname) {
 
         ## Retrieve the column names for each comparison
