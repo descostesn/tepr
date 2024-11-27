@@ -227,6 +227,16 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(list(allwindtib, blacklisttib, maptracktib))
 }
 
+.retrievebgval <- function(currentpath, verbose) {
+
+    valgr <- rtracklayer::import.bedGraph(currentpath)
+    if (verbose) message("\t\t Converting to tibble")
+    valdf <- as.data.frame(valgr)
+    colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
+    valtib <- tibble::as_tibble(valdf)
+    return(valtib)
+}
+
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
     nbcputrans, allwindowsbed, expnamevec, windsize, verbose) {
 
