@@ -263,6 +263,51 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     return(resmap)
 }
 
+.missingandwmean <- function(resmap, windsize, allwindstrand, currentname,
+    nbcputrans) {
+
+    ## Splitting the scores kept on the high mappability track by transcript
+    bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
+
+    ## Performing identification of missing windows and calculation of weighted
+    ## means for each transcript. This is parallelized on nbcputrans CPUs.
+    bytranslist <- parallel::mclapply(bgscorebytrans, function(currenttrans,
+        windsize, allwindstrand, currentname) {
+
+            ## Identification of missing windows for the current transcript
+            ## and setting their scores to NA. Indeed if a window is missing
+            ## it is because it was in a black list or a low mappability
+            ## interval.
+            res <- .arrangewindows(currenttrans, windsize, allwindstrand,
+                currentname)
+            currenttrans <- res[[1]]
+            transname <- res[[2]]
+
+            ## Identifying duplicated windows that will be used to compute
+            ## a weighted mean.
+            dupidx <- which(duplicated(currenttrans$window))
+            colscore <- paste0(currentname, "_score") # nolint
+
+            if (!isTRUE(all.equal(length(dupidx), 0))) {
+                dupframenbvec <- unique(currenttrans$window[dupidx])
+                ## For each duplicated frame, compute the weighted mean
+                wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans,
+                    currentname, colscore)
+                ## Remove duplicated frames and replace scores by wmean
+                currenttrans <- .replaceframeswithwmean(currenttrans, dupidx,
+                    windsize, transname, dupframenbvec, colscore, wmeanvec)
+             }
+
+             currenttrans <- currenttrans[order(currenttrans$coord), ]
+             return(currenttrans)
+    }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
+
+    transdf <- do.call("rbind", bytranslist)
+    rm(bytranslist)
+    invisible(gc())
+    return(transdf)
+}
+
 .processingbychrom <- function(maptracktib, allwindstrand, currentname,
     resblack, nbcputrans, windsize, verbose) {
 
