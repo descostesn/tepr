@@ -287,6 +287,46 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
 
 }
 
+.retrievemissingwind <- function(idxnavec, allwindstrand, currenttrans,
+    uniquechrom, uniquetrans, uniquegene) {
+
+    ## For each missing window whose number is contained in idxnavec
+    missingrowslist <- lapply(idxnavec, function(idxna, allwindstrand) {
+
+        ## Retrieving the line of the missing window in allwindstrand
+        idxmissing <-  which(allwindstrand$chrom == uniquechrom &
+            allwindstrand$transcript == uniquetrans &
+            allwindstrand$gene == uniquegene &
+            allwindstrand$window == idxna)
+
+        if (!isTRUE(all.equal(length(idxmissing), 1)))
+            stop("Problem in retrieving the missing window, this should not ",
+                "happen. Contact the developper.")
+
+        ## Below the bedgraph information columns are set to NA. These columns will be removed later # nolint
+        ## The score is set to NA since it is a missing value resulting from removing black list and low mappability (keeping high mappability) # nolint
+        ## Filling the other columns with the line retrieved in allwindstrand # nolint
+        windstrandrow <- allwindstrand[idxmissing, ]
+        resmissing <- data.frame(chrom = windstrandrow$chrom,
+            start.bg = NA, end.bg = NA, width.bg = NA, strand.bg = "*", ## Set the bedgraph info # nolint
+            score.bg = NA, ## Set the score to NA to keep track of missing values # nolint
+            biotype.window = windstrandrow$biotype,
+            start.window = windstrandrow$start,
+            end.window = windstrandrow$end,
+            transcript = windstrandrow$transcript, gene = windstrandrow$gene,
+            strand.window = windstrandrow$strand, window = windstrandrow$window,
+            coord = windstrandrow$coord)
+
+        return(resmissing)
+        }, allwindstrand)
+
+    missingrowsdf <- do.call("rbind", missingrowslist)
+    currenttrans <- rbind(currenttrans, missingrowsdf)
+    currenttrans <- currenttrans[order(currenttrans$coord), ]
+
+    return(currenttrans)
+}
+
 .arrangewindows <- function(currenttrans, windsize, allwindstrand,
     currentname) {
 
