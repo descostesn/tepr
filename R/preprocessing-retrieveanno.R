@@ -23,7 +23,9 @@
     return(gencodebed)
 }
 
-
+## This function filters gencode annotations to retrieve "transcript". It then
+## distinguishes transcripts coming from protein coding genes (MANE_Select) and
+## those coming from long non-coding genes (lncRNA, Ensembl_canonical).
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     verbose = TRUE) {
 
