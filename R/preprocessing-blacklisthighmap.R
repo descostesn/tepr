@@ -323,8 +323,12 @@
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## scores landing on high mappability intervals
-blacklisthighmap <- function(maptrackpath, blacklistshpath, exptab, nbcputrans,
-    allwindowsbed, windsize, saveobjectpath = NA, verbose = TRUE) {
+blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
+    nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, verbose = TRUE) {
+
+        ## Reading the information about experiments
+        if (verbose) message("Reading the information about experiments")
+        exptab <- read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list and mappability track")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
