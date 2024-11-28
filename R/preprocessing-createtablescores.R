@@ -31,8 +31,6 @@
 createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA, # nolint
     verbose = TRUE) {
 
-    if (verbose) message("Merging results of each bedgraph into a single table")
-
     ## Creating a rowid that will be used for merging
     if (verbose) message("\t Adding rowid for each bedgraph")
     rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
