@@ -1,5 +1,6 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, nbcputrans = 1, nbcpubg = 1, saveobjectpath = NA,
+    blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
+    finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
     verbose = TRUE) {
 
     ## This function filters gencode annotations to retrieve "transcript". It
@@ -31,6 +32,13 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         "single table ##\n")
     finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, saveobjectpath,
         verbose)
+
+    if (savefinaltable) {
+        outfile <- file.path(finaltabpath, finaltabname)
+        if (verbose) message("\n ## Saving the final table to ", outfile)
+        write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
+            row.names = FALSE, col.names = TRUE)
+    }
 
     return(finaltable)
 }
