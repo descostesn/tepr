@@ -113,6 +113,9 @@
     return(winddf)
 }
 
+## This functions uses the annotations filtered from gencode (see retrieveanno).
+## It removes any ensembl names containing "PAR_Y". It filters out intervals
+## smaller than windsize and splits each transcript into "windsize" windows.
 makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     saveobjectpath = NA) {
 
