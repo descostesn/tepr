@@ -27,7 +27,7 @@
 ## distinguishes transcripts coming from protein coding genes (MANE_Select) and
 ## those coming from long non-coding genes (lncRNA, Ensembl_canonical).
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
-    verbose = TRUE) {
+    showstats = FALSE, verbose = TRUE) {
 
     if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
         dir.create(saveobjectpath, recursive = TRUE)
@@ -51,17 +51,17 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     ## algorithm otherwise.
     if (verbose) message("\t Selecting Ensembl_canonical transcripts and ",
         "sorting")
-    gencodeprotcod <- .grepsequential("MANE_Select", gencode, verbose)
+    gencodeprotcod <- .grepsequential("MANE_Select", gencode, showstats)
     protcodbed <- .sortedbedformat(gencodeprotcod)
 
     ## Selecting long non-coding transcripts
     if (verbose) message("\t Selecting long non-coding transcripts and ",
         "sorting")
     lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode,
-        verbose)
+        showstats)
     removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
-    lncrna <- .grepsequential(removevec, lncrna, verbose, invert = TRUE)
+    lncrna <- .grepsequential(removevec, lncrna, showstats, invert = TRUE)
     lncrnabed <- .sortedbedformat(lncrna)
 
     ## Combine the annotations
