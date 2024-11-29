@@ -1,14 +1,15 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
-    verbose = TRUE) {
+    showstats = FALSE, verbose = TRUE) {
 
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
     ## Ensembl_canonical).
     if (verbose) message("## Filtering gencode annotations ##\n")
-    allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath, verbose)
+    allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
+        showstats, verbose)
 
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
