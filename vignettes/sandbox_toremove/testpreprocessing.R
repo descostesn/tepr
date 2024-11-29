@@ -1,3 +1,10 @@
+library("GenomeInfoDb")
+library("GenomicRanges")
+library("rtracklayer")
+library("parallel")
+library("purrr")
+library("dplyr")
+
 
 gencodepath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
