@@ -70,7 +70,6 @@
     colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript" # nolint
 
     return(list(currenttrans, uniquechrom, uniquetrans, uniquegene))
-
 }
 
 .retrievemissingwind <- function(idxnavec, allwindstrand, currenttrans,
