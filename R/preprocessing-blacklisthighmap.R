@@ -323,20 +323,32 @@
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
-    nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, verbose = TRUE) {
+    nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
+    verbose = TRUE) {
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
         exptab <- read.csv(exptabpath, header = TRUE)
 
-        if (verbose) message("Reading the black list and mappability track.",
-            "It might take some time")
+        if (verbose) message("Reading the black list")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-        maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
-        if (!is.na(saveobjectpath)) {
-            if (verbose) message("Saving mappability track as an rds object")
-            saveRDS(maptrackbed, file.path(saveobjectpath, "maptrackbed.rds"))
+        ## For the mappability track, reading can be skept by loading the object
+        ## if it exists
+        maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
+        if (!reload || !file.exists(maptrackbedobjfile)) {
+
+            maptrackbed <- read.delim(maptrackpath, header = FALSE)
+
+            if (!is.na(saveobjectpath)) {
+                if (verbose) message("Saving mappability track as an rds ",
+                    "object")
+                saveRDS(maptrackbed, maptrackbedobjfile)
+            }
+        } else {
+            if (verbose) message("Loading mappability track from existing rds ",
+                    "object")
+            maptrackbed <- readRDS(maptrackbedobjfile)
         }
 
         if (verbose) message("Removing scores within black list intervals, ",
@@ -347,6 +359,13 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
             maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
             verbose)
+
+        if (!is.na(saveobjectpath)) {
+                if (verbose) message("Saving bedgraphlistwmean as an rds ",
+                    "object")
+                saveRDS(bedgraphlistwmean, file.path(saveobjectpath,
+                    "bedgraphlistwmean.rds"))
+        }
 
         return(bedgraphlistwmean)
 }
