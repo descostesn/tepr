@@ -4,7 +4,7 @@ library("rtracklayer")
 library("parallel")
 library("purrr")
 library("dplyr")
-
+library("tidyverse")
 
 gencodepath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
@@ -17,7 +17,7 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/hg38
 maptrackpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 nbcpubg <- 8
 nbcputrans <- 20
-
-finaltab <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, nbcputrans, nbcpubg, finaltabpath, finaltabname,
-    saveobjectpath)
+showstats <- FALSE
+reload <- FALSE
+subverbose <- FALSE
+verbose <- TRUE
