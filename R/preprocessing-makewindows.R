@@ -127,8 +127,11 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     allwindowsbed <- .makewindowsbedtools(allannobed, windsize, nbcputrans,
         verbose)
 
-    if (!is.na(saveobjectpath))
-        saveRDS(allwindowsbed, file.path(saveobjectpath, "allwindowsbed.rds"))
+    if (!is.na(saveobjectpath)) {
+        outfile <- file.path(saveobjectpath, "allwindowsbed.rds")
+        if (verbose) message("\t Saving ", outfile)
+        saveRDS(allwindowsbed, outfile)
+    }
 
     return(allwindowsbed)
 }
