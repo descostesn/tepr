@@ -272,7 +272,7 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
-    nbcputrans, allwindowsbed, expnamevec, windsize, verbose) {
+    nbcputrans, allwindowsbed, expnamevec, windsize, verbose, subverbose) {
 
         if (verbose) message("\t Converting annotations' windows, blacklist,",
             " and mappability track to tibble")
@@ -311,7 +311,7 @@
             ## track has too many rows. Formatting scores, keeping those on
             ## high mappability, filling missing windows, and compute wmean
             resallchrom <- .processingbychrom(maptracktib, allwindstrand,
-                currentname, resblack, nbcputrans, windsize, verbose)
+                currentname, resblack, nbcputrans, windsize, subverbose)
             return(resallchrom)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
@@ -324,7 +324,7 @@
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
-    verbose = TRUE) {
+    verbose = TRUE, subverbose = TRUE) {
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
@@ -358,7 +358,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             exptab$direction)
         bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
             maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
-            verbose)
+            verbose, subverbose)
 
         if (!is.na(saveobjectpath)) {
                 if (verbose) message("Saving bedgraphlistwmean as an rds ",
