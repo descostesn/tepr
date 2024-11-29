@@ -310,6 +310,8 @@
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows. Formatting scores, keeping those on
             ## high mappability, filling missing windows, and compute wmean
+            if (verbose) message("\t\t Performing operations on each",
+                " chromosome. It takes time even with parallelization")
             resallchrom <- .processingbychrom(maptracktib, allwindstrand,
                 currentname, resblack, nbcputrans, windsize, subverbose)
             return(resallchrom)
