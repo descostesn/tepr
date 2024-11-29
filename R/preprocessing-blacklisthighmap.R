@@ -329,7 +329,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         if (verbose) message("Reading the information about experiments")
         exptab <- read.csv(exptabpath, header = TRUE)
 
-        if (verbose) message("Reading the black list and mappability track")
+        if (verbose) message("Reading the black list and mappability track.",
+            "It might take some time")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
         maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
