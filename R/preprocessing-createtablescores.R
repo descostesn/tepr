@@ -40,9 +40,11 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA, #
         by = c("chrom", "start.window", "end.window", "strand.window", "gene",
         "biotype.window", "window", "coord", "transcript", "rowid"))
 
-    if (!is.na(saveobjectpath))
-        saveRDS(completeframedf, file = file.path(saveobjectpath,
-            "finaltab.rds"))
+    if (!is.na(saveobjectpath)) {
+        outfile <- file.path(saveobjectpath, "finaltab.rds")
+        if (verbose) message("\t Saving ", outfile)
+        saveRDS(completeframedf, file = outfile)
+    }
 
     return(completeframedf)
 }
