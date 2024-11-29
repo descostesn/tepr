@@ -255,8 +255,8 @@
                     currentchrom)
 
                 ## Processing data per transcript for windows and wmean
-                message("\t\t\t Setting missing windows scores to NA and",
-                    " computing weighted mean for each transcript")
+                if (verbose) message("\t\t\t Setting missing windows scores",
+                    " to NA and computing weighted mean for each transcript")
                 transdf <- .missingandwmean(resmap, windsize, allwindstrand,
                     currentname, nbcputrans)
                 return(transdf)
