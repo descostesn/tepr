@@ -53,28 +53,26 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
 
 
 - NAMES OF EXP
-
-    idxcolscores <- grep("_score", colnames(completeframedf))
-    newscorenames <- unlist(apply(exptab, 1, function(x) {
-        return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
-    }, simplify = FALSE))
-    colnames(completeframedf)[idxcolscores] <- paste(newscorenames, "score", sep = "_")
+         if (verbose) message("\t Renaming score columns")
+        idxcolscores <- grep("_score", colnames(test))
+        newscorenames <- unlist(apply(exptab, 1, function(x) {
+            return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
+        }, simplify = FALSE))
+        colnames(test)[idxcolscores] <- paste(newscorenames, "score", sep = "_")
 
 - NEW DF OF EXP NAMES
-    dfexpnameslist <- lapply(newscorenames, rep, nrow(completeframedf))
-    dfexpnames <- do.call("cbind", dfexpnameslist)
+        if (verbose) message("\t Creating experiment columns")
+        dfexpnameslist <- lapply(newscorenames, rep, nrow(test))
+        dfexpnames <- do.call("cbind", dfexpnameslist)
+        colnames(dfexpnames) <- newscorenames
 
-- 
+- ASSOCIATING SCORES WITH EXPNAMES
+        if (verbose) message("\t Combining the experiment cols to the table")
+        test2 <- cbind(test, dfexpnames)
 
-- ASSOCIATING SCORES WITH THE COL OF EXP NAME
-expnamescorelist <- parallel::mcmapply(function(expnamecol, scorecol) {
-    return(cbind(expnamecol, scorecol))
-}, dfexpnames, completeframedf[idxcolscores], SIMPLIFY = FALSE,
-    mc.silent = FALSE, mc.cores = nbcpubg)
-expnamescoredf <- do.call("cbind", expnamescorelist)
+- ARRANGE COLUMNS WITH RELOCATE
 
--  COMBINING THE TWO FINAL DF
-finaldf <- cbind(noexpdf, expnamescoredf) 
+
 !!!!!!!!!!!!!
 
         if (!is.na(saveobjectpath)) {
