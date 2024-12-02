@@ -295,8 +295,12 @@
             ## Keeping window coordinates on the correct strand
             if (verbose) message("\t\t Retrieving coordinates on strand ",
                 currentstrand)
+            if (isTRUE(all.equal(currentstrand, "plus")))
+                retrievedstrand <- "+"
+            else
+                retrievedstrand <- "-"
             allwindstrand <- allwindtib %>%
-                dplyr::filter(strand == as.character(currentstrand)) # nolint
+                dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
             ## Overlapping scores with anno on correct strand and remove
             ## blacklist
