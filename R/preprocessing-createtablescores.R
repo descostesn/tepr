@@ -55,24 +55,30 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
 - NAMES OF EXP
          if (verbose) message("\t Renaming score columns")
         idxcolscores <- grep("_score", colnames(test))
-        newscorenames <- unlist(apply(exptab, 1, function(x) {
+        expcolnames <- unlist(apply(exptab, 1, function(x) {
             return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
         }, simplify = FALSE))
-        colnames(test)[idxcolscores] <- paste(newscorenames, "score", sep = "_")
+        newscorenames <- paste(expcolnames, "score", sep = "_")
+        colnames(test)[idxcolscores] <- newscorenames
 
 - NEW DF OF EXP NAMES
         if (verbose) message("\t Creating experiment columns")
-        dfexpnameslist <- lapply(newscorenames, rep, nrow(test))
+        dfexpnameslist <- lapply(expcolnames, rep, nrow(test))
         dfexpnames <- do.call("cbind", dfexpnameslist)
-        colnames(dfexpnames) <- newscorenames
+        colnames(dfexpnames) <- expcolnames
 
 - ASSOCIATING SCORES WITH EXPNAMES
         if (verbose) message("\t Combining the experiment cols to the table")
         test2 <- cbind(test, dfexpnames)
+        test2 <- tibble::as_tibble(test2)
 
 - ARRANGE COLUMNS WITH RELOCATE
-
-
+~~~~~~!!~start again with  outfile <- file.path(saveobjectpath, "df.rds")
+~~~~~~!! do a list of pairs with "expcolnames, newscorenames" to replace below in .x
+df_relocated <- purrr::reduce(
+  .x = list(!!), 
+  .f = ~ relocate(.x, .y[1], .after = .y[2]),
+  .init = test2)
 !!!!!!!!!!!!!
 
         if (!is.na(saveobjectpath)) {
