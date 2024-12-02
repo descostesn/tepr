@@ -342,6 +342,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
         if (!reload || !file.exists(maptrackbedobjfile)) {
 
+            if (verbose) message("Reading the mappability track")
             maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
             if (!is.na(saveobjectpath)) {
