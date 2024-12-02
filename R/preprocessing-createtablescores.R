@@ -31,6 +31,10 @@
 createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
     saveobjectpath = NA, verbose = TRUE) {
 
+        ## Reading the information about experiments
+        if (verbose) message("Reading the information about experiments")
+        exptab <- read.csv(exptabpath, header = TRUE)
+
         ## Creating a rowid that will be used for merging
         if (verbose) message("\t Adding rowid for each bedgraph")
         rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
@@ -42,11 +46,29 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
                 "rowid"))
 
 !!!!!!! 
-DATA NO EXP
-    completeframedf[, c("biotype.window", "chrom", "start.window",
+- DATA NO EXP
+    noexpdf <- completeframedf[, c("biotype.window", "chrom", "start.window",
         "end.window", "transcript", "gene", "strand.window", "window", "rowid")]
-NAMES OF EXP
+- NAMES OF EXP
+    idxcolscores <- grep("_score", colnames(completeframedf))
+    newscorenames <- unlist(apply(exptab, 1, function(x) {
+        return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
+    }, simplify = FALSE))
+    colnames(completeframedf)[idxcolscores] <- paste(newscorenames, "score", sep = "_")
 
+- NEW DF OF EXP NAMES
+    dfexpnameslist <- lapply(newscorenames, rep, nrow(completeframedf))
+    dfexpnames <- do.call("cbind", dfexpnameslist)
+
+- ASSOCIATING SCORES WITH THE COL OF EXP NAME
+expnamescorelist <- parallel::mcmapply(function(expnamecol, scorecol) {
+    return(cbind(expnamecol, scorecol))
+}, dfexpnames, completeframedf[idxcolscores], SIMPLIFY = FALSE,
+    mc.silent = FALSE, mc.cores = nbcpubg)
+expnamescoredf <- do.call("cbind", expnamescorelist)
+
+-  COMBINING THE TWO FINAL DF
+finaldf <- cbind(noexpdf, expnamescoredf) 
 !!!!!!!!!!!!!
 
         if (!is.na(saveobjectpath)) {
