@@ -38,7 +38,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         outfile <- file.path(finaltabpath, finaltabname)
         if (verbose) message("\n ## Saving the final table to ", outfile)
         write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
-            row.names = FALSE, col.names = TRUE)
+            row.names = FALSE, col.names = FALSE)
     }
 
     return(finaltable)
