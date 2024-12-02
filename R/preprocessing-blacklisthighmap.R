@@ -261,13 +261,13 @@
                 return(transdf)
             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
 
-            ## Merging results that were computed on each chromosome
-            if (subverbose) message("\t\t Merging results that were computed ",
-                "on each chromome")
-            resallchrom <- do.call("rbind", bychromlist)
-            rm(bychromlist)
-            invisible(gc())
-            return(resallchrom)
+        ## Merging results that were computed on each chromosome
+        if (subverbose) message("\t\t Merging results that were computed ",
+            "on each chromome")
+        resallchrom <- do.call("rbind", bychromlist)
+        rm(bychromlist)
+        invisible(gc())
+        return(resallchrom)
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
