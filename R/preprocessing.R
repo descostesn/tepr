@@ -31,8 +31,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## blacklisthighmap
     if (verbose) message("\n ## Merging results of each bedgraph into a ",
         "single table ##\n")
-    finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, saveobjectpath,
-        verbose)
+    finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
+        saveobjectpath, verbose)
 
     if (savefinaltable) {
         outfile <- file.path(finaltabpath, finaltabname)

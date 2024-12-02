@@ -28,23 +28,32 @@
     return(rowidreslist)
 }
 
-createtablescores <- function(bedgraphlistwmean, nbcpubg, saveobjectpath = NA, # nolint
-    verbose = TRUE) {
+createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
+    saveobjectpath = NA, verbose = TRUE) {
 
-    ## Creating a rowid that will be used for merging
-    if (verbose) message("\t Adding rowid for each bedgraph")
-    rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
+        ## Creating a rowid that will be used for merging
+        if (verbose) message("\t Adding rowid for each bedgraph")
+        rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
 
-    if (verbose) message("\t Joining the elements of each bedgraph")
-    completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
-        by = c("chrom", "start.window", "end.window", "strand.window", "gene",
-        "biotype.window", "window", "coord", "transcript", "rowid"))
+        if (verbose) message("\t Joining the elements of each bedgraph")
+        completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
+            by = c("chrom", "start.window", "end.window", "strand.window",
+                "gene", "biotype.window", "window", "coord", "transcript",
+                "rowid"))
 
-    if (!is.na(saveobjectpath)) {
-        outfile <- file.path(saveobjectpath, "finaltab.rds")
-        if (verbose) message("\t Saving ", outfile)
-        saveRDS(completeframedf, file = outfile)
-    }
+!!!!!!! 
+DATA NO EXP
+    completeframedf[, c("biotype.window", "chrom", "start.window",
+        "end.window", "transcript", "gene", "strand.window", "window", "rowid")]
+NAMES OF EXP
 
-    return(completeframedf)
+!!!!!!!!!!!!!
+
+        if (!is.na(saveobjectpath)) {
+            outfile <- file.path(saveobjectpath, "finaltab.rds")
+            if (verbose) message("\t Saving ", outfile)
+            saveRDS(completeframedf, file = outfile)
+        }
+
+        return(completeframedf)
 }
