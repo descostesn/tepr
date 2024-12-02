@@ -40,16 +40,20 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
         rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
 
         if (verbose) message("\t Joining the elements of each bedgraph")
-        completeframedf <- purrr::reduce(rowidreslist, dplyr::full_join,
+        df <- purrr::reduce(rowidreslist, dplyr::full_join,
             by = c("chrom", "start.window", "end.window", "strand.window",
                 "gene", "biotype.window", "window", "coord", "transcript",
                 "rowid"))
 
 !!!!!!! 
-- DATA NO EXP
-    noexpdf <- completeframedf[, c("biotype.window", "chrom", "start.window",
-        "end.window", "transcript", "gene", "strand.window", "window", "rowid")]
+        if (verbose) message("\t Sorting columns")
+        test <- df %>% relocate(c("biotype.window", "chrom", "start.window",
+        "end.window", "transcript", "gene", "strand.window", "window", "rowid"))
+        test <- test[, -which(colnames(test) == "coord")]
+
+
 - NAMES OF EXP
+
     idxcolscores <- grep("_score", colnames(completeframedf))
     newscorenames <- unlist(apply(exptab, 1, function(x) {
         return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
@@ -59,6 +63,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
 - NEW DF OF EXP NAMES
     dfexpnameslist <- lapply(newscorenames, rep, nrow(completeframedf))
     dfexpnames <- do.call("cbind", dfexpnameslist)
+
+- 
 
 - ASSOCIATING SCORES WITH THE COL OF EXP NAME
 expnamescorelist <- parallel::mcmapply(function(expnamecol, scorecol) {
