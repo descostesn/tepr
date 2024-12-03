@@ -27,7 +27,9 @@
 ## distinguishes transcripts coming from protein coding genes (MANE_Select) and
 ## those coming from long non-coding genes (lncRNA, Ensembl_canonical).
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
-    showstats = FALSE, verbose = TRUE) {
+    showstats = FALSE, showtime = FALSE, verbose = TRUE) {
+
+    if (showtime) start_time <- Sys.time()
 
     if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
         dir.create(saveobjectpath, recursive = TRUE)
@@ -74,6 +76,11 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
         outfile <- file.path(saveobjectpath, "allannobed.rds")
         if (verbose) message("\t Saving ", outfile)
         saveRDS(allannobed, outfile)
+    }
+
+    if (showtime) {
+      end_time <- Sys.time()
+      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
     }
 
     return(allannobed)
