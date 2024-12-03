@@ -1,15 +1,17 @@
-.computewindflist <- function(nbcputrans, expbed, windcoordvec, nbwindows) {
+# REMOVE .computewindflist <- function(nbcputrans, expbed, windcoordvec, nbwindows) { # nolint
+.computewindflist <- function(nbcputrans, expbed, nbwindows) {
 
     cl <- parallel::makeCluster(nbcputrans)
     windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
-    function(i, expbed, windcoordvec, nbwindows) {
+    function(i, expbed, nbwindows) {
+    # REMOVE function(i, expbed, windcoordvec, nbwindows) {
 
         ## Retrieve the necessary gene information
         currentanno <- expbed[i, ]
         currentstart <- currentanno$start
         currentend <- currentanno$end
         currentstrand <- currentanno$strand
-        windowvec <- windcoordvec
+        # REMOVE windowvec <- windcoordvec
 
         ## Compute the vector with the size of each window
         lgene <- currentend - currentstart
@@ -30,11 +32,11 @@
             stop("Problem in the calculation of windows")
 
         ## Inverting start, end, and window vectors if strand is negative
-        if (isTRUE(all.equal(currentstrand, "-"))) {
-            startvec <- rev(startvec)
-            endvec <- rev(endvec)
-            windowvec <- rev(windcoordvec)
-        }
+        # REMOVE if (isTRUE(all.equal(currentstrand, "-"))) {
+            # REMOVE startvec <- rev(startvec)
+            # REMOVE endvec <- rev(endvec)
+            # REMOVE windowvec <- rev(windcoordvec)
+        # REMOVE }
 
         ## Build the result data.frame containing the coordinates of each
         ## frame alongside window and coord numbers
@@ -42,15 +44,18 @@
             chr = currentanno$chrom, coor1 = startvec,
             coor2 = endvec,  transcript = currentanno$ensembl,
             gene = currentanno$symbol, strand = currentstrand,
-            window = windowvec, coord = windcoordvec)
+            window = seq_len(nbwindows))
+            # REMOVE window = windowvec, coord = windcoordvec)
 
         return(res)
-    }, expbed, windcoordvec, nbwindows)
+    }, expbed, nbwindows)
+    # REMOVE }, expbed, windcoordvec, nbwindows)
     parallel::stopCluster(cl)
 
     return(windflist)
 }
 
+# REMOVE .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) { # nolint
 .divideannoinwindows <- function(expbed, nbwindows, nbcputrans) {
 
     ## Retrieve the necessary gene information
@@ -59,6 +64,8 @@
     ## Inverting start, end, and window vectors if strand is negative
     ## Build the result data.frame containing the coordinates of each
     ## frame alongside window and coord numbers
+
+    # REMOVE windflist <- .computewindflist(nbcputrans, expbed, windcoordvec, nbwindows) # nolint
     windflist <- .computewindflist(nbcputrans, expbed, nbwindows)
 
     nbwindcheck <- unique(sapply(windflist, nrow))
