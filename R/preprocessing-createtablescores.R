@@ -28,6 +28,41 @@
     return(rowidreslist)
 }
 
+.orderingtable <- function(df, exptab, verbose) {
+
+    if (verbose) message("\t\t Sorting columns")
+    orderedcolvec <- c("biotype.window", "chrom", "start.window",
+        "end.window", "transcript", "gene", "strand.window", "window",
+        "rowid")
+    df <- df %>% dplyr::relocate(orderedcolvec)
+    df <- df[, -which(colnames(df) == "coord")]
+
+    if (verbose) message("\t\t Renaming score columns")
+    idxcolscores <- grep("_score", colnames(df))
+    expcolnames <- unlist(apply(exptab, 1, function(x) {
+        return(paste0(x["condition"], "_rep", x["replicate"], ".",
+            x["strand"]))
+    }, simplify = FALSE))
+    newscorenames <- paste(expcolnames, "score", sep = "_")
+    colnames(df)[idxcolscores] <- newscorenames
+
+    if (verbose) message("\t\t Creating experiment columns")
+    dfexpnameslist <- lapply(expcolnames, rep, nrow(df))
+    dfexpnames <- do.call("cbind", dfexpnameslist)
+    colnames(dfexpnames) <- expcolnames
+
+    if (verbose) message("\t\t Combining the experiment cols to the table")
+    df <- cbind(df, dfexpnames)
+    df <- tibble::as_tibble(df)
+
+    if (verbose) message("\t\t Placing exp name columns before corresponding",
+        " scores")
+    df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
+        .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
+
+    return(df)
+}
+
 createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
     saveobjectpath = NA, verbose = TRUE) {
 
@@ -46,37 +81,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
                 "rowid"))
 
         if (verbose) message("\t Preparing final table")
-!!!!!!!!!!!!!!!!!!!!!
-        if (verbose) message("\t Sorting columns")
-        orderedcolvec <- c("biotype.window", "chrom", "start.window",
-            "end.window", "transcript", "gene", "strand.window", "window",
-            "rowid")
-        df <- df %>% dplyr::relocate(orderedcolvec)
-        df <- df[, -which(colnames(df) == "coord")]
+        df <- .orderingtable(df, exptab, verbose)
 
-         if (verbose) message("\t Renaming score columns")
-        idxcolscores <- grep("_score", colnames(df))
-        expcolnames <- unlist(apply(exptab, 1, function(x) {
-            return(paste0(x["condition"], "_rep", x["replicate"], ".",
-                x["strand"]))
-        }, simplify = FALSE))
-        newscorenames <- paste(expcolnames, "score", sep = "_")
-        colnames(df)[idxcolscores] <- newscorenames
-
-        if (verbose) message("\t Creating experiment columns")
-        dfexpnameslist <- lapply(expcolnames, rep, nrow(df))
-        dfexpnames <- do.call("cbind", dfexpnameslist)
-        colnames(dfexpnames) <- expcolnames
-
-        if (verbose) message("\t Combining the experiment cols to the table")
-        df <- cbind(df, dfexpnames)
-        df <- tibble::as_tibble(df)
-
-        if (verbose) message("\t Placing exp name columns before corresponding",
-            " scores")
-        df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
-            .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
-!!!!!!!!!!!!!!!!
         if (!is.na(saveobjectpath)) {
             outfile <- file.path(saveobjectpath, "finaltab.rds")
             if (verbose) message("\t Saving ", outfile)
