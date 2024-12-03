@@ -84,9 +84,9 @@
     ## Splitting each transcript into "nbwindows" windows
     if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
         nbwindows, " windows data.frame")
-    windcoordvec <- seq_len(nbwindows)
-    winddf <- .divideannoinwindows(expbed, windcoordvec, nbwindows,
-        nbcputrans)
+   # REMOVE windcoordvec <- seq_len(nbwindows)
+   # REMOVE winddf <- .divideannoinwindows(expbed, windcoordvec, nbwindows, nbcputrans)
+    winddf <- .divideannoinwindows(expbed, nbwindows, nbcputrans)
 
     return(winddf)
 }
