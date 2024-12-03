@@ -2,11 +2,16 @@
 
         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
 
+
+!!!!!!!!!!!!!!!
+
+ENST00000000233.10_ARF5_+_1
+protein-coding_chr7_127588411_127588427_+_ARF5_ENST00000000233.10_frame1_coord1
         rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window,
             tab$end.window, tab$strand.window, tab$gene,
             tab$transcript, paste0("frame", tab$window),
             paste0("coord", tab$coord), sep = "_")
-
+!!!!!!!!!!!!!!
         ## Inserting rowid col after transcript
         tab <- tab %>% tibble::add_column(rowid = rowidvec,
             .after = "transcript")
