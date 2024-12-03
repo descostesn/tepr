@@ -2,16 +2,12 @@
 
         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
 
+        rowidvec <- paste(tab$transcript, tab$gene, tab$strand.window,
+            tab$window, sep = "_")
+        # ENST00000000233.10_ARF5_+_1
+        # protein-coding_chr7_127588411_127588427_+_ARF5_ENST00000000233.10_frame1_coord1 # nolint
+        # TO REMOVE rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window, tab$end.window, tab$strand.window, tab$gene, tab$transcript, paste0("frame", tab$window), paste0("coord", tab$coord), sep = "_") # nolint
 
-!!!!!!!!!!!!!!!
-
-ENST00000000233.10_ARF5_+_1
-protein-coding_chr7_127588411_127588427_+_ARF5_ENST00000000233.10_frame1_coord1
-        rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window,
-            tab$end.window, tab$strand.window, tab$gene,
-            tab$transcript, paste0("frame", tab$window),
-            paste0("coord", tab$coord), sep = "_")
-!!!!!!!!!!!!!!
         ## Inserting rowid col after transcript
         tab <- tab %>% tibble::add_column(rowid = rowidvec,
             .after = "transcript")
@@ -26,6 +22,7 @@ protein-coding_chr7_127588411_127588427_+_ARF5_ENST00000000233.10_frame1_coord1
             stop("When creating the final table, the score column is not ",
                 "unique for a given bedgraph. This should not happen. Contact",
                 " the developer.")
+!!!!!!!!!!!!!!!!!!! TO CONTINUE
         tab <- dplyr::relocate(tab, colnamevec[idxscore], .after = "coord")
         return(tab)
     }, mc.cores = nbcpubg)
@@ -82,8 +79,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
         if (verbose) message("\t Joining the elements of each bedgraph")
         df <- purrr::reduce(rowidreslist, dplyr::full_join,
             by = c("chrom", "start.window", "end.window", "strand.window",
-                "gene", "biotype.window", "window", "coord", "transcript",
-                "rowid"))
+                "gene", "biotype.window", "window", "transcript", "rowid"))
+            # TO REMOVE by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype.window", "window", "coord", "transcript", "rowid")) # nolint
 
         if (verbose) message("\t Preparing final table")
         df <- .orderingtable(df, exptab, verbose)
