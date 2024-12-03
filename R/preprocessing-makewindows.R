@@ -51,7 +51,7 @@
     return(windflist)
 }
 
-.divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) {
+.divideannoinwindows <- function(expbed, nbwindows, nbcputrans) {
 
     ## Retrieve the necessary gene information
     ## Compute the vector with the size of each window
@@ -59,7 +59,7 @@
     ## Inverting start, end, and window vectors if strand is negative
     ## Build the result data.frame containing the coordinates of each
     ## frame alongside window and coord numbers
-    windflist <- .computewindflist(nbcputrans, expbed, windcoordvec, nbwindows)
+    windflist <- .computewindflist(nbcputrans, expbed, nbwindows)
 
     nbwindcheck <- unique(sapply(windflist, nrow))
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
