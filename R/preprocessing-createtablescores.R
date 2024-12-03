@@ -45,6 +45,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
                 "gene", "biotype.window", "window", "coord", "transcript",
                 "rowid"))
 
+        if (verbose) message("\t Preparing final table")
+!!!!!!!!!!!!!!!!!!!!!
         if (verbose) message("\t Sorting columns")
         orderedcolvec <- c("biotype.window", "chrom", "start.window",
             "end.window", "transcript", "gene", "strand.window", "window",
@@ -74,7 +76,7 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
             " scores")
         df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
             .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
-
+!!!!!!!!!!!!!!!!
         if (!is.na(saveobjectpath)) {
             outfile <- file.path(saveobjectpath, "finaltab.rds")
             if (verbose) message("\t Saving ", outfile)
