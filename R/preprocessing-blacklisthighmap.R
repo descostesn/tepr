@@ -1,7 +1,8 @@
 .convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
 
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
-            "transcript", "gene", "strand", "window", "coord")
+            "transcript", "gene", "strand", "window")
+            # TO REMOVE "transcript", "gene", "strand", "window", "coord")
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
@@ -61,10 +62,10 @@
             stop("chrom, transcript, and genes should be unique, this should", # nolint
                 " not happen. Contact the developper.") # nolint
 
-    ## Renaming window and coord columns removing the suffix
+    ## Renaming window removing the suffix
     colnamevec <- colnames(currenttrans)
     colnames(currenttrans)[which(colnamevec == "window.window")] <- "window"
-    colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord"
+    # TO REMOVE colnames(currenttrans)[which(colnamevec == "coord.window")] <- "coord" # nolint
     colnames(currenttrans)[which(colnamevec == "gene.window")] <- "gene"
     colnames(currenttrans)[which(colnamevec == "transcript.window")] <- "transcript" # nolint
 
@@ -98,15 +99,15 @@
             start.window = windstrandrow$start,
             end.window = windstrandrow$end,
             transcript = windstrandrow$transcript, gene = windstrandrow$gene,
-            strand.window = windstrandrow$strand, window = windstrandrow$window,
-            coord = windstrandrow$coord)
+            strand.window = windstrandrow$strand, window = windstrandrow$window)
+           # TO REMOVE coord = windstrandrow$coord)
 
         return(resmissing)
         }, allwindstrand)
 
     missingrowsdf <- do.call("rbind", missingrowslist)
     currenttrans <- rbind(currenttrans, missingrowsdf)
-    currenttrans <- currenttrans[order(currenttrans$coord), ]
+    # TO REMOVE currenttrans <- currenttrans[order(currenttrans$coord), ]
 
     return(currenttrans)
 }
@@ -149,7 +150,7 @@
         if (isTRUE(all.equal(nrow(allframedf), 1)))
             stop("There should be more than one frame selected")
 
-        ## Testing that the coord of the window is the same for all scores
+        ## Testing that the start/end of the window is the same for all scores
         ## selected (this should not give an error)
         windowstart <- unique(allframedf$start.window)
         windowend <- unique(allframedf$end.window)
@@ -226,7 +227,7 @@
                     windsize, transname, dupframenbvec, colscore, wmeanvec)
              }
 
-             currenttrans <- currenttrans[order(currenttrans$coord), ]
+             # TO REMOVE currenttrans <- currenttrans[order(currenttrans$coord), ] # nolint
              return(currenttrans)
     }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
 
@@ -291,8 +292,8 @@
                 currentname)
             valtib <- .retrievebgval(currentpath, verbose)
 
-            ## Keeping window coordinates on the correct strand
-            if (verbose) message("\t\t Retrieving coordinates on strand ",
+            ## Keeping information on the correct strand
+            if (verbose) message("\t\t Retrieving information on strand ",
                 currentstrand)
             if (isTRUE(all.equal(currentstrand, "plus")))
                 retrievedstrand <- "+"
