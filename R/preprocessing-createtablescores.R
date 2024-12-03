@@ -45,47 +45,41 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
                 "gene", "biotype.window", "window", "coord", "transcript",
                 "rowid"))
 
-!!!!!!! 
         if (verbose) message("\t Sorting columns")
-        test <- df %>% relocate(c("biotype.window", "chrom", "start.window",
-        "end.window", "transcript", "gene", "strand.window", "window", "rowid"))
-        test <- test[, -which(colnames(test) == "coord")]
+        orderedcolvec <- c("biotype.window", "chrom", "start.window",
+            "end.window", "transcript", "gene", "strand.window", "window",
+            "rowid")
+        df <- df %>% dplyr::relocate(orderedcolvec)
+        df <- df[, -which(colnames(df) == "coord")]
 
-
-- NAMES OF EXP
          if (verbose) message("\t Renaming score columns")
-        idxcolscores <- grep("_score", colnames(test))
+        idxcolscores <- grep("_score", colnames(df))
         expcolnames <- unlist(apply(exptab, 1, function(x) {
-            return(paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"]))
+            return(paste0(x["condition"], "_rep", x["replicate"], ".",
+                x["strand"]))
         }, simplify = FALSE))
         newscorenames <- paste(expcolnames, "score", sep = "_")
-        colnames(test)[idxcolscores] <- newscorenames
+        colnames(df)[idxcolscores] <- newscorenames
 
-- NEW DF OF EXP NAMES
         if (verbose) message("\t Creating experiment columns")
-        dfexpnameslist <- lapply(expcolnames, rep, nrow(test))
+        dfexpnameslist <- lapply(expcolnames, rep, nrow(df))
         dfexpnames <- do.call("cbind", dfexpnameslist)
         colnames(dfexpnames) <- expcolnames
 
-- ASSOCIATING SCORES WITH EXPNAMES
         if (verbose) message("\t Combining the experiment cols to the table")
-        test2 <- cbind(test, dfexpnames)
-        test2 <- tibble::as_tibble(test2)
+        df <- cbind(df, dfexpnames)
+        df <- tibble::as_tibble(df)
 
-- ARRANGE COLUMNS WITH RELOCATE
-~~~~~~!!~start again with  outfile <- file.path(saveobjectpath, "df.rds")
-~~~~~~!! do a list of pairs with "expcolnames, newscorenames" to replace below in .x
-df_relocated <- purrr::reduce(
-  .x = list(!!), 
-  .f = ~ relocate(.x, .y[1], .after = .y[2]),
-  .init = test2)
-!!!!!!!!!!!!!
+        if (verbose) message("\t Placing exp name columns before corresponding",
+            " scores")
+        df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
+            .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
 
         if (!is.na(saveobjectpath)) {
             outfile <- file.path(saveobjectpath, "finaltab.rds")
             if (verbose) message("\t Saving ", outfile)
-            saveRDS(completeframedf, file = outfile)
+            saveRDS(df, file = outfile)
         }
 
-        return(completeframedf)
+        return(df)
 }
