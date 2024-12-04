@@ -26,11 +26,15 @@
 }
 
 .removeblacklist <- function(allwindstrand, valtib, blacklisttib) {
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!! MOVE OUT THE LINE TO DO MEAN AFTER RETRIEVING BEDGRAPH VALUES
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ## Retrieving scores on annotations of strand
         suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
                 suffix = c("", ".window")))
         ## Removing black list
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
+        !!!!!!!!!!! SEE IF NA SHOULD BE ATTRIBUTED HERE
         return(resblack)
 }
 
@@ -218,6 +222,10 @@
             dupidx <- which(duplicated(currenttrans$window))
             colscore <- paste0(currentname, "_score") # nolint
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!! MOVE OUT THE LINE TO DO MEAN AFTER RETRIEVING BEDGRAPH VALUES
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
             if (!isTRUE(all.equal(length(dupidx), 0))) {
                 dupframenbvec <- unique(currenttrans$window[dupidx])
                 ## For each duplicated frame, compute the weighted mean
@@ -228,6 +236,7 @@
                     windsize, transname, dupframenbvec, colscore, wmeanvec)
              }
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              # TO REMOVE currenttrans <- currenttrans[order(currenttrans$coord), ] # nolint
              return(currenttrans)
     }, windsize, allwindstrand, currentname, mc.cores = nbcputrans)
@@ -302,6 +311,11 @@
                 retrievedstrand <- "-"
             allwindstrand <- allwindtib %>%
                 dplyr::filter(strand == as.character(retrievedstrand)) # nolint
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!! ASSOCIATE SCORES AND COMPUTE WMEAN HERE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
             ## Overlapping scores with anno on correct strand and remove
             ## blacklist
