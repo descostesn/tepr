@@ -16,6 +16,7 @@
 
 .retrievebgval <- function(currentpath, verbose) {
 
+    if (verbose) message("\t\t Reading ", currentpath)
     valgr <- rtracklayer::import.bedGraph(currentpath)
     if (verbose) message("\t\t Converting to tibble")
     valdf <- as.data.frame(valgr)
