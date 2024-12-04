@@ -191,16 +191,21 @@
     dupframenbvec, colscore, wmeanvec) {
 
         ## Remove duplicated frames and replace scores by wmean
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         currenttrans <- currenttrans[-dupidx, ]
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
             stop("The number of frames should be equal to windsize: ",
                 windsize, " for transcript ", transname)
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         idxscorereplace <- match(dupframenbvec, currenttrans$window)
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         if (!isTRUE(all.equal(dupframenbvec,
             currenttrans$window[idxscorereplace])))
             stop("Problem in replacing scores by wmean, contact the developer.")
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         currenttrans[idxscorereplace, colscore] <- wmeanvec
-
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         return(currenttrans)
 }
 
@@ -344,7 +349,7 @@
              if (verbose) message("For each transcript compute the weighted",
                 " mean")
              bytranslist <- parallel::mclapply(bgscorebytrans,
-                function(currenttrans) {
+                function(currenttrans, windsize) {
 
                     ## Identifying duplicated windows that will be used to
                     ## compute a weighted mean.
@@ -377,9 +382,18 @@
                             return(wmean)
                         }, currenttrans)
 
-                    }
+                        ## Remove duplicated frames and replace scores by wmean
+                        currenttrans <- currenttrans[-dupidx, ]
+                        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+                            stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", unique(currenttrans$transcript.window))
+                        idxscorereplace <- match(dupframenbvec, currenttrans$window.window)
 
-                }, mc.cores = nbcputrans)
+                        if (!isTRUE(all.equal(dupframenbvec, currenttrans$window.window[idxscorereplace])))
+                            stop("Problem in replacing scores by wmean, contact the developer.")
+                        currenttrans[idxscorereplace, "score"] <- wmeanvec
+                        return(currenttrans)
+                    }
+                }, windsize, mc.cores = nbcputrans)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
