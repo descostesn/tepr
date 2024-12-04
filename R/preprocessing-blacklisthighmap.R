@@ -366,13 +366,13 @@
 
                             ## Retrieve the nb of overlapping nt for each score
                             overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
-                                nt <- seq(from = x["start.bg"], to = x["end.bg"], by = 1)
+                                nt <- seq(from = x["start"], to = x["end"], by = 1)
                                 overnt <- length(which(nt >= windowstart & nt <= windowend))
                                 return(overnt)
                             }, windowstart, windowend)
 
                             ## Computing weighted mean
-                            allscores <- as.data.frame(allframedf[,colscore])[[1]]
+                            allscores <- as.data.frame(allframedf[, "score"])[[1]]
                             wmean <- weighted.mean(allscores, overntvec)
                             return(wmean)
                         }, currenttrans)
