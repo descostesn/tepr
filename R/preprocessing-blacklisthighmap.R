@@ -327,6 +327,14 @@
             if (verbose) message("Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
+
+             ## For each transcript compute the weighted means for each window.
+             ## The weight is calculated if a window contains more than one
+             ## score
+             if (verbose) message("For each transcript compute the weighted",
+                " mean")
+             bytranslist <- parallel::mclapply(bgscorebytrans,
+                function(currenttrans, currentname) { }, currentname, mc.cores = nbcputrans)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
