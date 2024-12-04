@@ -29,9 +29,9 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !!!!!!!!! MOVE OUT THE LINE TO DO MEAN AFTER RETRIEVING BEDGRAPH VALUES
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        ## Retrieving scores on annotations of strand
-        suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
-                suffix = c("", ".window")))
+        # ## Retrieving scores on annotations of strand
+        # suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
+        #         suffix = c("", ".window")))
         ## Removing black list
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
         !!!!!!!!!!! SEE IF NA SHOULD BE ATTRIBUTED HERE
@@ -200,8 +200,9 @@
 .missingandwmean <- function(resmap, windsize, allwindstrand, currentname,
     nbcputrans) {
 
-    ## Splitting the scores kept on the high mappability track by transcript
-    bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
+!!    ## Splitting the scores kept on the high mappability track by transcript
+!!    bgscorebytrans <- split(resmap, factor(resmap$transcript.window))
 
     ## Performing identification of missing windows and calculation of weighted
     ## means for each transcript. This is parallelized on nbcputrans CPUs.
@@ -314,6 +315,18 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !!!!!!!!! ASSOCIATE SCORES AND COMPUTE WMEAN HERE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            ## Retrieving scores on annotations of strand
+            if (verbose) message("\t\t Retrieving scores on annotations of ",
+                "strand")
+            suppressWarnings(annoscores <- valr::bed_intersect(valtib,
+                allwindstrand, suffix = c("", ".window")))
+
+            ## Splitting the scores by transcript
+            if (verbose) message("Splitting the scores by transcript")
+            trsfact <- factor(annoscores$transcript.window)
+            bgscorebytrans <- split(annoscores, trsfact)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
