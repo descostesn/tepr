@@ -147,24 +147,31 @@
     colscore) {
 
     ## For each duplicated frame
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
     wmeanvec <- sapply(dupframenbvec, function(nbdup, currenttrans, currentname,
         colscore) {
 
-        ## Selecting all rows having a window equal tro nbdup
+        ## Selecting all rows having a window equal to nbdup
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         allframedf <- currenttrans[which(currenttrans$window == nbdup), ]
-        if (isTRUE(all.equal(nrow(allframedf), 1)))
-            stop("There should be more than one frame selected")
+!! COMMENTED CODE BECAUSE UNNECESSARY
+        # if (isTRUE(all.equal(nrow(allframedf), 1)))
+        #     stop("There should be more than one frame selected")
 
         ## Testing that the start/end of the window is the same for all scores
         ## selected (this should not give an error)
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         windowstart <- unique(allframedf$start.window)
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         windowend <- unique(allframedf$end.window)
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         if (!isTRUE(all.equal(length(windowstart), 1)) ||
             !isTRUE(all.equal(length(windowend), 1)))
                 stop("The size of the window is not unique for the frame rows ",
                     "selected, this should not happen, contact the developper.")
 
         ## Retrieve the nb of overlapping nt for each score
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         overntvec <- apply(allframedf, 1,
             function(x, currentname, windowstart, windowend) {
                 nt <- seq(from = x["start.bg"], to = x["end.bg"], by = 1)
@@ -220,6 +227,7 @@
 
             ## Identifying duplicated windows that will be used to compute
             ## a weighted mean.
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
             dupidx <- which(duplicated(currenttrans$window))
             colscore <- paste0(currentname, "_score") # nolint
 
@@ -227,7 +235,9 @@
     !!!!!!!!! MOVE OUT THE LINE TO DO MEAN AFTER RETRIEVING BEDGRAPH VALUES
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
             if (!isTRUE(all.equal(length(dupidx), 0))) {
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
                 dupframenbvec <- unique(currenttrans$window[dupidx])
                 ## For each duplicated frame, compute the weighted mean
                 wmeanvec <- .computewmeanvec(dupframenbvec, currenttrans,
@@ -334,7 +344,42 @@
              if (verbose) message("For each transcript compute the weighted",
                 " mean")
              bytranslist <- parallel::mclapply(bgscorebytrans,
-                function(currenttrans, currentname) { }, currentname, mc.cores = nbcputrans)
+                function(currenttrans) {
+
+                    ## Identifying duplicated windows that will be used to
+                    ## compute a weighted mean.
+                    dupidx <- which(duplicated(currenttrans$window.window))
+                    if (!isTRUE(all.equal(length(dupidx), 0))) {
+                        dupframenbvec <- unique(currenttrans$window.window[dupidx])
+
+                        ## Computing the weighted mean for each duplicated window
+                        wmeanvec <- sapply(dupframenbvec, function(nbdup, currenttrans) {
+                            ## Selecting all rows having a window equal to nbdup
+                            allframedf <- currenttrans[which(currenttrans$window.window == nbdup), ]
+
+                            ## Retrieving start and end of the window to calculate nb of nt
+                            windowstart <- unique(allframedf$start.window)
+                            windowend <- unique(allframedf$end.window)
+                            if (!isTRUE(all.equal(length(windowstart), 1)) || !isTRUE(all.equal(length(windowend), 1)))
+                                stop("The size of the window is not unique for the frame rows ",
+                                    "selected, this should not happen, contact the developper.")
+
+                            ## Retrieve the nb of overlapping nt for each score
+                            overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
+                                nt <- seq(from = x["start.bg"], to = x["end.bg"], by = 1)
+                                overnt <- length(which(nt >= windowstart & nt <= windowend))
+                                return(overnt)
+                            }, windowstart, windowend)
+
+                            ## Computing weighted mean
+                            allscores <- as.data.frame(allframedf[,colscore])[[1]]
+                            wmean <- weighted.mean(allscores, overntvec)
+                            return(wmean)
+                        }, currenttrans)
+
+                    }
+
+                }, mc.cores = nbcputrans)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
