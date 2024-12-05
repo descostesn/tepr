@@ -351,7 +351,7 @@
              if (verbose) message("For each transcript compute the weighted",
                 " mean")
              bytranslist <- parallel::mclapply(bgscorebytrans,
-                function(currenttrans, windsize) {
+                function(currenttrans, windsize, currentname) {
 
                     ## Identifying duplicated windows that will be used to
                     ## compute a weighted mean.
@@ -397,13 +397,20 @@
 
                     ## Remove columns corresponding to bedgraph
                     idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"), colnames(currenttrans))
-                        currenttrans <- currenttrans[, -idxcolbg]
+                    currenttrans <- currenttrans[, -idxcolbg]
 
-                        ## Move score column at the end
-                        dplyr::relocate(currenttrans, "score", .after = "window.window")
+                    ## Move score column at the end
+                    currenttrans <- dplyr::relocate(currenttrans, "score", .after = "window.window")
+
+                    ## Remove the .window suffix from column names
+                    colnames(currenttrans) <- gsub(".window", "", colnames(currenttrans))
+
+                    ## Add exp name prefix to column score
+                    idxscore <- which(colnames(currenttrans) == "score")
+                    colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
 
                         return(currenttrans)
-                }, windsize, mc.cores = nbcputrans)
+                }, windsize, currentname, mc.cores = nbcputrans)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
