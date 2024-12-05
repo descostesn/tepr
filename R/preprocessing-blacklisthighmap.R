@@ -25,19 +25,6 @@
     return(valtib)
 }
 
-.removeblacklist <- function(allwindstrand, valtib, blacklisttib) {
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !!!!!!!!! MOVE OUT THE LINE TO DO MEAN AFTER RETRIEVING BEDGRAPH VALUES
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # ## Retrieving scores on annotations of strand
-        # suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
-        #         suffix = c("", ".window")))
-        ## Removing black list
-!!!!!! CODE IS MOVED IN THE LOOP THAT RETURNS bytranslist
-        resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
-        !!!!!!!!!!! SEE IF NA SHOULD BE ATTRIBUTED HERE
-        return(resblack)
-}
 
 .retrieveonhighmap <- function(resblack, maptracktib, currentchrom) { # nolint
 
@@ -426,19 +413,12 @@
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
-                
-                ## Set the scores overlapping a black list interval to NA
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-            ## Overlapping scores with anno on correct strand and remove
-            ## blacklist
-            if (verbose) message("\t\t Keeping scores outside blacklist ",
-                "intervals")
-            resblack <- .removeblacklist(allwindstrand, valtib, blacklisttib)
-            rm(valtib)
-            invisible(gc())
 
             ## Processing by chromosomes because of size limits, the mappability
             ## track has too many rows. Formatting scores, keeping those on
