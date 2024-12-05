@@ -33,6 +33,7 @@
         # suppressWarnings(resanno <- valr::bed_intersect(valtib, allwindstrand,
         #         suffix = c("", ".window")))
         ## Removing black list
+!!!!!! CODE IS MOVED IN THE LOOP THAT RETURNS bytranslist
         resblack <- valr::bed_intersect(resanno, blacklisttib, invert = TRUE)
         !!!!!!!!!!! SEE IF NA SHOULD BE ATTRIBUTED HERE
         return(resblack)
@@ -349,7 +350,7 @@
              ## The weight is calculated if a window contains more than one
              ## score
              if (verbose) message("For each transcript compute the weighted",
-                " mean")
+                " mean and set scores overlapping black list to NA")
              bytranslist <- parallel::mclapply(bgscorebytrans,
                 function(currenttrans, windsize, currentname) {
 
@@ -409,11 +410,18 @@
                     idxscore <- which(colnames(currenttrans) == "score")
                     colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
 
-                        return(currenttrans)
+                    ## Set scores overlapping black list to NA
+                    resblack <- valr::bed_intersect(currenttrans, blacklisttib)
+                    if (!isTRUE(all.equal(nrow(resblack), 0))) {}
+
+                    return(currenttrans)
                 }, windsize, currentname, mc.cores = nbcputrans)
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
+                
+                ## Set the scores overlapping a black list interval to NA
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
