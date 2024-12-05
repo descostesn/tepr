@@ -180,7 +180,9 @@
             }, currentname, windowstart, windowend)
 
         ## Computing weighted mean
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         allscores <- as.data.frame(allframedf[,colscore])[[1]]
+!! CODE WAS COPIED AFTER RETRIEVING BG VAL
         wmean <- weighted.mean(allscores, overntvec)
         return(wmean)
     }, currenttrans, currentname, colscore)
@@ -391,8 +393,16 @@
                         if (!isTRUE(all.equal(dupframenbvec, currenttrans$window.window[idxscorereplace])))
                             stop("Problem in replacing scores by wmean, contact the developer.")
                         currenttrans[idxscorereplace, "score"] <- wmeanvec
-                        return(currenttrans)
                     }
+
+                    ## Remove columns corresponding to bedgraph
+                    idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"), colnames(currenttrans))
+                        currenttrans <- currenttrans[, -idxcolbg]
+
+                        ## Move score column at the end
+                        dplyr::relocate(currenttrans, "score", .after = "window.window")
+
+                        return(currenttrans)
                 }, windsize, mc.cores = nbcputrans)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
