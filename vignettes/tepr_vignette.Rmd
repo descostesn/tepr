@@ -246,119 +246,7 @@ invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx
 
 # Standard workflow
 
-To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`.
-
-## Note on processing the complete dataset
-
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. The composition of the experiment table is indicated in the next section.
-
-The time of computation for each function is indicated:
-
-```{r completedataset, eval = FALSE}
-library(tepr)
-
-transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
-exppath <- system.file("extdata", "exptab.csv", package="tepr")
-
-## Reading input files
-transdf <- read.delim(transpath, header = FALSE) 
-expdf <- read.csv(exppath)
-
-## Calculate Average Expression and Filter Transcript Data
-expthres <- 0.1
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
-
-         Calculating average expression per transcript
-         Removing lines with values < expthres
-                 ## Analysis performed in: 7.67012810707092 (seconds)
-
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
-         Splitting the table by each transcript
-                 ## Analysis performed in: 25.9511797428131 (seconds)
-
-## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
-         Filtering to keep only the expressed transcripts
-         Splitting the table by each transcript
-         Computing ecdf on each transcript
-                 ## Analysis performed in: 1.23920369148254 (minutes)
-resecdf <- resecdflist[[1]]
-nbwindows <- resecdflist[[2]]
-
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
-
-         Merging columns for condition ctrl
-         Calculating average and difference between replicates for columns 'value' of ctrl
-         Calculating average and difference between replicates for columns 'Fx' of ctrl
-         Merging columns for condition HS
-         Calculating average and difference between replicates for columns 'value' of HS
-         Calculating average and difference between replicates for columns 'Fx' of HS
-         Commputing all differences on mean columns
-                 ## Analysis performed in: 0.953349590301514 (seconds)
-
-## Split the results by transcripts
-start_time <- Sys.time()
-bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time)
-
-                ## Analysis performed in: 6.54691791534424 (seconds)
-
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
-
-         Computing the differences (d or delta) of AUC
-         Computing the Area Under Curve (AUC)
-         Merging results
-                 ## Analysis performed in: 27.2096176147461 (seconds)
-
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
-
-                 ## Analysis performed in: 11.8020555973053 (seconds)
-
-## Calculate Attenuation from AUC and Other Transcript Features
-resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff, nbcpu = 20, showtime = TRUE)
-
-         Merging tables
-         Building summary
-         Merging summary
-         Merging detailed mean table with summary
-         Splitting the previous table by transcript
-         Computing up and down mean
-         Merging attenuation to the complete table
-                 ## Analysis performed in: 1.17459278106689 (minutes)
-
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt, showtime = TRUE)
-
-         Computing the Universe column
-         Computing the Group column
-                          ## Analysis performed in: 0.0214207172393799 (seconds)
-
-## Plotting and saving to current folder
-colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
-plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = ".",
-    formatname = "png")
-
-plotauc(res, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
-    formatname = "png")
-genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval",
-    outfold = ".", formatname = "png")
-
-plotmetagenes(res, resmeandiff, plottype = "attenuation", formatname = "png",
-    outfold = ".")
-
-plothistoknee(res, outfold = ".", formatname = "png")
-plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
-```
-
+To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section 5.12. Here we will focus on 100 transcripts. 
 
 ## Input files
 
@@ -693,3 +581,116 @@ plothistoknee(res, plottype = "kb", plot = TRUE)
 The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
+
+
+## Note on processing the complete dataset
+
+Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. The composition of the experiment table is indicated in the next section.
+
+The time of computation for each function is indicated:
+
+```{r completedataset, eval = FALSE}
+library(tepr)
+
+transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
+exppath <- system.file("extdata", "exptab.csv", package="tepr")
+
+## Reading input files
+transdf <- read.delim(transpath, header = FALSE) 
+expdf <- read.csv(exppath)
+
+## Calculate Average Expression and Filter Transcript Data
+expthres <- 0.1
+resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
+
+         Calculating average expression per transcript
+         Removing lines with values < expthres
+                 ## Analysis performed in: 7.67012810707092 (seconds)
+
+## Count NA values per transcript and condition
+rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
+
+         Splitting the table by each transcript
+                 ## Analysis performed in: 25.9511797428131 (seconds)
+
+## Compute ECDF for Genes Based on Expression Data
+resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
+
+         Filtering to keep only the expressed transcripts
+         Splitting the table by each transcript
+         Computing ecdf on each transcript
+                 ## Analysis performed in: 1.23920369148254 (minutes)
+resecdf <- resecdflist[[1]]
+nbwindows <- resecdflist[[2]]
+
+## Compute Mean and Differences of Scores for Each Condition
+resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
+
+         Merging columns for condition ctrl
+         Calculating average and difference between replicates for columns 'value' of ctrl
+         Calculating average and difference between replicates for columns 'Fx' of ctrl
+         Merging columns for condition HS
+         Calculating average and difference between replicates for columns 'value' of HS
+         Calculating average and difference between replicates for columns 'Fx' of HS
+         Commputing all differences on mean columns
+                 ## Analysis performed in: 0.953349590301514 (seconds)
+
+## Split the results by transcripts
+start_time <- Sys.time()
+bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+end_time <- Sys.time()
+message("\t\t ## Analysis performed in: ", end_time - start_time)
+
+                ## Analysis performed in: 6.54691791534424 (seconds)
+
+## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
+
+         Computing the differences (d or delta) of AUC
+         Computing the Area Under Curve (AUC)
+         Merging results
+                 ## Analysis performed in: 27.2096176147461 (seconds)
+
+## Identify the Knee and Max ECDF Differences for Each Transcript
+resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
+
+                 ## Analysis performed in: 11.8020555973053 (seconds)
+
+## Calculate Attenuation from AUC and Other Transcript Features
+resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+    resmeandiff, nbcpu = 20, showtime = TRUE)
+
+         Merging tables
+         Building summary
+         Merging summary
+         Merging detailed mean table with summary
+         Splitting the previous table by transcript
+         Computing up and down mean
+         Merging attenuation to the complete table
+                 ## Analysis performed in: 1.17459278106689 (minutes)
+
+## Define Universe and Group of Genes Based on Expression Data
+res <- universegroup(resatt, showtime = TRUE)
+
+         Computing the Universe column
+         Computing the Group column
+                          ## Analysis performed in: 0.0214207172393799 (seconds)
+
+## Plotting and saving to current folder
+colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = ".",
+    formatname = "png")
+
+plotauc(res, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
+    formatname = "png")
+genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
+plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval",
+    outfold = ".", formatname = "png")
+
+plotmetagenes(res, resmeandiff, plottype = "attenuation", formatname = "png",
+    outfold = ".")
+
+plothistoknee(res, outfold = ".", formatname = "png")
+plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
+```
+
