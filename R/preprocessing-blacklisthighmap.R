@@ -337,9 +337,9 @@
              ## The weight is calculated if a window contains more than one
              ## score
              if (verbose) message("For each transcript compute the weighted",
-                " mean and set scores overlapping black list to NA")
+                " mean and set scores overlapping black list and low mappability to NA")
              bytranslist <- parallel::mclapply(bgscorebytrans,
-                function(currenttrans, windsize, currentname) {
+                function(currenttrans, windsize, currentname, blacklisttib, maptracktib) {
 
                     ## Identifying duplicated windows that will be used to
                     ## compute a weighted mean.
@@ -408,8 +408,19 @@
                         currenttrans[idxblack, idxscore] <- NA
                     }
 
+                    ## Set scores NOT overlapping high map to NA (i.e. scores overlapping low mappability intervals)
+                    resmap <- valr::bed_intersect(currenttrans, maptracktib)
+                    if (!isTRUE(all.equal(nrow(resmap), 0))) {
+                        ## Compute strtransvec only if no overlap with black list was found
+                        if (isTRUE(all.equal(nrow(resblack), 0))) strtransvec <- paste(currenttrans$chrom, currenttrans$start, currenttrans$end, sep = "-")
+                        strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x, sep = "-")
+                        idxmap <- match(strtransvec, strmap)
+                        idxtosetNA <- which(is.na(idxmap)) ## NOT overlapping high map
+                        currenttrans[idxtosetNA, idxscore] <- NA
+                    }
+
                     return(currenttrans)
-                }, windsize, currentname, mc.cores = nbcputrans)
+                }, windsize, currentname, blacklisttib, maptracktib, mc.cores = nbcputrans)
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
