@@ -250,7 +250,13 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## Input files
 
-The first table that you need contains information about each experiment along with scores, for each protein-coding and lncRNA annotations retrieved following the steps described in the `Pre-processing` section. Below is a reduced table limited to 100 transcripts. The column names are defined automatically by the function `averageandfilterexprs` later on. For ease of reading, we define them manually here.
+Two tables are needed as input:
+
+- **transdf**: Table obtained with the `preprocessing` function (see previous section). It contains information about each experiment along with scores, for each protein-coding and lncRNA annotations. 
+
+- **exptab**: Table describing the experiments. It contains the columns "condition", "replicate", "direction", "strand", and "path". The column "direction" should contain the values "forward" and "reverse". The column "strand" should contain the values "plus" and "minus". You can check the conformity of the table with the utility function    `checkexptab`. 
+
+The two tables are provided with the package and can be retrieved with the command `system.file` in the folder “extdata”. We sampled 100 transcripts from the transdf table to describe the pipeline in order to reduce computation time. 
 
 ```{r reading-anno-scores}
 library(tepr)
@@ -585,7 +591,7 @@ The plot on the complete dataset gives:
 
 ## Note on processing the complete dataset
 
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. The composition of the experiment table is indicated in the next section.
+Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. Note that you can check the conformity of the table `transdf` with the utility function `checkexptab`. 
 
 The time of computation for each function is indicated:
 
