@@ -411,6 +411,9 @@
 
                         return(currenttrans)
                 }, windsize, currentname, mc.cores = nbcputrans)
+
+                if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
+                    stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
