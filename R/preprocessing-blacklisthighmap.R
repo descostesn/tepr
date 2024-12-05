@@ -412,7 +412,14 @@
 
                     ## Set scores overlapping black list to NA
                     resblack <- valr::bed_intersect(currenttrans, blacklisttib)
-                    if (!isTRUE(all.equal(nrow(resblack), 0))) {}
+                    if (!isTRUE(all.equal(nrow(resblack), 0))) {
+                        strtransvec <- paste(currenttrans$chrom, currenttrans$start, currenttrans$end, sep = "-")
+                        strblack <- paste(resblack$chrom, resblack$start.x, resblack$end.x, sep = "-")
+                        idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
+                        if (isTRUE(all.equal(length(idx), 0)))
+                            stop("Problem in setting scores overlapping black list to NA. This should not happen. Contact the developer.")
+                        currenttrans[idxblack, idxscore] <- NA
+                    }
 
                     return(currenttrans)
                 }, windsize, currentname, mc.cores = nbcputrans)
