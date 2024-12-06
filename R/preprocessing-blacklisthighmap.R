@@ -248,6 +248,7 @@
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
             rm(trsfact, valtib)
+            invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
              ## The weight is calculated if a window contains more than one
@@ -268,6 +269,7 @@
                 stop("All elements of the list should contain ", windsize,
                     " rows. This should not happen. Contact the developer.")
 
+            rm(bgscorebytrans)
             invisible(gc())
             return(bytranslist)
 
