@@ -27,7 +27,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
             saveobjectpath, showtime)
     } else {
         if (verbose) message("Loading ", allwindowsbedobjpath)
-        allannobed <- readRDS(allwindowsbedobjpath)
+        allwindowsbed <- readRDS(allwindowsbedobjpath)
     }
 
     ## Retrieving the values of the bedgraph files, removing black lists and
@@ -35,9 +35,16 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     if (verbose) message("\n ## Retrieving the values of the bedgraph files, ",
         "removing black lists and keeping scores landing on high mappability",
         " intervals ##\n")
-    bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
-        exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath, reload,
-        showtime, verbose)
+    bedgraphlistwmeanobjpath <- file.path(saveobjectpath,
+        "bedgraphlistwmean.rds")
+    if (!reload || !file.exists(bedgraphlistwmeanobjpath)) {
+        bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
+            exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
+            reload, showtime, verbose)
+    } else {
+        if (verbose) message("Loading ", bedgraphlistwmeanobjpath)
+        bedgraphlistwmean <- readRDS(bedgraphlistwmeanobjpath)
+    }
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
