@@ -77,60 +77,9 @@
     return(list(currenttrans, idxscore))
 }
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-# .removelowmap <- function(currenttrans, idxscore, maptracktib) {
-
-#         ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
-#         ## low mappability intervals)
-#         resmap <- valr::bed_intersect(currenttrans, maptracktib)
-#         if (!isTRUE(all.equal(nrow(resmap), 0))) {
-#             ## Compute strtransvec only if no overlap with black list was found
-#             strtransvec <- paste(currenttrans$chrom, currenttrans$start,
-#                     currenttrans$end, sep = "-")
-#             strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x,
-#                 sep = "-")
-#             idxmap <- match(strtransvec, strmap)
-#             idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
-#             currenttrans[idxtosetna, idxscore] <- NA
-#         }
-#         rm(resmap)
-#         invisible(gc())
-#         return(currenttrans)
-# }
-
-# .processingbychrom <- function(bytranslist, maptracktib, currentname,
-#     nbcputrans, subverbose) {
-
-#          if (subverbose) message("\t\t Retrieving list of chromosomes")
-#          chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
-
-#          if (subverbose) message("\t\t Splitting transcripts by chromosomes")
-#          if (subverbose) message("\t\t Excluding low mappability scores")
-#          bychromlist <- lapply(chromvec, function(currentchrom, bytranslist,
-#              currentname, maptracktib, nbcputrans) {
-
-#                  if (subverbose) message("\t\t\t over ", currentchrom)
-
-#                  ## Keeping high mappability track on specific chrom
-#                  resmap <-  maptracktib  %>% dplyr::filter(chrom == currentchrom), # nolint
-
-#                 return(transdf)
-#             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
-
-#         ## Merging results that were computed on each chromosome
-#         if (subverbose) message("\t\t Merging results that were computed ",
-#             "on each chromome")
-#         resallchrom <- do.call("rbind", bychromlist)
-#         rm(bychromlist)
-#         invisible(gc())
-#         return(resallchrom)
-# }
-
-
-# !!!!!!!!!!!!!!!
-
-.removeblack <- function(currenttrans, blacklisttib, idxscore) {
+.removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore,
+    maptracktib) {
 
         ## Set scores overlapping black list to NA
         resblack <- valr::bed_intersect(currenttrans, blacklisttib)
@@ -146,7 +95,21 @@
             currenttrans[idxblack, idxscore] <- NA
         }
 
-        rm(resblack)
+        ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
+        ## low mappability intervals)
+        resmap <- valr::bed_intersect(currenttrans, maptracktib)
+        if (!isTRUE(all.equal(nrow(resmap), 0))) {
+            ## Compute strtransvec only if no overlap with black list was found
+            if (isTRUE(all.equal(nrow(resblack), 0)))
+                strtransvec <- paste(currenttrans$chrom, currenttrans$start,
+                    currenttrans$end, sep = "-")
+            strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x,
+                sep = "-")
+            idxmap <- match(strtransvec, strmap)
+            idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
+            currenttrans[idxtosetna, idxscore] <- NA
+        }
+        rm(resblack, resmap)
         invisible(gc())
         return(currenttrans)
 }
@@ -189,20 +152,21 @@
                 currenttrans <- res[[1]]
                 idxscore <- res[[2]]
 
-                ## Set scores overlapping black list to NA
-                currenttrans <- .removeblack(currenttrans, blacklisttib,
-                    idxscore)
+                ## Set scores overlapping black list and low map to NA
+                idxchrom <- which(maptracktib$chrom == unique(
+                    currenttrans$chrom))
+                maptracktibchrom <- maptracktib[idxchrom, ]
+                currenttrans <- .removeblackandlowmap(currenttrans,
+                    blacklisttib, idxscore, maptracktibchrom)
 
-                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace)
+                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
+                    maptracktibchrom)
                 invisible(gc())
                 return(currenttrans)
 
                 }, windsize, currentname, blacklisttib, maptracktib,
                     mc.cores = nbcputrans)
 
-                ## Set scores overlapping low map to NA
-                # !!
-                # !!
                 return(bytranslist)
 }
 
