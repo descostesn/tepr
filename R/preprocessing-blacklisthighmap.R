@@ -275,6 +275,34 @@
         return(maptrackbed)
 }
 
+.loadbgprocessing <- function(exptab, blacklistbed, maptrackbed, allwindowsbed,
+        windsize, nbcputrans, showtime, saveobjectpath, verbose) {
+
+            if (verbose) message("Removing scores within black list intervals,",
+            " keeping those on high mappability regions, and computing ",
+            "weighted means.")
+            expnamevec <- paste0(exptab$condition, exptab$replicate,
+                exptab$direction)
+            if (showtime) start_time_bglistwmean <- Sys.time()
+            bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
+                maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
+                showtime, verbose)
+            if (showtime) {
+                end_time_bglistwmean <- Sys.time()
+                timing <- end_time_bglistwmean - start_time_bglistwmean
+                message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
+            }
+
+            if (!is.na(saveobjectpath)) {
+                if (verbose) message("Saving bedgraphlistwmean as an rds ",
+                    "object")
+                saveRDS(bedgraphlistwmean, file.path(saveobjectpath,
+                    "bedgraphlistwmean.rds"))
+            }
+
+            return(bedgraphlistwmean)
+}
+
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
@@ -295,27 +323,11 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
             saveobjectpath, reload, verbose)
 
-        if (verbose) message("Removing scores within black list intervals, ",
-            "keeping those on high mappability regions, and computing ",
-            "weighted means.")
-        expnamevec <- paste0(exptab$condition, exptab$replicate,
-            exptab$direction)
-        if (showtime) start_time_bedgraphlistwmean <- Sys.time()
-        bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
-            maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
-            showtime, verbose)
-        if (showtime) {
-            end_time_bedgraphlistwmean <- Sys.time()
-            timing <- end_time_bedgraphlistwmean - start_time_bedgraphlistwmean
-            message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
-        }
-
-        if (!is.na(saveobjectpath)) {
-                if (verbose) message("Saving bedgraphlistwmean as an rds ",
-                    "object")
-                saveRDS(bedgraphlistwmean, file.path(saveobjectpath,
-                    "bedgraphlistwmean.rds"))
-        }
+        ## Removing scores within black list intervals, keeping those on high
+        ## mappability regions, and computing weighted means.
+        bedgraphlistwmean <- .loadbgprocessing(exptab, blacklistbed,
+            maptrackbed, allwindowsbed, windsize, nbcputrans, showtime,
+            saveobjectpath, verbose)
 
         rm(maptrackbed)
         invisible(gc())
