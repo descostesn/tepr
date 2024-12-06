@@ -25,54 +25,8 @@
     return(valtib)
 }
 
-.retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
-    nbcputrans, allwindowsbed, expnamevec, windsize, verbose, subverbose) {
-
-        if (verbose) message("\t Converting annotations' windows, blacklist,",
-            " and mappability track to tibble")
-        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
-        allwindtib <- tibres[[1]]
-        blacklisttib <- tibres[[2]]
-        maptracktib <- tibres[[3]]
-
-        ## Looping on each experiment bg file
-        if (verbose) message("\t For each bedgraph file")
-        bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans, verbose) {
-
-            ## Retrieving bedgraph values
-            if (verbose) message("\t\t Retrieving begraph values for ",
-                currentname)
-            valtib <- .retrievebgval(currentpath, verbose)
-
-            ## Keeping information on the correct strand
-            if (verbose) message("\t\t Retrieving information on strand ",
-                currentstrand)
-            if (isTRUE(all.equal(currentstrand, "plus")))
-                retrievedstrand <- "+"
-            else
-                retrievedstrand <- "-"
-            allwindstrand <- allwindtib %>%
-                dplyr::filter(strand == as.character(retrievedstrand)) # nolint
-
-            ## Retrieving scores on annotations of strand
-            if (verbose) message("\t\t Retrieving scores on annotations of ",
-                "strand")
-            suppressWarnings(annoscores <- valr::bed_intersect(valtib,
-                allwindstrand, suffix = c("", ".window")))
-
-            ## Splitting the scores by transcript
-            if (verbose) message("Splitting the scores by transcript")
-            trsfact <- factor(annoscores$transcript.window)
-            bgscorebytrans <- split(annoscores, trsfact)
-
-             ## For each transcript compute the weighted means for each window.
-             ## The weight is calculated if a window contains more than one
-             ## score
-             if (verbose) message("For each transcript compute the weighted",
-                " mean and set scores overlapping black list and low mappability to NA")
-             bytranslist <- parallel::mclapply(bgscorebytrans,
+.meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname, blacklisttib, maptracktib, nbcputrans) {
+                bytranslist <- parallel::mclapply(bgscorebytrans,
                 function(currenttrans, windsize, currentname, blacklisttib, maptracktib) {
 
                     ## Identifying duplicated windows that will be used to
@@ -155,6 +109,59 @@
 
                     return(currenttrans)
                 }, windsize, currentname, blacklisttib, maptracktib, mc.cores = nbcputrans)
+
+                return(bytranslist)
+}
+
+.retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
+    nbcputrans, allwindowsbed, expnamevec, windsize, verbose, subverbose) {
+
+        if (verbose) message("\t Converting annotations' windows, blacklist,",
+            " and mappability track to tibble")
+        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
+        allwindtib <- tibres[[1]]
+        blacklisttib <- tibres[[2]]
+        maptracktib <- tibres[[3]]
+
+        ## Looping on each experiment bg file
+        if (verbose) message("\t For each bedgraph file")
+        bedgraphlistwmean <- mapply(function(currentpath, currentname,
+            currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
+            nbcputrans, verbose) {
+
+            ## Retrieving bedgraph values
+            if (verbose) message("\t\t Retrieving begraph values for ",
+                currentname)
+            valtib <- .retrievebgval(currentpath, verbose)
+
+            ## Keeping information on the correct strand
+            if (verbose) message("\t\t Retrieving information on strand ",
+                currentstrand)
+            if (isTRUE(all.equal(currentstrand, "plus")))
+                retrievedstrand <- "+"
+            else
+                retrievedstrand <- "-"
+            allwindstrand <- allwindtib %>%
+                dplyr::filter(strand == as.character(retrievedstrand)) # nolint
+
+            ## Retrieving scores on annotations of strand
+            if (verbose) message("\t\t Retrieving scores on annotations of ",
+                "strand")
+            suppressWarnings(annoscores <- valr::bed_intersect(valtib,
+                allwindstrand, suffix = c("", ".window")))
+
+            ## Splitting the scores by transcript
+            if (verbose) message("Splitting the scores by transcript")
+            trsfact <- factor(annoscores$transcript.window)
+            bgscorebytrans <- split(annoscores, trsfact)
+
+             ## For each transcript compute the weighted means for each window.
+             ## The weight is calculated if a window contains more than one
+             ## score
+             if (verbose) message("For each transcript compute the weighted",
+                " mean and set scores overlapping black list and low mappability to NA")
+             bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
+                currentname, blacklisttib, maptracktib, nbcputrans)
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
