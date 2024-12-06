@@ -108,7 +108,7 @@
             idxtosetNA <- which(is.na(idxmap)) ## NOT overlapping high map
             currenttrans[idxtosetNA, idxscore] <- NA
         }
-        
+
         return(currenttrans)
 }
 
@@ -226,6 +226,7 @@
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
 
+        invisible(gc())
         return(bedgraphlistwmean)
 }
 
