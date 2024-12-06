@@ -56,6 +56,27 @@
     return(wmeanvec)
 }
 
+.formatcurrenttranscols <- function(currenttrans, currentname) {
+
+    ## Remove columns corresponding to bedgraph
+    idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"),
+        colnames(currenttrans))
+    currenttrans <- currenttrans[, -idxcolbg]
+
+    ## Move score column at the end
+    currenttrans <- dplyr::relocate(currenttrans, "score",
+        .after = "window.window")
+
+    ## Remove the .window suffix from column names
+    colnames(currenttrans) <- gsub(".window", "", colnames(currenttrans))
+
+    ## Add exp name prefix to column score
+    idxscore <- which(colnames(currenttrans) == "score")
+    colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
+
+    return(currenttrans)
+}
+
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
     blacklisttib, maptracktib, nbcputrans) {
 
@@ -87,20 +108,10 @@
                         currenttrans[idxscorereplace, "score"] <- wmeanvec
                 }
 
-                    ## Remove columns corresponding to bedgraph
-                    idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"), colnames(currenttrans))
-                    currenttrans <- currenttrans[, -idxcolbg]
-
-                    ## Move score column at the end
-                    currenttrans <- dplyr::relocate(currenttrans, "score", .after = "window.window")
-
-                    ## Remove the .window suffix from column names
-                    colnames(currenttrans) <- gsub(".window", "", colnames(currenttrans))
-
-                    ## Add exp name prefix to column score
-                    idxscore <- which(colnames(currenttrans) == "score")
-                    colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
-
+                currenttrans <- .formatcurrenttranscols(currenttrans,
+                    currentname)
+                
+                    
                     ## Set scores overlapping black list to NA
                     resblack <- valr::bed_intersect(currenttrans, blacklisttib)
                     if (!isTRUE(all.equal(nrow(resblack), 0))) {
