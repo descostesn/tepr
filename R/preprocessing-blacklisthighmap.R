@@ -152,10 +152,14 @@
                 idxscore <- res[[2]]
 
                 ## Set scores overlapping black list and low map to NA
+                idxchrom <- which(maptracktib$chrom == unique(
+                    currenttrans$chrom))
+                maptracktibchrom <- maptracktib[idxchrom, ]
                 currenttrans <- .removeblackandlowmap(currenttrans,
-                    blacklisttib, idxscore, maptracktib)
+                    blacklisttib, idxscore, maptracktibchrom)
 
-                rm(wmeanvec, dupidx, res)
+                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
+                    maptracktibchrom)
                 invisible(gc())
                 return(currenttrans)
 
