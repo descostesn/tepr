@@ -67,21 +67,25 @@
                 dupidx <- which(duplicated(currenttrans$window.window))
                 if (!isTRUE(all.equal(length(dupidx), 0))) {
 
-                    dupframenbvec <- unique(currenttrans$window.window[dupidx])
-
                     ## Computing the weighted mean for each duplicated window
+                    dupframenbvec <- unique(currenttrans$window.window[dupidx])
                     wmeanvec <- .wmeanvec(dupframenbvec, currenttrans)
 
-                        ## Remove duplicated frames and replace scores by wmean
-                        currenttrans <- currenttrans[-dupidx, ]
-                        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
-                            stop("The number of frames should be equal to windsize: ", windsize, " for transcript ", unique(currenttrans$transcript.window))
-                        idxscorereplace <- match(dupframenbvec, currenttrans$window.window)
+                    ## Remove duplicated frames and replace scores by wmean
+                    currenttrans <- currenttrans[-dupidx, ]
+                    if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+                        stop("The number of frames should be equal to ",
+                            "windsize: ", windsize, " for transcript ",
+                            unique(currenttrans$transcript.window))
+                    idxscorereplace <- match(dupframenbvec,
+                        currenttrans$window.window)
 
-                        if (!isTRUE(all.equal(dupframenbvec, currenttrans$window.window[idxscorereplace])))
-                            stop("Problem in replacing scores by wmean, contact the developer.")
+                    if (!isTRUE(all.equal(dupframenbvec,
+                        currenttrans$window.window[idxscorereplace])))
+                            stop("Problem in replacing scores by wmean, ",
+                                "contact the developer.")
                         currenttrans[idxscorereplace, "score"] <- wmeanvec
-                    }
+                }
 
                     ## Remove columns corresponding to bedgraph
                     idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"), colnames(currenttrans))
