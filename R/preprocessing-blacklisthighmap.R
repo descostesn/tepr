@@ -240,7 +240,9 @@
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
-    verbose = TRUE, subverbose = TRUE) {
+    showtime = FALSE, verbose = TRUE, subverbose = TRUE) {
+
+        if (showtime) start_time_fun <- Sys.time()
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
@@ -251,6 +253,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## For the mappability track, reading can be skept by loading the object
         ## if it exists
+        if (showtime) start_time_maptrackreading <- Sys.time()
         maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
         if (!reload || !file.exists(maptrackbedobjfile)) {
 
@@ -266,6 +269,11 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             if (verbose) message("Loading mappability track from existing rds ",
                     "object")
             maptrackbed <- readRDS(maptrackbedobjfile)
+        }
+        if (showtime) {
+            end_time_maptrackreading <- Sys.time()
+            timing <- end_time_maptrackreading - start_time_maptrackreading
+            message("\t\t ## read maptrack in: ", timing) # nolint
         }
 
         if (verbose) message("Removing scores within black list intervals, ",
