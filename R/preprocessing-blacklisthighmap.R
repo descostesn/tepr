@@ -403,7 +403,7 @@
                         strtransvec <- paste(currenttrans$chrom, currenttrans$start, currenttrans$end, sep = "-")
                         strblack <- paste(resblack$chrom, resblack$start.x, resblack$end.x, sep = "-")
                         idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
-                        if (isTRUE(all.equal(length(idx), 0)))
+                        if (isTRUE(all.equal(length(idxblack), 0)))
                             stop("Problem in setting scores overlapping black list to NA. This should not happen. Contact the developer.")
                         currenttrans[idxblack, idxscore] <- NA
                     }
@@ -425,25 +425,12 @@
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
 
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-            ## Processing by chromosomes because of size limits, the mappability
-            ## track has too many rows. Formatting scores, keeping those on
-            ## high mappability, filling missing windows, and compute wmean
-            if (verbose) message("\t\t Performing operations on each",
-                " chromosome. It takes time even with parallelization")
-            resallchrom <- .processingbychrom(maptracktib, allwindstrand,
-                currentname, resblack, nbcputrans, windsize, subverbose)
             return(resallchrom)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
 
-        return(bedgraphlistwmean)
+        return(bytranslist)
 }
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
