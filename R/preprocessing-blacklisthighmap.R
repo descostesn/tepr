@@ -111,6 +111,27 @@
 #         invisible(gc())
 #         return(resallchrom)
 # }
+
+.removelowmap <- function(currenttrans, idxscore, maptracktib) {
+
+        ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
+        ## low mappability intervals)
+        resmap <- valr::bed_intersect(currenttrans, maptracktib)
+        if (!isTRUE(all.equal(nrow(resmap), 0))) {
+            ## Compute strtransvec only if no overlap with black list was found
+            strtransvec <- paste(currenttrans$chrom, currenttrans$start,
+                    currenttrans$end, sep = "-")
+            strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x,
+                sep = "-")
+            idxmap <- match(strtransvec, strmap)
+            idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
+            currenttrans[idxtosetna, idxscore] <- NA
+        }
+        rm(resmap)
+        invisible(gc())
+        return(currenttrans)
+}
+
 !!!!!!!!!!!!!!!
 
 .removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore,
