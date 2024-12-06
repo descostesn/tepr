@@ -281,9 +281,15 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             "weighted means.")
         expnamevec <- paste0(exptab$condition, exptab$replicate,
             exptab$direction)
+        if (showtime) start_time_bedgraphlistwmean <- Sys.time()
         bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
             maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
             verbose, subverbose)
+        if (showtime) {
+            end_time_bedgraphlistwmean <- Sys.time()
+            timing <- end_time_bedgraphlistwmean - start_time_bedgraphlistwmean
+            message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
+        }
 
         if (!is.na(saveobjectpath)) {
                 if (verbose) message("Saving bedgraphlistwmean as an rds ",
