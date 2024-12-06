@@ -155,7 +155,10 @@
                 currenttrans <- .removeblackandlowmap(currenttrans,
                     blacklisttib, idxscore, maptracktib)
 
-                    return(currenttrans)
+                rm(c(wmeanvec, dupidx, res))
+                invisible(gc())
+                return(currenttrans)
+
                 }, windsize, currentname, blacklisttib, maptracktib,
                     mc.cores = nbcputrans)
 
