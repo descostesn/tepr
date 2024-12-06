@@ -102,21 +102,27 @@
 ## It removes any ensembl names containing "PAR_Y". It filters out intervals
 ## smaller than windsize and splits each transcript into "windsize" windows.
 makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
-    saveobjectpath = NA) {
+    saveobjectpath = NA, showtime = FALSE) {
 
-    ## Making windows for all annotations
-    if (verbose) message("Making windows for all annotations")
-    idxpar <- grep("PAR_Y", allannobed$ensembl)
-    if (!isTRUE(all.equal(length(idxpar), 0)))
-        allannobed <- allannobed[-idxpar, ]
-    allwindowsbed <- .makewindowsbedtools(allannobed, windsize, nbcputrans,
-        verbose)
+        if (showtime) start_time <- Sys.time()
+        ## Making windows for all annotations
+        if (verbose) message("Making windows for all annotations")
+        idxpar <- grep("PAR_Y", allannobed$ensembl)
+        if (!isTRUE(all.equal(length(idxpar), 0)))
+            allannobed <- allannobed[-idxpar, ]
+        allwindowsbed <- .makewindowsbedtools(allannobed, windsize, nbcputrans,
+            verbose)
 
-    if (!is.na(saveobjectpath)) {
-        outfile <- file.path(saveobjectpath, "allwindowsbed.rds")
-        if (verbose) message("\t Saving ", outfile)
-        saveRDS(allwindowsbed, outfile)
+        if (!is.na(saveobjectpath)) {
+            outfile <- file.path(saveobjectpath, "allwindowsbed.rds")
+            if (verbose) message("\t Saving ", outfile)
+            saveRDS(allwindowsbed, outfile)
+        }
+
+        if (showtime) {
+            end_time <- Sys.time()
+            message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
     }
 
-    return(allwindowsbed)
+        return(allwindowsbed)
 }
