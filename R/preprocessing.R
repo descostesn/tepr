@@ -1,7 +1,7 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
-    reload = FALSE, showstats = FALSE, subverbose = TRUE, verbose = TRUE) {
+    reload = FALSE, showstats = FALSE, showtime = TRUE, verbose = TRUE) {
 
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
@@ -16,7 +16,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## smaller than windsize and splits each transcript into "windsize" windows.
     if (verbose) message("\n ## Splitting transcripts into windows ##\n")
     allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
-        saveobjectpath)
+        saveobjectpath, showtime)
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
@@ -25,7 +25,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         " intervals ##\n")
     bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath, reload,
-        verbose, subverbose)
+        showtime, verbose)
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
