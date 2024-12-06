@@ -155,7 +155,7 @@
                 currenttrans <- .removeblackandlowmap(currenttrans,
                     blacklisttib, idxscore, maptracktib)
 
-                rm(c(wmeanvec, dupidx, res))
+                rm(wmeanvec, dupidx, res)
                 invisible(gc())
                 return(currenttrans)
 
