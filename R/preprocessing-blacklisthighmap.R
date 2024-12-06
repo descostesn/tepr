@@ -170,7 +170,7 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
-    nbcputrans, allwindowsbed, expnamevec, windsize, verbose, subverbose) {
+    nbcputrans, allwindowsbed, expnamevec, windsize, showtime, verbose) {
 
         if (verbose) message("\t Converting annotations' windows, blacklist,",
             " and mappability track to tibble")
@@ -240,7 +240,7 @@
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
-    showtime = FALSE, verbose = TRUE, subverbose = TRUE) {
+    showtime = FALSE, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
 
@@ -284,7 +284,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         if (showtime) start_time_bedgraphlistwmean <- Sys.time()
         bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
             maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
-            verbose, subverbose)
+            showtime, verbose)
         if (showtime) {
             end_time_bedgraphlistwmean <- Sys.time()
             timing <- end_time_bedgraphlistwmean - start_time_bedgraphlistwmean
