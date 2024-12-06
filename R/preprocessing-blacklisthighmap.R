@@ -278,6 +278,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
                     "bedgraphlistwmean.rds"))
         }
 
+        rm(maptrackbed)
+        invisible(gc())
         return(bedgraphlistwmean)
 }
 
