@@ -22,7 +22,7 @@ reload <- FALSE
 verbose <- TRUE
 showtime <- TRUE
 
-preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
+preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans, nbcpubg, finaltabpath,
     finaltabname, saveobjectpath, savefinaltable,
     reload, showstats, showtime, verbose)
