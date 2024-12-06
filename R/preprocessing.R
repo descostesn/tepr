@@ -3,6 +3,10 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
     reload = FALSE, showstats = FALSE, showtime = FALSE, verbose = TRUE) {
 
+    if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
+        warning("The final table already exists, this will recompute it ",
+            "again", immediate. = TRUE)
+
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
