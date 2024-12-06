@@ -306,6 +306,12 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         rm(maptrackbed)
         invisible(gc())
+        if (showtime) {
+            end_time_fun <- Sys.time()
+            timing <- end_time_fun - start_time_fun
+            message("\t\t ## All bedgraphs processed in: ", timing) # nolint
+        }
+
         return(bedgraphlistwmean)
 }
 
