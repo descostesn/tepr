@@ -245,6 +245,36 @@
         return(bedgraphlistwmean)
 }
 
+.retrievemaptrackbed <- function(maptrackpath, showtime, saveobjectpath, reload,
+    verbose) {
+
+        if (showtime) start_time_maptrackreading <- Sys.time()
+        maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
+
+        if (!reload || !file.exists(maptrackbedobjfile)) {
+            if (verbose) message("Reading the mappability track (the file is ",
+                "big, be patient)")
+            maptrackbed <- read.delim(maptrackpath, header = FALSE)
+            if (!is.na(saveobjectpath)) {
+                if (verbose) message("Saving mappability track as an rds ",
+                    "object")
+                saveRDS(maptrackbed, maptrackbedobjfile)
+            }
+        } else {
+            if (verbose) message("Loading mappability track from existing rds ",
+                    "object")
+            maptrackbed <- readRDS(maptrackbedobjfile)
+        }
+
+        if (showtime) {
+            end_time_maptrackreading <- Sys.time()
+            timing <- end_time_maptrackreading - start_time_maptrackreading
+            message("\t\t ## read maptrack in: ", timing) # nolint
+        }
+
+        return(maptrackbed)
+}
+
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
 ## scores landing on high mappability intervals
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
@@ -262,30 +292,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## For the mappability track, reading can be skept by loading the object
         ## if it exists
-        .retrievemaptrackbed <- function() {}
-        if (showtime) start_time_maptrackreading <- Sys.time()
-        maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
-        if (!reload || !file.exists(maptrackbedobjfile)) {
-
-            if (verbose) message("Reading the mappability track (the file is ",
-                "big, be patient)")
-            maptrackbed <- read.delim(maptrackpath, header = FALSE)
-
-            if (!is.na(saveobjectpath)) {
-                if (verbose) message("Saving mappability track as an rds ",
-                    "object")
-                saveRDS(maptrackbed, maptrackbedobjfile)
-            }
-        } else {
-            if (verbose) message("Loading mappability track from existing rds ",
-                    "object")
-            maptrackbed <- readRDS(maptrackbedobjfile)
-        }
-        if (showtime) {
-            end_time_maptrackreading <- Sys.time()
-            timing <- end_time_maptrackreading - start_time_maptrackreading
-            message("\t\t ## read maptrack in: ", timing) # nolint
-        }
+        maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
+            saveobjectpath, reload, verbose)
 
         if (verbose) message("Removing scores within black list intervals, ",
             "keeping those on high mappability regions, and computing ",
