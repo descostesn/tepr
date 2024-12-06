@@ -1,7 +1,7 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
-    reload = FALSE, showstats = FALSE, showtime = TRUE, verbose = TRUE) {
+    reload = FALSE, showstats = FALSE, showtime = FALSE, verbose = TRUE) {
 
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
