@@ -56,10 +56,6 @@
             allwindstrand <- allwindtib %>%
                 dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !!!!!!!!! ASSOCIATE SCORES AND COMPUTE WMEAN HERE
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
             ## Retrieving scores on annotations of strand
             if (verbose) message("\t\t Retrieving scores on annotations of ",
                 "strand")
@@ -163,12 +159,12 @@
                 if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
                     stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
 
-            return(resallchrom)
+            return(bytranslist)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, verbose),
         SIMPLIFY = FALSE)
 
-        return(bytranslist)
+        return(bedgraphlistwmean)
 }
 
 ## Retrieving the values of the bedgraph files, removing black lists and keeping
