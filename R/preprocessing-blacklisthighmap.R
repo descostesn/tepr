@@ -183,7 +183,7 @@
         if (verbose) message("\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans, verbose) {
+            nbcputrans, verbose, showtime) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\t\t Retrieving begraph values for ",
@@ -211,25 +211,31 @@
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
             rm(trsfact, valtib)
-            invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
              ## The weight is calculated if a window contains more than one
              ## score
              if (verbose) message("For each transcript compute the weighted",
                 " mean and set scores overlapping black list and low ",
-                "mappability to NA")
+                "mappability to NA. It takes a while.")
+             if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                 currentname, blacklisttib, maptracktib, nbcputrans)
+            if (showtime) {
+                end_time_bytranslist <- Sys.time()
+                timing <- end_time_bytranslist - start_time_bytranslist
+                message("\t\t ## Exp treated in: ", timing) # nolint
+            }
 
-                if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
-                    windsize)))
-                    stop("All elements of the list should contain ", windsize,
-                        " rows. This should not happen. Contact the developer.")
+            if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)), windsize)))
+                stop("All elements of the list should contain ", windsize,
+                    " rows. This should not happen. Contact the developer.")
 
+            invisible(gc())
             return(bytranslist)
+
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, nbcputrans, verbose),
+        blacklisttib, maptracktib, windsize, nbcputrans, verbose, showtime),
         SIMPLIFY = FALSE)
 
         invisible(gc())
