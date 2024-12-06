@@ -206,7 +206,7 @@
             if (verbose) message("Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
-            rm(c(trsfact, valtib))
+            rm(trsfact, valtib)
             invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
