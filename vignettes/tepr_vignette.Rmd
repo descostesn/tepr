@@ -271,11 +271,8 @@ colnames(transdf) <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
     "HS_rep1.minus_score", "HS_rep2.plus", "HS_rep2.plus_score",
     "HS_rep2.minus", "HS_rep2.minus_score")
 print(head(transdf, 3))
-```
 
-The second table contains information about each replicate:
-
-```{r reading-exptab}
+## The second table contains information about each replicate:
 exppath <- system.file("extdata", "exptab.csv", package="tepr")
 expdf <- read.csv(exppath)
 head(expdf)
@@ -287,9 +284,9 @@ You can verify the conformity of the table with the utility function `checkexpta
 checkexptab(expdf)
 ```
 
-## Calculate Average Expression and Filter Transcript Data
+## Expressed transcripts and average expression
 
-In order to study changes in patterns of nascent RNA, the first step is to filter out non-expressed transcripts. The expression value of a gene is defined as the mean score on each strand. Remember that scores were extracted from bedgraphs. A gene is considered as expressed if one of the strand means is above a given expression threshold. The threshold above which a gene is considered as expressed is set to 0.1 by default.
+In order to study changes in patterns of nascent RNA, the first step is to select expressed transcripts. The expression value of a gene is defined as the mean score on each strand. Scores were extracted from bedgraphs. A gene is considered as expressed if all condition means are above a given expression threshold. The threshold above which a gene is considered as expressed is set to 0.1 by default.
 
 ```{r averageandfilterexprs}
 ## Calculate Average Expression and Filter Transcript Data
@@ -297,7 +294,7 @@ expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ```
 
-`resallexprs` is a list which first element contains `transdf` with added column names. The column names are built from `expdf`. The second element contains a vector of the transcripts considered as expressed. This vector will be used for further downstream analyses.
+`resallexprs` is a list which first element contains `transdf` with added columns such as means. The second element contains a vector of the transcripts considered as expressed. This vector will be used for further downstream analyses.
 
 ```{r exprsvec}
 ## Print the first 6 expressed transcripts
