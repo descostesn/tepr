@@ -1,3 +1,18 @@
+.createallannobed <- function(exptabpath, gencodepath, showstats,
+    saveobjectpath, reload, verbose) {
+
+        if (verbose) message("## Filtering gencode annotations ##\n")
+        allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
+        if (!reload || !file.exists(allannobedobjpath)) {
+            allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
+                showstats, verbose)
+        } else {
+            if (verbose) message("Loading ", allannobedobjpath)
+            allannobed <- readRDS(allannobedobjpath)
+        }
+        return(allannobed)
+}
+
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
@@ -11,15 +26,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## then distinguishes transcripts coming from protein coding genes
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
     ## Ensembl_canonical).
-    if (verbose) message("## Filtering gencode annotations ##\n")
-    allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
-    if (!reload || !file.exists(allannobedobjpath)) {
-        allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
-            showstats, verbose)
-    } else {
-        if (verbose) message("Loading ", allannobedobjpath)
-        allannobed <- readRDS(allannobedobjpath)
-    }
+    allannobed <- .createallannobed(exptabpath, gencodepath, showstats,
+        saveobjectpath, reload, verbose)
 
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
