@@ -18,7 +18,7 @@ maptrackpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/k50.uma
 nbcpubg <- 8
 nbcputrans <- 20
 showstats <- FALSE
-reload <- FALSE
+reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
 
