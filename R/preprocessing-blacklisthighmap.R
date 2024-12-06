@@ -201,14 +201,12 @@
                 "strand")
             suppressWarnings(annoscores <- valr::bed_intersect(valtib,
                 allwindstrand, suffix = c("", ".window")))
-            rm(valtib)
-            invisible(gc())
 
             ## Splitting the scores by transcript
             if (verbose) message("Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
-            rm(trsfact)
+            rm(c(trsfact, valtib))
             invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
