@@ -262,11 +262,13 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## For the mappability track, reading can be skept by loading the object
         ## if it exists
+        .retrievemaptrackbed <- function() {}
         if (showtime) start_time_maptrackreading <- Sys.time()
         maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
         if (!reload || !file.exists(maptrackbedobjfile)) {
 
-            if (verbose) message("Reading the mappability track")
+            if (verbose) message("Reading the mappability track (the file is ",
+                "big, be patient)")
             maptrackbed <- read.delim(maptrackpath, header = FALSE)
 
             if (!is.na(saveobjectpath)) {
