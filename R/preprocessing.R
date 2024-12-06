@@ -8,13 +8,13 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
     ## Ensembl_canonical).
     if (verbose) message("## Filtering gencode annotations ##\n")
-    if (!reload) {
+    allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
+    if (!reload && !file.exists(allannobedobjpath)) {
         allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
             showstats, verbose)
     } else {
-        allannobedobj <- readRDS(file.path(saveobjectpath, "allannobed.rds"))
-        if (verbose) message("Loading ", allannobedobj)
-        allannobed <- readRDS(allannobedobj)
+        if (verbose) message("Loading ", allannobedobjpath)
+        allannobed <- readRDS(allannobedobjpath)
     }
 
     ## This functions uses the annotations filtered from gencode (allannobed).
@@ -26,9 +26,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
             saveobjectpath, showtime)
     } else {
-        allwindowsbedobj <- readRDS(allwindowsbedobjpath)
-        if (verbose) message("Loading ", allwindowsbedobj)
-        allannobed <- readRDS(allwindowsbed)
+        if (verbose) message("Loading ", allwindowsbedobjpath)
+        allannobed <- readRDS(allwindowsbedobjpath)
     }
 
     ## Retrieving the values of the bedgraph files, removing black lists and
