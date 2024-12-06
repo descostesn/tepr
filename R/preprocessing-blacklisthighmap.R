@@ -77,6 +77,41 @@
     return(list(currenttrans, idxscore))
 }
 
+.removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore,
+    maptracktib) {
+
+        ## Set scores overlapping black list to NA
+        resblack <- valr::bed_intersect(currenttrans, blacklisttib)
+        if (!isTRUE(all.equal(nrow(resblack), 0))) {
+            strtransvec <- paste(currenttrans$chrom, currenttrans$start,
+                currenttrans$end, sep = "-")
+            strblack <- paste(resblack$chrom, resblack$start.x, resblack$end.x,
+                sep = "-")
+            idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
+            if (isTRUE(all.equal(length(idxblack), 0)))
+                stop("Problem in setting scores overlapping black list to NA.",
+                    " This should not happen. Contact the developer.")
+            currenttrans[idxblack, idxscore] <- NA
+        }
+
+        ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
+        ## low mappability intervals)
+        resmap <- valr::bed_intersect(currenttrans, maptracktib)
+        if (!isTRUE(all.equal(nrow(resmap), 0))) {
+            ## Compute strtransvec only if no overlap with black list was found
+            if (isTRUE(all.equal(nrow(resblack), 0)))
+                strtransvec <- paste(currenttrans$chrom, currenttrans$start,
+                    currenttrans$end, sep = "-")
+            strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x,
+                sep = "-")
+            idxmap <- match(strtransvec, strmap)
+            idxtosetNA <- which(is.na(idxmap)) ## NOT overlapping high map
+            currenttrans[idxtosetNA, idxscore] <- NA
+        }
+        
+        return(currenttrans)
+}
+
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
     blacklisttib, maptracktib, nbcputrans) {
 
@@ -115,33 +150,13 @@
                 currenttrans <- res[[1]]
                 idxscore <- res[[2]]
 
-                currenttrans <- 
-
-                    .removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore) {}
-                    ## Set scores overlapping black list to NA
-                    resblack <- valr::bed_intersect(currenttrans, blacklisttib)
-                    if (!isTRUE(all.equal(nrow(resblack), 0))) {
-                        strtransvec <- paste(currenttrans$chrom, currenttrans$start, currenttrans$end, sep = "-")
-                        strblack <- paste(resblack$chrom, resblack$start.x, resblack$end.x, sep = "-")
-                        idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
-                        if (isTRUE(all.equal(length(idxblack), 0)))
-                            stop("Problem in setting scores overlapping black list to NA. This should not happen. Contact the developer.")
-                        currenttrans[idxblack, idxscore] <- NA
-                    }
-
-                    ## Set scores NOT overlapping high map to NA (i.e. scores overlapping low mappability intervals)
-                    resmap <- valr::bed_intersect(currenttrans, maptracktib)
-                    if (!isTRUE(all.equal(nrow(resmap), 0))) {
-                        ## Compute strtransvec only if no overlap with black list was found
-                        if (isTRUE(all.equal(nrow(resblack), 0))) strtransvec <- paste(currenttrans$chrom, currenttrans$start, currenttrans$end, sep = "-")
-                        strmap <- paste(resmap$chrom, resmap$start.x, resmap$end.x, sep = "-")
-                        idxmap <- match(strtransvec, strmap)
-                        idxtosetNA <- which(is.na(idxmap)) ## NOT overlapping high map
-                        currenttrans[idxtosetNA, idxscore] <- NA
-                    }
+                ## Set scores overlapping black list and low map to NA
+                currenttrans <- .removeblackandlowmap(currenttrans,
+                    blacklisttib, idxscore, maptracktib)
 
                     return(currenttrans)
-                }, windsize, currentname, blacklisttib, maptracktib, mc.cores = nbcputrans)
+                }, windsize, currentname, blacklisttib, maptracktib,
+                    mc.cores = nbcputrans)
 
                 return(bytranslist)
 }
@@ -182,11 +197,15 @@
                 "strand")
             suppressWarnings(annoscores <- valr::bed_intersect(valtib,
                 allwindstrand, suffix = c("", ".window")))
+            rm(valtib)
+            invisible(gc())
 
             ## Splitting the scores by transcript
             if (verbose) message("Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
+            rm(trsfact)
+            invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
              ## The weight is calculated if a window contains more than one
@@ -197,7 +216,7 @@
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                 currentname, blacklisttib, maptracktib, nbcputrans)
 
-                if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)),
+                if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
                     windsize)))
                     stop("All elements of the list should contain ", windsize,
                         " rows. This should not happen. Contact the developer.")
