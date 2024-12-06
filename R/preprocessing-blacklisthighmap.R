@@ -25,40 +25,52 @@
     return(valtib)
 }
 
-.meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname, blacklisttib, maptracktib, nbcputrans) {
-                bytranslist <- parallel::mclapply(bgscorebytrans,
-                function(currenttrans, windsize, currentname, blacklisttib, maptracktib) {
+.wmeanvec <- function(dupframenbvec, currenttrans) {
 
-                    ## Identifying duplicated windows that will be used to
-                    ## compute a weighted mean.
-                    dupidx <- which(duplicated(currenttrans$window.window))
-                    if (!isTRUE(all.equal(length(dupidx), 0))) {
-                        dupframenbvec <- unique(currenttrans$window.window[dupidx])
+    wmeanvec <- sapply(dupframenbvec, function(nbdup, currenttrans) {
 
-                        ## Computing the weighted mean for each duplicated window
-                        wmeanvec <- sapply(dupframenbvec, function(nbdup, currenttrans) {
-                            ## Selecting all rows having a window equal to nbdup
-                            allframedf <- currenttrans[which(currenttrans$window.window == nbdup), ]
+        ## Selecting all rows having a window equal to nbdup
+        allframedf <- currenttrans[which(currenttrans$window.window == nbdup), ]
 
-                            ## Retrieving start and end of the window to calculate nb of nt
-                            windowstart <- unique(allframedf$start.window)
-                            windowend <- unique(allframedf$end.window)
-                            if (!isTRUE(all.equal(length(windowstart), 1)) || !isTRUE(all.equal(length(windowend), 1)))
-                                stop("The size of the window is not unique for the frame rows ",
-                                    "selected, this should not happen, contact the developper.")
+        ## Retrieving start and end of the window to calculate nb of nt
+        windowstart <- unique(allframedf$start.window)
+        windowend <- unique(allframedf$end.window)
+        if (!isTRUE(all.equal(length(windowstart), 1)) ||
+            !isTRUE(all.equal(length(windowend), 1)))
+            stop("The size of the window is not unique for the frame rows ",
+                "selected, this should not happen, contact the developper.")
 
-                            ## Retrieve the nb of overlapping nt for each score
-                            overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
-                                nt <- seq(from = x["start"], to = x["end"], by = 1)
-                                overnt <- length(which(nt >= windowstart & nt <= windowend))
-                                return(overnt)
-                            }, windowstart, windowend)
+        ## Retrieve the nb of overlapping nt for each score
+        overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
+            nt <- seq(from = x["start"], to = x["end"], by = 1)
+            overnt <- length(which(nt >= windowstart & nt <= windowend))
+            return(overnt)
+        }, windowstart, windowend)
 
-                            ## Computing weighted mean
-                            allscores <- as.data.frame(allframedf[, "score"])[[1]]
-                            wmean <- weighted.mean(allscores, overntvec)
-                            return(wmean)
-                        }, currenttrans)
+        ## Computing weighted mean
+        allscores <- as.data.frame(allframedf[, "score"])[[1]]
+        wmean <- weighted.mean(allscores, overntvec)
+        return(wmean)
+    }, currenttrans)
+
+    return(wmeanvec)
+}
+
+.meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
+    blacklisttib, maptracktib, nbcputrans) {
+
+        bytranslist <- parallel::mclapply(bgscorebytrans, function(currenttrans,
+            windsize, currentname, blacklisttib, maptracktib) {
+
+                ## Identifying duplicated windows that will be used to
+                ## compute a weighted mean.
+                dupidx <- which(duplicated(currenttrans$window.window))
+                if (!isTRUE(all.equal(length(dupidx), 0))) {
+
+                    dupframenbvec <- unique(currenttrans$window.window[dupidx])
+
+                    ## Computing the weighted mean for each duplicated window
+                    wmeanvec <- .wmeanvec(dupframenbvec, currenttrans)
 
                         ## Remove duplicated frames and replace scores by wmean
                         currenttrans <- currenttrans[-dupidx, ]
