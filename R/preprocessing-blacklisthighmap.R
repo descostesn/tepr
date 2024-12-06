@@ -109,8 +109,8 @@
             idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
             currenttrans[idxtosetna, idxscore] <- NA
         }
-        rm(resblack, resmap, strtransvec, strblack, strmap)
-        invisible(gc())
+        # rm(resblack, resmap, strtransvec, strblack, strmap)
+        # invisible(gc())
         return(currenttrans)
 }
 
@@ -159,9 +159,9 @@
                 currenttrans <- .removeblackandlowmap(currenttrans,
                     blacklisttib, idxscore, maptracktibchrom)
 
-                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
-                    maptracktibchrom)
-                invisible(gc())
+                # rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
+                #     maptracktibchrom)
+                # invisible(gc())
                 return(currenttrans)
 
                 }, windsize, currentname, blacklisttib, maptracktib,
