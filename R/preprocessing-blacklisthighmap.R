@@ -74,7 +74,7 @@
     idxscore <- which(colnames(currenttrans) == "score")
     colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
 
-    return(currenttrans)
+    return(list(currenttrans, idxscore))
 }
 
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
@@ -108,10 +108,16 @@
                         currenttrans[idxscorereplace, "score"] <- wmeanvec
                 }
 
-                currenttrans <- .formatcurrenttranscols(currenttrans,
-                    currentname)
-                
-                    
+                ## Remove columns corresponding to bedgraph, move score column
+                ## at the end, remove the .window suffix from column names,
+                ## Add exp name prefix to column score
+                res <- .formatcurrenttranscols(currenttrans, currentname)
+                currenttrans <- res[[1]]
+                idxscore <- res[[2]]
+
+                currenttrans <- 
+
+                    .removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore) {}
                     ## Set scores overlapping black list to NA
                     resblack <- valr::bed_intersect(currenttrans, blacklisttib)
                     if (!isTRUE(all.equal(nrow(resblack), 0))) {
