@@ -8,8 +8,14 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
     ## Ensembl_canonical).
     if (verbose) message("## Filtering gencode annotations ##\n")
-    allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
-        showstats, verbose)
+    if (!reload) {
+        allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
+            showstats, verbose)
+    } else {
+        allannobedobj <- readRDS(file.path(saveobjectpath, "allannobed.rds"))
+        if (verbose) message("Loading ", allannobedobj)
+        allannobed <- readRDS(allannobedobj)
+    }
 
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
