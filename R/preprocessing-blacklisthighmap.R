@@ -193,21 +193,20 @@
                 currenttrans <- res[[1]]
                 idxscore <- res[[2]]
 
-                ## Set scores overlapping black list and low map to NA
-                idxchrom <- which(maptracktib$chrom == unique(
-                    currenttrans$chrom))
-                maptracktibchrom <- maptracktib[idxchrom, ]
-                currenttrans <- .removeblackandlowmap(currenttrans,
-                    blacklisttib, idxscore, maptracktibchrom)
+                ## Set scores overlapping black list to NA
+                currenttrans <- .removeblack(currenttrans, blacklisttib,
+                    idxscore)
 
-                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
-                    maptracktibchrom)
+                rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace)
                 invisible(gc())
                 return(currenttrans)
 
                 }, windsize, currentname, blacklisttib, maptracktib,
                     mc.cores = nbcputrans)
 
+                ## Set scores overlapping low map to NA
+                !!
+                !!
                 return(bytranslist)
 }
 
