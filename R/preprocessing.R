@@ -21,8 +21,15 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
     ## smaller than windsize and splits each transcript into "windsize" windows.
     if (verbose) message("\n ## Splitting transcripts into windows ##\n")
-    allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
-        saveobjectpath, showtime)
+    allwindowsbedobjpath <- file.path(saveobjectpath, "allwindowsbed.rds")
+    if (!reload && !file.exists(allwindowsbedobjpath)) {
+        allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
+            saveobjectpath, showtime)
+    } else {
+        allwindowsbedobj <- readRDS(allwindowsbedobjpath)
+        if (verbose) message("Loading ", allwindowsbedobj)
+        allannobed <- readRDS(allwindowsbed)
+    }
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
