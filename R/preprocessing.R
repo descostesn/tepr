@@ -13,6 +13,23 @@
         return(allannobed)
 }
 
+.createallwindowsbed <- function(allannobed, windsize, nbcputrans, showtime,
+    saveobjectpath, reload, verbose) {
+
+        if (verbose) message("\n ## Splitting transcripts into windows ##\n")
+            allwindowsbedobjpath <- file.path(saveobjectpath,
+                "allwindowsbed.rds")
+        if (!reload || !file.exists(allwindowsbedobjpath)) {
+            allwindowsbed <- makewindows(allannobed, windsize, nbcputrans,
+                verbose, saveobjectpath, showtime)
+        } else {
+            if (verbose) message("Loading ", allwindowsbedobjpath)
+            allwindowsbed <- readRDS(allwindowsbedobjpath)
+        }
+
+        return(allwindowsbed)
+}
+
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
@@ -32,15 +49,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
     ## smaller than windsize and splits each transcript into "windsize" windows.
-    if (verbose) message("\n ## Splitting transcripts into windows ##\n")
-    allwindowsbedobjpath <- file.path(saveobjectpath, "allwindowsbed.rds")
-    if (!reload || !file.exists(allwindowsbedobjpath)) {
-        allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
-            saveobjectpath, showtime)
-    } else {
-        if (verbose) message("Loading ", allwindowsbedobjpath)
-        allwindowsbed <- readRDS(allwindowsbedobjpath)
-    }
+    allwindowsbed <- .createallwindowsbed(allannobed, windsize, nbcputrans,
+        showtime, saveobjectpath, reload, verbose)
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
