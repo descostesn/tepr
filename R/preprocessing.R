@@ -30,6 +30,27 @@
         return(allwindowsbed)
 }
 
+.createbedgraphlistwmean <- function(maptrackpath, blacklistshpath,
+    exptabpath, nbcputrans, allwindowsbed, windsize, showtime, saveobjectpath,
+    reload, verbose) {
+
+        if (verbose) message("\n ## Retrieving the values of the bedgraph ",
+            "files, removing black lists and keeping scores landing on high ",
+            "mappability intervals ##\n")
+        bedgraphlistwmeanobjpath <- file.path(saveobjectpath,
+            "bedgraphlistwmean.rds")
+
+        if (!reload || !file.exists(bedgraphlistwmeanobjpath)) {
+            bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
+                exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
+                reload, showtime, verbose)
+        } else {
+            if (verbose) message("Loading ", bedgraphlistwmeanobjpath)
+                bedgraphlistwmean <- readRDS(bedgraphlistwmeanobjpath)
+        }
+        return(bedgraphlistwmean)
+}
+
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
@@ -54,19 +75,9 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
-    if (verbose) message("\n ## Retrieving the values of the bedgraph files, ",
-        "removing black lists and keeping scores landing on high mappability",
-        " intervals ##\n")
-    bedgraphlistwmeanobjpath <- file.path(saveobjectpath,
-        "bedgraphlistwmean.rds")
-    if (!reload || !file.exists(bedgraphlistwmeanobjpath)) {
-        bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
-            exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
-            reload, showtime, verbose)
-    } else {
-        if (verbose) message("Loading ", bedgraphlistwmeanobjpath)
-        bedgraphlistwmean <- readRDS(bedgraphlistwmeanobjpath)
-    }
+    bedgraphlistwmean <- .createbedgraphlistwmean(maptrackpath, blacklistshpath,
+        exptabpath, nbcputrans, allwindowsbed, windsize, showtime,
+        saveobjectpath, reload, verbose)
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
