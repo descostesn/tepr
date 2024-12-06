@@ -77,6 +77,42 @@
     return(list(currenttrans, idxscore))
 }
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# .processingbychrom <- function(maptracktib, allwindstrand, currentname,
+#     resblack, nbcputrans, windsize, subverbose) {
+
+#         if (subverbose) message("\t\t Retrieving list of chromosomes")
+#         chromvec <- as.data.frame(unique(maptracktib["chrom"]))[, 1]
+#         if (subverbose) message("\t\t Formatting scores")
+#         bychromlist <- lapply(chromvec, function(currentchrom, allwindstrand,
+#             currentname, resblack, maptracktib, nbcputrans) {
+
+#                 if (subverbose) message("\t\t\t over ", currentchrom)
+
+#                 ## Retrieving scores on high mappability intervals
+#                 if (subverbose) message("\t\t\t Keeping scores on high ",
+#                     "mappability track")
+#                 resmap <- .retrieveonhighmap(resblack, maptracktib,
+#                     currentchrom)
+
+#                 ## Processing data per transcript for windows and wmean
+#                 if (subverbose) message("\t\t\t Setting missing windows scores",
+#                     " to NA and computing weighted mean for each transcript")
+#                 transdf <- .missingandwmean(resmap, windsize, allwindstrand,
+#                     currentname, nbcputrans)
+#                 return(transdf)
+#             }, allwindstrand, currentname, resblack, maptracktib, nbcputrans)
+
+#         ## Merging results that were computed on each chromosome
+#         if (subverbose) message("\t\t Merging results that were computed ",
+#             "on each chromome")
+#         resallchrom <- do.call("rbind", bychromlist)
+#         rm(bychromlist)
+#         invisible(gc())
+#         return(resallchrom)
+# }
+!!!!!!!!!!!!!!!
+
 .removeblackandlowmap <- function(currenttrans, blacklisttib, idxscore,
     maptracktib) {
 
