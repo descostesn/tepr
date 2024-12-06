@@ -109,7 +109,7 @@
             idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
             currenttrans[idxtosetna, idxscore] <- NA
         }
-        rm(resblack, resmap)
+        rm(resblack, resmap, strtransvec, strblack, strmap)
         invisible(gc())
         return(currenttrans)
 }
