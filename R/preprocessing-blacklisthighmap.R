@@ -164,8 +164,10 @@
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                 currentname, blacklisttib, maptracktib, nbcputrans)
 
-                if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)), windsize)))
-                    stop("All elements of the list should contain ", windsize, " rows. This should not happen. Contact the developer.")
+                if (!isTRUE(all.equal(unique(sapply(bytranslist,nrow)),
+                    windsize)))
+                    stop("All elements of the list should contain ", windsize,
+                        " rows. This should not happen. Contact the developer.")
 
             return(bytranslist)
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
