@@ -9,7 +9,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## Ensembl_canonical).
     if (verbose) message("## Filtering gencode annotations ##\n")
     allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
-    if (!reload && !file.exists(allannobedobjpath)) {
+    if (!reload || !file.exists(allannobedobjpath)) {
         allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
             showstats, verbose)
     } else {
@@ -22,7 +22,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## smaller than windsize and splits each transcript into "windsize" windows.
     if (verbose) message("\n ## Splitting transcripts into windows ##\n")
     allwindowsbedobjpath <- file.path(saveobjectpath, "allwindowsbed.rds")
-    if (!reload && !file.exists(allwindowsbedobjpath)) {
+    if (!reload || !file.exists(allwindowsbedobjpath)) {
         allwindowsbed <- makewindows(allannobed, windsize, nbcputrans, verbose,
             saveobjectpath, showtime)
     } else {
