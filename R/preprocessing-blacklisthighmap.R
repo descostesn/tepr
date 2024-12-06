@@ -159,7 +159,8 @@
              ## The weight is calculated if a window contains more than one
              ## score
              if (verbose) message("For each transcript compute the weighted",
-                " mean and set scores overlapping black list and low mappability to NA")
+                " mean and set scores overlapping black list and low ",
+                "mappability to NA")
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                 currentname, blacklisttib, maptracktib, nbcputrans)
 
