@@ -208,7 +208,7 @@
                 allwindstrand, suffix = c("", ".window")))
 
             ## Splitting the scores by transcript
-            if (verbose) message("Splitting the scores by transcript")
+            if (verbose) message("\t\t Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
             rm(trsfact, valtib)
@@ -217,8 +217,8 @@
              ## For each transcript compute the weighted means for each window.
              ## The weight is calculated if a window contains more than one
              ## score
-             if (verbose) message("For each transcript compute the weighted",
-                " mean and set scores overlapping black list and low ",
+             if (verbose) message("\t\t For each transcript compute the ",
+                "weighted mean and set scores overlapping black list and low ",
                 "mappability to NA. It takes a while.")
              if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
