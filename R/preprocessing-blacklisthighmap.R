@@ -218,7 +218,7 @@
              ## The weight is calculated if a window contains more than one
              ## score
              if (verbose) message("\t\t For each transcript compute the ",
-                "weighted mean and set scores overlapping black list and low ",
+                "weighted means and set scores overlapping black list and low ",
                 "mappability to NA. It takes a while.")
              if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
