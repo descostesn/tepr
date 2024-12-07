@@ -114,6 +114,33 @@
         return(currenttrans)
 }
 
+.dupidx <- function(currenttrans, windsize) {
+
+    dupidx <- which(duplicated(currenttrans$window.window))
+    if (!isTRUE(all.equal(length(dupidx), 0))) {
+
+        ## Computing the weighted mean for each duplicated window
+        dupframenbvec <- unique(currenttrans$window.window[dupidx])
+        wmeanvec <- .wmeanvec(dupframenbvec, currenttrans)
+
+        ## Remove duplicated frames and replace scores by wmean
+        currenttrans <- currenttrans[-dupidx, ]
+        if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
+            stop("The number of frames should be equal to ",
+                "windsize: ", windsize, " for transcript ",
+                unique(currenttrans$transcript.window))
+        idxscorereplace <- match(dupframenbvec,
+            currenttrans$window.window)
+
+        if (!isTRUE(all.equal(dupframenbvec,
+            currenttrans$window.window[idxscorereplace])))
+                stop("Problem in replacing scores by wmean, ",
+                    "contact the developer.")
+            currenttrans[idxscorereplace, "score"] <- wmeanvec
+    }
+    return(currenttrans)
+}
+
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
     blacklisttib, maptracktib, nbcputrans) {
 
@@ -122,28 +149,7 @@
 
                 ## Identifying duplicated windows that will be used to
                 ## compute a weighted mean.
-                dupidx <- which(duplicated(currenttrans$window.window))
-                if (!isTRUE(all.equal(length(dupidx), 0))) {
-
-                    ## Computing the weighted mean for each duplicated window
-                    dupframenbvec <- unique(currenttrans$window.window[dupidx])
-                    wmeanvec <- .wmeanvec(dupframenbvec, currenttrans)
-
-                    ## Remove duplicated frames and replace scores by wmean
-                    currenttrans <- currenttrans[-dupidx, ]
-                    if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
-                        stop("The number of frames should be equal to ",
-                            "windsize: ", windsize, " for transcript ",
-                            unique(currenttrans$transcript.window))
-                    idxscorereplace <- match(dupframenbvec,
-                        currenttrans$window.window)
-
-                    if (!isTRUE(all.equal(dupframenbvec,
-                        currenttrans$window.window[idxscorereplace])))
-                            stop("Problem in replacing scores by wmean, ",
-                                "contact the developer.")
-                        currenttrans[idxscorereplace, "score"] <- wmeanvec
-                }
+                currenttrans <- .dupidx(currenttrans, windsize)
 
                 ## Remove columns corresponding to bedgraph, move score column
                 ## at the end, remove the .window suffix from column names,
