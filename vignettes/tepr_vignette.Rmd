@@ -388,8 +388,8 @@ To assess attenuation in nascent-rna signal, one must identify a significant
 change in the signal distribution. To acheive this, tepr identifies the maximum
 *diff_Fx*. In other words, it identifies the maximum variation in the signal
 "progression" of the empirical cumulative distribution (see `genesECDF` and
-`meandifference`). The maximum change is designed by the term *knee* and is
-calculated as: *kee = max(diff_Fx)*.
+`meandifference`). The window where maximum change is observed is termed *knee* and is
+calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the max difference between the ecdf and y=x curve.
 
 The function returns the position (*Knee_AUC*) and the value (*diff_Fx*) of the
 knee.
@@ -402,13 +402,7 @@ print(head(resknee))
 
 ## Calculate Attenuation from AUC and Other Transcript Features
 
-The attenuation is the goal value for which the different statistics were
-previously computed. The `attenuation` function calculates the mean value of all
-window mean scores before and after the knee location. It then provides an
-"attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x
-for multiplication).
-The three values *att*, *downmean*, and *upmean* are provided by the columns
-"UP_mean_", "DOWN_mean_", and "Attenuation_".
+The `attenuation` function calculates the mean value of all window mean scores before and after the knee location. It then provides an "attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x for multiplication). The three values *att*, *downmean*, and *upmean* are provided by the columns "UP_mean_", "DOWN_mean_", and "Attenuation_".
 
 ```{r attenuation}
 ## Calculate Attenuation from AUC and Other Transcript Features
