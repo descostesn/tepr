@@ -142,9 +142,8 @@
 }
 
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
-    blacklisttib, maptracktib, saveobjectpath, nbcputrans) {
+    blacklisttib, maptracktib, saveobjectpath, nbcputrans, reload, verbose) {
 
-!! add reload + verbose
         currentobj <- file.path(saveobjectpath, paste0(currentname,
             "-translist.rds"))
         if (!reload || !file.exists(currentobj)) {
@@ -181,7 +180,7 @@
             }
         } else {
             if (verbose) message("\t\t\t Loading ", currentobj)
-            currenttrans <- readRDS(currentobj)
+            bytranslist <- readRDS(currentobj)
         }
 
         return(bytranslist)
@@ -189,7 +188,7 @@
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
     nbcputrans, allwindowsbed, expnamevec, windsize, saveobjectpath, showtime,
-    verbose) {
+    reload, verbose) {
 
         if (verbose) message("\t Converting annotations' windows, blacklist,",
             " and mappability track to tibble")
@@ -202,7 +201,7 @@
         if (verbose) message("\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans, saveobjectpath, verbose, showtime) {
+            nbcputrans, saveobjectpath, verbose, showtime, reload) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
@@ -241,7 +240,7 @@
              if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                 currentname, blacklisttib, maptracktib, saveobjectpath,
-                nbcputrans)
+                nbcputrans, reload, verbose)
             if (showtime) {
                 end_time_bytranslist <- Sys.time()
                 timing <- end_time_bytranslist - start_time_bytranslist
@@ -258,7 +257,7 @@
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
-        verbose, showtime), SIMPLIFY = FALSE)
+        verbose, showtime, reload), SIMPLIFY = FALSE)
 
         invisible(gc())
         return(bedgraphlistwmean)
@@ -295,7 +294,7 @@
 }
 
 .loadbgprocessing <- function(exptab, blacklistbed, maptrackbed, allwindowsbed,
-        windsize, nbcputrans, showtime, saveobjectpath, verbose) {
+        windsize, nbcputrans, showtime, saveobjectpath, reload, verbose) {
 
             if (verbose) message("Removing scores within black list intervals,",
             " keeping those on high mappability regions, and computing ",
@@ -305,7 +304,7 @@
             if (showtime) start_time_bglistwmean <- Sys.time()
             bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
                 maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
-                saveobjectpath, showtime, verbose)
+                saveobjectpath, showtime, reload, verbose)
             if (showtime) {
                 end_time_bglistwmean <- Sys.time()
                 timing <- end_time_bglistwmean - start_time_bglistwmean
@@ -346,7 +345,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         ## mappability regions, and computing weighted means.
         bedgraphlistwmean <- .loadbgprocessing(exptab, blacklistbed,
             maptrackbed, allwindowsbed, windsize, nbcputrans, showtime,
-            saveobjectpath, verbose)
+            saveobjectpath, reload, verbose)
 
         rm(maptrackbed)
         invisible(gc())
