@@ -187,7 +187,7 @@
             nbcputrans, verbose, showtime) {
 
             ## Retrieving bedgraph values
-            if (verbose) message("\t\t Retrieving begraph values for ",
+            if (verbose) message("\n\t\t Retrieving begraph values for ",
                 currentname)
             valtib <- .retrievebgval(currentpath, verbose)
 
