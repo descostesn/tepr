@@ -22,6 +22,13 @@ reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
 
+
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-makewindows.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-retrieveanno.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing.R")
+source("/g/romebioinfo/Projects/tepr/R/utils.R")
+
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans, nbcpubg, finaltabpath,
     finaltabname, saveobjectpath, savefinaltable,
