@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH --array=1
 #SBATCH --nodes=1
-#SBATCH --mem=200gb
+#SBATCH --mem=400gb
 #SBATCH --time=06:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
