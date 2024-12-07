@@ -357,8 +357,7 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 print(head(resmeandiff, 3))
 ```
 
-To avoid code duplication in the following steps, we transform the above results
-into a list which elements contain a given transcript:
+The result table is then splitted into a list of table per transcript. This enables to further perform operations by transcripts and to parallelize to speed up the analysis.
 
 ```{r splitmeans}
 ## Split the results by transcripts
