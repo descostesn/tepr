@@ -206,6 +206,7 @@
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
                 currentname)
+            invisible(gc())
             valtib <- .retrievebgval(currentpath, verbose)
 
             ## Keeping information on the correct strand
