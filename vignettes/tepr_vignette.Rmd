@@ -314,33 +314,22 @@ head(rescountna)
 
 ## Compute ECDF for Genes Based on Expression Data
 
-This function calculates the empirical cumulative distribution function (ECDF)
-for expressed genes across transcripts. An ECDF is an estimator of the
-Cumulative Distribution Function. The ECDF will enable us to answer the question:
-*What is the transcription density of windows located at less than X kb from
-the TSS?*. In other words, this statistics enables to identify a specific locus
-from where transcription decreases. Indeed, if the cumulative transcription
-density stops increasing, it means that the windows after the locus have small
-values (see plotecdf for a visual). In the following steps, the ECDF is used to
-compute the difference with the cumulative distribution (see `meananddifference`),
-which is subsequently used to calculate the area under the curve (AUC, see
-`allauc`) and the inflection point or *knee* (see `kneeid`).
+This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across transcripts. An ECDF is an estimator of the Cumulative Distribution Function, here we use the ecdf() function from R. It creates a ECDF for each transcript, which can then be used to use the statistical power of the Kolsmogorov-Smirnov test. The ECDF enables us to answer the question: How likely is it that we would see a distibution of signals like this if these signals were drawn from a uniform probability distribution? In other words, this statistics enables to identify specific loci from where transcription signal differs significantly from a uniform density. Indeed, if the cumulative transcription density stops increasing, it means that the windows after the locus have small values (see plotecdf for a visual). In the following steps, the ECDF is used to compute the difference with the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).  
+
 
 ```{r ecdf}
 ## Compute ECDF for Genes Based on Expression Data
 resecdflist <- genesECDF(resallexprs, expdf)
 ```
 
-The genesECDF function returns a list which first element is the main table
-with additional ecdf columns denoted with the `Fx` prefix.
+The genesECDF function returns a list which first element is the main table with additional ecdf columns denoted with the `Fx` prefix corresponding to the cumulative density as calculated by R ecdf() function .
 
 ```{r resecdf}
 resecdf <- resecdflist[[1]]
 print(head(as.data.frame(resecdf), 3))
 ```
 
-The second element returns the number of windows per transcript that we set to
-200.
+The second element returns the number of windows per transcript that is set to 200 by default during the pre-processing.
 
 ```{r nbwindows}
 nbwindows <- resecdflist[[2]]
