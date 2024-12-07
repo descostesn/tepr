@@ -142,42 +142,54 @@
 }
 
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
-    blacklisttib, maptracktib, nbcputrans) {
+    blacklisttib, maptracktib, saveobjectpath, nbcputrans) {
 
-        bytranslist <- parallel::mclapply(bgscorebytrans, function(currenttrans,
-            windsize, currentname, blacklisttib, maptracktib) {
+!! add reload + verbose
+        currentobj <- file.path(saveobjectpath, paste0(currentname,
+            "-translist.rds"))
+        if (!reload || !file.exists(currentobj)) {
+            bytranslist <- parallel::mclapply(bgscorebytrans,
+                function(currenttrans, windsize, currentname, blacklisttib,
+                    maptracktib) {
 
-                ## Identifying duplicated windows that will be used to
-                ## compute a weighted mean.
-                currenttrans <- .dupidx(currenttrans, windsize)
+                        ## Identifying duplicated windows that will be used to
+                        ## compute a weighted mean.
+                        currenttrans <- .dupidx(currenttrans, windsize)
 
-                ## Remove columns corresponding to bedgraph, move score column
-                ## at the end, remove the .window suffix from column names,
-                ## Add exp name prefix to column score
-                res <- .formatcurrenttranscols(currenttrans, currentname)
-                currenttrans <- res[[1]]
-                idxscore <- res[[2]]
+                        ## Remove columns corresponding to bedgraph, move score
+                        ## column at the end, remove the .window suffix from
+                        ## column names, Add exp name prefix to column score
+                        res <- .formatcurrenttranscols(currenttrans,
+                            currentname)
+                        currenttrans <- res[[1]]
+                        idxscore <- res[[2]]
 
-                ## Set scores overlapping black list and low map to NA
-                idxchrom <- which(maptracktib$chrom == unique(
-                    currenttrans$chrom))
-                maptracktibchrom <- maptracktib[idxchrom, ]
-                currenttrans <- .removeblackandlowmap(currenttrans,
-                    blacklisttib, idxscore, maptracktibchrom)
+                        ## Set scores overlapping black list and low map to NA
+                        idxchrom <- which(maptracktib$chrom == unique(
+                            currenttrans$chrom))
+                        maptracktibchrom <- maptracktib[idxchrom, ]
+                        currenttrans <- .removeblackandlowmap(currenttrans,
+                            blacklisttib, idxscore, maptracktibchrom)
 
-                # rm(wmeanvec, dupidx, res, dupframenbvec, idxscorereplace,
-                #     maptracktibchrom)
-                # invisible(gc())
-                return(currenttrans)
+                        return(currenttrans)
 
-                }, windsize, currentname, blacklisttib, maptracktib,
-                    mc.cores = nbcputrans)
+            }, windsize, currentname, blacklisttib, maptracktib,
+                mc.cores = nbcputrans)
+            if (!is.na(saveobjectpath)) {
+                if (verbose) message("\t\t\t Saving ", currentobj)
+                saveRDS(bytranslist, file = currentobj)
+            }
+        } else {
+            if (verbose) message("\t\t\t Loading ", currentobj)
+            currenttrans <- readRDS(currentobj)
+        }
 
-                return(bytranslist)
+        return(bytranslist)
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
-    nbcputrans, allwindowsbed, expnamevec, windsize, showtime, verbose) {
+    nbcputrans, allwindowsbed, expnamevec, windsize, saveobjectpath, showtime,
+    verbose) {
 
         if (verbose) message("\t Converting annotations' windows, blacklist,",
             " and mappability track to tibble")
@@ -190,7 +202,7 @@
         if (verbose) message("\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans, verbose, showtime) {
+            nbcputrans, saveobjectpath, verbose, showtime) {
 
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
@@ -228,7 +240,8 @@
                 "mappability to NA. It takes a while.")
              if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
-                currentname, blacklisttib, maptracktib, nbcputrans)
+                currentname, blacklisttib, maptracktib, saveobjectpath,
+                nbcputrans)
             if (showtime) {
                 end_time_bytranslist <- Sys.time()
                 timing <- end_time_bytranslist - start_time_bytranslist
@@ -244,8 +257,8 @@
             return(bytranslist)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, nbcputrans, verbose, showtime),
-        SIMPLIFY = FALSE)
+        blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
+        verbose, showtime), SIMPLIFY = FALSE)
 
         invisible(gc())
         return(bedgraphlistwmean)
@@ -292,7 +305,7 @@
             if (showtime) start_time_bglistwmean <- Sys.time()
             bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
                 maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
-                showtime, verbose)
+                saveobjectpath, showtime, verbose)
             if (showtime) {
                 end_time_bglistwmean <- Sys.time()
                 timing <- end_time_bglistwmean - start_time_bglistwmean
