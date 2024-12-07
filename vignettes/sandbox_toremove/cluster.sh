@@ -4,6 +4,7 @@
 #SBATCH --mem=200gb
 #SBATCH --time=06:00:00
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
 #SBATCH --job-name=bgmean
 #SBATCH --output=slurm_%x_%A_%a.out
 
