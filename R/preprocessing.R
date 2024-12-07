@@ -81,17 +81,17 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
-    if (verbose) message("\n ## Merging results of each bedgraph into a ",
-        "single table ##\n")
-    finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
-        saveobjectpath, verbose)
+    # if (verbose) message("\n ## Merging results of each bedgraph into a ",
+    #     "single table ##\n")
+    # finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
+    #     saveobjectpath, verbose)
 
-    if (savefinaltable) {
-        outfile <- file.path(finaltabpath, finaltabname)
-        if (verbose) message("\n ## Saving the final table to ", outfile)
-        write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
-            row.names = FALSE, col.names = FALSE)
-    }
+    # if (savefinaltable) {
+    #     outfile <- file.path(finaltabpath, finaltabname)
+    #     if (verbose) message("\n ## Saving the final table to ", outfile)
+    #     write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
+    #         row.names = FALSE, col.names = FALSE)
+    # }
 
-    return(finaltable)
+    # return(finaltable)
 }
