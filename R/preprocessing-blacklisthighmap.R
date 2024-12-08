@@ -252,9 +252,13 @@
                 stop("All elements of the list should contain ", windsize,
                     " rows. This should not happen. Contact the developer.")
 
-            rm(bgscorebytrans)
+            ## Combining transcripts in one table
+            if (verbose) message("\t\t Combining transcripts in one table")
+            res <- do.call("rbind", bytranslist)
+
+            rm(bgscorebytrans, bytranslist)
             invisible(gc())
-            return(bytranslist)
+            return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
         blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
