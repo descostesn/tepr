@@ -68,10 +68,11 @@
 createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
     saveobjectpath = NA, reload = FALSE, showtime = TRUE, verbose = TRUE) {
 
+        if (showtime) start_time_fun <- Sys.time()
         dfobj <- file.path(saveobjectpath, "finaltab.rds")
 
         if (!reload || !file.exists(dfobj)) {
-!! add showtime
+
             ## Reading the information about experiments
             if (verbose) message("Reading the information about experiments")
             exptab <- read.csv(exptabpath, header = TRUE)
@@ -86,6 +87,9 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
                     "gene", "biotype.window", "window", "transcript", "rowid"))
                 # TO REMOVE by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype.window", "window", "coord", "transcript", "rowid")) # nolint
 
+            rm(rowidreslist)
+            invisible(gc())
+
             if (verbose) message("\t Preparing final table")
             df <- .orderingtable(df, exptab, verbose)
 
@@ -98,6 +102,7 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
             if (verbose) message("Loading object ", dfobj)
             df <- readRDS(dfobj)
         }
+        !!
 
         return(df)
 }
