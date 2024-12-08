@@ -66,9 +66,17 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
 
             if (verbose) message("\t Joining the elements of each bedgraph")
             df <- purrr::reduce(rowidreslist, dplyr::full_join,
-                by = c("chrom", "start.window", "end.window", "strand.window",
-                    "gene", "biotype.window", "window", "transcript", "rowid"))
-                # TO REMOVE by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype.window", "window", "coord", "transcript", "rowid")) # nolint
+                by = c("biotype", "chrom", "start", "end", "transcript", "gene",
+                    "strand", "window", "rowid"))
+                
+    !!!!!!!!!!!!!!!!!
+    vic:
+    biotype  chr  coor1  coor2  transcript   gene strand window id
+    nic:
+    chrom  biotype  start  end  transcript    gene strand window rowid
+    nic for reduce:
+    biotype chrom  start  end  transcript    gene strand window rowid
+    !!!!!!!!!!!!!!!!
 
             rm(rowidreslist)
             invisible(gc())
