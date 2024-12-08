@@ -40,12 +40,6 @@
     idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
     colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
 
-    orderedcolvec <- c("biotype.window", "chrom", "start.window",
-        "end.window", "transcript", "gene", "strand.window", "window",
-        "rowid")
-    df <- df %>% dplyr::relocate(orderedcolvec)
-    df <- df[, -which(colnames(df) == "coord")]
-
     if (verbose) message("\t\t Renaming score columns")
     idxcolscores <- grep("_score", colnames(df))
     expcolnames <- unlist(apply(exptab, 1, function(x) {
