@@ -60,6 +60,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         stop("The final table already exists, set reload = FALSE to create",
             "it again.")
 
+    if (showtime) start_time_preprocessing <- Sys.time()
+
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
@@ -91,6 +93,12 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         if (verbose) message("\n ## Saving the final table to ", outfile)
         write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
             row.names = FALSE, col.names = FALSE)
+    }
+
+    if (showtime) {
+        end_time_preprocessing <- Sys.time()
+        timing <- end_time_preprocessing - start_time_preprocessing
+            message("\n\n\t ## Total preprocessing in: ", timing) # nolint
     }
 
     return(finaltable)
