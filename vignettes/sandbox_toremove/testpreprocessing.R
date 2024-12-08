@@ -28,6 +28,7 @@ showtime <- TRUE
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-makewindows.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-retrieveanno.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-createtablescores.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing.R")
 source("/g/romebioinfo/Projects/tepr/R/utils.R")
 
