@@ -151,6 +151,10 @@
                 function(currenttrans, windsize, currentname, blacklisttib,
                     maptracktib) {
 
+                        ## Reordering rows according to window number
+                        idxwind <- order(currenttrans$window.window)
+                        currenttrans <- currenttrans[idxwind, ]
+
                         ## Identifying duplicated windows that will be used to
                         ## compute a weighted mean.
                         currenttrans <- .dupidx(currenttrans, windsize)
