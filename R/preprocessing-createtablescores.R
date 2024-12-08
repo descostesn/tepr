@@ -13,30 +13,10 @@
     return(rowidreslist)
 }
 
-.orderingtable <- function(df, exptab, verbose) {
-
-!!!!!!!!!!!!!!!!!
-    nic:
-    [1] "chrom"              "biotype"            "start"
- [4] "end"                "transcript"         "gene"
- [7] "strand"             "window"             "rowid"
-[10] "ctrl1forward_score" "ctrl1reverse_score" "ctrl2forward_score"
-[13] "ctrl2reverse_score" "HS1forward_score"   "HS1reverse_score"
-[16] "HS2forward_score"   "HS2reverse_score"
-    vic:
-    [1] "biotype"               "chr"                   "coor1"
- [4] "coor2"                 "transcript"            "gene"
- [7] "strand"                "window"                "id"
-[10] "ctrl_rep1.plus"        "ctrl_rep1.plus_score"  "ctrl_rep1.minus"
-[13] "ctrl_rep1.minus_score" "ctrl_rep2.plus"        "ctrl_rep2.plus_score"
-[16] "ctrl_rep2.minus"       "ctrl_rep2.minus_score" "HS_rep1.plus"
-[19] "HS_rep1.plus_score"    "HS_rep1.minus"         "HS_rep1.minus_score"
-[22] "HS_rep2.plus"          "HS_rep2.plus_score"    "HS_rep2.minus"
-[25] "HS_rep2.minus_score"
-    !!!!!!!!!!!!!!!!
+.orderingtable <- function(df, exptab, verbose) { # nolint
 
     if (verbose) message("\t\t Sorting and renaming information columns")
-    df <- df %>% dplyr::relocate(biotype, .before = chrom)
+    df <- df %>% dplyr::relocate(biotype, .before = chrom) # nolint
     idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
     colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
 
