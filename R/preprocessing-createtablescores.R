@@ -1,25 +1,14 @@
 .createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
 
         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
-
-        rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
-            sep = "_")
-
-        ## Inserting rowid col after transcript
-        tab <- tab %>% tibble::add_column(rowid = rowidvec,
-            .after = "window")
-
-        ## Move the score column at the end of the table
-        colnamevec <- colnames(tab)
-        idxscore <- grep("_score", colnamevec)
-        if (!isTRUE(all.equal(length(idxscore), 1)))
-            stop("When creating the final table, the score column is not ",
-                "unique for a given bedgraph. This should not happen. Contact",
-                " the developer.")
-!!!!!!!!!!!!!!!!!!! TO CONTINUE
-        tab <- dplyr::relocate(tab, colnamevec[idxscore], .after = "coord")
-        return(tab)
-    }, mc.cores = nbcpubg)
+            ## Create rowid string
+            rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
+                sep = "_")
+            ## Inserting rowid col after window
+            tab <- tab %>% tibble::add_column(rowid = rowidvec,
+                .after = "window")
+            return(tab)
+        }, mc.cores = nbcpubg)
 
     return(rowidreslist)
 }
