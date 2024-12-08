@@ -102,7 +102,12 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
             if (verbose) message("Loading object ", dfobj)
             df <- readRDS(dfobj)
         }
-        !!
+
+        if (showtime) {
+            end_time_fun <- Sys.time()
+            timing <- end_time_fun - start_time_fun
+            message("\t\t ## Final table created in: ", timing) # nolint
+        }
 
         return(df)
 }
