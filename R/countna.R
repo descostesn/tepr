@@ -76,8 +76,9 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
 
         ## Retrieving total NA and transcript info
         if (!isTRUE(all.equal(res[[1]], res[[2]])))
-            stop("Number of NA is different between conditions. This should ",
-                "not happen. Contact the developer.")
+            stop("Number of NA is different between conditions for ",
+              unique(transtable$gene), ": ", res[[1]], " - ", res[[2]],
+              ". This should not happen. Contact the developer.")
         ## I drop the other NA columns because it is the same value for all the
         ## conditions (NA depends on blacklist and unmmapable region)
         countna <- res[1]
