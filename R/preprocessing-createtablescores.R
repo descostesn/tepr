@@ -50,7 +50,11 @@
     colnames(df)[idxcolscores] <- newscorenames
 
     if (verbose) message("\t\t Creating experiment columns")
-    dfexpnameslist <- lapply(expcolnames, rep, nrow(df))
+    ## The format of the experiment column is title "HS_rep1.plus", content "HS_rep1.forward" # nolint
+    directionexpstr <- unlist(apply(exptab, 1, function(x) {
+        return(paste0(x["condition"], "_rep", x["replicate"], ".",
+            x["direction"]))}, simplify = FALSE))
+    dfexpnameslist <- lapply(directionexpstr, rep, nrow(df))
     dfexpnames <- do.call("cbind", dfexpnameslist)
     colnames(dfexpnames) <- expcolnames
 
