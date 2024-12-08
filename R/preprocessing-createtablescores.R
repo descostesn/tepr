@@ -70,26 +70,33 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
 
         dfobj <- file.path(saveobjectpath, "finaltab.rds")
 
-        ## Reading the information about experiments
-        if (verbose) message("Reading the information about experiments")
-        exptab <- read.csv(exptabpath, header = TRUE)
+        if (!reload || !file.exists(dfobj)) {
+!! add showtime
+            ## Reading the information about experiments
+            if (verbose) message("Reading the information about experiments")
+            exptab <- read.csv(exptabpath, header = TRUE)
 
-        ## Creating a rowid that will be used for merging
-        if (verbose) message("\t Adding rowid for each bedgraph")
-        rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
+            ## Creating a rowid that will be used for merging
+            if (verbose) message("\t Adding rowid for each bedgraph")
+            rowidreslist <- .createrowidlist(bedgraphlistwmean, nbcpubg)
 
-        if (verbose) message("\t Joining the elements of each bedgraph")
-        df <- purrr::reduce(rowidreslist, dplyr::full_join,
-            by = c("chrom", "start.window", "end.window", "strand.window",
-                "gene", "biotype.window", "window", "transcript", "rowid"))
-            # TO REMOVE by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype.window", "window", "coord", "transcript", "rowid")) # nolint
+            if (verbose) message("\t Joining the elements of each bedgraph")
+            df <- purrr::reduce(rowidreslist, dplyr::full_join,
+                by = c("chrom", "start.window", "end.window", "strand.window",
+                    "gene", "biotype.window", "window", "transcript", "rowid"))
+                # TO REMOVE by = c("chrom", "start.window", "end.window", "strand.window", "gene", "biotype.window", "window", "coord", "transcript", "rowid")) # nolint
 
-        if (verbose) message("\t Preparing final table")
-        df <- .orderingtable(df, exptab, verbose)
+            if (verbose) message("\t Preparing final table")
+            df <- .orderingtable(df, exptab, verbose)
 
-        if (!is.na(saveobjectpath)) {
-            if (verbose) message("\t Saving ", dfobj)
-            saveRDS(df, file = dfobj)
+            if (!is.na(saveobjectpath)) {
+                if (verbose) message("\t Saving ", dfobj)
+                saveRDS(df, file = dfobj)
+            }
+        } else {
+
+            if (verbose) message("Loading object ", dfobj)
+            df <- readRDS(dfobj)
         }
 
         return(df)
