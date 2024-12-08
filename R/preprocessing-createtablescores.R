@@ -9,9 +9,6 @@
         tab <- tab %>% tibble::add_column(rowid = rowidvec,
             .after = "window")
 
-        ## Remove bedgraph columns
-        tab <- tab[, -grep(".bg", colnames(tab))]
-
         ## Move the score column at the end of the table
         colnamevec <- colnames(tab)
         idxscore <- grep("_score", colnamevec)
