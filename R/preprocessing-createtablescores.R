@@ -2,8 +2,8 @@
 
         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
 
-        rowidvec <- paste(tab$transcript, tab$gene, tab$strand.window,
-            tab$window, sep = "_")
+        rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
+            sep = "_")
         # ENST00000000233.10_ARF5_+_1
         # protein-coding_chr7_127588411_127588427_+_ARF5_ENST00000000233.10_frame1_coord1 # nolint
         # TO REMOVE rowidvec <- paste(tab$biotype.window, tab$chrom, tab$start.window, tab$end.window, tab$strand.window, tab$gene, tab$transcript, paste0("frame", tab$window), paste0("coord", tab$coord), sep = "_") # nolint
