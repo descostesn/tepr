@@ -57,8 +57,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     reload = FALSE, showstats = FALSE, showtime = FALSE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
-        warning("The final table already exists, this will recompute it ",
-            "again", immediate. = TRUE)
+        stop("The final table already exists, set reload = FALSE to create",
+            "it again.")
 
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
