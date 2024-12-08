@@ -66,7 +66,9 @@
 }
 
 createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
-    saveobjectpath = NA, verbose = TRUE) {
+    saveobjectpath = NA, reload = FALSE, showtime = TRUE, verbose = TRUE) {
+
+        dfobj <- file.path(saveobjectpath, "finaltab.rds")
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
@@ -86,9 +88,8 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
         df <- .orderingtable(df, exptab, verbose)
 
         if (!is.na(saveobjectpath)) {
-            outfile <- file.path(saveobjectpath, "finaltab.rds")
-            if (verbose) message("\t Saving ", outfile)
-            saveRDS(df, file = outfile)
+            if (verbose) message("\t Saving ", dfobj)
+            saveRDS(df, file = dfobj)
         }
 
         return(df)
