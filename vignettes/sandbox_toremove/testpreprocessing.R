@@ -21,6 +21,8 @@ showstats <- FALSE
 reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
+# nbcpubg <- 1
+# nbcputrans <- 1
 
 
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap.R")
