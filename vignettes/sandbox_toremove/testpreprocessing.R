@@ -17,7 +17,6 @@ blacklistshpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/hg38
 maptrackpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
 nbcpubg <- 8
 nbcputrans <- 20
-showstats <- FALSE
 reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
@@ -35,4 +34,4 @@ source("/g/romebioinfo/Projects/tepr/R/utils.R")
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans, nbcpubg, finaltabpath,
     finaltabname, saveobjectpath, savefinaltable,
-    reload, showstats, showtime, verbose)
+    reload, showtime, verbose)
