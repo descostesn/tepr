@@ -330,8 +330,87 @@
             return(bedgraphlistwmean)
 }
 
-## Retrieving the values of the bedgraph files, removing black lists and keeping
-## scores landing on high mappability intervals
+
+#' Process Bedgraph Files by Removing Blacklist Scores and Keeping High
+#' Mappability Scores
+#'
+#' @description
+#' This function processes bedgraph files by filtering out scores overlapping
+#' blacklisted regions and retaining those in high-mappability regions. It
+#' computes weighted means for scores within overlapping windows and supports
+#' parallel processing for efficiency.
+#'
+#' @usage
+#' blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans,
+#'  allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
+#'  showtime = FALSE, verbose = TRUE)
+#'
+#' @param maptrackpath Character string. Path to the mappability track file.
+#' @param blacklistshpath Character string. Path to the blacklist regions file.
+#' @param exptabpath Path to the experiment table file containing a table with
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param nbcputrans Number of CPU cores to use for transcript-level operations.
+#' @param allwindowsbed Data frame. BED-formatted data frame obtained with the
+#'  function makewindows.
+#' @param windsize Window size for splitting transcripts into intervals.
+#' @param saveobjectpath Path to save intermediate R objects. Default is `NA`
+#'  and R objects are not saved.
+#' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
+#'  recomputation. Default is `FALSE`. If the function failed during object
+#'  saving, make sure to delete the corresponding object.
+#' @param showtime Logical. Whether to display timing information.
+#' @param verbose Logical. Whether to display detailed progress messages.
+#'
+#' @return A list of data frames where each entry corresponds to the processed
+#'  scores for an experiment. Scores outside high-mappability regions or in
+#'  blacklisted regions are set to `NA`.
+#'
+#' @details
+#' The function involves the following steps:
+#' 1. Reading and converting the blacklist, mappability track, and annotation
+#'  windows into tibbles.
+#' 2. Reading experiment metadata to identify bedgraph files.
+#' 3. For each bedgraph file:
+#'    - Extracting scores based on strand information.
+#'    - Filtering scores overlapping blacklisted regions or outside
+#'  high-mappability intervals.
+#'    - Computing weighted means for overlapping windows.
+#' 4. Combining processed scores into a single data frame for each experiment.
+#'
+#' The function can save intermediate objects to disk and reload them for
+#' efficiency in repeated runs.
+#'
+#' @examples
+#' # Define paths to required files
+#' maptrackpath <- "path/to/maptrack.bed"
+#' blacklistshpath <- "path/to/blacklist.bed"
+#' exptabpath <- "path/to/experiments.csv"
+#' allwindowsbed <- data.frame(...)  # Annotation windows as a BED-formatted data frame
+#'
+#' # Run the function
+#' results <- blacklisthighmap(
+#'     maptrackpath = maptrackpath,
+#'     blacklistshpath = blacklistshpath,
+#'     exptabpath = exptabpath,
+#'     nbcputrans = 4,
+#'     allwindowsbed = allwindowsbed,
+#'     windsize = 100,
+#'     saveobjectpath = "output/",
+#'     reload = FALSE,
+#'     showtime = TRUE,
+#'     verbose = TRUE
+#' )
+#'
+#' @seealso
+#' [makewindows]
+#'
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr relocate filter
+#' @importFrom rtracklayer import.bedGraph
+#' @importFrom valr bed_intersect
+#'
+#' @export
+
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
     showtime = FALSE, verbose = TRUE) {
