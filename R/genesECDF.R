@@ -73,8 +73,8 @@
 #' @param allexprsdfs A list of data frames where the first element is the main
 #'    expression data frame and the second element contains the names of the
 #'    expressed transcripts (see 'averageandfilterexprs').
-#' @param expdf A data frame containing experimental conditions and other
-#'    relevant information.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'    parallel computation. Default is \code{1}.
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
