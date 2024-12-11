@@ -1,17 +1,14 @@
-# REMOVE .computewindflist <- function(nbcputrans, expbed, windcoordvec, nbwindows) { # nolint
 .computewindflist <- function(nbcputrans, expbed, nbwindows) {
 
     cl <- parallel::makeCluster(nbcputrans)
     windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
     function(i, expbed, nbwindows) {
-    # REMOVE function(i, expbed, windcoordvec, nbwindows) {
 
         ## Retrieve the necessary gene information
         currentanno <- expbed[i, ]
         currentstart <- currentanno$start
         currentend <- currentanno$end
         currentstrand <- currentanno$strand
-        # REMOVE windowvec <- windcoordvec
 
         ## Compute the vector with the size of each window
         lgene <- currentend - currentstart
@@ -31,13 +28,6 @@
         if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
             stop("Problem in the calculation of windows")
 
-        ## Inverting start, end, and window vectors if strand is negative
-        # REMOVE if (isTRUE(all.equal(currentstrand, "-"))) {
-            # REMOVE startvec <- rev(startvec)
-            # REMOVE endvec <- rev(endvec)
-            # REMOVE windowvec <- rev(windcoordvec)
-        # REMOVE }
-
         ## Build the result data.frame containing the coordinates of each
         ## frame alongside window and coord numbers
         res <- data.frame(biotype = currentanno$biotype,
@@ -45,17 +35,16 @@
             coor2 = endvec,  transcript = currentanno$ensembl,
             gene = currentanno$symbol, strand = currentstrand,
             window = seq_len(nbwindows))
-            # REMOVE window = windowvec, coord = windcoordvec)
 
         return(res)
     }, expbed, nbwindows)
-    # REMOVE }, expbed, windcoordvec, nbwindows)
+
     parallel::stopCluster(cl)
 
     return(windflist)
 }
 
-# REMOVE .divideannoinwindows <- function(expbed, windcoordvec, nbwindows, nbcputrans) { # nolint
+
 .divideannoinwindows <- function(expbed, nbwindows, nbcputrans) {
 
     ## Retrieve the necessary gene information
@@ -65,7 +54,6 @@
     ## Build the result data.frame containing the coordinates of each
     ## frame alongside window and coord numbers
 
-    # REMOVE windflist <- .computewindflist(nbcputrans, expbed, windcoordvec, nbwindows) # nolint
     windflist <- .computewindflist(nbcputrans, expbed, nbwindows)
 
     nbwindcheck <- unique(sapply(windflist, nrow))
@@ -91,8 +79,6 @@
     ## Splitting each transcript into "nbwindows" windows
     if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
         nbwindows, " windows data.frame")
-   # REMOVE windcoordvec <- seq_len(nbwindows)
-   # REMOVE winddf <- .divideannoinwindows(expbed, windcoordvec, nbwindows, nbcputrans)
     winddf <- .divideannoinwindows(expbed, nbwindows, nbcputrans)
 
     return(winddf)
