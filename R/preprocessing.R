@@ -65,7 +65,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## This function filters gencode annotations to retrieve "transcript". It
     ## then distinguishes transcripts coming from protein coding genes
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
-    ## Ensembl_canonical).
+    ## Ensembl_canonical). It returns the combination of the two types of
+    ## transcripts that are distinguished by the column 'biotype'.
     allannobed <- .createallannobed(exptabpath, gencodepath, showstats,
         saveobjectpath, reload, verbose)
 
