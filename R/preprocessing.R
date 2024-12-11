@@ -81,24 +81,27 @@
 #' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
 #'  recomputation. Default is `FALSE`. If the function failed during object
 #'  saving, make sure to delete the corresponding object.
-#' @param showtime Logical. If `TRUE`, displays timing information. Default is `FALSE`.
-#' @param verbose Logical. If `TRUE`, provides detailed messages during execution. Default is `TRUE`.
+#' @param showtime Logical. If `TRUE`, displays timing information. Default is
+#'  `FALSE`.
+#' @param verbose Logical. If `TRUE`, provides detailed messages during
+#'  execution. Default is `TRUE`.
 #'
 #' @return A data frame containing the final annotated table.
 #'
 #' @details
 #' The `preprocessing` function performs the following steps:
-#' 
-#' 1. Filters GENCODE annotations to retrieve "transcript" entries and categorizes them
-#'    as protein-coding or long non-coding RNA.
-#' 2. Splits transcripts into windows of size `windsize`, filtering out intervals smaller
-#'    than this size and removing entries with "PAR_Y" in their Ensembl names.
-#' 3. Retrieves values from bedgraph files, applies blacklist filtering, and retains scores
-#'    in high-mappability regions.
+#'
+#' 1. Filters GENCODE annotations to retrieve "transcript" entries and
+#'  categorizes them as protein-coding or long non-coding RNA.
+#' 2. Splits transcripts into windows of size `windsize`, filtering out
+#'  intervals smaller than this size and removing entries with "PAR_Y" in their
+#'  Ensembl names.
+#' 3. Retrieves values from bedgraph files, applies blacklist filtering, and
+#'  retains scores in high-mappability regions.
 #' 4. Merges results into a final table and optionally saves it to disk.
 #'
-#' If `reload` is set to `TRUE` and saved objects exist, the function avoids recomputation
-#' by reusing those objects.
+#' If `reload` is set to `TRUE` and saved objects exist, the function avoids
+#' recomputation by reusing those objects.
 #'
 #' @examples
 #' # Example usage:
@@ -117,7 +120,13 @@
 #'   verbose = TRUE
 #' )
 #'
-#' @importFrom utils write.table
+#' @importFrom tibble as_tibble add_column
+#' @importFrom rtracklayer import.bedGraph
+#' @importFrom dplyr relocate filter full_join
+#' @importFrom valr bed_intersect
+#' @importFrom parallel mclapply makeCluster parLapply stopCluster
+#' @importFrom purrr reduce map2
+#'
 #' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
