@@ -10,7 +10,7 @@
 #' verbose = TRUE)
 #'
 #' @param expdf A data frame containing experiment data that should have
-#'              columns named 'condition', 'replicate', and 'strand'.
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param alldf A data frame containing all transcript-related information,
 #'              including biotype, chromosome, coordinates, transcript, gene,
 #'              strand, window, ID and scores retrieved from the bedgraph
