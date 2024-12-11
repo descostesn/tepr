@@ -92,8 +92,8 @@
 #' @param matnatrans A data frame containing the number of missing values per
 #'                   transcript (see countna).
 #' @param bytranslistmean A list of data frames with mean values by transcripts.
-#' @param expdf A data frame containing experimental conditions, must include
-#'              a column named 'condition'.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param dfmeandiff A data frame containing means and differences in mean
 #'                  values, if more than one condition. (see meandifference).
 #' @param nbcpu An integer specifying the number of CPU cores to use for
