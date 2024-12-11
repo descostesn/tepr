@@ -9,7 +9,7 @@
 #' averageandfilterexprs(expdf, alldf, expthres, showtime = FALSE,
 #' verbose = TRUE)
 #'
-#' @param expdf A data frame containing expression data that should have
+#' @param expdf A data frame containing experiment data that should have
 #'              columns named 'condition', 'replicate', and 'strand'.
 #' @param alldf A data frame containing all transcript-related information,
 #'              including biotype, chromosome, coordinates, transcript, gene,
