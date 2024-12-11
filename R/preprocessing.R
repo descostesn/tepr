@@ -1,11 +1,11 @@
-.createallannobed <- function(exptabpath, gencodepath, showstats,
-    saveobjectpath, reload, verbose) {
+.createallannobed <- function(exptabpath, gencodepath, saveobjectpath, reload,
+    verbose) {
 
         if (verbose) message("## Filtering gencode annotations ##\n")
         allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
         if (!reload || !file.exists(allannobedobjpath)) {
             allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
-                showstats, verbose)
+                verbose)
         } else {
             if (verbose) message("Loading ", allannobedobjpath)
             allannobed <- readRDS(allannobedobjpath)
@@ -62,7 +62,7 @@
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 #' blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
 #'     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
-#'     reload = FALSE, showstats = FALSE, showtime = FALSE, verbose = TRUE)
+#'     reload = FALSE, showtime = FALSE, verbose = TRUE)
 #'
 #' @param exptabpath Path to the experiment table file containing a table with
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
@@ -81,7 +81,6 @@
 #' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
 #'  recomputation. Default is `FALSE`. If the function failed during object
 #'  saving, make sure to delete the corresponding object.
-#' @param showstats Logical. If `TRUE`, shows statistics during processing. Default is `FALSE`.
 #' @param showtime Logical. If `TRUE`, displays timing information. Default is `FALSE`.
 #' @param verbose Logical. If `TRUE`, provides detailed messages during execution. Default is `TRUE`.
 #'
@@ -114,7 +113,6 @@
 #'   saveobjectpath = "./intermediate_objects",
 #'   savefinaltable = TRUE,
 #'   reload = FALSE,
-#'   showstats = TRUE,
 #'   showtime = TRUE,
 #'   verbose = TRUE
 #' )
@@ -125,7 +123,7 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, nbcputrans = 1, nbcpubg = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", saveobjectpath = NA, savefinaltable = TRUE,
-    reload = FALSE, showstats = FALSE, showtime = FALSE, verbose = TRUE) {
+    reload = FALSE, showtime = FALSE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
@@ -138,8 +136,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## (MANE_Select) and those coming from long non-coding genes (lncRNA,
     ## Ensembl_canonical). It returns the combination of the two types of
     ## transcripts that are distinguished by the column 'biotype'.
-    allannobed <- .createallannobed(exptabpath, gencodepath, showstats,
-        saveobjectpath, reload, verbose)
+    allannobed <- .createallannobed(exptabpath, gencodepath, saveobjectpath,
+        reload, verbose)
 
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
