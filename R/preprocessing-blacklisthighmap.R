@@ -2,7 +2,7 @@
 
     colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
             "transcript", "gene", "strand", "window")
-            # TO REMOVE "transcript", "gene", "strand", "window", "coord")
+
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
