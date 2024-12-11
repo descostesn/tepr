@@ -50,6 +50,67 @@
     return(df)
 }
 
+
+#' Create a Table of Scores from Bedgraph Data
+#'
+#' @description
+#' This function processes the scores of bedgraph files retrieved on transcripts
+#' to create a merged table of scores. It performs tasks such as adding unique
+#' row IDs, joining bedgraph data, reordering and renaming columns, and
+#' preparing a final table for further analysis.
+#'
+#' @usage
+#' createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
+#'  saveobjectpath = NA, reload = FALSE, showtime = TRUE, verbose = TRUE)
+#'
+#' @param bedgraphlistwmean A list for each bedgraph with values on transcript
+#'  windows. It was obtained with the function blacklisthighmap.
+#' @param nbcpubg Number of CPU cores to use for bedgraph-level operations.
+#' @param exptabpath Path to the experiment table file containing a table with
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param saveobjectpath Path to save intermediate R objects. Default is `NA`
+#'  and R objects are not saved.
+#' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
+#'  recomputation. Default is `FALSE`. If the function failed during object
+#'  saving, make sure to delete the corresponding object.
+#' @param showtime Logical. If `TRUE`, displays timing information. Default is
+#'  `FALSE`.
+#' @param verbose Logical. If `TRUE`, provides detailed messages during
+#'  execution. Default is `TRUE`.
+#'
+#' @return A tibble containing the final merged and processed table with scores
+#' and experiment details.
+#'
+#' @details
+#' The function performs the following steps:
+#' 1. Reads experiment details from the provided exptabpath.
+#' 2. Adds a unique row ID to each bedgraph data frame based on transcript,
+#'  gene, strand, and window.
+#' 3. Merges all bedgraph data frames into a single data frame using the unique
+#'  row ID.
+#' 4. Reorders and renames columns for consistency and clarity.
+#' 5. Adds experiment-related columns based on the provided experiment table.
+#' 6. Optionally saves the resulting table to the specified path.
+#'
+#' @examples
+#' # Example usage of createtablescores function:
+#' bedgraphlist <- list(bedgraph1, bedgraph2, bedgraph3)
+#' exptabpath <- "path/to/experiment_table.csv"
+#' output_path <- "path/to/save_directory"
+#' final_table <- createtablescores(bedgraphlist, nbcpubg = 4, exptabpath,
+#'  saveobjectpath = output_path, reload = FALSE, showtime = TRUE,
+#'  verbose = TRUE)
+#'
+#' @seealso
+#' [blacklisthighmap]
+#'
+#' @importFrom parallel mclapply
+#' @importFrom purrr reduce map2
+#' @importFrom dplyr full_join relocate
+#' @importFrom tibble add_column as_tibble
+#'
+#' @export
+
 createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
     saveobjectpath = NA, reload = FALSE, showtime = TRUE, verbose = TRUE) {
 
