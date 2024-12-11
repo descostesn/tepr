@@ -102,8 +102,8 @@
 #'
 #' @param resultsecdf A data frame containing ECDF results for each transcript
 #'  and condition (see genesECDF).
-#' @param expdf A data frame containing experimental information including a
- #'   \code{condition} column.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbwindows An integer representing the number of windows (or segments)
 #'  in each transcript.
 #' @param showtime A logical value indicating if the duration of the function

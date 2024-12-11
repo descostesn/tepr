@@ -105,7 +105,8 @@
 #'  windows around the TSS (see meandifference).
 #' @param unigroupdf A data frame containing gene-specific statistics, including
 #'  their belonging to Universe or Group (see universegroup).
-#' @param expdf A data frame with experimental conditions and replicates.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param genename A string specifying the name of the gene of interest to plot.
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot.
