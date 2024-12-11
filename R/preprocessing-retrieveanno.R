@@ -23,9 +23,66 @@
     return(gencodebed)
 }
 
-## This function filters gencode annotations to retrieve "transcript". It then
-## distinguishes transcripts coming from protein coding genes (MANE_Select) and
-## those coming from long non-coding genes (lncRNA, Ensembl_canonical).
+
+#' Retrieve and Combine Annotation Information
+#'
+#' @description
+#' This function filters gencode annotations to retrieve "transcript". It then
+#' distinguishes transcripts coming from protein coding genes (MANE_Select) and
+#' those coming from long non-coding genes (lncRNA, Ensembl_canonical).
+#'
+#' @usage
+#' retrieveanno(exptabpath, gencodepath, saveobjectpath = NA, showtime = FALSE,
+#' verbose = TRUE)
+#'
+#' @param exptabpath Path to the experiment table file containing a table with
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param gencodepath Path to the GENCODE annotation file.
+#' @param saveobjectpath Path to save intermediate R objects. Default is `NA`
+#'  and R objects are not saved.
+#' @param showtime Logical. If `TRUE`, displays timing information. Default is
+#'  `FALSE`.
+#' @param verbose Logical. If `TRUE`, provides detailed messages during
+#'  execution. Default is `TRUE`.
+#'
+#' @return A data frame containing the combined annotation information for
+#'  protein-coding and long non-coding RNA transcripts. If `saveobjectpath` is
+#'  not `NA`, the object is also saved as an RDS file in the specified
+#'  directory.
+#'
+#' @details
+#' The function performs the following steps:
+#' 1. Reads experimental data from the provided CSV file and validates it.
+#' 2. Reads genomic annotations from the gencode file and filters for
+#'  transcripts.
+#' 3. Separately processes protein-coding and long non-coding RNA transcripts:
+#'    - For protein-coding genes, selects the most representative (MANE_Select
+#'  or Ensembl_canonical) transcripts.
+#'    - For long non-coding RNAs, filters out transcripts with undesirable
+#'  evidence levels.
+#' 4. Combines these annotations into a single data frame, labeling each
+#'  transcript with its biotype.
+#' 5. Optionally saves the resulting data frame as an RDS file in the specified
+#'  directory.
+#' 6. Optionally reports the total time taken for analysis.
+#'
+#' @examples
+#' # Example usage:
+#' exptab_file <- "path/to/experiment_table.csv"
+#' gencode_file <- "path/to/gencode_annotations.gtf"
+#' output_dir <- "path/to/output_directory"
+#'
+#' # Run the function with verbose output and timing enabled
+#' annotations <- retrieveanno(
+#'     exptabpath = exptab_file,
+#'     gencodepath = gencode_file,
+#'     saveobjectpath = output_dir,
+#'     showtime = TRUE,
+#'     verbose = TRUE
+#' )
+#'
+#' @export
+
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     showtime = FALSE, verbose = TRUE) {
 
