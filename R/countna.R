@@ -15,8 +15,8 @@
 #'  first element is assumed to be the main table. The second element is a
 #'  vector of transcript names that passed the filtering of
 #'  'averageandfilterexprs'.
-#' @param expdf A data frame containing experimental conditions and strand
-#'  information. Must have columns \code{condition} and \code{strand}.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
