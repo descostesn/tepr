@@ -147,8 +147,8 @@
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more
 #'                        conditions.
-#' @param expdf A data frame containing experimental conditions associated with
-#'              the transcript data. It should have a column named 'condition'.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbwindows An integer specifying the number of windows to consider for
 #'                  AUC calculations.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
