@@ -283,8 +283,6 @@
         blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
         verbose, showtime, reload), SIMPLIFY = FALSE)
 
-        if (verbose) message("\t\t Free memory")
-        invisible(gc())
         return(bedgraphlistwmean)
 }
 
