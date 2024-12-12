@@ -1,11 +1,11 @@
 .createallannobed <- function(exptabpath, gencodepath, saveobjectpath, reload,
-    verbose) {
+    showtime, verbose) {
 
         if (verbose) message("## Filtering gencode annotations ##\n")
         allannobedobjpath <- file.path(saveobjectpath, "allannobed.rds")
         if (!reload || !file.exists(allannobedobjpath)) {
             allannobed <- retrieveanno(exptabpath, gencodepath, saveobjectpath,
-                verbose)
+                showtime, verbose)
         } else {
             if (verbose) message("Loading ", allannobedobjpath)
             allannobed <- readRDS(allannobedobjpath)
@@ -146,7 +146,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## Ensembl_canonical). It returns the combination of the two types of
     ## transcripts that are distinguished by the column 'biotype'.
     allannobed <- .createallannobed(exptabpath, gencodepath, saveobjectpath,
-        reload, verbose)
+        reload, showtime, verbose)
 
     ## This functions uses the annotations filtered from gencode (allannobed).
     ## It removes any ensembl names containing "PAR_Y", filters out intervals
