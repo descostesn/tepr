@@ -166,6 +166,8 @@
                             currentname)
                         currenttrans <- res[[1]]
                         idxscore <- res[[2]]
+                        rm(res)
+                        invisible(gc())
 
                         ## Set scores overlapping black list and low map to NA
                         idxchrom <- which(maptracktib$chrom == unique(
@@ -236,8 +238,9 @@
             if (verbose) message("\t\t Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
+
             if (verbose) message("\t\t Deleting objects and free memory")
-            rm(trsfact, valtib)
+            rm(trsfact, valtib, allwindstrand, annoscores)
             invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
