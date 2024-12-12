@@ -279,7 +279,7 @@
             invisible(gc())
 
 !!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!! CREATE TABLE SCORE HERE?
+!!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
 !!!!!!!!!!!!!!!!!
 
             return(res)
