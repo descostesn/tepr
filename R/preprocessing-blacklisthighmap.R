@@ -200,6 +200,8 @@
         allwindtib <- tibres[[1]]
         blacklisttib <- tibres[[2]]
         maptracktib <- tibres[[3]]
+        rm(tibres, allwindowsbed, blacklistbed, maptrackbed)
+        invisible(gc())
 
         ## Looping on each experiment bg file
         if (verbose) message("\t For each bedgraph file")
