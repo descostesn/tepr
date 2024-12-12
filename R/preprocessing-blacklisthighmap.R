@@ -166,8 +166,8 @@
                             currentname)
                         currenttrans <- res[[1]]
                         idxscore <- res[[2]]
-                        rm(res)
-                        invisible(gc())
+                        # rm(res)
+                        # invisible(gc())
 
                         ## Set scores overlapping black list and low map to NA
                         idxchrom <- which(maptracktib$chrom == unique(
