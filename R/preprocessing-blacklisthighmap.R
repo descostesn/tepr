@@ -278,9 +278,9 @@
             rm(bgscorebytrans, bytranslist)
             invisible(gc())
 
-!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
-!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
+# !!!!!!!!!!!!!!!!!
 
             return(res)
 
