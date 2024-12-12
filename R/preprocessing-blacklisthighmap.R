@@ -278,10 +278,6 @@
             rm(bgscorebytrans, bytranslist)
             invisible(gc())
 
-!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
-!!!!!!!!!!!!!!!!!
-
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
@@ -293,10 +289,6 @@
 
 .retrievemaptrackbed <- function(maptrackpath, showtime, saveobjectpath, reload,
     verbose) {
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!! See how to read bed by chromosomes
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (showtime) start_time_maptrackreading <- Sys.time()
         maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
