@@ -212,10 +212,17 @@
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
             nbcputrans, saveobjectpath, verbose, showtime, reload) {
 
+            ## Deleting res which is created at the end of the loop before
+            ## creating the new one
+            if (exists("res")) {
+                if (verbose) message("\t\t Deleting objects and free memory")
+                rm(res)
+                invisible(gc())
+            }
+
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
                 currentname)
-            invisible(gc())
             valtib <- .retrievebgval(currentpath, verbose)
 
             ## Keeping information on the correct strand
