@@ -277,6 +277,11 @@
             if (verbose) message("\t\t Deleting objects and free memory")
             rm(bgscorebytrans, bytranslist)
             invisible(gc())
+
+!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!! CREATE TABLE SCORE HERE?
+!!!!!!!!!!!!!!!!!
+
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
