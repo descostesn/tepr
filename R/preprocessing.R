@@ -154,6 +154,10 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     allwindowsbed <- .createallwindowsbed(allannobed, windsize, nbcputrans,
         showtime, saveobjectpath, reload, verbose)
 
+    if (verbose) message("\t\t Deleting objects and free memory")
+    rm(allannobed)
+    invisible(gc())
+
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
     bedgraphlistwmean <- .createbedgraphlistwmean(maptrackpath, blacklistshpath,
