@@ -200,6 +200,7 @@
         allwindtib <- tibres[[1]]
         blacklisttib <- tibres[[2]]
         maptracktib <- tibres[[3]]
+        if (verbose) message("\t Deleting objects and free memory")
         rm(tibres, allwindowsbed, blacklistbed, maptrackbed)
         invisible(gc())
 
@@ -235,6 +236,7 @@
             if (verbose) message("\t\t Splitting the scores by transcript")
             trsfact <- factor(annoscores$transcript.window)
             bgscorebytrans <- split(annoscores, trsfact)
+            if (verbose) message("\t\t Deleting objects and free memory")
             rm(trsfact, valtib)
             invisible(gc())
 
@@ -262,6 +264,7 @@
             if (verbose) message("\t\t Combining transcripts in one table")
             res <- do.call("rbind", bytranslist)
 
+            if (verbose) message("\t\t Deleting objects and free memory")
             rm(bgscorebytrans, bytranslist)
             invisible(gc())
             return(res)
@@ -270,6 +273,7 @@
         blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
         verbose, showtime, reload), SIMPLIFY = FALSE)
 
+        if (verbose) message("\t\t Free memory")
         invisible(gc())
         return(bedgraphlistwmean)
 }
@@ -437,8 +441,6 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             maptrackbed, allwindowsbed, windsize, nbcputrans, showtime,
             saveobjectpath, reload, verbose)
 
-        rm(maptrackbed)
-        invisible(gc())
         if (showtime) {
             end_time_fun <- Sys.time()
             timing <- end_time_fun - start_time_fun
