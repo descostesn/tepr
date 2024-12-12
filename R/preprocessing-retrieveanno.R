@@ -110,16 +110,17 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
     ## algorithm otherwise.
     if (verbose) message("\t Selecting Ensembl_canonical transcripts and ",
         "sorting")
-    gencodeprotcod <- .grepsequential("MANE_Select", gencode)
+    gencodeprotcod <- .grepsequential("MANE_Select", gencode, verbose)
     protcodbed <- .sortedbedformat(gencodeprotcod)
 
     ## Selecting long non-coding transcripts
     if (verbose) message("\t Selecting long non-coding transcripts and ",
         "sorting")
-    lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode)
+    lncrna <- .grepsequential(c("lncRNA", "Ensembl_canonical"), gencode,
+        verbose)
     removevec <- c("not_best_in_genome_evidence", "transcript_support_level 5",
                 "transcript_support_level 4")
-    lncrna <- .grepsequential(removevec, lncrna, invert = TRUE)
+    lncrna <- .grepsequential(removevec, lncrna, verbose, invert = TRUE)
     lncrnabed <- .sortedbedformat(lncrna)
 
     ## Combine the annotations
