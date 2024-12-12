@@ -387,7 +387,7 @@
 #' maptrackpath <- "path/to/maptrack.bed"
 #' blacklistshpath <- "path/to/blacklist.bed"
 #' exptabpath <- "path/to/experiments.csv"
-#' allwindowsbed <- data.frame(...)  # Annotation windows as a BED-formatted data frame
+#' allwindowsbed <- data.frame(...)
 #'
 #' # Run the function
 #' results <- blacklisthighmap(
