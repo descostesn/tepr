@@ -301,6 +301,25 @@
         if (showtime) start_time_maptrackreading <- Sys.time()
         maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
 
+
+
+!!!!!!!!!!!!!!!!!!!!!
+
+
+ test_bed_file <- BEDFile(test_bed)
+       import(test_bed_file)
+
+       test_bed_con <- file(test_bed)
+       import(test_bed_con, format = "bed")
+
+       import(test_bed, trackLine = FALSE)
+       import(test_bed, genome = "hg19")
+       import(test_bed, colnames = c("name", "strand", "thick"))
+
+       which <- GRanges("chr7:1-127473000")
+       import(test_bed, which = which)
+
+!!!!!!!!!!!!!!!!!!!!!!!
         if (!reload || !file.exists(maptrackbedobjfile)) {
             if (verbose) message("Reading the mappability track (the file is ",
                 "big, be patient)")
@@ -333,6 +352,12 @@
             "weighted means.")
             expnamevec <- paste0(exptab$condition, exptab$replicate,
                 exptab$direction)
+
+            ## For the mappability track, reading can be skept by loading the
+            ## object if it exists. The maptrack is read by chromosomes
+            maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
+                saveobjectpath, reload, verbose)
+
             if (showtime) start_time_bglistwmean <- Sys.time()
             bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
                 maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
@@ -435,10 +460,17 @@
 #' @export
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
-    nbcputrans, allwindowsbed, windsize, saveobjectpath = NA, reload = FALSE,
-    showtime = FALSE, verbose = TRUE) {
+    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
+    reload = FALSE, showtime = FALSE, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
+
+        ## Retrieving chromosome information
+        chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+        if (is.null(chromtab))
+            stop("The genome ", genomename, " was not found with the function ",
+            " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
+            " if the genome is available on UCSC.")
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
@@ -446,11 +478,6 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         if (verbose) message("Reading the black list")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
-
-        ## For the mappability track, reading can be skept by loading the object
-        ## if it exists
-        maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
-            saveobjectpath, reload, verbose)
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
