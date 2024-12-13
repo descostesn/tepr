@@ -357,11 +357,16 @@
 !! CREATE LAPPLY ON CHROMOSOMES
 
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
-                function(currentchrom, maptrackpath, showtime, saveobjectpath,
-                reload, verbose, exptab, blacklistbed, nbcputrans,
-                allwindowsbed, expnamevec, windsize) {
+                function(currentchrom, chromtab, maptrackpath, showtime,
+                saveobjectpath, reload, verbose, exptab, blacklistbed,
+                nbcputrans, allwindowsbed, expnamevec, windsize) {
 
                     if (verbose) message("\t # Processing ", currentchrom)
+                    ## Retrieve chrom length
+                    idxchrom <- which(GenomeInfoDb::seqnames(chromtab) == currentchrom) # nolint
+                    chromlength <- as.numeric(
+                            GenomeInfoDb::seqlengths(chromtab)[idxchrom])
+
                     ## For the mappability track, reading can be skept by
                     ## loading the object if it exists. The maptrack is read by
                     ## chromosomes
@@ -377,9 +382,9 @@
                 timing <- end_time_bglistwmean - start_time_bglistwmean
                 message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
             }
-                }, maptrackpath, showtime, saveobjectpath, reload, verbose,
-                exptab, blacklistbed, nbcputrans, allwindowsbed, expnamevec,
-                windsize))
+                }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
+                    verbose, exptab, blacklistbed, nbcputrans, allwindowsbed,
+                    expnamevec, windsize))
             
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (!is.na(saveobjectpath)) {
