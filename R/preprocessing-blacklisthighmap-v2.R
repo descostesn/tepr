@@ -345,7 +345,8 @@
 }
 
 .loadbgprocessing <- function(exptab, blacklistbed, maptrackbed, allwindowsbed,
-        windsize, nbcputrans, showtime, saveobjectpath, reload, verbose) {
+        windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
+        verbose) {
 
             if (verbose) message("Removing scores within black list intervals,",
             " keeping those on high mappability regions, and computing ",
@@ -494,8 +495,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
         bedgraphlistwmean <- .loadbgprocessing(exptab, blacklistbed,
-            maptrackbed, allwindowsbed, windsize, nbcputrans, showtime,
-            saveobjectpath, reload, verbose)
+            maptrackbed, allwindowsbed, windsize, chromtab, nbcputrans,
+            showtime, saveobjectpath, reload, verbose)
 
         if (showtime) {
             end_time_fun <- Sys.time()
