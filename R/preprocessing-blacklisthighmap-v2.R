@@ -356,11 +356,17 @@
 !!!!!!!!!!!!!!!!!!!!!!!!
 !! CREATE LAPPLY ON CHROMOSOMES
 
-            invisible(lapply())
-            ## For the mappability track, reading can be skept by loading the
-            ## object if it exists. The maptrack is read by chromosomes
-            maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
-                saveobjectpath, reload, verbose)
+            invisible(lapply(GenomeInfoDb::seqnames(chromtab),
+                function(currentchrom, maptrackpath, showtime, saveobjectpath,
+                reload, verbose, exptab, blacklistbed, nbcputrans,
+                allwindowsbed, expnamevec, windsize) {
+
+                    if (verbose) message("\t # Processing ", currentchrom)
+                    ## For the mappability track, reading can be skept by
+                    ## loading the object if it exists. The maptrack is read by
+                    ## chromosomes
+                    !!maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
+                        currentchrom, saveobjectpath, reload, verbose)
 
             if (showtime) start_time_bglistwmean <- Sys.time()
             bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
@@ -371,7 +377,11 @@
                 timing <- end_time_bglistwmean - start_time_bglistwmean
                 message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
             }
-
+                }, maptrackpath, showtime, saveobjectpath, reload, verbose,
+                exptab, blacklistbed, nbcputrans, allwindowsbed, expnamevec,
+                windsize))
+            
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (!is.na(saveobjectpath)) {
                 if (verbose) message("Saving bedgraphlistwmean as an rds ",
                     "object")
