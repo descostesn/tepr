@@ -8,8 +8,8 @@
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
     blacklisttib <- tibble::as_tibble(blacklistbed)
 
-    !!colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
-    !!maptracktib <- tibble::as_tibble(maptrackbed)
+    # colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
+    # maptracktib <- tibble::as_tibble(maptrackbed)
 
     return(list(allwindtib, blacklisttib, maptracktib))
 }
@@ -296,26 +296,34 @@
     chromlength, saveobjectpath, reload, verbose) {
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!! See how to read bed by chromosomes
+!!!!!!!!!!!!!!!!!!! See how to read bed by chromosomes -> integrate in code below
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (showtime) start_time_maptrackreading <- Sys.time()
         filename <- paste0("maptrackbed-", currentchrom, ".rds")
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
+        ## Reading file on chrom and converting to data.frame
         maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
         whichchrom <- GenomicRanges::GRanges(
             paste0(currentchrom, ":1-", chromlength))
         maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
         maptrackbedchrom <- as.data.frame(maptrackbedchrom)
-        idxname <- which(colnames(maptrackbedchrom) == "name")
-        if (isTRUE(all.equal(length(idxname), 0)))
-            stop("Column 'name' was not found in the maptrack file. This",
-                " should not happen. Contact the developer.")
-        maptrackbedchrom <- maptrackbedchrom[, -idxname]
-        colnames(maptrackbedchrom) <- c("chrom", "start", "end", "width",
-            "strand", "score")
-        !
+
+        idxvec <- sapply(c("name", "width"), function(x){
+            return(which(colnames(maptrackbedchrom) == x))
+        }, maptrackbedchrom)
+        if (!isTRUE(all.equal(length(idxvec), 2)))
+            stop("Columns 'name' and 'width' were not found in the maptrack ",
+                "file. This should not happen. Contact the developer.")
+        maptrackbedchrom <- maptrackbedchrom[, -idxvec]
+        colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
+            "mapscore")
+        maptracktib <- tibble::as_tibble(maptrackbedchrom)
+
+        rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
+        invisible(gc())
+
 
 !!!!!!!!!!!!!!!!!!!!!
 
