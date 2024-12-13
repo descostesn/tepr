@@ -356,7 +356,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!
 !! CREATE LAPPLY ON CHROMOSOMES
 
-            
+            invisible(lapply())
             ## For the mappability track, reading can be skept by loading the
             ## object if it exists. The maptrack is read by chromosomes
             maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
@@ -390,11 +390,11 @@
         stop("The genome ", genomename, " was not found with the function ",
         " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
         " if the genome is available on UCSC.")
-    idxkeep <- seqnames(chromtab)[grep("_|chrM", seqnames(chromtab),
-        perl = TRUE, invert = TRUE)]
+    idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
+        GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]
     chromtab <- chromtab[idxkeep,]
-    if (verbose) message("\t Working on: ", paste(seqnames(chromtab),
-        collapse="/"))
+    if (verbose) message("\t Working on: ",
+        paste(GenomeInfoDb::seqnames(chromtab), collapse="/"))
     return(chromtab)
 }
 
