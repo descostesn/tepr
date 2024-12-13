@@ -8,8 +8,8 @@
     colnames(blacklistbed) <- c("chrom", "start", "end", "type")
     blacklisttib <- tibble::as_tibble(blacklistbed)
 
-    colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
-    maptracktib <- tibble::as_tibble(maptrackbed)
+    !!colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
+    !!maptracktib <- tibble::as_tibble(maptrackbed)
 
     return(list(allwindtib, blacklisttib, maptracktib))
 }
@@ -303,7 +303,19 @@
         filename <- paste0("maptrackbed-", currentchrom, ".rds")
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
-
+        maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
+        whichchrom <- GenomicRanges::GRanges(
+            paste0(currentchrom, ":1-", chromlength))
+        maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
+        maptrackbedchrom <- as.data.frame(maptrackbedchrom)
+        idxname <- which(colnames(maptrackbedchrom) == "name")
+        if (isTRUE(all.equal(length(idxname), 0)))
+            stop("Column 'name' was not found in the maptrack file. This",
+                " should not happen. Contact the developer.")
+        maptrackbedchrom <- maptrackbedchrom[, -idxname]
+        colnames(maptrackbedchrom) <- c("chrom", "start", "end", "width",
+            "strand", "score")
+        !
 
 !!!!!!!!!!!!!!!!!!!!!
 
