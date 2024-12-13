@@ -300,7 +300,8 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (showtime) start_time_maptrackreading <- Sys.time()
-        maptrackbedobjfile <- file.path(saveobjectpath, "maptrackbed.rds")
+        filename <- paste0("maptrackbed-", currentchrom, ".rds")
+        maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
 
 
