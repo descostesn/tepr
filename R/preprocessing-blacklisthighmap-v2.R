@@ -291,8 +291,9 @@
         return(bedgraphlistwmean)
 }
 
-.retrievemaptrackbed <- function(maptrackpath, showtime, saveobjectpath, reload,
-    verbose) {
+
+.retrievemaptrackbed <- function(maptrackpath, showtime, currentchrom,
+    chromlength, saveobjectpath, reload, verbose) {
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!! See how to read bed by chromosomes
@@ -363,15 +364,17 @@
 
                     if (verbose) message("\t # Processing ", currentchrom)
                     ## Retrieve chrom length
-                    idxchrom <- which(GenomeInfoDb::seqnames(chromtab) == currentchrom) # nolint
+                    idxchrom <- which(
+                        GenomeInfoDb::seqnames(chromtab) == currentchrom)
                     chromlength <- as.numeric(
                             GenomeInfoDb::seqlengths(chromtab)[idxchrom])
 
                     ## For the mappability track, reading can be skept by
                     ## loading the object if it exists. The maptrack is read by
                     ## chromosomes
-                    !!maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
-                        currentchrom, saveobjectpath, reload, verbose)
+                    maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
+                        currentchrom, chromlength, saveobjectpath, reload,
+                        verbose)
 
             if (showtime) start_time_bglistwmean <- Sys.time()
             bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
