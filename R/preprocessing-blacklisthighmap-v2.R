@@ -324,23 +324,6 @@
         rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
         invisible(gc())
 
-
-!!!!!!!!!!!!!!!!!!!!!
-
-
- test_bed_file <- BEDFile(test_bed)
-       import(test_bed_file)
-
-       test_bed_con <- file(test_bed)
-       import(test_bed_con, format = "bed")
-
-       import(test_bed, trackLine = FALSE)
-       import(test_bed, genome = "hg19")
-       import(test_bed, colnames = c("name", "strand", "thick"))
-
-       which <- GRanges("chr7:1-127473000")
-       import(test_bed, which = which)
-
 !!!!!!!!!!!!!!!!!!!!!!!
         if (!reload || !file.exists(maptrackbedobjfile)) {
             if (verbose) message("Reading the mappability track (the file is ",
