@@ -378,6 +378,22 @@
             return(bedgraphlistwmean)
 }
 
+.retrievechrom <- function(genomename, verbose) {
+
+    if (verbose) message("Retrieving chromosome lengths")
+    chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+    if (is.null(chromtab))
+        stop("The genome ", genomename, " was not found with the function ",
+        " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
+        " if the genome is available on UCSC.")
+    idxkeep <- seqnames(chromtab)[grep("_|chrM", seqnames(chromtab),
+        perl = TRUE, invert = TRUE)]
+    chromtab <- chromtab[idxkeep,]
+    if (verbose) message("\t Working on: ", paste(seqnames(chromtab),
+        collapse="/"))
+    return(chromtab)
+}
+
 
 #' Process Bedgraph Files by Removing Blacklist Scores and Keeping High
 #' Mappability Scores
@@ -465,18 +481,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         if (showtime) start_time_fun <- Sys.time()
 
-        ## Retrieving chromosome information
-        if (verbose) message("Retrieving chromosome information")
-        chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
-        if (is.null(chromtab))
-            stop("The genome ", genomename, " was not found with the function ",
-            " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
-            " if the genome is available on UCSC.")
-        idxkeep <- seqnames(chromtab)[grep("_|chrM", seqnames(chromtab),
-            perl = TRUE, invert = TRUE)]
-        chromtab <- chromtab[idxkeep,]
-        if (verbose) message("\t Working on: ", paste(seqnames(chromtab),
-            collapse="/"))
+        ## Retrieving chromosome lengths
+        chromtab <- .retrievechrom(genomename, verbose)
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
