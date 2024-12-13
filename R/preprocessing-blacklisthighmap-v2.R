@@ -353,7 +353,10 @@
             "weighted means.")
             expnamevec <- paste0(exptab$condition, exptab$replicate,
                 exptab$direction)
+!!!!!!!!!!!!!!!!!!!!!!!!
+!! CREATE LAPPLY ON CHROMOSOMES
 
+            
             ## For the mappability track, reading can be skept by loading the
             ## object if it exists. The maptrack is read by chromosomes
             maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
@@ -375,7 +378,7 @@
                 saveRDS(bedgraphlistwmean, file.path(saveobjectpath,
                     "bedgraphlistwmean.rds"))
             }
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             return(bedgraphlistwmean)
 }
 
