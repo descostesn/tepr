@@ -117,15 +117,15 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
-    nbcputrans, allwintib, expnamevec, windsize, chromlength, saveobjectpath,
-    showtime, reload, verbose) {
+    nbcputrans, allwintib, expnamevec, windsize, currentchrom, chromlength,
+    saveobjectpath, showtime, reload, verbose) {
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            chromlength, nbcputrans, saveobjectpath, verbose, showtime,
-            reload) {
+            currentchrom, chromlength, nbcputrans, saveobjectpath, verbose,
+            showtime, reload) {
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -138,7 +138,8 @@
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
                 currentname)
-            valtib <- .retrievebgval(currentpath, chromlength, verbose)
+            valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
+                verbose)
 
             ## Keeping information on the correct strand
             if (verbose) message("\t\t Retrieving information on strand ",
@@ -202,8 +203,9 @@
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, chromlength, nbcputrans,
-        saveobjectpath, verbose, showtime, reload), SIMPLIFY = FALSE)
+        blacklisttib, maptracktib, windsize, currentchrom, chromlength,
+        nbcputrans, saveobjectpath, verbose, showtime, reload),
+        SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
 }
@@ -235,8 +237,8 @@
 
                     bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
                         blacklisttib, maptrackbed, nbcputrans, allwintib,
-                        expnamevec, windsize, chromlength, saveobjectpath,
-                        showtime, reload, verbose)
+                        expnamevec, windsize, currentchrom, chromlength,
+                        saveobjectpath, showtime, reload, verbose)
                     if (showtime) {
                         end_time_bglistwmean <- Sys.time()
                         timing <- end_time_bglistwmean - start_time_bglistwmean

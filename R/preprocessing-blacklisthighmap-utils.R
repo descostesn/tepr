@@ -1,4 +1,4 @@
-.retrievebgval <- function(currentpath, chromlength, verbose) {
+.retrievebgval <- function(currentpath, currentchrom, chromlength, verbose) {
 
     if (verbose) message("\t\t Reading ", currentpath)
 
