@@ -303,40 +303,38 @@
         filename <- paste0("maptrackbed-", currentchrom, ".rds")
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
-        ## Reading file on chrom and converting to data.frame
-        if (verbose) message("\t\t Reading the mappability track")
-        maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
-        whichchrom <- GenomicRanges::GRanges(
-            paste0(currentchrom, ":1-", chromlength))
-        maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
-        maptrackbedchrom <- as.data.frame(maptrackbedchrom)
-
-        idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
-        if (!isTRUE(all.equal(length(idxvec), 2)))
-            stop("Columns 'name' and 'width' were not found in the maptrack ",
-                "file. This should not happen. Contact the developer.")
-        maptrackbedchrom <- maptrackbedchrom[, -idxvec]
-        colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
-            "mapscore")
-        maptracktib <- tibble::as_tibble(maptrackbedchrom)
-
-        rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
-        invisible(gc())
-
-!!!!!!!!!!!!!!!!!!!!!!!
         if (!reload || !file.exists(maptrackbedobjfile)) {
-            if (verbose) message("Reading the mappability track (the file is ",
-                "big, be patient)")
-            maptrackbed <- read.delim(maptrackpath, header = FALSE)
+            if (verbose) message("\t\t Reading the mappability track") {
+                ## Reading file on chrom and converting to data.frame
+                maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
+                whichchrom <- GenomicRanges::GRanges(
+                    paste0(currentchrom, ":1-", chromlength))
+                maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
+                maptrackbedchrom <- as.data.frame(maptrackbedchrom)
+
+                idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
+                if (!isTRUE(all.equal(length(idxvec), 2)))
+                    stop("Columns 'name' and 'width' were not found in the ",
+                        "maptrack file. This should not happen. Contact the ",
+                        "developer.")
+                maptrackbedchrom <- maptrackbedchrom[, -idxvec]
+                colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
+                    "mapscore")
+                maptracktib <- tibble::as_tibble(maptrackbedchrom)
+
+                rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
+                invisible(gc())
+            }
+
             if (!is.na(saveobjectpath)) {
-                if (verbose) message("Saving mappability track as an rds ",
-                    "object")
+                if (verbose) message("Saving mappability track to ",
+                    maptrackbedobjfile)
                 saveRDS(maptrackbed, maptrackbedobjfile)
             }
         } else {
             if (verbose) message("Loading mappability track from existing rds ",
                     "object")
-            maptrackbed <- readRDS(maptrackbedobjfile)
+            maptracktib <- readRDS(maptrackbedobjfile)
         }
 
         if (showtime) {
@@ -345,7 +343,7 @@
             message("\t\t ## read maptrack in: ", timing) # nolint
         }
 
-        return(maptrackbed)
+        return(maptracktib)
 }
 
 .loadbgprocessing <- function(exptab, blacklistbed, maptrackbed, allwindowsbed,
@@ -375,7 +373,7 @@
                     ## For the mappability track, reading can be skept by
                     ## loading the object if it exists. The maptrack is read by
                     ## chromosomes
-                    maptrackbed <- .retrievemaptrackbed(maptrackpath, showtime,
+                    maptracktib <- .retrievemaptrackbed(maptrackpath, showtime,
                         currentchrom, chromlength, saveobjectpath, reload,
                         verbose)
 
