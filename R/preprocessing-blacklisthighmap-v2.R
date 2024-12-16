@@ -256,6 +256,8 @@
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
 !!!!!!!!!!!!!!!!!
 
+            !!!!!!!!! SAVE OBJECT FOR chromosome here
+
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
@@ -268,10 +270,6 @@
 
 .retrievemaptrackbed <- function(maptrackpath, showtime, currentchrom,
     chromlength, saveobjectpath, reload, verbose) {
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!! See how to read bed by chromosomes -> integrate in code below
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (showtime) start_time_maptrackreading <- Sys.time()
         filename <- paste0("maptrackbed-", currentchrom, ".rds")
@@ -320,6 +318,13 @@
         return(maptracktib)
 }
 
+.retrievechromlength <- function(chromtab, currentchrom) {
+
+    idxchrom <- which(GenomeInfoDb::seqnames(chromtab) == currentchrom)
+    chromlength <- as.numeric(GenomeInfoDb::seqlengths(chromtab)[idxchrom])
+    return(chromlength)
+}
+
 .loadbgprocessing <- function(exptab, blacklisttib, maptrackbed, allwintib,
         windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
         verbose) {
@@ -329,37 +334,32 @@
             "weighted means.")
             expnamevec <- paste0(exptab$condition, exptab$replicate,
                 exptab$direction)
-!!!!!!!!!!!!!!!!!!!!!!!!
-!! CREATE LAPPLY ON CHROMOSOMES
 
+            ## Loading process on a specific chromosom
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
                 function(currentchrom, chromtab, maptrackpath, showtime,
                 saveobjectpath, reload, verbose, exptab, blacklisttib,
                 nbcputrans, allwintib, expnamevec, windsize) {
 
-                    if (verbose) message("\t # Processing ", currentchrom)
-                    ## Retrieve chrom length
-                    idxchrom <- which(
-                        GenomeInfoDb::seqnames(chromtab) == currentchrom)
-                    chromlength <- as.numeric(
-                            GenomeInfoDb::seqlengths(chromtab)[idxchrom])
+                    if (showtime) start_time_bglistwmean <- Sys.time()
 
-                    ## For the mappability track, reading can be skept by
-                    ## loading the object if it exists. The maptrack is read by
-                    ## chromosomes
+                    if (verbose) message("\t # Processing ", currentchrom)
+                    ## Reading the maptrack on a specific chromosomes
+                    chromlength <- .retrievechromlength(chromtab, currentchrom)
                     maptracktib <- .retrievemaptrackbed(maptrackpath, showtime,
                         currentchrom, chromlength, saveobjectpath, reload,
                         verbose)
 
-            if (showtime) start_time_bglistwmean <- Sys.time()
-            bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklisttib,
-                maptrackbed, nbcputrans, allwintib, expnamevec, windsize,
-                saveobjectpath, showtime, reload, verbose)
-            if (showtime) {
-                end_time_bglistwmean <- Sys.time()
-                timing <- end_time_bglistwmean - start_time_bglistwmean
-                message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
-            }
+                    bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
+                        blacklisttib, maptrackbed, nbcputrans, allwintib,
+                        expnamevec, windsize, saveobjectpath, showtime, reload,
+                        verbose)
+                    if (showtime) {
+                        end_time_bglistwmean <- Sys.time()
+                        timing <- end_time_bglistwmean - start_time_bglistwmean
+                        message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
+                    }
+
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
                     verbose, exptab, blacklisttib, nbcputrans, allwintib,
                     expnamevec, windsize))
