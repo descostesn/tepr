@@ -1,19 +1,3 @@
-.convertotibble <- function(allwindowsbed, blacklistbed, maptrackbed) {
-
-    colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
-            "transcript", "gene", "strand", "window")
-
-    allwindtib <- tibble::as_tibble(allwindowsbed)
-
-    # colnames(blacklistbed) <- c("chrom", "start", "end", "type")
-    # blacklisttib <- tibble::as_tibble(blacklistbed)
-
-    # colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
-    # maptracktib <- tibble::as_tibble(maptrackbed)
-
-    return(list(allwindtib, blacklisttib, maptracktib))
-}
-
 .retrievebgval <- function(currentpath, verbose) {
 
     if (verbose) message("\t\t Reading ", currentpath)
@@ -193,18 +177,8 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
-    nbcputrans, allwindowsbed, expnamevec, windsize, saveobjectpath, showtime,
+    nbcputrans, allwintib, expnamevec, windsize, saveobjectpath, showtime,
     reload, verbose) {
-
-        if (verbose) message("\t Converting annotations' windows, blacklist,",
-            " and mappability track to tibble")
-        tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
-        allwindtib <- tibres[[1]]
-        #blacklisttib <- tibres[[2]]
-        #maptracktib <- tibres[[3]]
-        if (verbose) message("\t Deleting objects and free memory")
-        rm(tibres, allwindowsbed, blacklistbed, maptrackbed)
-        invisible(gc())
 
         ## Looping on each experiment bg file
         if (verbose) message("\t For each bedgraph file")
@@ -515,13 +489,20 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
         colnames(blacklistbed) <- c("chrom", "start", "end", "type")
         blacklisttib <- tibble::as_tibble(blacklistbed)
-        rm(blacklistbed)
+
+        ## Converting allwindowsbed to tib
+        colnames(allwindowsbed) <- c("biotype", "chrom", "start", "end",
+            "transcript", "gene", "strand", "window")
+        allwindtib <- tibble::as_tibble(allwindowsbed)
+
+        ## Cleaning
+        rm(blacklistbed, allwindowsbed)
         invisible(gc())
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
         bedgraphlistwmean <- .loadbgprocessing(exptab, blacklistbed,
-            maptrackbed, allwindowsbed, windsize, chromtab, nbcputrans,
+            maptrackbed, allwintib, windsize, chromtab, nbcputrans,
             showtime, saveobjectpath, reload, verbose)
 
         if (showtime) {
