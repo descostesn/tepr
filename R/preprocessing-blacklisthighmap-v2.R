@@ -121,7 +121,7 @@
     reload, verbose) {
 
         ## Looping on each experiment bg file
-        if (verbose) message("\t For each bedgraph file")
+        if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
             nbcputrans, saveobjectpath, verbose, showtime, reload) {
