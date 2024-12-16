@@ -117,8 +117,8 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
-    nbcputrans, allwintib, expnamevec, windsize, saveobjectpath, showtime,
-    reload, verbose) {
+    nbcputrans, allwintib, expnamevec, windsize, chromlength, saveobjectpath,
+    showtime, reload, verbose) {
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
@@ -234,8 +234,8 @@
 
                     bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
                         blacklisttib, maptrackbed, nbcputrans, allwintib,
-                        expnamevec, windsize, saveobjectpath, showtime, reload,
-                        verbose)
+                        expnamevec, windsize, chromlength, saveobjectpath,
+                        showtime, reload, verbose)
                     if (showtime) {
                         end_time_bglistwmean <- Sys.time()
                         timing <- end_time_bglistwmean - start_time_bglistwmean
