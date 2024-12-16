@@ -304,15 +304,14 @@
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
         ## Reading file on chrom and converting to data.frame
+        if (verbose) message("\t\t Reading the mappability track")
         maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
         whichchrom <- GenomicRanges::GRanges(
             paste0(currentchrom, ":1-", chromlength))
         maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
         maptrackbedchrom <- as.data.frame(maptrackbedchrom)
 
-        idxvec <- sapply(c("name", "width"), function(x){
-            return(which(colnames(maptrackbedchrom) == x))
-        }, maptrackbedchrom)
+        idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
         if (!isTRUE(all.equal(length(idxvec), 2)))
             stop("Columns 'name' and 'width' were not found in the maptrack ",
                 "file. This should not happen. Contact the developer.")
