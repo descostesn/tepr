@@ -65,32 +65,32 @@
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
         if (!reload || !file.exists(maptrackbedobjfile)) {
-            if (verbose) message("\t\t Reading the mappability track") {
-                ## Reading file on chrom and converting to data.frame
-                maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
-                whichchrom <- GenomicRanges::GRanges(
-                    paste0(currentchrom, ":1-", chromlength))
-                maptrackbedchrom <- import(maptrackbedfile, which = whichchrom)
-                maptrackbedchrom <- as.data.frame(maptrackbedchrom)
+            if (verbose) message("\t\t Reading the mappability track")
+            ## Reading file on chrom and converting to data.frame
+            maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
+            whichchrom <- GenomicRanges::GRanges(
+                paste0(currentchrom, ":1-", chromlength))
+            maptrackbedchrom <- rtracklayer::import(maptrackbedfile,
+                which = whichchrom)
+            maptrackbedchrom <- as.data.frame(maptrackbedchrom)
 
-                idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
-                if (!isTRUE(all.equal(length(idxvec), 2)))
-                    stop("Columns 'name' and 'width' were not found in the ",
-                        "maptrack file. This should not happen. Contact the ",
-                        "developer.")
-                maptrackbedchrom <- maptrackbedchrom[, -idxvec]
-                colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
-                    "mapscore")
-                maptracktib <- tibble::as_tibble(maptrackbedchrom)
+            idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
+            if (!isTRUE(all.equal(length(idxvec), 2)))
+                stop("Columns 'name' and 'width' were not found in the ",
+                    "maptrack file. This should not happen. Contact the ",
+                    "developer.")
+            maptrackbedchrom <- maptrackbedchrom[, -idxvec]
+            colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
+                "mapscore")
+            maptracktib <- tibble::as_tibble(maptrackbedchrom)
 
-                rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
-                invisible(gc())
-            }
+            rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
+            invisible(gc())
 
             if (!is.na(saveobjectpath)) {
                 if (verbose) message("Saving mappability track to ",
                     maptrackbedobjfile)
-                saveRDS(maptrackbed, maptrackbedobjfile)
+                saveRDS(maptracktib, maptrackbedobjfile)
             }
         } else {
             if (verbose) message("Loading mappability track from existing rds ",
