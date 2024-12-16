@@ -176,7 +176,7 @@
         return(bytranslist)
 }
 
-.retrieveandfilterfrombg <- function(exptab, blacklistbed, maptrackbed, # nolint
+.retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
     nbcputrans, allwintib, expnamevec, windsize, saveobjectpath, showtime,
     reload, verbose) {
 
@@ -320,7 +320,7 @@
         return(maptracktib)
 }
 
-.loadbgprocessing <- function(exptab, blacklistbed, maptrackbed, allwindowsbed,
+.loadbgprocessing <- function(exptab, blacklisttib, maptrackbed, allwintib,
         windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
         verbose) {
 
@@ -334,8 +334,8 @@
 
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
                 function(currentchrom, chromtab, maptrackpath, showtime,
-                saveobjectpath, reload, verbose, exptab, blacklistbed,
-                nbcputrans, allwindowsbed, expnamevec, windsize) {
+                saveobjectpath, reload, verbose, exptab, blacklisttib,
+                nbcputrans, allwintib, expnamevec, windsize) {
 
                     if (verbose) message("\t # Processing ", currentchrom)
                     ## Retrieve chrom length
@@ -352,8 +352,8 @@
                         verbose)
 
             if (showtime) start_time_bglistwmean <- Sys.time()
-            bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklistbed,
-                maptrackbed, nbcputrans, allwindowsbed, expnamevec, windsize,
+            bedgraphlistwmean <- .retrieveandfilterfrombg(exptab, blacklisttib,
+                maptrackbed, nbcputrans, allwintib, expnamevec, windsize,
                 saveobjectpath, showtime, reload, verbose)
             if (showtime) {
                 end_time_bglistwmean <- Sys.time()
@@ -361,7 +361,7 @@
                 message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
             }
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
-                    verbose, exptab, blacklistbed, nbcputrans, allwindowsbed,
+                    verbose, exptab, blacklisttib, nbcputrans, allwintib,
                     expnamevec, windsize))
             
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -501,7 +501,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
-        bedgraphlistwmean <- .loadbgprocessing(exptab, blacklistbed,
+        bedgraphlistwmean <- .loadbgprocessing(exptab, blacklisttib,
             maptrackbed, allwintib, windsize, chromtab, nbcputrans,
             showtime, saveobjectpath, reload, verbose)
 
