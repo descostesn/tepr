@@ -65,7 +65,8 @@
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
         if (!reload || !file.exists(maptrackbedobjfile)) {
-            if (verbose) message("\t\t Reading the mappability track")
+            if (verbose) message("\t\t Reading the mappability track on the",
+                " specified chromosome")
             ## Reading file on chrom and converting to data.frame
             maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
             whichchrom <- GenomicRanges::GRanges(
