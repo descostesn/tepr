@@ -5,8 +5,8 @@
 
     allwindtib <- tibble::as_tibble(allwindowsbed)
 
-    colnames(blacklistbed) <- c("chrom", "start", "end", "type")
-    blacklisttib <- tibble::as_tibble(blacklistbed)
+    # colnames(blacklistbed) <- c("chrom", "start", "end", "type")
+    # blacklisttib <- tibble::as_tibble(blacklistbed)
 
     # colnames(maptrackbed) <- c("chrom", "start", "end", "id", "mapscore")
     # maptracktib <- tibble::as_tibble(maptrackbed)
@@ -200,8 +200,8 @@
             " and mappability track to tibble")
         tibres <- .convertotibble(allwindowsbed, blacklistbed, maptrackbed)
         allwindtib <- tibres[[1]]
-        blacklisttib <- tibres[[2]]
-        maptracktib <- tibres[[3]]
+        #blacklisttib <- tibres[[2]]
+        #maptracktib <- tibres[[3]]
         if (verbose) message("\t Deleting objects and free memory")
         rm(tibres, allwindowsbed, blacklistbed, maptrackbed)
         invisible(gc())
@@ -513,6 +513,10 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         if (verbose) message("Reading the black list")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+        colnames(blacklistbed) <- c("chrom", "start", "end", "type")
+        blacklisttib <- tibble::as_tibble(blacklistbed)
+        rm(blacklistbed)
+        invisible(gc())
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
