@@ -25,7 +25,9 @@ genomename <- "hg38"
 # nbcputrans <- 1
 
 
-source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap.R")
+#source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap-v2.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap-utils.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-makewindows.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-retrieveanno.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-createtablescores.R")
