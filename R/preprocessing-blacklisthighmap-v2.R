@@ -124,7 +124,8 @@
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
             currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
-            nbcputrans, saveobjectpath, verbose, showtime, reload) {
+            chromlength, nbcputrans, saveobjectpath, verbose, showtime,
+            reload) {
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -137,7 +138,7 @@
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
                 currentname)
-            valtib <- .retrievebgval(currentpath, verbose)
+            valtib <- .retrievebgval(currentpath, chromlength, verbose)
 
             ## Keeping information on the correct strand
             if (verbose) message("\t\t Retrieving information on strand ",
@@ -201,8 +202,8 @@
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, nbcputrans, saveobjectpath,
-        verbose, showtime, reload), SIMPLIFY = FALSE)
+        blacklisttib, maptracktib, windsize, chromlength, nbcputrans,
+        saveobjectpath, verbose, showtime, reload), SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
 }
