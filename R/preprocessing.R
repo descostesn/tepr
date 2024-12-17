@@ -30,16 +30,16 @@
         return(allwindowsbed)
 }
 
-.createbedgraphlistwmean <- function(maptrackpath, blacklistshpath,
-    exptabpath, nbcputrans, allwindowsbed, windsize, showtime, saveobjectpath,
+.createbedgraphlistwmean <- function(maptrackpath, blacklistshpath, exptabpath,
+    nbcputrans, allwindowsbed, windsize, genomename, showtime, saveobjectpath,
     reload, tmpfold, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
-        blacklisthighmap(maptrackpath, blacklistshpath,
-                exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
-                tmpfold, reload, showtime, verbose)
+        blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+            nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
+            tmpfold, reload, showtime, verbose)
 }
 
 # !!!!!!
