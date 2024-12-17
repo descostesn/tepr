@@ -124,9 +124,10 @@
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, currentcond, currentrep, allwindchromtib,
-            blacklisttib, maptracktib, windsize, currentchrom, chromlength,
-            nbcputrans, saveobjectpath, verbose, showtime, reload) {
+            currentstrand, currentcond, currentrep, currentdirection,
+            allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
+            chromlength, nbcputrans, saveobjectpath, verbose, showtime,
+            reload) {
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -215,7 +216,14 @@
             idxcolscore <- grep("_score", colnames(res))
             colnames(res)[idxcolscore] <- paste0(currentcond, "_rep",
                 currentrep, ".", currentstrand)
-    
+    !!!!!!!!!!!!!!
+            ## Creating experiment columns
+            paste0(currentcond, "_rep", currentrep, ".",
+            x["direction"]))}, simplify = FALSE))
+    dfexpnameslist <- lapply(directionexpstr, rep, nrow(df))
+    dfexpnames <- do.call("cbind", dfexpnameslist)
+    colnames(dfexpnames) <- expcolnames
+
 
 !!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
@@ -226,9 +234,10 @@
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, exptab$condition,
-            exptab$replicate, MoreArgs = list(allwindchromtib, blacklisttib,
-            maptracktib, windsize, currentchrom, chromlength, nbcputrans,
-            saveobjectpath, verbose, showtime, reload), SIMPLIFY = FALSE)
+            exptab$replicate, exptab$direction, MoreArgs = list(allwindchromtib,
+            blacklisttib, maptracktib, windsize, currentchrom, chromlength,
+            nbcputrans, saveobjectpath, verbose, showtime, reload),
+            SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
 }
