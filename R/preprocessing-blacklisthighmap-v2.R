@@ -66,10 +66,11 @@
 }
 
 .meanblackhighbytrans <- function(bgscorebytrans, windsize, currentname,
-    blacklisttib, maptracktib, saveobjectpath, nbcputrans, reload, verbose) {
+    currentchrom, blacklisttib, maptracktib, saveobjectpath, nbcputrans,
+    reload, verbose) {
 
         currentobj <- file.path(saveobjectpath, paste0(currentname,
-            "-translist.rds"))
+            "-", currentchrom, "-translist.rds"))
         if (!reload || !file.exists(currentobj)) {
             bytranslist <- parallel::mclapply(bgscorebytrans,
                 function(currenttrans, windsize, currentname, blacklisttib,
@@ -174,8 +175,8 @@
                 "mappability to NA. It takes a while.")
              if (showtime) start_time_bytranslist <- Sys.time()
              bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
-                currentname, blacklisttib, maptracktib, saveobjectpath,
-                nbcputrans, reload, verbose)
+                currentname, currentchrom, blacklisttib, maptracktib,
+                saveobjectpath, nbcputrans, reload, verbose)
             if (showtime) {
                 end_time_bytranslist <- Sys.time()
                 timing <- end_time_bytranslist - start_time_bytranslist
