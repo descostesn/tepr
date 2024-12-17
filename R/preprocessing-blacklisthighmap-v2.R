@@ -267,10 +267,11 @@
                     idxchrom <- which(allwindtib$chrom == currentchrom)
                     allwindchromtib <- allwindtib[idxchrom, ]
 
-                    bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
-                        blacklisttib, maptrackbed, nbcputrans, allwindchromtib,
-                        expnamevec, windsize, currentchrom, chromlength,
-                        saveobjectpath, showtime, reload, tmpfold, verbose)
+                    .retrieveandfilterfrombg(exptab, blacklisttib, maptrackbed,
+                        nbcputrans, allwindchromtib, expnamevec, windsize,
+                        currentchrom, chromlength, saveobjectpath, showtime,
+                        reload, tmpfold, verbose)
+
                     if (showtime) {
                         end_time_bglistwmean <- Sys.time()
                         timing <- end_time_bglistwmean - start_time_bglistwmean
