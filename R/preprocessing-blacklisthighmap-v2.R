@@ -117,13 +117,13 @@
 }
 
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
-    nbcputrans, allwintib, expnamevec, windsize, currentchrom, chromlength,
-    saveobjectpath, showtime, reload, verbose) {
+    nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
+    chromlength, saveobjectpath, showtime, reload, verbose) {
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, allwindtib, blacklisttib, maptracktib, windsize,
+            currentstrand, allwindchromtib, blacklisttib, maptracktib, windsize,
             currentchrom, chromlength, nbcputrans, saveobjectpath, verbose,
             showtime, reload) {
 
@@ -148,7 +148,7 @@
                 retrievedstrand <- "+"
             else
                 retrievedstrand <- "-"
-            allwindstrand <- allwindtib %>%
+            allwindstrand <- allwindchromtib %>%
                 dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
             ## Retrieving scores on annotations of strand
@@ -163,7 +163,7 @@
             bgscorebytrans <- split(annoscores, trsfact)
 
             if (verbose) message("\t\t Deleting objects and free memory")
-            rm(trsfact, valtib, allwindstrand, annoscores)
+            rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
             invisible(gc())
 
              ## For each transcript compute the weighted means for each window.
@@ -202,10 +202,10 @@
 
             return(res)
 
-        }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(allwindtib,
-        blacklisttib, maptracktib, windsize, currentchrom, chromlength,
-        nbcputrans, saveobjectpath, verbose, showtime, reload),
-        SIMPLIFY = FALSE)
+        }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(
+            allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
+            chromlength, nbcputrans, saveobjectpath, verbose, showtime, reload),
+            SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
 }
@@ -236,11 +236,12 @@
                         verbose)
 
                     ## Filtering allwindtib on the current chromosome
+                    if (verbose) message("Selecting windows on ", currentchrom)
                     idxchrom <- which(allwindtib$chrom == currentchrom)
                     allwindchromtib <- allwindtib[idxchrom, ]
 
                     bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
-                        blacklisttib, maptrackbed, nbcputrans, allwintib,
+                        blacklisttib, maptrackbed, nbcputrans, allwindchromtib,
                         expnamevec, windsize, currentchrom, chromlength,
                         saveobjectpath, showtime, reload, verbose)
                     if (showtime) {
