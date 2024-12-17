@@ -61,7 +61,7 @@
     return(currenttrans)
 }
 
-.retrievemaptrackbed <- function(maptrackpath, showtime, currentchrom,
+.retrievemaptrack <- function(maptrackpath, showtime, currentchrom,
     chromlength, saveobjectpath, reload, verbose) {
 
         if (showtime) start_time_maptrackreading <- Sys.time()

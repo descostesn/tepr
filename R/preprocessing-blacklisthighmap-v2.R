@@ -258,7 +258,7 @@
                     if (verbose) message("\t # Processing ", currentchrom)
                     ## Reading the maptrack on a specific chromosomes
                     chromlength <- .retrievechromlength(chromtab, currentchrom)
-                    maptracktib <- .retrievemaptrackbed(maptrackpath, showtime,
+                    maptracktib <- .retrievemaptrack(maptrackpath, showtime,
                         currentchrom, chromlength, saveobjectpath, reload,
                         verbose)
 
