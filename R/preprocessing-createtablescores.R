@@ -192,4 +192,6 @@ createtablescores <- function(tmpfold, verbose) {
 
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
+    
+    !!start join command
 }
