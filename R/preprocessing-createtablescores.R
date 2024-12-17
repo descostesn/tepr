@@ -21,13 +21,13 @@
     # colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
 
     if (verbose) message("\t\t Renaming score columns")
-    idxcolscores <- grep("_score", colnames(df))
-    expcolnames <- unlist(apply(exptab, 1, function(x) {
-        return(paste0(x["condition"], "_rep", x["replicate"], ".",
-            x["strand"]))
-    }, simplify = FALSE))
-    newscorenames <- paste(expcolnames, "score", sep = "_")
-    colnames(df)[idxcolscores] <- newscorenames
+    # idxcolscores <- grep("_score", colnames(df))
+    # expcolnames <- unlist(apply(exptab, 1, function(x) {
+    #     return(paste0(x["condition"], "_rep", x["replicate"], ".",
+    #         x["strand"]))
+    # }, simplify = FALSE))
+    # newscorenames <- paste(expcolnames, "score", sep = "_")
+    # colnames(df)[idxcolscores] <- newscorenames
 
     if (verbose) message("\t\t Creating experiment columns")
     ## The format of the experiment column is title "HS_rep1.plus", content "HS_rep1.forward" # nolint
