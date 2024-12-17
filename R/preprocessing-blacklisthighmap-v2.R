@@ -239,7 +239,7 @@
                         if (showtime) {
                             end_bglistwmean <- Sys.time()
                             timing <- end_bglistwmean - start_bglistwmean
-                            message("\t\t ## Built bedgraphlistwmean in: ",
+                            message("\t\t ## Built ", currentchrom," in: ",
                                 timing)
                         }
                     } else {
