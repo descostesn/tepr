@@ -182,7 +182,7 @@ createtablescores <- function(tmpfold, verbose) {
 
     if(verbose) message("\t Merging files by experiment and direction")
     !! check if the direction is differentiated
-    destfilelist <- mapply(function(currentfiles, currentname, tmpfold,
+    rowidreslist <- mapply(function(currentfiles, currentname, tmpfold,
         verbose) {
             destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
             if (verbose) message("\t\t Combining all ", currentname,
