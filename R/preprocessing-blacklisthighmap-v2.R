@@ -174,11 +174,9 @@
                 if (verbose) message("\t\t Splitting the scores by transcript")
                 trsfact <- factor(annoscores$transcript.window)
                 bgscorebytrans <- split(annoscores, trsfact)
-
-                rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
+                rm(trsfact, annoscores)
                 invisible(gc())
-                
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
                 ## For each transcript compute the weighted means for each
                 ## window. The weight is calculated if a window contains more
                 ## than one score
