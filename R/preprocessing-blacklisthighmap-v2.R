@@ -211,8 +211,6 @@
                 res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
                 ## Retrieving score column position
                 idxcolscore <- grep("_score", colnames(res))
-                expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
-                    currentstrand)
                 ## Creating experiment columns
                 expcol <- paste0(currentcond, "_rep", currentrep, ".",
                     currentdirection)
