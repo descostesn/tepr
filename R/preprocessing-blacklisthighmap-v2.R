@@ -235,6 +235,10 @@
                         currentchrom, chromlength, saveobjectpath, reload,
                         verbose)
 
+                    ## Filtering allwindtib on the current chromosome
+                    idxchrom <- which(allwindtib$chrom == currentchrom)
+                    allwindchromtib <- allwindtib[idxchrom, ]
+
                     bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
                         blacklisttib, maptrackbed, nbcputrans, allwintib,
                         expnamevec, windsize, currentchrom, chromlength,
