@@ -187,7 +187,7 @@
                 write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
             } else {
-                if (verbose) message("The file ", filename,
+                if (verbose) message("\t\t The file ", filename,
                     " was already computed. Skipping.")
             }
 
@@ -224,7 +224,8 @@
                         verbose)
 
                     ## Filtering allwindtib on the current chromosome
-                    if (verbose) message("Selecting windows on ", currentchrom)
+                    if (verbose) message("\t\t Selecting windows on ",
+                        currentchrom)
                     idxchrom <- which(allwindtib$chrom == currentchrom)
 
                     if (!isTRUE(all.equal(length(idxchrom), 0))) {

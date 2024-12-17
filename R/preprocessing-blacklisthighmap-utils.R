@@ -93,13 +93,13 @@
             invisible(gc())
 
             if (!is.na(saveobjectpath)) {
-                if (verbose) message("Saving mappability track to ",
+                if (verbose) message("\t\t Saving mappability track to ",
                     maptrackbedobjfile)
                 saveRDS(maptracktib, maptrackbedobjfile)
             }
         } else {
-            if (verbose) message("Loading mappability track from existing rds ",
-                    "object")
+            if (verbose) message("\t\t Loading mappability track from ",
+                    "existing rds object")
             maptracktib <- readRDS(maptrackbedobjfile)
         }
 
