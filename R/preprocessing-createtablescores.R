@@ -194,4 +194,5 @@ createtablescores <- function(tmpfold, verbose) {
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
     
     !!start join command
+    !! sort properly the final table
 }
