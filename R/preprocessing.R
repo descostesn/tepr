@@ -39,7 +39,7 @@
             "mappability intervals ##\n")
         blacklisthighmap(maptrackpath, blacklistshpath,
                 exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
-                reload, showtime, verbose)
+                tmpfold, reload, showtime, verbose)
 }
 
 #' Preprocess Genomic Data
