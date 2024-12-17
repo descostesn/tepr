@@ -245,7 +245,7 @@
 }
 
 
-!! DOC TO DO
+# !! DOC TO DO
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
@@ -288,6 +288,4 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             timing <- end_time_fun - start_time_fun
             message("\t\t ## All bedgraphs processed in: ", timing) # nolint
         }
-
-!!        return(bedgraphlistwmean)
 }
