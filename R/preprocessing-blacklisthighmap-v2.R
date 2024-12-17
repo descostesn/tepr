@@ -237,7 +237,7 @@
             SIMPLIFY = FALSE))
 }
 
-.loadbgprocessing <- function(exptab, blacklisttib, maptrackpath, allwintib,
+.loadbgprocessing <- function(exptab, blacklisttib, maptrackpath, allwindtib,
         windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
         tmpfold, verbose) {
 
@@ -251,7 +251,7 @@
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
                 function(currentchrom, chromtab, maptrackpath, showtime,
                 saveobjectpath, reload, verbose, exptab, blacklisttib,
-                nbcputrans, allwintib, expnamevec, windsize) {
+                nbcputrans, allwindtib, expnamevec, windsize) {
 
                     if (showtime) start_time_bglistwmean <- Sys.time()
 
@@ -279,7 +279,7 @@
                     }
 
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
-                    verbose, exptab, blacklisttib, nbcputrans, allwintib,
+                    verbose, exptab, blacklisttib, nbcputrans, allwindtib,
                     expnamevec, windsize))
 }
 
@@ -322,14 +322,11 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
             tmpfold, verbose)
 
-        !!
-        !! delete tmp fold
-
         if (showtime) {
             end_time_fun <- Sys.time()
             timing <- end_time_fun - start_time_fun
             message("\t\t ## All bedgraphs processed in: ", timing) # nolint
         }
 
-        return(bedgraphlistwmean)
+!!        return(bedgraphlistwmean)
 }
