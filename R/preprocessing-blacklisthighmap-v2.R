@@ -237,7 +237,7 @@
             SIMPLIFY = FALSE))
 }
 
-.loadbgprocessing <- function(exptab, blacklisttib, maptrackbed, allwintib,
+.loadbgprocessing <- function(exptab, blacklisttib, maptrackpath, allwintib,
         windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
         tmpfold, verbose) {
 
@@ -318,7 +318,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
-        .loadbgprocessing(exptab, blacklisttib, maptrackbed, allwintib,
+        .loadbgprocessing(exptab, blacklisttib, maptrackpath, allwintib,
             windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
             tmpfold, verbose)
 
