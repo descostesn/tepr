@@ -60,8 +60,6 @@
             idxtosetna <- which(is.na(idxmap)) ## NOT overlapping high map
             currenttrans[idxtosetna, idxscore] <- NA
         }
-        # rm(resblack, resmap, strtransvec, strblack, strmap)
-        # invisible(gc())
         return(currenttrans)
 }
 
@@ -91,8 +89,6 @@
                             currentname)
                         currenttrans <- res[[1]]
                         idxscore <- res[[2]]
-                        # rm(res)
-                        # invisible(gc())
 
                         ## Set scores overlapping black list and low map to NA
                         idxchrom <- which(maptracktib$chrom == unique(
