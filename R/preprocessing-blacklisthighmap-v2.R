@@ -123,11 +123,14 @@
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
-        bedgraphlistwmean <- mapply(function(currentpath, currentname,
+        invisible(mapply(function(currentpath, currentname,
             currentstrand, currentcond, currentrep, currentdirection,
             allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
             chromlength, nbcputrans, saveobjectpath, verbose, showtime,
             reload, tmpfold) {
+
+            filename <- file.path(tmpfold, paste0(currentname, "-",
+                currentchrom, ".tsv"))
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -137,111 +140,110 @@
                 invisible(gc())
             }
 
-            ## Retrieving bedgraph values
-            if (verbose) message("\n\t\t Retrieving begraph values for ",
-                currentname, " on ", currentchrom)
-            valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
-                verbose)
+            if (!reload || !file.exists(filename)) {
+                ## Retrieving bedgraph values
+                if (verbose) message("\n\t\t Retrieving begraph values for ",
+                    currentname, " on ", currentchrom)
+                valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
+                    verbose)
 
-            ## Keeping information on the correct strand
-            if (verbose) message("\t\t Retrieving information on strand ",
-                currentstrand)
-            if (isTRUE(all.equal(currentstrand, "plus")))
-                retrievedstrand <- "+"
-            else
-                retrievedstrand <- "-"
-            allwindstrand <- allwindchromtib %>%
-                dplyr::filter(strand == as.character(retrievedstrand)) # nolint
+                ## Keeping information on the correct strand
+                if (verbose) message("\t\t Retrieving information on strand ",
+                    currentstrand)
+                if (isTRUE(all.equal(currentstrand, "plus")))
+                    retrievedstrand <- "+"
+                else
+                    retrievedstrand <- "-"
+                allwindstrand <- allwindchromtib %>%
+                    dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
-            ## Retrieving scores on annotations of strand
-            if (verbose) message("\t\t Retrieving scores on annotations of ",
-                "strand")
-            suppressWarnings(annoscores <- valr::bed_intersect(valtib,
-                allwindstrand, suffix = c("", ".window")))
+                ## Retrieving scores on annotations of strand
+                if (verbose) message("\t\t Retrieving scores on annotations of ",
+                    "strand")
+                suppressWarnings(annoscores <- valr::bed_intersect(valtib,
+                    allwindstrand, suffix = c("", ".window")))
 
-            ## Splitting the scores by transcript
-            if (verbose) message("\t\t Splitting the scores by transcript")
-            trsfact <- factor(annoscores$transcript.window)
-            bgscorebytrans <- split(annoscores, trsfact)
+                ## Splitting the scores by transcript
+                if (verbose) message("\t\t Splitting the scores by transcript")
+                trsfact <- factor(annoscores$transcript.window)
+                bgscorebytrans <- split(annoscores, trsfact)
 
-            if (verbose) message("\t\t Deleting objects and free memory")
-            rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
-            invisible(gc())
+                if (verbose) message("\t\t Deleting objects and free memory")
+                rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
+                invisible(gc())
 
-             ## For each transcript compute the weighted means for each window.
-             ## The weight is calculated if a window contains more than one
-             ## score
-             if (verbose) message("\t\t For each transcript compute the ",
-                "weighted means and set scores overlapping black list and low ",
-                "mappability to NA. It takes a while.")
-             if (showtime) start_time_bytranslist <- Sys.time()
-             bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
-                currentname, currentchrom, blacklisttib, maptracktib,
-                saveobjectpath, nbcputrans, reload, verbose)
-            if (showtime) {
-                end_time_bytranslist <- Sys.time()
-                timing <- end_time_bytranslist - start_time_bytranslist
-                message("\t\t\t ## Features excluded in: ", timing) # nolint
+                ## For each transcript compute the weighted means for each window.
+                ## The weight is calculated if a window contains more than one
+                ## score
+                if (verbose) message("\t\t For each transcript compute the ",
+                    "weighted means and set scores overlapping black list and low ",
+                    "mappability to NA. It takes a while.")
+                if (showtime) start_time_bytranslist <- Sys.time()
+                bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
+                    currentname, currentchrom, blacklisttib, maptracktib,
+                    saveobjectpath, nbcputrans, reload, verbose)
+                if (showtime) {
+                    end_time_bytranslist <- Sys.time()
+                    timing <- end_time_bytranslist - start_time_bytranslist
+                    message("\t\t\t ## Features excluded in: ", timing) # nolint
+                }
+
+                if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)), windsize)))
+                    stop("All elements of the list should contain ", windsize,
+                        " rows. This should not happen. Contact the developer.")
+
+                ## Combining transcripts in one table
+                if (verbose) message("\t\t Combining transcripts in one table")
+                res <- do.call("rbind", bytranslist)
+
+                if (verbose) message("\t\t Deleting objects and free memory")
+                rm(bgscorebytrans, bytranslist)
+                invisible(gc())
+
+                ##
+                ## Formatting columns and adding rowid column
+                ##
+                if (verbose) message("\t\t Formatting and adding rowid column")
+                ## Create rowid string
+                rowidvec <- paste(res$transcript, res$gene, res$strand, res$window,
+                    sep = "_")
+                ## Inserting rowid col after window
+                res <- res %>% tibble::add_column(rowid = rowidvec,
+                    .after = "window")
+                ## Move biotype col before chrom col
+                res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
+                ## Renaming information columns
+                #idxtorename <- match(c("chrom", "start", "end", "rowid"),
+                #    colnames(res))
+                #colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
+                ## Renaming score columns
+                idxcolscore <- grep("_score", colnames(res))
+                expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
+                    currentstrand)
+                #colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
+                ## Creating experiment columns
+                expcol <- paste0(currentcond, "_rep", currentrep, ".",
+                    currentdirection)
+                expcolvec <- rep(expcol, nrow(res))
+                tmpres <- cbind(res[, -idxcolscore], expcolvec)
+                res <- cbind(tmpres, res[, idxcolscore])
+                res <- tibble::as_tibble(res)
+                #colnames(res)[ncol(res)-1] <- expnamecol
+
+                ## Saving table to temporary folder 
+                if (verbose) message("\t\t Saving table to ", filename)
+                write.table(res, file = filename, sep = "\t", quote = FALSE,
+                    col.names = FALSE, row.names = FALSE)
+            } else {
+                if (verbose) message("The file ", filename,
+                    " was already computed. Skipping.")
             }
-
-            if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)), windsize)))
-                stop("All elements of the list should contain ", windsize,
-                    " rows. This should not happen. Contact the developer.")
-
-            ## Combining transcripts in one table
-            if (verbose) message("\t\t Combining transcripts in one table")
-            res <- do.call("rbind", bytranslist)
-
-            if (verbose) message("\t\t Deleting objects and free memory")
-            rm(bgscorebytrans, bytranslist)
-            invisible(gc())
-
-            ##
-            ## Formatting columns and adding rowid column
-            ##
-            if (verbose) message("\t\t Formatting and adding rowid column")
-            ## Create rowid string
-            rowidvec <- paste(res$transcript, res$gene, res$strand, res$window,
-                sep = "_")
-            ## Inserting rowid col after window
-            res <- res %>% tibble::add_column(rowid = rowidvec,
-                .after = "window")
-            ## Move biotype col before chrom col
-            res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
-            ## Renaming information columns
-            #idxtorename <- match(c("chrom", "start", "end", "rowid"),
-            #    colnames(res))
-            #colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
-            ## Renaming score columns
-            idxcolscore <- grep("_score", colnames(res))
-            expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
-                currentstrand)
-            #colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
-            ## Creating experiment columns
-            expcol <- paste0(currentcond, "_rep", currentrep, ".",
-                currentdirection)
-            expcolvec <- rep(expcol, nrow(res))
-            tmpres <- cbind(res[, -idxcolscore], expcolvec)
-            res <- cbind(tmpres, res[, idxcolscore])
-            res <- tibble::as_tibble(res)
-            #colnames(res)[ncol(res)-1] <- expnamecol
-
-            ## Saving table to temporary folder
-            filename <- file.path(tmpfold, paste0(currentname, "-",
-                currentchrom, ".tsv")) 
-            if (verbose) message("\t\t Saving table to ", filename)
-            write.tabe(res, file = filname, sep = "\t", quote = FALSE,
-                col.names = FALSE, row.names = FALSE)
-
-            return(res)
 
         }, exptab$path, expnamevec, exptab$strand, exptab$condition,
             exptab$replicate, exptab$direction, MoreArgs = list(allwindchromtib,
             blacklisttib, maptracktib, windsize, currentchrom, chromlength,
             nbcputrans, saveobjectpath, verbose, showtime, reload, tmpfold),
-            SIMPLIFY = FALSE)
-
-        return(bedgraphlistwmean)
+            SIMPLIFY = FALSE))
 }
 
 .loadbgprocessing <- function(exptab, blacklisttib, maptrackbed, allwintib,
