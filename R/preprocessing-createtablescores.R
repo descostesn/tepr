@@ -1,24 +1,24 @@
-.createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
+# .createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
 
-        rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
-            ## Create rowid string
-            rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
-                sep = "_")
-            ## Inserting rowid col after window
-            tab <- tab %>% tibble::add_column(rowid = rowidvec,
-                .after = "window")
-            return(tab)
-        }, mc.cores = nbcpubg)
+#         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
+#             ## Create rowid string
+#             rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
+#                 sep = "_")
+#             ## Inserting rowid col after window
+#             tab <- tab %>% tibble::add_column(rowid = rowidvec,
+#                 .after = "window")
+#             return(tab)
+#         }, mc.cores = nbcpubg)
 
-    return(rowidreslist)
-}
+#     return(rowidreslist)
+# }
 
 .orderingtable <- function(df, exptab, verbose) { # nolint
 
-    if (verbose) message("\t\t Sorting and renaming information columns")
-    df <- df %>% dplyr::relocate(biotype, .before = chrom) # nolint
-    idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
-    colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
+    # if (verbose) message("\t\t Sorting and renaming information columns")
+    # df <- df %>% dplyr::relocate(biotype, .before = chrom) # nolint
+    # idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
+    # colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
 
     if (verbose) message("\t\t Renaming score columns")
     idxcolscores <- grep("_score", colnames(df))
