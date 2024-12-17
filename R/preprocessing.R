@@ -104,5 +104,5 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
             message("\n\n\t ## Total preprocessing in: ", timing) # nolint
     }
 
-    return(finaltable)
+    #return(finaltable)
 }
