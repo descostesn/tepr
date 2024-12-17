@@ -243,7 +243,7 @@
 
 .loadbgprocessing <- function(exptab, blacklisttib, maptrackbed, allwintib,
         windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
-        verbose) {
+        tmpfold, verbose) {
 
             if (verbose) message("Removing scores within black list intervals,",
             " keeping those on high mappability regions, and computing ",
@@ -411,7 +411,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         ## mappability regions, and computing weighted means.
         bedgraphlistwmean <- .loadbgprocessing(exptab, blacklisttib,
             maptrackbed, allwintib, windsize, chromtab, nbcputrans,
-            showtime, saveobjectpath, reload, verbose)
+            showtime, saveobjectpath, reload, tmpfold, verbose)
 
         !!
         !! delete tmp fold
