@@ -217,7 +217,6 @@
             expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
                 currentstrand)
             colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
-    !!!!!!!!!!!!!!
             ## Creating experiment columns
             expcol <- paste0(currentcond, "_rep", currentrep, ".",
                 currentdirection)
@@ -226,17 +225,10 @@
             res <- cbind(tmpres, res[, idxcolscore])
             res <- tibble::as_tibble(res)
             colnames(res)[ncol(res)-1] <- expnamecol
-            
 
-    
-    
-
-
-!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
-!!!!!!!!!!!!!!!!!
-
-            !!!!!!!!! SAVE FILE IN TSV FOR chromosome here
+            ## Saving table to temporary folder
+            !!!!!!!!! SAVE FILE IN TSV FOR chromosome here: create tmpfold and filename
+            if (verbose) message("\t\t Saving table to ", !!)
 
             return(res)
 
