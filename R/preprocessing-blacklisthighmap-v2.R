@@ -122,7 +122,7 @@
     chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
 
         ## Looping on each experiment bg file
-        if (verbose) message("\t\t For each bedgraph file")
+        if (verbose) message("\t\t For each bedgraph file") # nolint
         invisible(mapply(function(currentpath, currentname,
             currentstrand, currentcond, currentrep, currentdirection,
             allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
@@ -135,20 +135,20 @@
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
             if (exists("res")) {
-                if (verbose) message("\t\t Deleting objects and free memory")
+                if (verbose) message("\t\t Deleting objects and free memory") # nolint
                 rm(res)
                 invisible(gc())
             }
 
             if (!reload || !file.exists(filename)) {
                 ## Retrieving bedgraph values
-                if (verbose) message("\n\t\t Retrieving begraph values for ",
-                    currentname, " on ", currentchrom)
+                if (verbose) message("\n\t\t Retrieving begraph values for ", # nolint
+                    currentname, " on ", currentchrom) # nolint
                 valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
                     verbose)
 
                 ## Keeping information on the correct strand
-                if (verbose) message("\t\t Retrieving information on strand ",
+                if (verbose) message("\t\t Retrieving information on strand ", # nolint
                     currentstrand)
                 if (isTRUE(all.equal(currentstrand, "plus")))
                     retrievedstrand <- "+"
@@ -158,8 +158,8 @@
                     dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
                 ## Retrieving scores on annotations of strand
-                if (verbose) message("\t\t Retrieving scores on annotations of ",
-                    "strand")
+                if (verbose) message("\t\t Retrieving scores on annotations ",
+                    "of strand")
                 suppressWarnings(annoscores <- valr::bed_intersect(valtib,
                     allwindstrand, suffix = c("", ".window")))
 
@@ -172,12 +172,12 @@
                 rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
                 invisible(gc())
 
-                ## For each transcript compute the weighted means for each window.
-                ## The weight is calculated if a window contains more than one
-                ## score
+                ## For each transcript compute the weighted means for each
+                ## window. The weight is calculated if a window contains more
+                ## than one score
                 if (verbose) message("\t\t For each transcript compute the ",
-                    "weighted means and set scores overlapping black list and low ",
-                    "mappability to NA. It takes a while.")
+                    "weighted means and set scores overlapping black list and ",
+                    "low mappability to NA. It takes a while.")
                 if (showtime) start_time_bytranslist <- Sys.time()
                 bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                     currentname, currentchrom, blacklisttib, maptracktib,
@@ -188,7 +188,8 @@
                     message("\t\t\t ## Features excluded in: ", timing) # nolint
                 }
 
-                if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)), windsize)))
+                if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
+                    windsize)))
                     stop("All elements of the list should contain ", windsize,
                         " rows. This should not happen. Contact the developer.")
 
@@ -205,8 +206,8 @@
                 ##
                 if (verbose) message("\t\t Formatting and adding rowid column")
                 ## Create rowid string
-                rowidvec <- paste(res$transcript, res$gene, res$strand, res$window,
-                    sep = "_")
+                rowidvec <- paste(res$transcript, res$gene, res$strand,
+                    res$window, sep = "_")
                 ## Inserting rowid col after window
                 res <- res %>% tibble::add_column(rowid = rowidvec,
                     .after = "window")
