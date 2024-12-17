@@ -209,9 +209,9 @@
             ## Move biotype col before chrom col
             res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
             ## Renaming information columns
-            idxtorename <- match(c("chrom", "start", "end", "rowid"),
-                colnames(res))
-            colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
+            #idxtorename <- match(c("chrom", "start", "end", "rowid"),
+            #    colnames(res))
+            #colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
             ## Renaming score columns
             idxcolscore <- grep("_score", colnames(res))
             expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
