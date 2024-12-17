@@ -214,15 +214,22 @@
             colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
             ## Renaming score columns
             idxcolscore <- grep("_score", colnames(res))
-            colnames(res)[idxcolscore] <- paste0(currentcond, "_rep",
-                currentrep, ".", currentstrand)
+            expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
+                currentstrand)
+            colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
     !!!!!!!!!!!!!!
             ## Creating experiment columns
-            paste0(currentcond, "_rep", currentrep, ".",
-            x["direction"]))}, simplify = FALSE))
-    dfexpnameslist <- lapply(directionexpstr, rep, nrow(df))
-    dfexpnames <- do.call("cbind", dfexpnameslist)
-    colnames(dfexpnames) <- expcolnames
+            expcol <- paste0(currentcond, "_rep", currentrep, ".",
+                currentdirection)
+            expcolvec <- rep(expcol, nrow(res))
+            tmpres <- cbind(res[, -idxcolscore], expcolvec)
+            res <- cbind(tmpres, res[, idxcolscore])
+            res <- tibble::as_tibble(res)
+            colnames(res)[ncol(res)-1] <- expnamecol
+            
+
+    
+    
 
 
 !!!!!!!!!!!!!!!!!
