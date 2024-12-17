@@ -42,10 +42,10 @@
     # df <- cbind(df, dfexpnames)
     # df <- tibble::as_tibble(df)
 
-    if (verbose) message("\t\t Placing exp name columns before corresponding",
-        " scores")
-    df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
-        .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
+    # if (verbose) message("\t\t Placing exp name columns before corresponding",
+    #     " scores")
+    # df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
+    #     .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
 
     return(df)
 }
