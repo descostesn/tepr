@@ -1,10 +1,10 @@
 .retrievebgval <- function(currentpath, currentchrom, chromlength, verbose) {
 
-    if (verbose) message("\t\t Reading ", currentpath)
+    if (verbose) message("\t\t\t Reading ", currentpath)
     whichchrom <- GenomicRanges::GRanges(paste0(currentchrom, ":1-",
         chromlength))
     valgr <- rtracklayer::import.bedGraph(currentpath, which = whichchrom)
-    if (verbose) message("\t\t Converting to tibble")
+    if (verbose) message("\t\t\t Converting to tibble")
     valdf <- as.data.frame(valgr)
     colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
     rm(valdf)
