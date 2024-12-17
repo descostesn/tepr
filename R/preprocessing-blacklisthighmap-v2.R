@@ -179,7 +179,7 @@
             if (showtime) {
                 end_time_bytranslist <- Sys.time()
                 timing <- end_time_bytranslist - start_time_bytranslist
-                message("\t\t ## Exp treated in: ", timing) # nolint
+                message("\t\t\t ## Features excluded in: ", timing) # nolint
             }
 
             if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)), windsize)))
