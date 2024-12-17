@@ -281,16 +281,6 @@
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
                     verbose, exptab, blacklisttib, nbcputrans, allwintib,
                     expnamevec, windsize))
-            
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if (!is.na(saveobjectpath)) {
-                if (verbose) message("Saving bedgraphlistwmean as an rds ",
-                    "object")
-                saveRDS(bedgraphlistwmean, file.path(saveobjectpath,
-                    "bedgraphlistwmean.rds"))
-            }
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            return(bedgraphlistwmean)
 }
 
 
