@@ -198,7 +198,7 @@
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
 !!!!!!!!!!!!!!!!!
 
-            !!!!!!!!! SAVE OBJECT FOR chromosome here
+            !!!!!!!!! SAVE FILE IN TSV FOR chromosome here
 
             return(res)
 
