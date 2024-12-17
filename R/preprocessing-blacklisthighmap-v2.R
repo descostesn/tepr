@@ -213,15 +213,10 @@
                     .after = "window")
                 ## Move biotype col before chrom col
                 res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
-                ## Renaming information columns
-                #idxtorename <- match(c("chrom", "start", "end", "rowid"),
-                #    colnames(res))
-                #colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
-                ## Renaming score columns
+                ## Retrieving score column position
                 idxcolscore <- grep("_score", colnames(res))
                 expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
                     currentstrand)
-                #colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
                 ## Creating experiment columns
                 expcol <- paste0(currentcond, "_rep", currentrep, ".",
                     currentdirection)
@@ -229,9 +224,8 @@
                 tmpres <- cbind(res[, -idxcolscore], expcolvec)
                 res <- cbind(tmpres, res[, idxcolscore])
                 res <- tibble::as_tibble(res)
-                #colnames(res)[ncol(res)-1] <- expnamecol
 
-                ## Saving table to temporary folder 
+                ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
                 write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
