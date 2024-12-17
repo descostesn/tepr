@@ -119,7 +119,7 @@
 
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
-    chromlength, saveobjectpath, showtime, reload, verbose) {
+    chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
@@ -127,7 +127,7 @@
             currentstrand, currentcond, currentrep, currentdirection,
             allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
             chromlength, nbcputrans, saveobjectpath, verbose, showtime,
-            reload) {
+            reload, tmpfold) {
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -227,15 +227,18 @@
             colnames(res)[ncol(res)-1] <- expnamecol
 
             ## Saving table to temporary folder
-            !!!!!!!!! SAVE FILE IN TSV FOR chromosome here: create tmpfold and filename
-            if (verbose) message("\t\t Saving table to ", !!)
+            filename <- file.path(tmpfold, paste0(currentname, "-",
+                currentchrom, ".tsv")) 
+            if (verbose) message("\t\t Saving table to ", filename)
+            write.tabe(res, file = filname, sep = "\t", quote = FALSE,
+                col.names = FALSE, row.names = FALSE)
 
             return(res)
 
         }, exptab$path, expnamevec, exptab$strand, exptab$condition,
             exptab$replicate, exptab$direction, MoreArgs = list(allwindchromtib,
             blacklisttib, maptracktib, windsize, currentchrom, chromlength,
-            nbcputrans, saveobjectpath, verbose, showtime, reload),
+            nbcputrans, saveobjectpath, verbose, showtime, reload, tmpfold),
             SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
@@ -274,7 +277,7 @@
                     bedgraphlistwmean <- .retrieveandfilterfrombg(exptab,
                         blacklisttib, maptrackbed, nbcputrans, allwindchromtib,
                         expnamevec, windsize, currentchrom, chromlength,
-                        saveobjectpath, showtime, reload, verbose)
+                        saveobjectpath, showtime, reload, tmpfold, verbose)
                     if (showtime) {
                         end_time_bglistwmean <- Sys.time()
                         timing <- end_time_bglistwmean - start_time_bglistwmean
