@@ -195,6 +195,24 @@
             rm(bgscorebytrans, bytranslist)
             invisible(gc())
 
+            ##
+            ## Formatting columns and adding rowid column
+            ##
+            if (verbose) message("\t\t Formatting and adding rowid column")
+            ## Create rowid string
+            rowidvec <- paste(res$transcript, res$gene, res$strand, res$window,
+                sep = "_")
+            ## Inserting rowid col after window
+            res <- res %>% tibble::add_column(rowid = rowidvec,
+                .after = "window")
+            ## Move biotype col before chrom col
+            res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
+            ## renaming information columns
+            idxtorename <- match(c("chrom", "start", "end", "rowid"),
+                colnames(res))
+            colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
+            
+
 !!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
 !!!!!!!!!!!!!!!!!
