@@ -21,6 +21,7 @@ reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
 genomename <- "hg38"
+tmpfold <- "./tmp"
 # nbcpubg <- 1
 # nbcputrans <- 1
 
