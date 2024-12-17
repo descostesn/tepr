@@ -178,8 +178,6 @@
                 ## Combining transcripts in one table
                 if (verbose) message("\t\t Combining transcripts in one table")
                 res <- do.call("rbind", bytranslist)
-
-                if (verbose) message("\t\t Deleting objects and free memory")
                 rm(bgscorebytrans, bytranslist)
                 invisible(gc())
 
