@@ -113,7 +113,7 @@
         return(bytranslist)
 }
 
-.retrieveandfilterfrombg <- function(exptab, blacklisttib, maptrackbed, # nolint
+.retrieveandfilterfrombg <- function(exptab, blacklisttib, maptracktib, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
     chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
 
