@@ -7,9 +7,9 @@
     if (verbose) message("\t\t\t Converting to tibble")
     valdf <- as.data.frame(valgr)
     colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
+    valtib <- tibble::as_tibble(valdf)
     rm(valdf)
     invisible(gc())
-    valtib <- tibble::as_tibble(valdf)
     return(valtib)
 }
 
