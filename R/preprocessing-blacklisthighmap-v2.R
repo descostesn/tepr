@@ -184,6 +184,8 @@
 
                 ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
+                idx <- order(res$rowid)
+                res <- res[idx, ]
                 write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
             } else {
