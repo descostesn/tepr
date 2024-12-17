@@ -267,7 +267,7 @@
                     idxchrom <- which(allwindtib$chrom == currentchrom)
                     allwindchromtib <- allwindtib[idxchrom, ]
 
-                    .retrieveandfilterfrombg(exptab, blacklisttib, maptrackbed,
+                    .retrieveandfilterfrombg(exptab, blacklisttib, maptracktib,
                         nbcputrans, allwindchromtib, expnamevec, windsize,
                         currentchrom, chromlength, saveobjectpath, showtime,
                         reload, tmpfold, verbose)
