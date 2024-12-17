@@ -180,7 +180,8 @@ createtablescores <- function(tmpfold, verbose) {
 
     explist <- split(filevec, factor(expnamevec))
 
-    if(verbose) message("\t Merging files by experiment")
+    if(verbose) message("\t Merging files by experiment and direction")
+    !! check if the direction is differentiated
     destfilelist <- mapply(function(currentfiles, currentname, tmpfold,
         verbose) {
             destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
@@ -189,10 +190,12 @@ createtablescores <- function(tmpfold, verbose) {
             cmd <- paste0("cat ", paste(currentfiles, collapse = " "), " > ",
                 destfile)
         #   !! TO UNCOMMENT system(cmd)
+        !! reading the merged table and returning it - see how much memory it takes
 
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
     
-    !!start join command
+     
+    !!start join command - full join is too difficult/long in bash. reuse the purrr::reduce(rowidreslist, dplyr::full_join,
     !! sort properly the final table
 }
