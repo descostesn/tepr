@@ -124,7 +124,10 @@
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, allwindchromtib, blacklisttib, maptracktib, windsize,
+            currentstrand, currentcond, currentrep
+            
+            
+            allwindchromtib, blacklisttib, maptracktib, windsize,
             currentchrom, chromlength, nbcputrans, saveobjectpath, verbose,
             showtime, reload) {
 
@@ -207,11 +210,13 @@
                 .after = "window")
             ## Move biotype col before chrom col
             res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
-            ## renaming information columns
+            ## Renaming information columns
             idxtorename <- match(c("chrom", "start", "end", "rowid"),
                 colnames(res))
             colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
-            
+            ## Renaming score columns
+            idxcolscores <- grep("_score", colnames(res))
+            !!
 
 !!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
@@ -221,10 +226,10 @@
 
             return(res)
 
-        }, exptab$path, expnamevec, exptab$strand, MoreArgs = list(
-            allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
-            chromlength, nbcputrans, saveobjectpath, verbose, showtime, reload),
-            SIMPLIFY = FALSE)
+        }, exptab$path, expnamevec, exptab$strand, exptab$condition,
+            exptab$replicate, MoreArgs = list(allwindchromtib, blacklisttib,
+            maptracktib, windsize, currentchrom, chromlength, nbcputrans,
+            saveobjectpath, verbose, showtime, reload), SIMPLIFY = FALSE)
 
         return(bedgraphlistwmean)
 }
