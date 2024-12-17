@@ -214,7 +214,7 @@
                 saveobjectpath, reload, verbose, exptab, blacklisttib,
                 nbcputrans, allwindtib, expnamevec, windsize, tmpfold) {
 
-                    if (showtime) start_time_bglistwmean <- Sys.time()
+                    if (showtime) start_bglistwmean <- Sys.time()
 
                     if (verbose) message("\t # Processing ", currentchrom)
                     ## Reading the maptrack on a specific chromosomes
@@ -226,17 +226,24 @@
                     ## Filtering allwindtib on the current chromosome
                     if (verbose) message("Selecting windows on ", currentchrom)
                     idxchrom <- which(allwindtib$chrom == currentchrom)
-                    allwindchromtib <- allwindtib[idxchrom, ]
 
-                    .retrieveandfilterfrombg(exptab, blacklisttib, maptracktib,
-                        nbcputrans, allwindchromtib, expnamevec, windsize,
-                        currentchrom, chromlength, saveobjectpath, showtime,
-                        reload, tmpfold, verbose)
+                    if (!isTRUE(all.equal(length(idxchrom), 0))) {
+                        allwindchromtib <- allwindtib[idxchrom, ]
 
-                    if (showtime) {
-                        end_time_bglistwmean <- Sys.time()
-                        timing <- end_time_bglistwmean - start_time_bglistwmean
-                        message("\t\t ## Built bedgraphlistwmean in: ", timing) # nolint
+                        .retrieveandfilterfrombg(exptab, blacklisttib,
+                            maptracktib, nbcputrans, allwindchromtib,
+                            expnamevec, windsize, currentchrom, chromlength,
+                            saveobjectpath, showtime, reload, tmpfold, verbose)
+
+                        if (showtime) {
+                            end_bglistwmean <- Sys.time()
+                            timing <- end_bglistwmean - start_bglistwmean
+                            message("\t\t ## Built bedgraphlistwmean in: ",
+                                timing)
+                        }
+                    } else {
+                        if (verbose) message("\t\t No transcript annotations ",
+                            " found on ", currentchrom, ". Skipping.")
                     }
 
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
