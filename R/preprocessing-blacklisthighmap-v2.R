@@ -379,9 +379,12 @@
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-    reload = FALSE, showtime = FALSE, verbose = TRUE) {
+    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
+
+        if (!file.exists(tmpfold))
+            dir.create(tmpfold, recursive = TRUE)
 
         ## Retrieving chromosome lengths
         chromtab <- .retrievechrom(genomename, verbose)
@@ -409,6 +412,9 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         bedgraphlistwmean <- .loadbgprocessing(exptab, blacklisttib,
             maptrackbed, allwintib, windsize, chromtab, nbcputrans,
             showtime, saveobjectpath, reload, verbose)
+
+        !!
+        !! delete tmp fold
 
         if (showtime) {
             end_time_fun <- Sys.time()
