@@ -124,12 +124,9 @@
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file")
         bedgraphlistwmean <- mapply(function(currentpath, currentname,
-            currentstrand, currentcond, currentrep
-            
-            
-            allwindchromtib, blacklisttib, maptracktib, windsize,
-            currentchrom, chromlength, nbcputrans, saveobjectpath, verbose,
-            showtime, reload) {
+            currentstrand, currentcond, currentrep, allwindchromtib,
+            blacklisttib, maptracktib, windsize, currentchrom, chromlength,
+            nbcputrans, saveobjectpath, verbose, showtime, reload) {
 
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
@@ -215,8 +212,10 @@
                 colnames(res))
             colnames(res)[idxtorename] <- c("chr", "coor1", "coor2", "id")
             ## Renaming score columns
-            idxcolscores <- grep("_score", colnames(res))
-            !!
+            idxcolscore <- grep("_score", colnames(res))
+            colnames(res)[idxcolscore] <- paste0(currentcond, "_rep",
+                currentrep, ".", currentstrand)
+    
 
 !!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!! FORMAT ROWID AND COLUMN NAMES INSTEAD OF IN createtablescores
