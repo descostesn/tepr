@@ -32,23 +32,14 @@
 
 .createbedgraphlistwmean <- function(maptrackpath, blacklistshpath,
     exptabpath, nbcputrans, allwindowsbed, windsize, showtime, saveobjectpath,
-    reload, verbose) {
+    reload, tmpfold, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
-        bedgraphlistwmeanobjpath <- file.path(saveobjectpath,
-            "bedgraphlistwmean.rds")
-
-        if (!reload || !file.exists(bedgraphlistwmeanobjpath)) {
-            bedgraphlistwmean <- blacklisthighmap(maptrackpath, blacklistshpath,
+        blacklisthighmap(maptrackpath, blacklistshpath,
                 exptabpath, nbcputrans, allwindowsbed, windsize, saveobjectpath,
                 reload, showtime, verbose)
-        } else {
-            if (verbose) message("Loading ", bedgraphlistwmeanobjpath)
-                bedgraphlistwmean <- readRDS(bedgraphlistwmeanobjpath)
-        }
-        return(bedgraphlistwmean)
 }
 
 #' Preprocess Genomic Data
@@ -131,8 +122,9 @@
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, nbcpubg = 1,
-    finaltabpath = "./", finaltabname = "anno.tsv", saveobjectpath = NA,
-    savefinaltable = TRUE, reload = FALSE, showtime = FALSE, verbose = TRUE) {
+    finaltabpath = "./", finaltabname = "anno.tsv", tmpfold = "./tmp",
+    saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
+    showtime = FALSE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
@@ -160,9 +152,9 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
-    bedgraphlistwmean <- .createbedgraphlistwmean(maptrackpath, blacklistshpath,
+    .createbedgraphlistwmean(maptrackpath, blacklistshpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime,
-        saveobjectpath, reload, verbose)
+        saveobjectpath, reload, tmpfold, verbose)
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
