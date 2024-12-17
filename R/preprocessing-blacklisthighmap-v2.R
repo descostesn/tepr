@@ -143,6 +143,8 @@
                 valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
                     verbose)
 
+                ## Retrieving scores on annotations of strand
+                !! create fun .retrieveannoscores
                 ## Keeping information on the correct strand
                 if (verbose) message("\t\t Retrieving information on strand ", # nolint
                     currentstrand)
