@@ -137,7 +137,7 @@
 
             ## Retrieving bedgraph values
             if (verbose) message("\n\t\t Retrieving begraph values for ",
-                currentname)
+                currentname, " on ", currentchrom)
             valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
                 verbose)
 
