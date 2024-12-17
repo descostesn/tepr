@@ -113,6 +113,38 @@
         return(bytranslist)
 }
 
+.rowidandcols <- function(bytranslist, currentcond, currentrep, # nolint
+    currentdirection, verbose) {
+
+    ## Combining transcripts in one table
+    if (verbose) message("\t\t Combining transcripts in one table")
+    res <- do.call("rbind", bytranslist)
+    rm(bytranslist)
+    invisible(gc())
+
+    if (verbose) message("\t\t Formatting and adding rowid column")
+    ## Create rowid string
+    rowidvec <- paste(res$transcript, res$gene, res$strand,
+        res$window, sep = "_")
+    ## Inserting rowid col after window
+    res <- res %>% tibble::add_column(rowid = rowidvec,
+        .after = "window")
+    ## Move biotype col before chrom col
+    res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
+    ## Retrieving score column position
+    idxcolscore <- grep("_score", colnames(res))
+    ## Creating experiment columns
+    expcol <- paste0(currentcond, "_rep", currentrep, ".",
+        currentdirection)
+    expcolvec <- rep(expcol, nrow(res))
+    tmpres <- cbind(res[, -idxcolscore], expcolvec)
+    res <- cbind(tmpres, res[, idxcolscore])
+    res <- tibble::as_tibble(res)
+    rm(tmpres)
+    invisible(gc())
+    return(res)
+}
+
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptracktib, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
     chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
@@ -161,9 +193,11 @@
                     "weighted means and set scores overlapping black list and ",
                     "low mappability to NA. It takes a while.")
                 if (showtime) start_time_bytranslist <- Sys.time()
+
                 bytranslist <- .meanblackhighbytrans(bgscorebytrans, windsize,
                     currentname, currentchrom, blacklisttib, maptracktib,
                     saveobjectpath, nbcputrans, reload, verbose)
+
                 if (showtime) {
                     end_time_bytranslist <- Sys.time()
                     timing <- end_time_bytranslist - start_time_bytranslist
@@ -174,34 +208,12 @@
                     windsize)))
                     stop("All elements of the list should contain ", windsize,
                         " rows. This should not happen. Contact the developer.")
-
-                ## Combining transcripts in one table
-                if (verbose) message("\t\t Combining transcripts in one table")
-                res <- do.call("rbind", bytranslist)
-                rm(bgscorebytrans, bytranslist)
+                rm(bgscorebytrans)
                 invisible(gc())
 
-                ##
                 ## Formatting columns and adding rowid column
-                ##
-                if (verbose) message("\t\t Formatting and adding rowid column")
-                ## Create rowid string
-                rowidvec <- paste(res$transcript, res$gene, res$strand,
-                    res$window, sep = "_")
-                ## Inserting rowid col after window
-                res <- res %>% tibble::add_column(rowid = rowidvec,
-                    .after = "window")
-                ## Move biotype col before chrom col
-                res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
-                ## Retrieving score column position
-                idxcolscore <- grep("_score", colnames(res))
-                ## Creating experiment columns
-                expcol <- paste0(currentcond, "_rep", currentrep, ".",
-                    currentdirection)
-                expcolvec <- rep(expcol, nrow(res))
-                tmpres <- cbind(res[, -idxcolscore], expcolvec)
-                res <- cbind(tmpres, res[, idxcolscore])
-                res <- tibble::as_tibble(res)
+                res <- .rowidandcols(bytranslist, currentcond, currentrep,
+                    currentdirection, verbose)
 
                 ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
