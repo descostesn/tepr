@@ -131,7 +131,6 @@
             ## Deleting res which is created at the end of the loop before
             ## creating the new one
             if (exists("res")) {
-                if (verbose) message("\t\t Deleting objects and free memory") # nolint
                 rm(res)
                 invisible(gc())
             }
