@@ -212,7 +212,7 @@
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
                 function(currentchrom, chromtab, maptrackpath, showtime,
                 saveobjectpath, reload, verbose, exptab, blacklisttib,
-                nbcputrans, allwindtib, expnamevec, windsize) {
+                nbcputrans, allwindtib, expnamevec, windsize, tmpfold) {
 
                     if (showtime) start_time_bglistwmean <- Sys.time()
 
@@ -241,7 +241,7 @@
 
                 }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
                     verbose, exptab, blacklisttib, nbcputrans, allwindtib,
-                    expnamevec, windsize))
+                    expnamevec, windsize, tmpfold))
 }
 
 
