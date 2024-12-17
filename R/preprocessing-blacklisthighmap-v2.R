@@ -113,29 +113,6 @@
         return(bytranslist)
 }
 
-.retrieveannoscores <- function(currentstrand, allwindchromtib, valtib, # nolint
-    verbose) {
-
-    ## Keeping information on the correct strand
-    if (verbose) message("\t\t Retrieving information on strand ", # nolint
-        currentstrand)
-    if (isTRUE(all.equal(currentstrand, "plus")))
-        retrievedstrand <- "+"
-    else
-        retrievedstrand <- "-"
-    allwindstrand <- allwindchromtib %>%
-        dplyr::filter(strand == as.character(retrievedstrand)) # nolint
-
-    ## Retrieving scores on annotations of strand
-    if (verbose) message("\t\t Retrieving scores on annotations of strand") # nolint
-    suppressWarnings(annoscores <- valr::bed_intersect(valtib,
-        allwindstrand, suffix = c("", ".window")))
-
-    rm(valtib, allwindchromtib, allwindstrand)
-    invisible(gc())
-    return(annoscores)
-}
-
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptracktib, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
     chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
