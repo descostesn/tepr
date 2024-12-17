@@ -113,6 +113,29 @@
         return(bytranslist)
 }
 
+.retrieveannoscores <- function(currentstrand, allwindchromtib, valtib, # nolint
+    verbose) {
+
+    ## Keeping information on the correct strand
+    if (verbose) message("\t\t Retrieving information on strand ", # nolint
+        currentstrand)
+    if (isTRUE(all.equal(currentstrand, "plus")))
+        retrievedstrand <- "+"
+    else
+        retrievedstrand <- "-"
+    allwindstrand <- allwindchromtib %>%
+        dplyr::filter(strand == as.character(retrievedstrand)) # nolint
+
+    ## Retrieving scores on annotations of strand
+    if (verbose) message("\t\t Retrieving scores on annotations of strand") # nolint
+    suppressWarnings(annoscores <- valr::bed_intersect(valtib,
+        allwindstrand, suffix = c("", ".window")))
+
+    rm(valtib, allwindchromtib, allwindstrand)
+    invisible(gc())
+    return(annoscores)
+}
+
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptracktib, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
     chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
@@ -144,32 +167,18 @@
                     verbose)
 
                 ## Retrieving scores on annotations of strand
-                !! create fun .retrieveannoscores
-                ## Keeping information on the correct strand
-                if (verbose) message("\t\t Retrieving information on strand ", # nolint
-                    currentstrand)
-                if (isTRUE(all.equal(currentstrand, "plus")))
-                    retrievedstrand <- "+"
-                else
-                    retrievedstrand <- "-"
-                allwindstrand <- allwindchromtib %>%
-                    dplyr::filter(strand == as.character(retrievedstrand)) # nolint
-
-                ## Retrieving scores on annotations of strand
-                if (verbose) message("\t\t Retrieving scores on annotations ",
-                    "of strand")
-                suppressWarnings(annoscores <- valr::bed_intersect(valtib,
-                    allwindstrand, suffix = c("", ".window")))
+                annoscores <- .retrieveannoscores(currentstrand,
+                    allwindchromtib, valtib, verbose)
 
                 ## Splitting the scores by transcript
                 if (verbose) message("\t\t Splitting the scores by transcript")
                 trsfact <- factor(annoscores$transcript.window)
                 bgscorebytrans <- split(annoscores, trsfact)
 
-                if (verbose) message("\t\t Deleting objects and free memory")
                 rm(trsfact, valtib, allwindchromtib, allwindstrand, annoscores)
                 invisible(gc())
-
+                
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ## For each transcript compute the weighted means for each
                 ## window. The weight is calculated if a window contains more
                 ## than one score
