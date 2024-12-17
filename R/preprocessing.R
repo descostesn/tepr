@@ -178,6 +178,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
             row.names = FALSE, col.names = FALSE)
     }
 
+    !!!!!!! remove all saved obj if set to true (must be the default)
+
     if (showtime) {
         end_time_preprocessing <- Sys.time()
         timing <- end_time_preprocessing - start_time_preprocessing
