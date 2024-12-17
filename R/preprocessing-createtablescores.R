@@ -38,9 +38,9 @@
     # dfexpnames <- do.call("cbind", dfexpnameslist)
     # colnames(dfexpnames) <- expcolnames
 
-    if (verbose) message("\t\t Combining the experiment cols to the table")
-    df <- cbind(df, dfexpnames)
-    df <- tibble::as_tibble(df)
+    # if (verbose) message("\t\t Combining the experiment cols to the table")
+    # df <- cbind(df, dfexpnames)
+    # df <- tibble::as_tibble(df)
 
     if (verbose) message("\t\t Placing exp name columns before corresponding",
         " scores")
