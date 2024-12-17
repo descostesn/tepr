@@ -216,7 +216,7 @@
             idxcolscore <- grep("_score", colnames(res))
             expnamecol <- paste0(currentcond, "_rep", currentrep, ".",
                 currentstrand)
-            colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
+            #colnames(res)[idxcolscore] <- paste0(expnamecol, "_score")
             ## Creating experiment columns
             expcol <- paste0(currentcond, "_rep", currentrep, ".",
                 currentdirection)
@@ -224,7 +224,7 @@
             tmpres <- cbind(res[, -idxcolscore], expcolvec)
             res <- cbind(tmpres, res[, idxcolscore])
             res <- tibble::as_tibble(res)
-            colnames(res)[ncol(res)-1] <- expnamecol
+            #colnames(res)[ncol(res)-1] <- expnamecol
 
             ## Saving table to temporary folder
             filename <- file.path(tmpfold, paste0(currentname, "-",
