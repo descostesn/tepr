@@ -1,51 +1,51 @@
-# .createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
+.createrowidlist <- function(bedgraphlistwmean, nbcpubg) { # nolint
 
-#         rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
-#             ## Create rowid string
-#             rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
-#                 sep = "_")
-#             ## Inserting rowid col after window
-#             tab <- tab %>% tibble::add_column(rowid = rowidvec,
-#                 .after = "window")
-#             return(tab)
-#         }, mc.cores = nbcpubg)
+        rowidreslist <- parallel::mclapply(bedgraphlistwmean, function(tab) {
+            ## Create rowid string
+            rowidvec <- paste(tab$transcript, tab$gene, tab$strand, tab$window,
+                sep = "_")
+            ## Inserting rowid col after window
+            tab <- tab %>% tibble::add_column(rowid = rowidvec,
+                .after = "window")
+            return(tab)
+        }, mc.cores = nbcpubg)
 
-#     return(rowidreslist)
-# }
+    return(rowidreslist)
+}
 
 .orderingtable <- function(df, exptab, verbose) { # nolint
 
-    # if (verbose) message("\t\t Sorting and renaming information columns")
-    # df <- df %>% dplyr::relocate(biotype, .before = chrom) # nolint
-    # idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
-    # colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
+    if (verbose) message("\t\t Sorting and renaming information columns")
+    df <- df %>% dplyr::relocate(biotype, .before = chrom) # nolint
+    idxtorename <- match(c("chrom", "start", "end", "rowid"), colnames(df))
+    colnames(df)[idxtorename] <- c("chr", "coor1", "coor2", "id")
 
     if (verbose) message("\t\t Renaming score columns")
-    # idxcolscores <- grep("_score", colnames(df))
-    # expcolnames <- unlist(apply(exptab, 1, function(x) {
-    #     return(paste0(x["condition"], "_rep", x["replicate"], ".",
-    #         x["strand"]))
-    # }, simplify = FALSE))
-    # newscorenames <- paste(expcolnames, "score", sep = "_")
-    # colnames(df)[idxcolscores] <- newscorenames
+    idxcolscores <- grep("_score", colnames(df))
+    expcolnames <- unlist(apply(exptab, 1, function(x) {
+        return(paste0(x["condition"], "_rep", x["replicate"], ".",
+            x["strand"]))
+    }, simplify = FALSE))
+    newscorenames <- paste(expcolnames, "score", sep = "_")
+    colnames(df)[idxcolscores] <- newscorenames
 
-    # if (verbose) message("\t\t Creating experiment columns")
-    # ## The format of the experiment column is title "HS_rep1.plus", content "HS_rep1.forward" # nolint
-    # directionexpstr <- unlist(apply(exptab, 1, function(x) {
-    #     return(paste0(x["condition"], "_rep", x["replicate"], ".",
-    #         x["direction"]))}, simplify = FALSE))
-    # dfexpnameslist <- lapply(directionexpstr, rep, nrow(df))
-    # dfexpnames <- do.call("cbind", dfexpnameslist)
-    # colnames(dfexpnames) <- expcolnames
+    if (verbose) message("\t\t Creating experiment columns")
+    ## The format of the experiment column is title "HS_rep1.plus", content "HS_rep1.forward" # nolint
+    directionexpstr <- unlist(apply(exptab, 1, function(x) {
+        return(paste0(x["condition"], "_rep", x["replicate"], ".",
+            x["direction"]))}, simplify = FALSE))
+    dfexpnameslist <- lapply(directionexpstr, rep, nrow(df))
+    dfexpnames <- do.call("cbind", dfexpnameslist)
+    colnames(dfexpnames) <- expcolnames
 
-    # if (verbose) message("\t\t Combining the experiment cols to the table")
-    # df <- cbind(df, dfexpnames)
-    # df <- tibble::as_tibble(df)
+    if (verbose) message("\t\t Combining the experiment cols to the table")
+    df <- cbind(df, dfexpnames)
+    df <- tibble::as_tibble(df)
 
-    # if (verbose) message("\t\t Placing exp name columns before corresponding",
-    #     " scores")
-    # df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
-    #     .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
+    if (verbose) message("\t\t Placing exp name columns before corresponding",
+        " scores")
+    df <- purrr::reduce(.x = purrr::map2(expcolnames, newscorenames, c),
+        .f = ~ dplyr::relocate(.x, .y[1], .before = .y[2]), .init = df)
 
     return(df)
 }
@@ -162,40 +162,4 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
         }
 
         return(df)
-}
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-createtablescores <- function(tmpfold, verbose) {
-
-    ## Retrieving the file paths
-    filevec <- list.files(tmpfold, full.names = TRUE)
-
-    ## Splitting the files by experiment names
-    expnamevec <- sapply(strsplit(basename(filevec), "-"), "[", 1)
-
-    if (!isTRUE(all.equal(length(unique(table(expnamevec))), 1)))
-        stop("Experiments have a different number of files. This should not",
-            "happen. Contact the developer.")
-
-    explist <- split(filevec, factor(expnamevec))
-
-    if(verbose) message("\t Merging files by experiment and direction")
-    !! check if the direction is differentiated
-    rowidreslist <- mapply(function(currentfiles, currentname, tmpfold,
-        verbose) {
-            destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
-            if (verbose) message("\t\t Combining all ", currentname,
-                " files into ", destfile)
-            cmd <- paste0("cat ", paste(currentfiles, collapse = " "), " > ",
-                destfile)
-        #   !! TO UNCOMMENT system(cmd)
-        !! reading the merged table and returning it - see how much memory it takes
-
-            return(destfile)
-        }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
-    
-     
-    !!start join command - full join is too difficult/long in bash. reuse the purrr::reduce(rowidreslist, dplyr::full_join,
-    !! sort properly the final table
 }
