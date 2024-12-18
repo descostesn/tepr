@@ -88,12 +88,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     # finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
     #     saveobjectpath, verbose)
 
-    # if (savefinaltable) {
-    #     outfile <- file.path(finaltabpath, finaltabname)
-    #     if (verbose) message("\n ## Saving the final table to ", outfile)
-    #     write.table(finaltable, file = outfile, sep = "\t", quote = FALSE,
-    #         row.names = FALSE, col.names = FALSE)
-    # }
+    
 
     # !!!!!!! remove all saved obj if set to true (must be the default)
 
