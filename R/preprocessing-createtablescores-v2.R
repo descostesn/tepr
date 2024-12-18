@@ -1,3 +1,20 @@
+.mergefiles <- function(explist, tmpfold, verbose) {
+
+    if (verbose) message("Merging files by experiment and direction")
+    mergedfilelist <- mapply(function(currentfiles, currentname, tmpfold,
+        verbose) {
+            destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
+            if (verbose) message("\t Combining all ", currentname,
+                " files into ", destfile)
+            cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
+                " > ", destfile)
+            system(cmd)
+            return(destfile)
+        }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
+
+    return(mergedfilelist)
+}
+
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
     showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
     finaltabname = "anno.tsv", verbose) {
@@ -23,17 +40,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
         explist <- split(filevec, factor(expnamevec))
 
         ## Merging files by experiment and direction
-        if (verbose) message("Merging files by experiment and direction")
-        mergedfilelist <- mapply(function(currentfiles, currentname, tmpfold,
-            verbose) {
-                destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
-                if (verbose) message("\t Combining all ", currentname,
-                    " files into ", destfile)
-                cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
-                    " > ", destfile)
-                system(cmd)
-                return(destfile)
-            }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
+        mergedfilelist <- .mergefiles(explist, tmpfold, verbose)
 
         ## Retrieving the exp name in the right order from exptab
         orderedexpvec <- paste0(exptab$condition, exptab$replicate,
