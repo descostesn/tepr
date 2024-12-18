@@ -12,7 +12,8 @@ createtablescores <- function(tmpfold, exptabpath, verbose) {
 
     explist <- split(filevec, factor(expnamevec))
 
-    if(verbose) message("\t Merging files by experiment and direction")
+    ## Merging files by experiment and direction
+    if (verbose) message("\t Merging files by experiment and direction")
     rowidreslist <- mapply(function(currentfiles, currentname, tmpfold,
         verbose) {
             destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
@@ -24,6 +25,7 @@ createtablescores <- function(tmpfold, exptabpath, verbose) {
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
 
+!!
     colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
         "strand", "window", "id", "dataset", "score")
     test <- read.delim(rowidreslist[[1]], header = FALSE, sep = "\t",
