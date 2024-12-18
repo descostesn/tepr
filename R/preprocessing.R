@@ -31,15 +31,15 @@
 }
 
 .createbedgraphlistwmean <- function(maptrackpath, blacklistshpath, exptabpath,
-    nbcputrans, allwindowsbed, windsize, genomename, showtime, saveobjectpath,
-    reload, tmpfold, verbose) {
+    nbcputrans, allwindowsbed, windsize, genomename, showtime, showmemory,
+    saveobjectpath, reload, tmpfold, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
         blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
             nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
-            tmpfold, reload, showtime, verbose)
+            tmpfold, reload, showtime, showmemory, verbose)
 }
 
 # !!!!!!
@@ -80,7 +80,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## keeping scores landing on high mappability intervals
     .createbedgraphlistwmean(maptrackpath, blacklistshpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime,
-        saveobjectpath, reload, tmpfold, verbose)
+        showmemory, saveobjectpath, reload, tmpfold, verbose)
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
