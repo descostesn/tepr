@@ -32,6 +32,7 @@ source("/g/romebioinfo/Projects/tepr/R/preprocessing-blacklisthighmap-utils.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-makewindows.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing-retrieveanno.R")
 #source("/g/romebioinfo/Projects/tepr/R/preprocessing-createtablescores.R")
+source("/g/romebioinfo/Projects/tepr/R/preprocessing-createtablescores-v2.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing.R")
 source("/g/romebioinfo/Projects/tepr/R/utils.R")
 
