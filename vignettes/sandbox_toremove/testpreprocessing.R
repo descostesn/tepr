@@ -20,6 +20,7 @@ nbcputrans <- 15
 reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
+showmemory <- TRUE
 genomename <- "hg38"
 tmpfold <- "./tmp"
 # nbcpubg <- 1
@@ -38,4 +39,4 @@ source("/g/romebioinfo/Projects/tepr/R/utils.R")
 
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath, blacklistshpath,
     genomename, nbcputrans, nbcpubg, finaltabpath, finaltabname, tmpfold,
-    saveobjectpath, savefinaltable, reload, showtime, verbose)
+    saveobjectpath, savefinaltable, reload, showtime, showmemory, verbose)
