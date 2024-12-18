@@ -15,6 +15,31 @@
     return(mergedfilelist)
 }
 
+.fulljoinfun <- function(mergedfilelist, idxvec, showmemory, verbose) {
+
+    colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
+        "strand", "window", "id", "dataset", "score")
+    colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
+    if (verbose) message("Reading files and joining to the final table")
+    firstpath <- mergedfilelist[[idxvec[1]]]
+    if (verbose) message("\t Reading and joining ", firstpath)
+    finaltab <- read.delim(firstpath, header = FALSE,
+        sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
+        stringsAsFactors = FALSE)
+
+    for (idx in idxvec[-1]) {
+        currentpath <- mergedfilelist[[idx]]
+        if (verbose) message("\t Reading and joining ", currentpath)
+        tab <- read.delim(currentpath, header = FALSE, sep = "\t",
+            na.strings = "NA", dec = ".", col.names = colnamevec,
+            stringsAsFactors = FALSE)
+        finaltab <<- dplyr::full_join(finaltab, tab, by = colnamejoin)
+        rm(tab)
+        if (showmemory) print(gc()) else invisible(gc())
+    }
+    return(finaltab)
+}
+
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
     showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
     finaltabname = "anno.tsv", verbose) {
@@ -52,27 +77,9 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
                 "should not happen. Contact the developer.")
 
         ## Reading each merged file and combining it to the final table
-        colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript",
-            "gene", "strand", "window", "id", "dataset", "score")
-        colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
-        if (verbose) message("Reading files and joining to the final table")
-        firstpath <- mergedfilelist[[idxvec[1]]]
-        if (verbose) message("\t Reading and joining ", firstpath)
-        finaltab <- read.delim(firstpath, header = FALSE,
-            sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
-            stringsAsFactors = FALSE)
+        finaltab <- .fulljoinfun(mergedfilelist, idxvec, showmemory, verbose)
 
-        for (idx in idxvec[-1]) {
-            currentpath <- mergedfilelist[[idx]]
-            if (verbose) message("\t Reading and joining ", currentpath)
-            tab <- read.delim(currentpath, header = FALSE, sep = "\t",
-                na.strings = "NA", dec = ".", col.names = colnamevec,
-                stringsAsFactors = FALSE)
-            finaltab <<- dplyr::full_join(finaltab, tab, by = colnamejoin)
-            rm(tab)
-            if (showmemory) print(gc()) else invisible(gc())
-        }
-
+        ## Filling the experiment columns
         if (verbose) message("Filling the experiment columns")
         idxdatasetvec <- grep("dataset", colnames(finaltab))
         nbrows <- nrow(finaltab)
