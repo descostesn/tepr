@@ -128,13 +128,6 @@
             filename <- file.path(tmpfold, paste0(currentname, "-",
                 currentchrom, ".tsv"))
 
-            ## Deleting res which is created at the end of the loop before
-            ## creating the new one
-            if (exists("res")) {
-                rm(res)
-                invisible(gc())
-            }
-
             if (!reload || !file.exists(filename)) {
                 ## Retrieving bedgraph values
                 if (verbose) message("\n\t\t Retrieving begraph values for ", # nolint
@@ -150,7 +143,7 @@
                 if (verbose) message("\t\t Splitting the scores by transcript")
                 trsfact <- factor(annoscores$transcript.window)
                 bgscorebytrans <- split(annoscores, trsfact)
-                rm(trsfact, annoscores)
+                rm(trsfact, annoscores, valtib)
                 invisible(gc())
 
                 ## For each transcript compute the weighted means for each
@@ -175,8 +168,6 @@
                     windsize)))
                     stop("All elements of the list should contain ", windsize,
                         " rows. This should not happen. Contact the developer.")
-                rm(bgscorebytrans)
-                invisible(gc())
 
                 ## Formatting columns and adding rowid column
                 res <- .rowidandcols(bytranslist, currentcond, currentrep,
@@ -186,6 +177,9 @@
                 if (verbose) message("\t\t Saving table to ", filename)
                 write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
+
+                rm(bgscorebytrans, bytranslist, res)
+                invisible(gc())
             } else {
                 if (verbose) message("\t\t The file ", filename,
                     " was already computed. Skipping.")
@@ -235,6 +229,8 @@
                             maptracktib, nbcputrans, allwindchromtib,
                             expnamevec, windsize, currentchrom, chromlength,
                             saveobjectpath, showtime, reload, tmpfold, verbose)
+                        rm(maptracktib)
+                        invisible(gc())
 
                         if (showtime) {
                             end_bglistwmean <- Sys.time()
@@ -290,6 +286,9 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         .loadbgprocessing(exptab, blacklisttib, maptrackpath, allwindtib,
             windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
             tmpfold, verbose)
+
+        rm(blacklisttib, allwindtib, chromtab)
+        invisible(gc())
 
         if (showtime) {
             end_time_fun <- Sys.time()
