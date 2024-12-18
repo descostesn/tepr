@@ -1,4 +1,5 @@
-.retrievebgval <- function(currentpath, currentchrom, chromlength, verbose) {
+.retrievebgval <- function(currentpath, currentchrom, chromlength, showmemory,
+    verbose) {
 
     if (verbose) message("\t\t\t Reading ", currentpath)
     whichchrom <- GenomicRanges::GRanges(paste0(currentchrom, ":1-",
@@ -9,7 +10,7 @@
     colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
     valtib <- tibble::as_tibble(valdf)
     rm(valdf)
-    invisible(gc())
+    if (showmemory) gc() else invisible(gc())
     return(valtib)
 }
 
@@ -61,7 +62,7 @@
     return(currenttrans)
 }
 
-.retrievemaptrack <- function(maptrackpath, showtime, currentchrom,
+.retrievemaptrack <- function(maptrackpath, showtime, showmemory, currentchrom,
     chromlength, saveobjectpath, reload, verbose) {
 
         if (showtime) start_time_maptrackreading <- Sys.time()
@@ -90,7 +91,7 @@
             maptracktib <- tibble::as_tibble(maptrackbedchrom)
 
             rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
-            invisible(gc())
+            if (showmemory) gc() else invisible(gc())
 
             if (!is.na(saveobjectpath)) {
                 if (verbose) message("\t\t Saving mappability track to ",
@@ -136,7 +137,7 @@
 }
 
 .retrieveannoscores <- function(currentstrand, allwindchromtib, valtib, # nolint
-    verbose) {
+    showmemory, verbose) {
 
     ## Keeping information on the correct strand
     if (verbose) message("\t\t Retrieving information on strand ", # nolint
@@ -154,18 +155,18 @@
         allwindstrand, suffix = c("", ".window")))
 
     rm(valtib, allwindchromtib, allwindstrand)
-    invisible(gc())
+    if (showmemory) gc() else invisible(gc())
     return(annoscores)
 }
 
 .rowidandcols <- function(bytranslist, currentcond, currentrep, # nolint
-    currentdirection, verbose) {
+    currentdirection, showmemory, verbose) {
 
     ## Combining transcripts in one table
     if (verbose) message("\t\t Combining transcripts in one table")
     res <- do.call("rbind", bytranslist)
     rm(bytranslist)
-    invisible(gc())
+    if (showmemory) gc() else invisible(gc())
 
     if (verbose) message("\t\t Formatting and adding rowid column")
     ## Create rowid string
@@ -186,6 +187,6 @@
     res <- cbind(tmpres, res[, idxcolscore])
     res <- tibble::as_tibble(res)
     rm(tmpres)
-    invisible(gc())
+    if (showmemory) gc() else invisible(gc())
     return(res)
 }

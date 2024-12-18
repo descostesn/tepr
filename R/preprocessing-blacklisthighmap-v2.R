@@ -115,7 +115,8 @@
 
 .retrieveandfilterfrombg <- function(exptab, blacklisttib, maptracktib, # nolint
     nbcputrans, allwindchromtib, expnamevec, windsize, currentchrom,
-    chromlength, saveobjectpath, showtime, reload, tmpfold, verbose) {
+    chromlength, saveobjectpath, showtime, showmemory, reload, tmpfold,
+    verbose) {
 
         ## Looping on each experiment bg file
         if (verbose) message("\t\t For each bedgraph file") # nolint
@@ -123,7 +124,7 @@
             currentstrand, currentcond, currentrep, currentdirection,
             allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
             chromlength, nbcputrans, saveobjectpath, verbose, showtime,
-            reload, tmpfold) {
+            showmemory, reload, tmpfold) {
 
             filename <- file.path(tmpfold, paste0(currentname, "-",
                 currentchrom, ".tsv"))
@@ -133,18 +134,18 @@
                 if (verbose) message("\n\t\t Retrieving begraph values for ", # nolint
                     currentname, " on ", currentchrom) # nolint
                 valtib <- .retrievebgval(currentpath, currentchrom, chromlength,
-                    verbose)
+                    showmemory, verbose)
 
                 ## Retrieving scores on annotations of strand
                 annoscores <- .retrieveannoscores(currentstrand,
-                    allwindchromtib, valtib, verbose)
+                    allwindchromtib, valtib, showmemory, verbose)
 
                 ## Splitting the scores by transcript
                 if (verbose) message("\t\t Splitting the scores by transcript")
                 trsfact <- factor(annoscores$transcript.window)
                 bgscorebytrans <- split(annoscores, trsfact)
                 rm(trsfact, annoscores, valtib)
-                invisible(gc())
+                if (showmemory) gc() else invisible(gc())
 
                 ## For each transcript compute the weighted means for each
                 ## window. The weight is calculated if a window contains more
@@ -171,7 +172,7 @@
 
                 ## Formatting columns and adding rowid column
                 res <- .rowidandcols(bytranslist, currentcond, currentrep,
-                    currentdirection, verbose)
+                    currentdirection, showmemory, verbose)
 
                 ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
@@ -179,7 +180,7 @@
                     col.names = FALSE, row.names = FALSE)
 
                 rm(bgscorebytrans, bytranslist, res)
-                invisible(gc())
+                if (showmemory) gc() else invisible(gc())
             } else {
                 if (verbose) message("\t\t The file ", filename,
                     " was already computed. Skipping.")
@@ -188,13 +189,13 @@
         }, exptab$path, expnamevec, exptab$strand, exptab$condition,
             exptab$replicate, exptab$direction, MoreArgs = list(allwindchromtib,
             blacklisttib, maptracktib, windsize, currentchrom, chromlength,
-            nbcputrans, saveobjectpath, verbose, showtime, reload, tmpfold),
-            SIMPLIFY = FALSE))
+            nbcputrans, saveobjectpath, verbose, showtime, showmemory, reload,
+            tmpfold), SIMPLIFY = FALSE))
 }
 
 .loadbgprocessing <- function(exptab, blacklisttib, maptrackpath, allwindtib,
-        windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
-        tmpfold, verbose) {
+        windsize, chromtab, nbcputrans, showtime, showmemory, saveobjectpath,
+        reload, tmpfold, verbose) {
 
             if (verbose) message("Removing scores within black list intervals,",
             " keeping those on high mappability regions, and computing ",
@@ -205,8 +206,9 @@
             ## Loading process on a specific chromosom
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
                 function(currentchrom, chromtab, maptrackpath, showtime,
-                saveobjectpath, reload, verbose, exptab, blacklisttib,
-                nbcputrans, allwindtib, expnamevec, windsize, tmpfold) {
+                showmemory, saveobjectpath, reload, verbose, exptab,
+                blacklisttib, nbcputrans, allwindtib, expnamevec, windsize,
+                tmpfold) {
 
                     if (showtime) start_bglistwmean <- Sys.time()
 
@@ -214,8 +216,8 @@
                     ## Reading the maptrack on a specific chromosomes
                     chromlength <- .retrievechromlength(chromtab, currentchrom)
                     maptracktib <- .retrievemaptrack(maptrackpath, showtime,
-                        currentchrom, chromlength, saveobjectpath, reload,
-                        verbose)
+                        showmemory, currentchrom, chromlength, saveobjectpath,
+                        reload, verbose)
 
                     ## Filtering allwindtib on the current chromosome
                     if (verbose) message("\t\t Selecting windows on ",
@@ -228,7 +230,8 @@
                         .retrieveandfilterfrombg(exptab, blacklisttib,
                             maptracktib, nbcputrans, allwindchromtib,
                             expnamevec, windsize, currentchrom, chromlength,
-                            saveobjectpath, showtime, reload, tmpfold, verbose)
+                            saveobjectpath, showtime, showmemory, reload,
+                            tmpfold, verbose)
                         rm(maptracktib)
                         invisible(gc())
 
@@ -243,9 +246,9 @@
                             " found on ", currentchrom, ". Skipping.")
                     }
 
-                }, chromtab, maptrackpath, showtime, saveobjectpath, reload,
-                    verbose, exptab, blacklisttib, nbcputrans, allwindtib,
-                    expnamevec, windsize, tmpfold))
+                }, chromtab, maptrackpath, showtime, showmemory, saveobjectpath,
+                    reload, verbose, exptab, blacklisttib, nbcputrans,
+                    allwindtib, expnamevec, windsize, tmpfold))
 }
 
 
@@ -253,7 +256,8 @@
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, verbose = TRUE) {
+    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
+    verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
 
@@ -279,16 +283,16 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Cleaning
         rm(blacklistbed, allwindowsbed)
-        invisible(gc())
+        if (showmemory) gc() else invisible(gc())
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
         .loadbgprocessing(exptab, blacklisttib, maptrackpath, allwindtib,
-            windsize, chromtab, nbcputrans, showtime, saveobjectpath, reload,
-            tmpfold, verbose)
+            windsize, chromtab, nbcputrans, showtime, showmemory,
+            saveobjectpath, reload, tmpfold, verbose)
 
         rm(blacklisttib, allwindtib, chromtab)
-        invisible(gc())
+        if (showmemory) gc() else invisible(gc())
 
         if (showtime) {
             end_time_fun <- Sys.time()
