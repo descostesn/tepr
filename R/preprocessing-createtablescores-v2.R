@@ -40,6 +40,10 @@
     return(finaltab)
 }
 
+# !!!!!!
+# !!!!!! DOC TO DO
+# !!!!!!
+
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
     showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
     finaltabname = "anno.tsv", verbose) {
