@@ -43,15 +43,21 @@ createtablescores <- function(tmpfold, exptabpath, verbose) {
 
     ## Reading each merged file and combining it to the final table
     if (verbose) message("Reading files and joining to the final table")
-    finaltab <- data.frame()
-
-    
-!!
+    finaltab <- read.delim(mergedfilelist[[idxvec[1]]], header = FALSE,
+        sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
+        stringsAsFactors = FALSE)
     colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
         "strand", "window", "id", "dataset", "score")
-    test <- read.delim(rowidreslist[[1]], header = FALSE, sep = "\t",
-        na.strings = "NA", dec = ".", col.names = colnamevec,
-        stringsAsFactors = FALSE)
+
+    for (idx in idxvec[-1]) {
+        currentpath <- mergedfilelist[[idx]]
+        if (verbose) message("\t Reading ", currentpath)
+        tab <- read.delim(currentpath, header = FALSE, sep = "\t",
+            na.strings = "NA", dec = ".", col.names = colnamevec,
+            stringsAsFactors = FALSE)
+        finaltab <<-
+    }
+
 
     !!start join command - full join is too difficult/long in bash. reuse the purrr::reduce(rowidreslist, dplyr::full_join,
     !! sort properly the final table
