@@ -1,4 +1,4 @@
-createtablescores <- function(tmpfold, exptabpath, verbose) {
+createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
 
     if (verbose) message("\n ## Merging results of each bedgraph into a ",
         "single table ##\n")
@@ -43,19 +43,25 @@ createtablescores <- function(tmpfold, exptabpath, verbose) {
 
     ## Reading each merged file and combining it to the final table
     if (verbose) message("Reading files and joining to the final table")
-    finaltab <- read.delim(mergedfilelist[[idxvec[1]]], header = FALSE,
+    firstpath <- mergedfilelist[[idxvec[1]]]
+    if (verbose) message("\t Reading and joining ", firstpath)
+    finaltab <- read.delim(firstpath, header = FALSE,
         sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
         stringsAsFactors = FALSE)
     colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
         "strand", "window", "id", "dataset", "score")
+    colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
 
     for (idx in idxvec[-1]) {
         currentpath <- mergedfilelist[[idx]]
-        if (verbose) message("\t Reading ", currentpath)
+        if (verbose) message("\t Reading and joining ", currentpath)
         tab <- read.delim(currentpath, header = FALSE, sep = "\t",
             na.strings = "NA", dec = ".", col.names = colnamevec,
             stringsAsFactors = FALSE)
-        finaltab <<-
+        finaltab <<- dplyr::full_join(finaltab, tab, by = colnamejoin)
+        rm(tab)
+        if (showmemory) gc() else invisible(gc())
+
     }
 
 
