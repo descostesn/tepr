@@ -50,7 +50,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, nbcpubg = 1,
     finaltabpath = "./", finaltabname = "anno.tsv", tmpfold = "./tmp",
     saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
-    showtime = FALSE, verbose = TRUE) {
+    showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
