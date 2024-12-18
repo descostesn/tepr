@@ -42,15 +42,15 @@ createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
             "should not happen. Contact the developer.")
 
     ## Reading each merged file and combining it to the final table
+    colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
+        "strand", "window", "id", "dataset", "score")
+    colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
     if (verbose) message("Reading files and joining to the final table")
     firstpath <- mergedfilelist[[idxvec[1]]]
     if (verbose) message("\t Reading and joining ", firstpath)
     finaltab <- read.delim(firstpath, header = FALSE,
         sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
         stringsAsFactors = FALSE)
-    colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
-        "strand", "window", "id", "dataset", "score")
-    colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
 
     for (idx in idxvec[-1]) {
         currentpath <- mergedfilelist[[idx]]
@@ -60,8 +60,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
             stringsAsFactors = FALSE)
         finaltab <<- dplyr::full_join(finaltab, tab, by = colnamejoin)
         rm(tab)
-        if (showmemory) gc() else invisible(gc())
-
+        if (showmemory) print(gc()) else invisible(gc())
     }
 
 
