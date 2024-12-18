@@ -145,7 +145,7 @@
                 trsfact <- factor(annoscores$transcript.window)
                 bgscorebytrans <- split(annoscores, trsfact)
                 rm(trsfact, annoscores, valtib)
-                if (showmemory) gc() else invisible(gc())
+                if (showmemory) print(gc()) else invisible(gc())
 
                 ## For each transcript compute the weighted means for each
                 ## window. The weight is calculated if a window contains more
@@ -180,7 +180,7 @@
                     col.names = FALSE, row.names = FALSE)
 
                 rm(bgscorebytrans, bytranslist, res)
-                if (showmemory) gc() else invisible(gc())
+                if (showmemory) print(gc()) else invisible(gc())
             } else {
                 if (verbose) message("\t\t The file ", filename,
                     " was already computed. Skipping.")
@@ -283,7 +283,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Cleaning
         rm(blacklistbed, allwindowsbed)
-        if (showmemory) gc() else invisible(gc())
+        if (showmemory) print(gc()) else invisible(gc())
 
         ## Removing scores within black list intervals, keeping those on high
         ## mappability regions, and computing weighted means.
@@ -292,7 +292,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             saveobjectpath, reload, tmpfold, verbose)
 
         rm(blacklisttib, allwindtib, chromtab)
-        if (showmemory) gc() else invisible(gc())
+        if (showmemory) print(gc()) else invisible(gc())
 
         if (showtime) {
             end_time_fun <- Sys.time()

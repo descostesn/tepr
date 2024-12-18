@@ -10,7 +10,7 @@
     colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
     valtib <- tibble::as_tibble(valdf)
     rm(valdf)
-    if (showmemory) gc() else invisible(gc())
+    if (showmemory) print(gc()) else invisible(gc())
     return(valtib)
 }
 
@@ -91,7 +91,7 @@
             maptracktib <- tibble::as_tibble(maptrackbedchrom)
 
             rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
-            if (showmemory) gc() else invisible(gc())
+            if (showmemory) print(gc()) else invisible(gc())
 
             if (!is.na(saveobjectpath)) {
                 if (verbose) message("\t\t Saving mappability track to ",
@@ -155,7 +155,7 @@
         allwindstrand, suffix = c("", ".window")))
 
     rm(valtib, allwindchromtib, allwindstrand)
-    if (showmemory) gc() else invisible(gc())
+    if (showmemory) print(gc()) else invisible(gc())
     return(annoscores)
 }
 
@@ -166,7 +166,7 @@
     if (verbose) message("\t\t Combining transcripts in one table")
     res <- do.call("rbind", bytranslist)
     rm(bytranslist)
-    if (showmemory) gc() else invisible(gc())
+    if (showmemory) print(gc()) else invisible(gc())
 
     if (verbose) message("\t\t Formatting and adding rowid column")
     ## Create rowid string
@@ -187,6 +187,6 @@
     res <- cbind(tmpres, res[, idxcolscore])
     res <- tibble::as_tibble(res)
     rm(tmpres)
-    if (showmemory) gc() else invisible(gc())
+    if (showmemory) print(gc()) else invisible(gc())
     return(res)
 }
