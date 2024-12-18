@@ -1,4 +1,5 @@
-createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
+createtablescores <- function(tmpfold, exptabpath, showmemory, savefinaltable,
+    finaltabpath, finaltabname, verbose) {
 
     if (verbose) message("\n ## Merging results of each bedgraph into a ",
         "single table ##\n")
@@ -71,6 +72,10 @@ createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
         finaltab[, idxdataset] <- rep(expname, nbrows)
     }
 
-    !!start join command - full join is too difficult/long in bash. reuse the purrr::reduce(rowidreslist, dplyr::full_join,
-    !! sort properly the final table
+    if (savefinaltable) {
+        outfile <- file.path(finaltabpath, finaltabname)
+        if (verbose) message("\n ## Saving the final table to ", outfile)
+        write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
+            row.names = FALSE, col.names = FALSE)
+    }
 }
