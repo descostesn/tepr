@@ -84,13 +84,10 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap
-    !!
-    # finaltable <- createtablescores(bedgraphlistwmean, nbcpubg, exptabpath,
-    #     saveobjectpath, verbose)
+    finaltable <- createtablescores(tmpfold, exptabpath, showmemory, showtime,
+        savefinaltable, finaltabpath, finaltabname, verbose)
 
-    
-
-    # !!!!!!! remove all saved obj if set to true (must be the default)
+    !!!!!!! remove all saved obj if set to true (must be the default)
 
     if (showtime) {
         end_time_preprocessing <- Sys.time()
