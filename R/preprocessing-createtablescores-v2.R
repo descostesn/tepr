@@ -1,5 +1,9 @@
 createtablescores <- function(tmpfold, exptabpath, verbose) {
 
+    ## Reading the information about experiments
+    if (verbose) message("Reading the information about experiments")
+    exptab <- read.csv(exptabpath, header = TRUE)
+
     ## Retrieving the file paths
     filevec <- list.files(tmpfold, full.names = TRUE)
 
