@@ -63,6 +63,13 @@ createtablescores <- function(tmpfold, exptabpath, showmemory, verbose) {
         if (showmemory) print(gc()) else invisible(gc())
     }
 
+    if (verbose) message("Filling the experiment columns")
+    idxdatasetvec <- grep("dataset", colnames(finaltab))
+    nbrows <- nrow(finaltab)
+    for (idxdataset in idxdatasetvec) {
+        expname <- as.character(na.omit(unique(finaltab[, idxdataset])))
+        finaltab[, idxdataset] <- rep(expname, nbrows)
+    }
 
     !!start join command - full join is too difficult/long in bash. reuse the purrr::reduce(rowidreslist, dplyr::full_join,
     !! sort properly the final table
