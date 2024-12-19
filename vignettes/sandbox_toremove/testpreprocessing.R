@@ -37,6 +37,7 @@ source("/g/romebioinfo/Projects/tepr/R/preprocessing-createtablescores-v2.R")
 source("/g/romebioinfo/Projects/tepr/R/preprocessing.R")
 source("/g/romebioinfo/Projects/tepr/R/utils.R")
 
-preprocessing(exptabpath, gencodepath, windsize, maptrackpath, blacklistshpath,
-    genomename, nbcputrans, nbcpubg, finaltabpath, finaltabname, tmpfold,
-    saveobjectpath, savefinaltable, reload, showtime, showmemory, verbose)
+finaltable <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
+    blacklistshpath, genomename, nbcputrans, nbcpubg, finaltabpath,
+    finaltabname, tmpfold, saveobjectpath, savefinaltable, reload, showtime,
+    showmemory, verbose)
