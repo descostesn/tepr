@@ -84,9 +84,66 @@
     return(winddf)
 }
 
-## This functions uses the annotations filtered from gencode (see retrieveanno).
-## It removes any ensembl names containing "PAR_Y". It filters out intervals
-## smaller than windsize and splits each transcript into "windsize" windows.
+
+#' Split Gene Annotations into Fixed-Size Windows
+#'
+#' @description
+#' This functions uses the annotations filtered from gencode (see retrieveanno).
+#' It removes any ensembl names containing "PAR_Y". It filters out intervals
+#' smaller than windsize and splits each transcript into "windsize" windows.
+#'
+#'
+#' @usage makewindows(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
+#'    saveobjectpath = NA, showtime = FALSE)
+#'
+#' @param allannobed A data frame which is the result of 'retrieveanno'.
+#' @param windsize An integer specifying the number of windows into which each
+#'  gene annotation should be divided.
+#' @param nbcputrans Number of CPU cores to use for transcript-level operations.
+#'  Defaults to 1.
+#' @param verbose A logical value indicating whether to display progress
+#'  messages. Defaults to `TRUE`.
+#' @param saveobjectpath A character string specifying the directory path where
+#'  the output object should be saved as an `.rds` file. If `NA`, the object is
+#'  not saved. Defaults to `NA`.
+#' @param showtime A logical value indicating whether to display the runtime of
+#'  the function. Defaults to `FALSE`.
+#'
+#' @return A data frame containing the split windows for each gene annotation.
+#'  The output includes fields such as `biotype`, `chr`, `coor1`, `coor2`,
+#'  `transcript`, `gene`, `strand`, and `window`.
+#'
+#' @details
+#' The function filters out annotations with intervals smaller than the
+#'  specified number of windows (`windsize`). It uses parallel processing to
+#' enhance performance when splitting transcripts into fixed-size windows. The
+#' result includes metadata for each window, such as its chromosome, start and
+#' end coordinates, associated gene, and the window number.
+#'
+#' Intermediate functions, such as `.computewindflist` and
+#' `.divideannoinwindows`, handle computation and validation of windows. Gene
+#' intervals with the "PAR_Y" tag are excluded from the analysis.
+#'
+#' @examples
+#' # Example data
+#' annotations <- data.frame(
+#'     start = c(1, 1001, 2001),
+#'     end = c(1000, 2000, 3000),
+#'     strand = c("+", "-", "+"),
+#'     chrom = c("chr1", "chr1", "chr2"),
+#'     ensembl = c("ENSG000001", "ENSG000002", "ENSG000003"),
+#'     symbol = c("Gene1", "Gene2", "Gene3"),
+#'     biotype = c("protein_coding", "lncRNA", "protein_coding")
+#' )
+#' result <- makewindows(allannobed = annotations, windsize = 5, nbcputrans = 2)
+#'
+#' @importFrom parallel makeCluster parLapply stopCluster
+#'
+#' @seealso
+#' [retrieveanno]
+#'
+#' @export
+
 makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     saveobjectpath = NA, showtime = FALSE) {
 
