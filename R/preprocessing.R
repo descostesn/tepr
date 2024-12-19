@@ -42,15 +42,78 @@
             tmpfold, reload, showtime, showmemory, verbose)
 }
 
-# !!!!!!
-# !!!!!! DOC TO DO
-# !!!!!!
+#' Preprocess Experimental Data for Genomic Analysis
+#'
+#' This function orchestrates a pipeline for preprocessing genomic data,
+#' including filtering annotations, splitting transcripts into windows,
+#' retrieving bedgraph values, and generating a final annotated table.
+#'
+#' @usage
+#' preprocessing(exptabpath, gencodepath, windsize, maptrackpath, blacklistshpath, genomename,
+#'               nbcputrans = 1, finaltabpath = "./", finaltabname = "anno.tsv",
+#'               tmpfold = "./tmp", saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
+#'               showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, verbose = TRUE)
+#'
+#' @param exptabpath Character. Path to the experiment table file.
+#' @param gencodepath Character. Path to the Gencode annotation file.
+#' @param windsize Integer. Window size for splitting transcripts.
+#' @param maptrackpath Character. Path to the mappability track file.
+#' @param blacklistshpath Character. Path to the blacklist file.
+#' @param genomename Character. Name of the genome assembly (e.g., "hg38").
+#' @param nbcputrans Integer. Number of CPUs to use for transcript processing. Default is 1.
+#' @param finaltabpath Character. Path where the final annotated table will be saved. Default is "./".
+#' @param finaltabname Character. Name of the final annotated table file. Default is "anno.tsv".
+#' @param tmpfold Character. Path to a temporary folder for intermediate files. Default is "./tmp".
+#' @param saveobjectpath Character. Path to save intermediate objects. Default is NA.
+#' @param savefinaltable Logical. Whether to save the final table to disk. Default is TRUE.
+#' @param reload Logical. Whether to reload intermediate objects if available. Default is FALSE.
+#' @param showtime Logical. Whether to display timing information. Default is FALSE.
+#' @param showmemory Logical. Whether to display memory usage information. Default is FALSE.
+#' @param deletetmp Logical. Whether to delete temporary files after processing. Default is TRUE.
+#' @param verbose Logical. Whether to display detailed progress messages. Default is TRUE.
+#'
+#' @return A data frame representing the final annotated table.
+#'
+#' @details
+#' The `preprocessing` function performs several key tasks:
+#' 1. Filters Gencode annotations to retrieve "transcript" annotations.
+#' 2. Differentiates between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
+#' 3. Splits transcripts into windows of size `windsize`.
+#' 4. Processes bedgraph files to retrieve values, exclude blacklisted regions, and retain high-mappability intervals.
+#' 5. Generates a final annotated table with scores derived from the above steps.
+#'
+#' Temporary files created during processing are optionally deleted at the end.
+#'
+#' @examples
+#' # Example usage of preprocessing:
+#' preprocessing(
+#'   exptabpath = "./example_exptab.tsv",
+#'   gencodepath = "./gencode.v38.annotation.gtf",
+#'   windsize = 200,
+#'   maptrackpath = "./mappability_track.bed",
+#'   blacklistshpath = "./blacklist.bed",
+#'   genomename = "hg38",
+#'   nbcputrans = 2,
+#'   finaltabpath = "./results/",
+#'   finaltabname = "final_annotated_table.tsv",
+#'   tmpfold = "./tmp",
+#'   saveobjectpath = "./saved_objects",
+#'   savefinaltable = TRUE,
+#'   reload = FALSE,
+#'   showtime = TRUE,
+#'   showmemory = TRUE,
+#'   deletetmp = TRUE,
+#'   verbose = TRUE
+#' )
+#'
+#' @importFrom utils file.exists
+#' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename, nbcputrans = 1, nbcpubg = 1,
-    finaltabpath = "./", finaltabname = "anno.tsv", tmpfold = "./tmp",
-    saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
-    showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, verbose = TRUE) {
+    blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
+    finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
+    savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
+    deletetmp = TRUE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
