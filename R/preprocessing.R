@@ -100,5 +100,5 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
                 format(timing, digits = 2))
     }
 
-    #return(finaltable)
+    return(finaltable)
 }
