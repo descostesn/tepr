@@ -50,7 +50,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, nbcpubg = 1,
     finaltabpath = "./", finaltabname = "anno.tsv", tmpfold = "./tmp",
     saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
-    showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
+    showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
@@ -87,7 +87,11 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     finaltable <- createtablescores(tmpfold, exptabpath, showmemory, showtime,
         savefinaltable, finaltabpath, finaltabname, verbose)
 
-    !!!!!!! remove all saved obj if set to true (must be the default)
+    ## Removing temporary files
+    if (deletetmp) {
+        if (verbose) message("\n ## Removing temporary files")
+        unlink(tmpfold, recursive = TRUE)
+    }
 
     if (showtime) {
         end_time_preprocessing <- Sys.time()
