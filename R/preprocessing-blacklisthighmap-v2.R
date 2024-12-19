@@ -253,7 +253,97 @@
 }
 
 
-# !! DOC TO DO
+#' Blacklist High Mappability Regions in Genomic Data
+#'
+#' @description
+#' This function processes genomic data to remove scores that fall within 
+#' blacklisted regions or have low mappability, and computes weighted means for
+#' overlapping windows. The process ensures the integrity of genomic scores by
+#' focusing on high mappability regions and excluding blacklisted intervals.
+#'
+#' @usage
+#' blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+#'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
+#'    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
+#'    verbose = TRUE)
+#'
+#' @param maptrackpath Character string. Path to the mappability track file.
+#' @param blacklistpath Character string. Path to the blacklist regions file.
+#' @param exptabpath Path to the experiment table file containing a table with
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param nbcputrans Number of CPU cores to use for transcript-level operations.
+#' @param allwindowsbed Data frame. BED-formatted data frame obtained with the
+#'  function 'makewindows'.
+#' @param windsize An integer specifying the size of the genomic windows.
+#' @param genomename Character string. A valid UCSC genome name. It is used to
+#' retrieve chromosome metadata, such as names and lengths.
+#' @param saveobjectpath Path to save intermediate R objects. Default is `NA`
+#'  and R objects are not saved.
+#' @param tmpfold A character string specifying the temporary folder for saving
+#'   output files. The temporary files contain the scores for each bedgraph on
+#'   each chromosome.
+#' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
+#'  recomputation. Default is `FALSE`. If the function failed during object
+#'  saving, make sure to delete the corresponding object.
+#' @param showtime A logical value indicating whether to display processing
+#'   time.
+#' @param showmemory A logical value indicating whether to display memory usage 
+#'   during processing.
+#' @param verbose A logical value indicating whether to display detailed
+#'   processing messages.
+#'
+#' @return This function does not return a value directly. It saves
+#' intermediate results to `tmpfold`. These intermediates files are then
+#' combined by the function 'createtablescores'.
+#'
+#' @details
+#' The `blacklisthighmap` function iterates through chromosomes, processes
+#' genomic scores by removing those overlapping with blacklisted regions, and
+#' ensures that scores within windows are computed using a weighted mean when
+#' overlaps occur. The function uses parallel processing for efficiency and
+#' supports saving (saveobjectpath) and reloading (reload) intermediate results
+#' to optimize workflow.
+#'
+#' The main steps include:
+#' - Reading and processing bedGraph values.
+#' - Removing scores overlapping with blacklisted or low mappability regions.
+#' - Computing weighted means for overlapping scores in genomic windows.
+#' - Saving the processed results to specified path (tmpfold).
+#'
+#' @examples
+#' # Define paths to required files
+#' maptrackpath <- "path/to/maptrack.bed"
+#' blacklistshpath <- "path/to/blacklist.bed"
+#' exptabpath <- "path/to/experiments.csv"
+#' allwindowsbed <- data.frame(...)
+#'
+#' # Run the function
+#' results <- blacklisthighmap(
+#'     maptrackpath = maptrackpath,
+#'     blacklistshpath = blacklistshpath,
+#'     exptabpath = exptabpath,
+#'     nbcputrans = 4,
+#'     allwindowsbed = allwindowsbed,
+#'     windsize = 200,
+#'     genomename = "hg38",
+#'     saveobjectpath = "output/",
+#'     tmpfold = "./tmp",
+#'     reload = FALSE,
+#'     showtime = TRUE,
+#'     showmemory = FALSE,
+#'     verbose = TRUE)
+#'
+#' @importFrom rtracklayer SeqinfoForUCSCGenome import.bedGraph
+#' @importFrom GenomeInfoDb seqnames seqlengths
+#' @importFrom tibble tibble as_tibble add_column
+#' @importFrom dplyr relocate filter
+#' @importFrom valr bed_intersect
+#'
+#' @seealso
+#' [createtablescores][makewindows]
+#'
+#' @export
+
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
