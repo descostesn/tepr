@@ -107,7 +107,8 @@
         if (showtime) {
             end_time_maptrackreading <- Sys.time()
             timing <- end_time_maptrackreading - start_time_maptrackreading
-            message("\t\t ## read maptrack in: ", timing) # nolint
+            cat("\t\t ## Read maptrack: ")
+            print(timing)
         }
 
         return(maptracktib)
