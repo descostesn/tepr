@@ -40,9 +40,57 @@
     return(finaltab)
 }
 
-# !!!!!!
-# !!!!!! DOC TO DO
-# !!!!!!
+#' Create a Unified Table of Scores
+#'
+#' @description
+#' This function processes and combines table scores of each bedgraph and each
+#' chromosome stored in the temporary folder into a unified table.
+#'
+#' @usage
+#' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
+#'   savefinaltable = TRUE, finaltabpath = "./", finaltabname = "anno.tsv",
+#'  verbose)
+#'
+#' @param tmpfold A string specifying the temporary folder containing the
+#'  score files created with the function 'blacklisthighmap'.
+#' @param exptabpath Path to the experiment table file containing a table with
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param showmemory Logical; if `TRUE`, memory usage is printed during
+#'  processing. Default is `FALSE`.
+#' @param showtime Logical; if `TRUE`, the execution time of the function is
+#'  printed. Default is `TRUE`.
+#' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
+#'  disk. Default is `TRUE`.
+#' @param finaltabpath A string specifying the directory where the final table
+#'  should be saved. Default is `"./"`.
+#' @param finaltabname A string specifying the name of the final table file.
+#'  Default is `"anno.tsv"`.
+#' @param verbose Logical; if `TRUE`, detailed messages are printed during
+#'  execution.
+#'
+#' @return A data frame containing the unified table of scores.
+#'
+#' @details
+#' This function first merges files belonging to the same experiment and
+#' direction. These files are combined into a single table providing two columns
+#' per experiment. The first gives the name of the experiment and the second the
+#' scores. The resulting table also includes annotations for each transcript.
+#'
+#' @examples
+#' # Example usage:
+#' tmpfold <- "path/to/temp/folder"
+#' exptabpath <- "path/to/experiment_table.csv"
+#' finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
+#'   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
+#'   finaltabpath = "./results", finaltabname = "final_scores.tsv",
+#'   verbose = TRUE)
+#'
+#' @importFrom dplyr full_join
+#'
+#' @seealso
+#' [blacklisthighmap]
+#'
+#' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
     showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
