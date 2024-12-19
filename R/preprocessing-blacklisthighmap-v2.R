@@ -233,8 +233,8 @@
                             expnamevec, windsize, currentchrom, chromlength,
                             saveobjectpath, showtime, showmemory, reload,
                             tmpfold, verbose)
-                        rm(maptracktib)
-                        invisible(gc())
+                        rm(maptracktib, allwindchromtib)
+                        if (showmemory) print(gc()) else invisible(gc())
 
                         if (showtime) {
                             end_bglistwmean <- Sys.time()
