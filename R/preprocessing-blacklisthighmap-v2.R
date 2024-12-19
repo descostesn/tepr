@@ -162,8 +162,8 @@
                 if (showtime) {
                     end_time_bytranslist <- Sys.time()
                     timing <- end_time_bytranslist - start_time_bytranslist
-                    cat("\t\t\t ## Features excluded in: ")
-                    print(timing)
+                    message("\t\t\t ## Features excluded in: ",
+                        format(timing, digits = 2))
                 }
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
@@ -239,8 +239,8 @@
                         if (showtime) {
                             end_bglistwmean <- Sys.time()
                             timing <- end_bglistwmean - start_bglistwmean
-                            cat("\t\t ## ", currentchrom, " built: ")
-                            print(timing)
+                            message("\t\t ## Built ", currentchrom, " in: ",
+                                format(timing, digits = 2))
                         }
                     } else {
                         if (verbose) message("\t\t No transcript annotations ",
@@ -298,7 +298,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         if (showtime) {
             end_time_fun <- Sys.time()
             timing <- end_time_fun - start_time_fun
-            cat("\t\t ## Processed all bedgraphs: ")
-            print(timing)
+            message("\t\t ## All bedgraphs processed in: ",
+                format(timing, digits = 2))
         }
 }

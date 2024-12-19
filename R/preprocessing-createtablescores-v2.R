@@ -102,8 +102,8 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
         if (showtime) {
             end_time_fun <- Sys.time()
             timing <- end_time_fun - start_time_fun
-            cat("\t\t ## Final table created: ")
-            print(timing)
+            message("\t\t ## Final table created in: ",
+                format(timing, digits = 2))
         }
 
         return(finaltab)

@@ -96,7 +96,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     if (showtime) {
         end_time_preprocessing <- Sys.time()
         timing <- end_time_preprocessing - start_time_preprocessing
-            message("\n\n\t ## Total preprocessing in: ", timing) # nolint
+            message("\n\n\t ## Total preprocessing in: ",
+                format(timing, digits = 2))
     }
 
     #return(finaltable)
