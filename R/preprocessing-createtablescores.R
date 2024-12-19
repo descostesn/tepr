@@ -136,7 +136,7 @@ createtablescores <- function(bedgraphlistwmean, nbcpubg, exptabpath,
             if (showtime) {
                 end_time_join <- Sys.time()
                 timing <- end_time_join - start_time_join
-            message("\t\t ## Joined table in: ", timing) # nolint
+                message("\t\t ## Joined table in: ", timing) # nolint
             }
 
             rm(rowidreslist)
