@@ -140,7 +140,9 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
             finaltab[, idxdataset] <- rep(expname, nbrows)
         }
 
-        if (savefinaltable) {
+        if (savefinaltable) {`
+            if (!file.exists(finaltabpath))
+                dir.create(finaltabpath, recursive = TRUE)
             outfile <- file.path(finaltabpath, finaltabname)
             if (verbose) message("\n ## Saving the final table to ", outfile)
             write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
