@@ -4,8 +4,8 @@
 #SBATCH --mem=150gb
 #SBATCH --time=20:00:00
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=10
-#SBATCH --job-name=bgmean10
+#SBATCH --cpus-per-task=7
+#SBATCH --job-name=bgmean7cpu
 #SBATCH --output=slurm_%x_%A_%a.out
 
 module purge
