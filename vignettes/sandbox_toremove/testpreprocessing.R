@@ -39,6 +39,7 @@ source("/g/romebioinfo/Projects/tepr/R/preprocessing.R")
 source("/g/romebioinfo/Projects/tepr/R/utils.R")
 
 finaltable <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename, nbcputrans, nbcpubg, finaltabpath,
-    finaltabname, tmpfold, saveobjectpath, savefinaltable, reload, showtime,
-    showmemory, verbose)
+    blacklistshpath, genomename, nbcputrans, finaltabpath,
+    finaltabname, tmpfold, saveobjectpath,
+    savefinaltable, reload, showtime, showmemory,
+    deletetmp, verbose)
