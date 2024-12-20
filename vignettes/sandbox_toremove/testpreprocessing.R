@@ -23,6 +23,7 @@ showtime <- TRUE
 showmemory <- TRUE
 genomename <- "hg38"
 tmpfold <- "./tmp"
+savefinaltable <- TRUE
 # nbcpubg <- 1
 # nbcputrans <- 1
 
