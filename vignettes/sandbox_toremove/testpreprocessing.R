@@ -23,6 +23,7 @@ showmemory <- TRUE
 genomename <- "hg38"
 tmpfold <- "./tmp-7cpu"
 savefinaltable <- TRUE
+deletetmp <- FALSE
 # nbcpubg <- 1
 # nbcputrans <- 1
 
