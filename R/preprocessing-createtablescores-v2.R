@@ -27,6 +27,9 @@
         stringsAsFactors = FALSE)
     df <- purrr::reduce(tablist, dplyr::full_join, by = colnamejoin)
 
+    rm(tablist)
+    if (showmemory) print(gc()) else invisible(gc())
+
     return(df)
 }
 
