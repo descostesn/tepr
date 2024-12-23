@@ -21,23 +21,13 @@
         "strand", "window", "id", "dataset", "score")
     colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
     if (verbose) message("Reading files and joining to the final table")
-    firstpath <- mergedfilelist[[idxvec[1]]]
-    if (verbose) message("\t Reading and joining ", firstpath)
-    finaltab <- read.delim(firstpath, header = FALSE,
-        sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
-        stringsAsFactors = FALSE)
 
-    for (idx in idxvec[-1]) {
-        currentpath <- mergedfilelist[[idx]]
-        if (verbose) message("\t Reading and joining ", currentpath)
-        tab <- read.delim(currentpath, header = FALSE, sep = "\t",
-            na.strings = "NA", dec = ".", col.names = colnamevec,
-            stringsAsFactors = FALSE)
-        finaltab <<- dplyr::full_join(finaltab, tab, by = colnamejoin)
-        rm(tab)
-        if (showmemory) print(gc()) else invisible(gc())
-    }
-    return(finaltab)
+    tablist <- lapply(mergedfilelist, read.delim, header = FALSE, sep = "\t",
+        na.strings = "NA", dec = ".", col.names = colnamevec,
+        stringsAsFactors = FALSE)
+    df <- purrr::reduce(tablist, dplyr::full_join, by = colnamejoin)
+
+    return(df)
 }
 
 #' Create a Unified Table of Scores
