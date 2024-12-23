@@ -8,20 +8,20 @@ library("tidyverse")
 
 gencodepath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
-finaltabpath <- "./objects-tsv-3cpus"
+finaltabpath <- "./objects-tsv-7cpus"
 finaltabname <- "cugusi.tsv"
 saveobjectpath <- finaltabpath
 
 windsize <- 200
 blacklistshpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/hg38-blacklist.v2.bed" # nolint
 maptrackpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/k50.umap.hg38.0.8.bed" # nolint
-nbcputrans <- 3
+nbcputrans <- 7
 reload <- TRUE
 verbose <- TRUE
 showtime <- TRUE
 showmemory <- TRUE
 genomename <- "hg38"
-tmpfold <- "./tmp-3cpu"
+tmpfold <- "./tmp-7cpu"
 savefinaltable <- TRUE
 deletetmp <- FALSE
 # nbcpubg <- 1
