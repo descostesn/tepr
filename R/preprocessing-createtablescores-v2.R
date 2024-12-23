@@ -38,20 +38,6 @@
         if (showmemory) print(gc()) else invisible(gc())
     }
     return(finaltab)
-    # colnamevec <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
-    #     "strand", "window", "id", "dataset", "score")
-    # colnamejoin <- colnamevec[-c(10, 11)] ## Remove dataset and score
-    # if (verbose) message("Reading files and joining to the final table")
-
-    # tablist <- lapply(mergedfilelist, read.delim, header = FALSE, sep = "\t",
-    #     na.strings = "NA", dec = ".", col.names = colnamevec,
-    #     stringsAsFactors = FALSE)
-    # df <- purrr::reduce(tablist, dplyr::full_join, by = colnamejoin)
-
-    # rm(tablist)
-    # if (showmemory) print(gc()) else invisible(gc())
-
-    # return(df)
 }
 
 #' Create a Unified Table of Scores
