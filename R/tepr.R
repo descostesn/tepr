@@ -16,5 +16,13 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## (ECDF) for expressed genes across multiple transcripts.
     resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding, showtime,
         verbose)
+    resecdf <- resecdflist[[1]]
+    nbwindows <- resecdflist[[2]]
+
+    ## This function calculates the mean values, mean Fx (ECDF) and ECDF
+    ## differences (Fx) for expression data, across different experimental
+    ## conditions.
+    resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime, verbose)
+
 
 }
