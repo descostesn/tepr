@@ -12,8 +12,8 @@ showtime = FALSE, verbose = TRUE)
 expression data frame and the second element contains the names of the
 expressed transcripts (see 'averageandfilterexprs').}
 
-\item{expdf}{A data frame containing experimental conditions and other
-relevant information.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. Default is \code{1}.}

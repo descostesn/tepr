@@ -19,8 +19,8 @@ transcript (see countna).}
 
 \item{bytranslistmean}{A list of data frames with mean values by transcripts.}
 
-\item{expdf}{A data frame containing experimental conditions, must include
-a column named 'condition'.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{dfmeandiff}{A data frame containing means and differences in mean
 values, if more than one condition. (see meandifference).}
