@@ -60,14 +60,21 @@ bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
     package = "tepr"))
 
 ## Replace the path column of expdf with the previously retrieved paths
+## and writing the new experiment file to the current folder
 expdf$path <- bgpathvec
+write.csv(expdf, file = "./exptab.csv", row.names = FALSE, quote = FALSE)
+exppath <- "./exptab.csv"
 
 
 #########
 # Pre-processing
 #########
 
-
+preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
+    blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
+    finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
+    savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
+    deletetmp = TRUE, verbose = TRUE)
 
 
 
