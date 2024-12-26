@@ -71,6 +71,7 @@
 #'
 #' @seealso
 #' [attenuation]
+#'
 #' @importFrom dplyr mutate relocate select filter
 #' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
