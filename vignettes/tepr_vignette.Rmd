@@ -94,7 +94,7 @@ res <- reslist[[2]]
 
 ## Description
 
-For a complete analysis, we will use the data of Cugusi *et al* [REF]. To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells (REF). We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
+For a complete analysis, we will use the data of [Cugusi et al](https://doi.org/10.1016/j.molcel.2022.01.007). To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells (REF). We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
 
 ## Download
 
