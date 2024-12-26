@@ -1,4 +1,5 @@
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
     showtime = FALSE, verbose = TRUE) {
 
     ## This function calculates the average expression levels for transcripts
@@ -33,6 +34,11 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         timing <- end_time_split - start_time_split
         message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
+
+    ## This function computes the Area Under Curve (AUC) and the differences of
+    ## AUC between two conditions for a list of transcript data.
+    resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu,
+        dontcompare, controlcondname, stresscondname, showtime, verbose)
 
 
 
