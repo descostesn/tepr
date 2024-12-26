@@ -1,5 +1,6 @@
 #' Calculate Average Expression and Filter Transcript Data
 #'
+#' @description
 #' This function calculates the average expression levels for transcripts from
 #' a provided expression data frame and filters out transcripts based on a
 #' specified expression threshold. The function also renames the columns in the
