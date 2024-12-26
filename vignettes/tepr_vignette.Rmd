@@ -37,9 +37,9 @@ Please submit issues or questions on Github for a most efficient communication.
 # Quick start
 
 The example below shows a complete run of the package. The pre-processing is
-done on chr13. The post-processing is performed using two experiments and
-is limited to 100 transcripts. The command `system.file` retrieves the file
-paths inside the "extdata" folder of the package.
+done on chr13. The post-processing is limited to 100 transcripts. The command
+`system.file` retrieves the file paths inside the "extdata" folder of the
+package.
 
 ```{r quickstart, eval = FALSE}
 
@@ -82,39 +82,12 @@ finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     showtime = TRUE)
 
 #########
-# tepr analysis - takes ~ 
+# tepr analysis - takes ~ 11 seconds
 #########
 
-
-## Calculate Average Expression and Filter Transcript Data
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
-
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf)
-
-## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf)
-resecdf <- resecdflist[[1]]
-nbwindows <- resecdflist[[2]]
-
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows)
-
-## Split the results by transcripts
-bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, nbwindows)
-
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf)
-
-## Calculate Attenuation from AUC and Other Transcript Features
-resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff)
-
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt)
+reslist <- tepr(expdf, transdf, expthres, showtime = TRUE)
+resmeandiff <- restlist[[1]]
+res <- reslist[[2]]
 ```
 
 # Data
