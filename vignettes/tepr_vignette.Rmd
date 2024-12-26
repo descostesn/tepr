@@ -81,7 +81,10 @@ finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
     showtime = TRUE)
 
-!!!!!!!!!!!!!
+#########
+# tepr analysis - takes ~ 
+#########
+
 
 ## Calculate Average Expression and Filter Transcript Data
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
