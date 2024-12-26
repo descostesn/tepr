@@ -1,7 +1,10 @@
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-    replaceval = NA, pval = 0.1, significant = FALSE, showtime = FALSE,
-    verbose = TRUE) {
+    replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
+    countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
+    pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
+    aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
+    showtime = FALSE, verbose = TRUE) {
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
@@ -53,6 +56,15 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
         resmeandiff, nbcpu, significant, replaceval, pval, showtime, verbose)
 
+    ## This function categorizes genes into a "Universe" and assigns them into
+    ## groups such as "Attenuated" or "Outgroup" based on transcription data and
+    ## thresholds.
+    res <- universegroup(resatt, controlcondname, stresscondname, windsizethres,
+        countnathres, meanctrlthres, meanstressthres, pvaltheorythres,
+        aucctrlthreshigher, aucctrlthreslower, aucstressthres,
+        attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
+
+    ## Return variables necessary for plotting
 
 
 
