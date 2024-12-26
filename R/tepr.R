@@ -1,3 +1,9 @@
+#' Perform the tepr differential nascent rna-seq analysis 
+#'
+#' @description
+#' 
+
+
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
     replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
