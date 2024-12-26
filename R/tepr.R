@@ -89,15 +89,21 @@
 #' }
 #'
 #' @examples
+#' # Example usage:
+#' # exptabpath <- "exp.csv"
+#' # alldfpath <- "result-preprocessing.tsv"
+#' # expdf <- read.csv(exptabpath)
+#' # alldf <- read.delim(alldfpath, header = FALSE)
+#' # expthres <- 0.1
+#' # reslist <- tepr(expdf, alldf, expthres)
+#' # resmeandiff <- restlist[[1]]
+#' # res <- reslist[[2]]
 #'
 #' @seealso
 #' [averageandfilterexprs()], [countna()], [genesECDF()], [meandifference()],
 #' [allauc()], [kneeid()], [attenuation()], [universegroup()], [preprocessing()]
 #'
-
-
-
-
+#' @export
 
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
