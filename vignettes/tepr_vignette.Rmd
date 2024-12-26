@@ -36,8 +36,10 @@ Please submit issues or questions on Github for a most efficient communication.
 
 # Quick start
 
-The example below shows a complete run of the package using two experiments,
-the analysis is limited to 100 transcripts.
+The example below shows a complete run of the package. The pre-processing is
+done on chr13. The post-processing is performed using two experiments and
+is limited to 100 transcripts. The command `system.file` retrieves the file
+paths inside the package.
 
 ```{r quickstart, eval = FALSE}
 
@@ -52,6 +54,22 @@ windsize <- 200
 ## Read input tables
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
+
+## Retrieving the bedgraph paths
+bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
+    package = "tepr"))
+
+## Replace the path column of expdf with the previously retrieved paths
+expdf$path <- bgpathvec
+
+
+#########
+# Pre-processing
+#########
+
+
+
+
 
 ## Calculate Average Expression and Filter Transcript Data
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
