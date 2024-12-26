@@ -46,6 +46,10 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## conditions.
     resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
 
+    ## 
+    resatt <- attenuation(resauc, resknee, rescountna, !!!!! bytranslistmean, expdf,
+  dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
+  showtime = FALSE, verbose = TRUE)
 
 
 
