@@ -39,7 +39,7 @@ Please submit issues or questions on Github for a most efficient communication.
 The example below shows a complete run of the package. The pre-processing is
 done on chr13. The post-processing is performed using two experiments and
 is limited to 100 transcripts. The command `system.file` retrieves the file
-paths inside the package.
+paths inside the "extdata" folder of the package.
 
 ```{r quickstart, eval = FALSE}
 
@@ -70,7 +70,7 @@ exppath <- "./exptab.csv"
 # Pre-processing
 #########
 
-gencodepath <- !!
+gencodepath <- system.files("extdata", "gencode-chr13.gtf", package = "tepr")
 
 preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
