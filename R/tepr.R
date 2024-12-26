@@ -12,7 +12,7 @@
 #' aucctrlthreshigher = -10, aucctrlthreslower = 15, aucstressthres = 15,
 #' attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2, showtime = FALSE,
 #' verbose = TRUE)
-#' 
+#'
 #' @param expdf A data frame containing experiment data that should have
 #'  columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param alldf A data frame containing all transcript-related information,
@@ -25,6 +25,48 @@
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
 #'  Defaults to \code{1}.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'  Default is \code{10}.
+#' @param dontcompare An optional parameter to specify any conditions to exclude
+#'  from the comparison. Defaults to \code{NULL}.
+#' @param controlcondname A string specifying the name of the control condition
+#'  Defaults to \code{"ctrl"}.
+#' @param stresscondname A string specifying the name of the stress condition.
+#'  Defaults to \code{"HS"}.
+#' @param replaceval A value to replace non-significant attenuation values
+#'  Defaults to \code{NA}.
+#' @param pval A numeric value specifying the p-value threshold for significance
+#'  of the KS test. Defaults to \code{0.1}.
+#' @param significant A logical indicating whether to filter out non-significant
+#'  attenuation values. Defaults to \code{FALSE}.
+#' @param windsizethres A numeric threshold for the minimum window size. Default
+#'  is 50.
+#' @param countnathres A numeric threshold for the maximum number of missing
+#'  data points for an experiment (NA values). Default is 20.
+#' @param meanctrlthres A numeric threshold for the minimum mean transcription
+#'  value in the control condition. Default is 0.5.
+#' @param meanstressthres A numeric threshold for the minimum mean transcription
+#'  value in the stress condition. Default is 0.5.
+#' @param pvaltheorythres A numeric threshold for the minimum p-value used to
+#'  define the universe of genes. Default is 0.1.
+#' @param aucctrlthreshigher A numeric threshold for the lower bound of the
+#'  control AUC value in the outgroup classification. Default is -10.
+#' @param aucctrlthreslower A numeric threshold for the upper bound of the
+#'  control AUC value in the outgroup classification. Default is 15.
+#' @param aucstressthres A numeric threshold for the minimum stress AUC value
+#'  used to classify attenuated genes. Default is 15.
+#' @param attenuatedpvalksthres A numeric threshold for the negative log10 of
+#'  the p-value (from KS test) for defining attenuated genes. Default is 2.
+#' @param outgrouppvalksthres A numeric threshold for the maximum KS p-value
+#'  used to define the outgroup. Default is 0.2.
+#' @param showtime A logical value indicating if the duration of the function
+#'  processing should be indicated before ending. Defaults to \code{FALSE}.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'  Defaults to \code{TRUE}.
+
+
+
+
 
 
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
