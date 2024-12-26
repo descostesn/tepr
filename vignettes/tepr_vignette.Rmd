@@ -70,7 +70,9 @@ exppath <- "./exptab.csv"
 # Pre-processing
 #########
 
-preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
+gencodepath <- !!
+
+preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
     savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
