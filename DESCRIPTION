@@ -61,7 +61,7 @@ Collate:
     'plothistoknee.R'
     'plotmetagenes.R'
     'preprocessing-blacklisthighmap-utils.R'
-    'preprocessing-blacklisthighmap.R''
+    'preprocessing-blacklisthighmap.R'
     'preprocessing-createtablescores.R'
     'preprocessing-makewindows.R'
     'preprocessing-retrieveanno.R'
