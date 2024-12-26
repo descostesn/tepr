@@ -65,7 +65,5 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
     ## Return variables necessary for plotting
-
-
-
+    return(list(resmeandiff, res))
 }
