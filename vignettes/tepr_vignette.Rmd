@@ -131,129 +131,16 @@ If one would like to skip the preprocessing, the result file can be downloaded w
 TO DO
 ```
 
-## Pre-processing
-
-To perform the pre-processing steps, we provide a conda environment that can be activated with:
-
-```{bash conda, eval = FALSE}
-TO DO
-```
-
-Retrieve the protein-coding and long non-coding RNA (lncRNA) annotations from the gencode file:
-
-```{bash protcod-lncrna, eval = FALSE}
-#!/usr/bin/sh
-
-cd data/
-
-## Building the protein-coding bed file
-grep -w transcript gencode.v43.basic.annotation.gtf | grep -w MANE_Select > MANE_Select.protein_coding.gtf
-awk 'OFS="\t" {print $0}' MANE_Select.protein_coding.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > MANE_Select.protein_coding.bed
-
-## Building the lncRNA bed file
-grep -w transcript gencode.v43.basic.annotation.gtf | grep -w lncRNA | grep -w Ensembl_canonical | grep -v not_best_in_genome_evidence | grep -v 'transcript_support_level "5"' | grep -v 'transcript_support_level "4"' > Ensembl_canonical_TSL123.lncRNA.gtf
-awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > Ensembl_canonical_TSL123.lncRNA.bed
-
-rm MANE_Select.protein_coding.gtf Ensembl_canonical_TSL123.lncRNA.gtf
-```
-
-Remove the black list and make windows for protein-coding and lncRNA files:
-
-```{bash remove, eval = FALSE}
-#!/usr/bin/sh
-
-WORKING="."
-blacklist="hg38-blacklist.v2.bed"
-window=200
-
-mkdir makewindow
-
-## Removing black list and computes windows for protein-coding annotations
-ANNOTATION="MANE_Select.protein_coding.bed"
-awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed
-echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed
-
-## Removing black list and computes windows for lncRNA annotations
-ANNOTATION="Ensembl_canonical_TSL123.lncRNA.bed"
-awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
-echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
-```
-
-For each bedgraph file, remove the black list and mappability track, and retrieve scores on the protein coding annotations:
-
-```{bash bedgraph-protcod, eval = FALSE}
-#!/usr/bin/zsh
-
-ext="bg"
-WORKING="."
-window=200
-umapk50="k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
-blacklist="hg38-blacklist.v2.bed"
-
-windowfiles=["makewindow/v43.MANE_protein.window${window}.bed" "makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"]
-annotationsfiles=["MANE_Select.protein_coding.bed" "Ensembl_canonical_TSL123.lncRNA.bed"]
-namesvec=["protein-coding" "lncRNA"]
-outputfolders=["protein_coding_score" "lncRNA_score"]
-
-for i in ${#windowfiles[@]};
-do
-    echo "Processing "${namesvec[$i]}
-    windowfile=${windowfiles[$i]}
-    annofile=${annotationsfiles[$i]}
-    outfoldname=${outputfolders[$i]}
-
-    mkdir $WORKING/withzeros
-    mkdir $WORKING/mapHigh
-
-    for file in $WORKING/*.$ext ;
-    do
-        filename=$(basename "$file" .$ext);
-        echo "starting file :"
-        echo $filename;
-
-        if echo $filename | egrep -q "reverse|minus" ;  then  
-            strand="-"
-        elif echo $filename | egrep -q "forward|plus" ; then
-            strand='+'
-        fi
-
-        echo "removing blacklist region"
-        bedtools intersect -a $WORKING/${filename}.$ext -b <( \
-        awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $annofile \
-        | bedtools intersect -a stdin -b $blacklist -v) \
-        | sort -k1,1 -k2,2n > $WORKING/withzeros/${filename}.nonzeros.$ext
-
-        echo "removing low mappability region"
-        bedtools intersect -a $WORKING/withzeros/${filename}.nonzeros.${ext} -b $umapk50 -sorted \
-        | awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > $WORKING/mapHigh/${filename}.0.8.$ext
-
-        echo "scoring windows"
-        bedmap --echo --wmean --delim "\t" $windowfile $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
-
-        mkdir $WORKING/$outfoldname
-        mv $WORKING/*.score $WORKING/$outfoldname/
-        rm -r $WORKING/withzeros $WORKING/mapHigh
-        echo "done"
-    done
-done
-```
-
-The package provides a `joinfiles` function to generate the final table that is used as input below. Running the function from the data folder, the default parameters can be used:
-
-```{r mergefiles, eval = FALSE}
-library(tepr)
-
-alltsv <- joinfiles()
-
-## Performing type conversion
-idxvec <- c(8, 11, 13, 15, 17, 19, 21, 23, 25)
-invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx])))
-```
 
 # Standard workflow
 
 To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section 5.12. Here we will focus on 100 transcripts. 
 
+## Pre-processing
+
+!!
+
+## 
 ## Input files
 
 Two tables are needed as input:
@@ -567,7 +454,7 @@ The plot on the complete dataset gives:
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
 
-## Note on processing the complete dataset
+## Annex 1 - Note on processing the complete dataset
 
 Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. Note that you can check the conformity of the table `transdf` with the utility function `checkexptab`. 
 
@@ -678,3 +565,122 @@ plothistoknee(res, outfold = ".", formatname = "png")
 plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
 ```
 
+
+## Annex 2 - Pre-processing with bash
+
+To perform the pre-processing steps, we provide a conda environment that can be activated with:
+
+```{bash conda, eval = FALSE}
+TO DO
+```
+
+Retrieve the protein-coding and long non-coding RNA (lncRNA) annotations from the gencode file:
+
+```{bash protcod-lncrna, eval = FALSE}
+#!/usr/bin/sh
+
+cd data/
+
+## Building the protein-coding bed file
+grep -w transcript gencode.v43.basic.annotation.gtf | grep -w MANE_Select > MANE_Select.protein_coding.gtf
+awk 'OFS="\t" {print $0}' MANE_Select.protein_coding.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > MANE_Select.protein_coding.bed
+
+## Building the lncRNA bed file
+grep -w transcript gencode.v43.basic.annotation.gtf | grep -w lncRNA | grep -w Ensembl_canonical | grep -v not_best_in_genome_evidence | grep -v 'transcript_support_level "5"' | grep -v 'transcript_support_level "4"' > Ensembl_canonical_TSL123.lncRNA.gtf
+awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sort -k1,1 -k2,2n  | awk -F \t -v OFS='\t' '{print $0}' | awk -v OFS="\t" '{ print $1,$4,$5,$12,$16,$7}' > Ensembl_canonical_TSL123.lncRNA.bed
+
+rm MANE_Select.protein_coding.gtf Ensembl_canonical_TSL123.lncRNA.gtf
+```
+
+Remove the black list and make windows for protein-coding and lncRNA files:
+
+```{bash remove, eval = FALSE}
+#!/usr/bin/sh
+
+WORKING="."
+blacklist="hg38-blacklist.v2.bed"
+window=200
+
+mkdir makewindow
+
+## Removing black list and computes windows for protein-coding annotations
+ANNOTATION="MANE_Select.protein_coding.bed"
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.MANE_protein.window${window}.bed
+echo $WORKING/makewindow/v43.MANE_protein.window${window}.bed
+
+## Removing black list and computes windows for lncRNA annotations
+ANNOTATION="Ensembl_canonical_TSL123.lncRNA.bed"
+awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools intersect -a stdin -b $blacklist -v  | bedtools makewindows -n $window -i srcwinnum -b stdin | sort -k1,1 -k2,2n > $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
+```
+
+For each bedgraph file, remove the black list and mappability track, and retrieve scores on the protein coding annotations:
+
+```{bash bedgraph-protcod, eval = FALSE}
+#!/usr/bin/zsh
+
+ext="bg"
+WORKING="."
+window=200
+umapk50="k50.umap.hg38.0.8.bed" # hg38 mappability windows with mapp k50 > 80%
+blacklist="hg38-blacklist.v2.bed"
+
+windowfiles=["makewindow/v43.MANE_protein.window${window}.bed" "makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed"]
+annotationsfiles=["MANE_Select.protein_coding.bed" "Ensembl_canonical_TSL123.lncRNA.bed"]
+namesvec=["protein-coding" "lncRNA"]
+outputfolders=["protein_coding_score" "lncRNA_score"]
+
+for i in ${#windowfiles[@]};
+do
+    echo "Processing "${namesvec[$i]}
+    windowfile=${windowfiles[$i]}
+    annofile=${annotationsfiles[$i]}
+    outfoldname=${outputfolders[$i]}
+
+    mkdir $WORKING/withzeros
+    mkdir $WORKING/mapHigh
+
+    for file in $WORKING/*.$ext ;
+    do
+        filename=$(basename "$file" .$ext);
+        echo "starting file :"
+        echo $filename;
+
+        if echo $filename | egrep -q "reverse|minus" ;  then  
+            strand="-"
+        elif echo $filename | egrep -q "forward|plus" ; then
+            strand='+'
+        fi
+
+        echo "removing blacklist region"
+        bedtools intersect -a $WORKING/${filename}.$ext -b <( \
+        awk -F "\t" -v OFS="\t" -v myvar=$strand '{if ($6==myvar) print $1,$2,$3,$4"_"$5"_"$6}' $annofile \
+        | bedtools intersect -a stdin -b $blacklist -v) \
+        | sort -k1,1 -k2,2n > $WORKING/withzeros/${filename}.nonzeros.$ext
+
+        echo "removing low mappability region"
+        bedtools intersect -a $WORKING/withzeros/${filename}.nonzeros.${ext} -b $umapk50 -sorted \
+        | awk -F "\t" -v OFS="\t" '{print $1,$2,$3,".",$4}' > $WORKING/mapHigh/${filename}.0.8.$ext
+
+        echo "scoring windows"
+        bedmap --echo --wmean --delim "\t" $windowfile $WORKING/mapHigh/${filename}.0.8.$ext | awk -F "_" -v OFS="\t" '{print $1,$2,$3,$4}' | awk -F "\t" -v OFS="\t" -v name="$filename" '{ print $0,$4"_"$5"_"$6"_"$7,name}' | awk -F "\t" -v OFS="\t" '{ print "protein-coding",$1,$2,$3,$4,$5,$6,$7,$9,$10,$8 }' > $WORKING/${filename}.window${window}.MANE.wmean.name.score ;
+
+        mkdir $WORKING/$outfoldname
+        mv $WORKING/*.score $WORKING/$outfoldname/
+        rm -r $WORKING/withzeros $WORKING/mapHigh
+        echo "done"
+    done
+done
+```
+
+The package provides a `joinfiles` function to generate the final table that is used as input below. Running the function from the data folder, the default parameters can be used:
+
+```{r mergefiles, eval = FALSE}
+library(tepr)
+
+alltsv <- joinfiles()
+
+## Performing type conversion
+idxvec <- c(8, 11, 13, 15, 17, 19, 21, 23, 25)
+invisible(sapply(idxvec, function(idx) alltsv[, idx] <<- as.numeric(alltsv[, idx])))
+```
