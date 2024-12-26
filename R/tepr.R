@@ -63,6 +63,17 @@
 #'  processing should be indicated before ending. Defaults to \code{FALSE}.
 #' @param verbose A logical flag indicating whether to print progress messages.
 #'  Defaults to \code{TRUE}.
+#'
+#' @return
+#' A list of data.frame made of two elements. The first data.frame is the
+#' result of the function 'meandifference': For each condition, it provides
+#' the mean values for the "value" and "Fx" columns (e.g. mean_value_ctrl, 
+#' mean_Fx_ctrl columns) as the differences between the Fx column and coordinate
+#' ratios (e.g., diff_Fx_ctrl column). The second data.frame is the result of
+#' the function 'universegroup': It contains columns concerning AUC, knee
+#' position, attenuation information, and columns defining the universe and
+#' groups (see details).
+#'
 
 
 
