@@ -144,6 +144,8 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## tepr analysis
 
+In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed.
+
 ### Input files
 
 Two tables are needed as input:
