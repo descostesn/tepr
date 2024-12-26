@@ -113,6 +113,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
     showtime = FALSE, verbose = TRUE) {
 
+    if (showtime) start_tepr <- Sys.time()
+
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
     ## on a specified expression threshold.
@@ -171,6 +173,12 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         aucctrlthreshigher, aucctrlthreslower, aucstressthres,
         attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
+    if (showtime) {
+        end_tepr <- Sys.time()
+        timing <- end_tepr - start_tepr
+        message("\n\t\t ### tepr analysis performed in: ",
+            format(timing, digits = 2))
+    }
     ## Return variables necessary for plotting
     return(list(resmeandiff, res))
 }
