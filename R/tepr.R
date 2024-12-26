@@ -40,6 +40,12 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu,
         dontcompare, controlcondname, stresscondname, showtime, verbose)
 
+    ## This function identifies the knee point (i.e., point of maximum change)
+    ## and the maximum difference in the empirical cumulative distribution
+    ## function (ECDF) for each transcript, across different experimental
+    ## conditions.
+    resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
+
 
 
 
