@@ -73,6 +73,8 @@ exppath <- "./exptab.csv"
 gencodepath <- system.files("extdata", "gencode-chr13.gtf", package = "tepr")
 maptrackpath <- system.files("extdata", "k50.umap.chr13.hg38.0.8.bed",
     package = "tepr")
+blacklistshpath <- system.files("extdata", "hg38-blacklist-chr13.v2.bed",
+    package = "tepr")
 
 preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
