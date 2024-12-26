@@ -38,7 +38,7 @@ attenuation values. Defaults to \code{FALSE}.}
 Defaults to \code{NA}.}
 
 \item{pval}{A numeric value specifying the p-value threshold for significance
-Defaults to \code{0.1}.}
+of the KS test. Defaults to \code{0.1}.}
 
 \item{showtime}{A logical value indicating if the duration of the function
 processing should be indicated before ending. Defaults to
