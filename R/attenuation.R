@@ -106,7 +106,7 @@
 #' @param replaceval A value to replace non-significant attenuation values
 #'                   Defaults to \code{NA}.
 #' @param pval A numeric value specifying the p-value threshold for significance
-#'              Defaults to \code{0.1}.
+#'              of the KS test. Defaults to \code{0.1}.
 #' @param showtime A logical value indicating if the duration of the function
 #'                  processing should be indicated before ending. Defaults to
 #'                  \code{FALSE}.
