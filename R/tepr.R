@@ -24,5 +24,18 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## conditions.
     resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime, verbose)
 
+    ## Split the results by transcripts
+    if (showtime) start_time_split <- Sys.time()
+    if (verbose) message("Split the results by transcripts")
+    bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+    if (showtime) {
+        end_time_split <- Sys.time()
+        timing <- end_time_split - start_time_split
+        message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+    }
+
+
+
+
 
 }
