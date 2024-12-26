@@ -66,5 +66,6 @@ Collate:
     'preprocessing-makewindows.R'
     'preprocessing-retrieveanno.R'
     'preprocessing.R'
+    'tepr.R'
     'universegroup.R'
     'utils.R'
