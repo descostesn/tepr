@@ -75,14 +75,13 @@ maptrackpath <- system.files("extdata", "k50.umap.chr13.hg38.0.8.bed",
     package = "tepr")
 blacklistshpath <- system.files("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
+genomename <- "hg38"
 
-preprocessing(exppath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
-    finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
-    savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-    deletetmp = TRUE, verbose = TRUE)
+finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
+    blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
+    showtime = TRUE)
 
-
+!!!!!!!!!!!!!
 
 ## Calculate Average Expression and Filter Transcript Data
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
