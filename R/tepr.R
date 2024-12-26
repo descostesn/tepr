@@ -1,6 +1,7 @@
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-    showtime = FALSE, verbose = TRUE) {
+    replaceval = NA, pval = 0.1, significant = FALSE, showtime = FALSE,
+    verbose = TRUE) {
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
@@ -46,10 +47,11 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## conditions.
     resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
 
-    ## 
-    resatt <- attenuation(resauc, resknee, rescountna, !!!!! bytranslistmean, expdf,
-  dfmeandiff, nbcpu = 1, significant = FALSE, replaceval = NA, pval = 0.1,
-  showtime = FALSE, verbose = TRUE)
+    ## This function computes the attenuation values for each window of each
+    ## transcript based on the data frames obtained with the functions 'allauc',
+    ## 'kneeid', and 'countna'.
+    resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+        resmeandiff, nbcpu, significant, replaceval, pval, showtime, verbose)
 
 
 
