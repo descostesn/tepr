@@ -74,7 +74,27 @@
 #' position, attenuation information, and columns defining the universe and
 #' groups (see details).
 #'
+#' @details
+#' The tepr function calls successively:
+#' \itemize{
+#'   \item averageandfilterexprs: This function calculates the average expression levels for transcripts from alldf that was obtained with the 'preprocessing' function. It filters out transcripts based on the 'expthres' expression threshold. The function also renames the columns in the output data frame to include mean expression values. It returns a list containing the original alldf with the mean columns added and a character vector of transcripts that meet the filtering criteria.
+#'   \item 
+#' }
 
+
+countna
+genesECDF - resecdf <- resecdflist[[1]]/nbwindows <- resecdflist[[2]]
+meandifference
+-- Split the results by transcripts - bytranslistmean
+allauc
+kneeid
+attenuation
+universegroup
+
+#' @seealso
+#' [averageandfilterexprs()], [countna()], [genesECDF()], [meandifference()],
+#' [allauc()], [kneeid()], [attenuation()], [universegroup()], [preprocessing()]
+#'
 
 
 
