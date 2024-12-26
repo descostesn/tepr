@@ -138,10 +138,13 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## Pre-processing
 
+### Input files
+
 !!
 
-## 
-## Input files
+## tepr analysis
+
+### Input files
 
 Two tables are needed as input:
 
@@ -177,7 +180,7 @@ You can verify the conformity of the table with the utility function `checkexpta
 checkexptab(expdf)
 ```
 
-## Expressed transcripts and average expression
+### Expressed transcripts and average expression
 
 In order to study changes in patterns of nascent RNA, the first step is to select expressed transcripts. The expression value of a gene is defined as the mean score on each strand. Scores were extracted from bedgraphs. A gene is considered as expressed if all condition means are above a given expression threshold. The threshold above which a gene is considered as expressed is set to 0.1 by default.
 
@@ -195,7 +198,7 @@ head(resallexprs[[2]])
 ```
 
 
-## Count NA values per transcript and condition
+### Count NA values per transcript and condition
 
 During the pre-processing, scores falling in intervals belonging to the user-defined black list, low mappability regions of the genome, or chosen regions to exclude are replaced by NA. The function `countna` enables to retrieve the number of "missing" scores per transcript. This table can be used for further filtering data, for example to filter out transcripts with too many windows without score.
 
@@ -205,7 +208,7 @@ rescountna <- countna(resallexprs, expdf)
 head(rescountna)
 ```
 
-## Compute ECDF for Genes Based on Expression Data
+### Compute ECDF for Genes Based on Expression Data
 
 This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across transcripts. An ECDF is an estimator of the Cumulative Distribution Function, here we use the ecdf() function from R. It creates a ECDF for each transcript, which can then be used to use the statistical power of the Kolsmogorov-Smirnov test. The ECDF enables us to answer the question: How likely is it that we would see a distibution of signals like this if these signals were drawn from a uniform probability distribution? In other words, this statistics enables to identify specific loci from where transcription signal differs significantly from a uniform density. Indeed, if the cumulative transcription density stops increasing, it means that the windows after the locus have small values (see plotecdf for a visual). In the following steps, the ECDF is used to compute the difference with the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).  
 
@@ -230,7 +233,7 @@ print(nbwindows)
 ```
 
 
-## Compute Mean and Differences of Scores for Each Condition
+### Compute Mean and Differences of Scores for Each Condition
 
 The function `meandifference` computes two types of statistics, mean values of
 scores and ecdf for each replicate (if provided) and difference of mean ecdf
@@ -258,7 +261,7 @@ bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 ```
 
 
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
+### Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 
 The AUC values enable the comparison of the nascent-rna signal with a uniform distribution (no attenuation of signal, x = y), or the AUC of difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated by a Kolmogorov-Smirnov test and the adjusted p-value is also provided. Finally, results are returned by transcript along with a mean value that is called *MeanValueFull*.
 
@@ -275,7 +278,7 @@ resauc <- allauc(bytranslistmean, expdf, nbwindows)
 print(head(resauc, 3))
 ```
 
-## Identify the Knee and Max ECDF Differences for Each Transcript
+### Identify the Knee and Max ECDF Differences for Each Transcript
 
 To assess attenuation in nascent-rna signal, one must identify a significant
 change in the signal distribution. To acheive this, tepr identifies the maximum
@@ -293,7 +296,7 @@ resknee <- kneeid(bytranslistmean, expdf)
 print(head(resknee))
 ```
 
-## Calculate Attenuation from AUC and Other Transcript Features
+### Calculate Attenuation from AUC and Other Transcript Features
 
 The `attenuation` function calculates the mean value of all window mean scores before and after the knee location. It then provides an "attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x for multiplication). The three values *att*, *downmean*, and *upmean* are provided by the columns "UP_mean_", "DOWN_mean_", and "Attenuation_".
 
@@ -304,7 +307,7 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 print(head(resatt, 3))
 ```
 
-## Define Universe and Group of Genes Based on Expression Data
+### Define Universe and Group of Genes Based on Expression Data
 
 Before further downstream analysis, the list of transcript to study must be
 defined. tepr selects a transcript if it has:
