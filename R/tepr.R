@@ -83,12 +83,12 @@
 #'   \item{meandifference}{It takes the result of 'genesECDF' as input and calculates the mean values, mean Fx (ECDF) and ECDF differences (Fx) for expression data, across different experimental conditions. It returns a data frame that contains, for each condition: mean values for the "value" and "Fx" columns (e.g., \code{mean_value_ctrl}, \code{mean_Fx_ctrl}) and the differences between the \code{Fx} column and coordinate ratios (e.g., \code{diff_Fx_ctrl}).}
 #'   \item{Splitting}{Split the results of 'meandifference' by transcripts and stores the list into bytranslistmean.}
 #'   \item{allauc}{It uses the previously computed variable 'bytranslistmean' and it computes the Area Under Curve (AUC) and the differences of AUC between two conditions for a list of transcript data. It returns a data frame containing the AUC and dAUC results for each transcript, along with associated statistical information.}
-#'   \item
+#'   \item{kneeid}{It uses the previously computed variable 'bytranslistmean' and identifies the knee point (i.e., point of maximum change) and the maximum difference in the empirical cumulative distribution function (ECDF) for each transcript, across different experimental conditions. It returns a data frame where each row corresponds to a transcript and contains the coordinates of the knee point and the maximum ECDF difference for each condition.}
 #'   \item 
 #' }
  
 
-kneeid
+
 attenuation
 universegroup
 
