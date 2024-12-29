@@ -333,7 +333,7 @@ bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 
 ### Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
 
-The AUC values enable the comparison of the nascent-rna signal with a uniform distribution (no attenuation of signal, x = y), or the AUC of difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated by a Kolmogorov-Smirnov test and the adjusted p-value is also provided. Finally, results are returned by transcript along with a mean value that is called *MeanValueFull*.
+The AUC values enable the comparison of the nascent-rna signal with a uniform distribution (no attenuation of signal, x = y), or to compare the difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated by a Kolmogorov-Smirnov test with adjusted p-value. Finally, results are returned by transcript along with a mean value that is called *MeanValueFull*.
 
 For each condition (if more than one), the Area Under the Curve (AUC) of *diff_Fx* (see previous section) is computed with a trapezoidal approximation (see pracma::trapz):
 
@@ -350,15 +350,9 @@ print(head(resauc, 3))
 
 ### Identify the Knee and Max ECDF Differences for Each Transcript
 
-To assess attenuation in nascent-rna signal, one must identify a significant
-change in the signal distribution. To acheive this, tepr identifies the maximum
-*diff_Fx*. In other words, it identifies the maximum variation in the signal
-"progression" of the empirical cumulative distribution (see `genesECDF` and
-`meandifference`). The window where maximum change is observed is termed *knee* and is
-calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the max difference between the ecdf and y=x curve.
+To assess attenuation in nascent-rna signal, one must identify a significant change in signal distribution. To acheive this, tepr identifies the maximum *diff_Fx*. In other words, it identifies the maximum variation in the signal progression of the empirical cumulative distribution (see `genesECDF` and `meandifference`). The window where maximum change is observed is termed *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the max difference between the ecdf and the y=x curve.
 
-The function returns the position (*Knee_AUC*) and the value (*diff_Fx*) of the
-knee.
+The function returns the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
 ```{r knee}
 ## Identify the Knee and Max ECDF Differences for Each Transcript
