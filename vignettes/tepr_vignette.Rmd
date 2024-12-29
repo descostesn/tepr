@@ -205,7 +205,10 @@ nbcputrans <- 1
 genomename <- "hg38"
 tmpfolder <- "./tmp"
 
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder, showtime = TRUE)
+## Retrieving chromosome information (optional)
+chrominfo <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+
+blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, chromtab = chrominfo, tmpfold = tmpfolder, showtime = TRUE)
 ```
 
 ### Create the final table
