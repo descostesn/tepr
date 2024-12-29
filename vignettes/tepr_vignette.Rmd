@@ -21,10 +21,7 @@ Please submit issues or questions on Github for a most efficient communication.
 
 # Quick start
 
-The example below shows a complete run of the package. The pre-processing is
-done on chr13. The post-processing is limited to 100 transcripts. The command
-`system.file` retrieves the file paths inside the "extdata" folder of the
-package.
+The example below shows a complete run of the package. The preprocessing is done on chr13. The postprocessing is limited to 100 transcripts. The command `system.file` retrieves the file paths inside the "extdata" folder of the package.
 
 ```{r quickstart, eval = FALSE}
 
@@ -79,7 +76,7 @@ res <- reslist[[2]]
 
 ## Description
 
-For a complete analysis, we will use the data of [Cugusi et al](https://doi.org/10.1016/j.molcel.2022.01.007). To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells (REF). We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
+For a complete analysis, we will use the data of [Cugusi et al](https://doi.org/10.1016/j.molcel.2022.01.007). To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells. We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
 
 ## Download
 
@@ -109,7 +106,7 @@ wget https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.
 
 ```
 
-If one would like to skip the preprocessing, the result file can be downloaded with:
+If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
 ```{bash cugusi-table, eval = FALSE}
 
@@ -173,7 +170,7 @@ exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath, showtime = TRUE)
-head(allannobed, 3)
+print(head(allannobed, 3))
 ```
 
 ### Defining windows for each transcript
@@ -185,16 +182,16 @@ head(allannobed, 3)
 windsize = 200
 
 allwindowsbed <- makewindows(allannobed, windsize, showtime = TRUE)
-head(allwindowsbed, 3)
+print(head(allwindowsbed, 3))
 ```
 
 ### Retrieving bedgraph scores, removing those in black list and low mappability intervals
 
-The `blacklisthighmap` function iterates through chromosomes, processes genomic scores by removing those overlapping with blacklisted regions, and ensures that scores within windows are computed using a weighted mean. The function uses parallel processing for efficiency and supports saving (saveobjectpath) and reloading (reload) intermediate results to optimize workflow.
+The `blacklisthighmap` function iterates through chromosomes, processes genomic scores by removing those overlapping with blacklisted and low-mappability regions, and ensures that scores within windows are computed using a weighted mean. The function uses parallel processing for efficiency and supports saving (saveobjectpath) and reloading (reload) intermediate results to optimize workflow.
 
 The main steps include:
  - Reading and processing bedGraph values.
- - Removing scores overlapping with blacklisted or low mappability regions.
+ - Removing scores overlapping with blacklisted and low mappability regions.
  - Computing weighted means for overlapping scores in genomic windows.
  - Saving the processed results to specified path (tmpfold).
 
@@ -223,14 +220,14 @@ head(finaltab, 3)
 
 ## tepr analysis
 
-In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed with the toy-data limited to 100 transcripts. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section 5.12.
+In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed with the toy-data limited to 100 transcripts. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table resulting from the preprocessing can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section XXX.
 
 
 ### Input files
 
 Two tables are needed as input:
 
-- **transdf**: Table obtained with the `preprocessing` function (see previous section). It contains information about each experiment along with scores, for each protein-coding and lncRNA annotations. 
+- **transdf**: Table obtained with the `preprocessing` function (see previous sections). It contains information about each experiment along with scores, for each protein-coding and lncRNA annotations. 
 
 - **exptab**: Table describing the experiments. It contains the columns "condition", "replicate", "direction", "strand", and "path". The column "direction" should contain the values "forward" and "reverse". The column "strand" should contain the values "plus" and "minus". You can check the conformity of the table with the utility function    `checkexptab`. 
 
@@ -280,7 +277,7 @@ head(resallexprs[[2]])
 
 ### Count NA values per transcript and condition
 
-During the pre-processing, scores falling in intervals belonging to the user-defined black list, low mappability regions of the genome, or chosen regions to exclude are replaced by NA. The function `countna` enables to retrieve the number of "missing" scores per transcript. This table can be used for further filtering data, for example to filter out transcripts with too many windows without score.
+During the preprocessing, scores falling in intervals belonging to the user-defined black list, low mappability regions of the genome, or any regions to exclude are replaced by NA. The function `countna` enables to retrieve the number of missing scores per transcript. This table can be used for further filtering of the data, such as filtering out transcripts with too many windows without scores.
 
 ```{r countna}
 ## Count NA values per transcript and condition
@@ -290,7 +287,7 @@ head(rescountna)
 
 ### Compute ECDF for Genes Based on Expression Data
 
-This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across transcripts. An ECDF is an estimator of the Cumulative Distribution Function, here we use the ecdf() function from R. It creates a ECDF for each transcript, which can then be used to use the statistical power of the Kolsmogorov-Smirnov test. The ECDF enables us to answer the question: How likely is it that we would see a distibution of signals like this if these signals were drawn from a uniform probability distribution? In other words, this statistics enables to identify specific loci from where transcription signal differs significantly from a uniform density. Indeed, if the cumulative transcription density stops increasing, it means that the windows after the locus have small values (see plotecdf for a visual). In the following steps, the ECDF is used to compute the difference with the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).  
+This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across transcripts. An ECDF is a probability distribution that is an estimator of the Cumulative Distribution Function, here we use the ecdf() function from R. It creates an ECDF for each transcript, which are then used to evaluate differences in signal with a Kolsmogorov-Smirnov test. The ECDF enables us to answer the question: How likely is it that we would see a distibution of signals like this if these signals were drawn from a uniform probability distribution? In other words, this statistics enables to identify specific loci from where transcription signal differs significantly from a uniform density. In the following steps, the ECDF is used to compute the difference with the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).  
 
 
 ```{r ecdf}
@@ -298,7 +295,7 @@ This function calculates the empirical cumulative distribution function (ECDF) f
 resecdflist <- genesECDF(resallexprs, expdf)
 ```
 
-The genesECDF function returns a list which first element is the main table with additional ecdf columns denoted with the `Fx` prefix corresponding to the cumulative density as calculated by R ecdf() function .
+The genesECDF function returns a list which first element is the main table with additional ecdf columns denoted with the `Fx` prefix.
 
 ```{r resecdf}
 resecdf <- resecdflist[[1]]
@@ -315,9 +312,7 @@ print(nbwindows)
 
 ### Compute Mean and Differences of Scores for Each Condition
 
-The function `meandifference` computes two types of statistics, mean values of
-scores and ecdf for each replicate (if provided) and difference of mean ecdf
-with the cumulative distribution respectively. The mean values between
+The function `meandifference` computes two types of statistics, the mean values of scores and the ecdf for each replicate (if provided) and difference of mean ecdf with the uniform cumulative distribution respectively. The mean values between !!!!!!!!
 replicates implies that one column `mean_value` per condition will be returned.
 The score `mean_value` column(s) are necessary to calculate the attenuation
 scores later on (see `attenuation`). The ecdf `mean_value` are used to computes
