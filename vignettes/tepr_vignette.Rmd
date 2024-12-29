@@ -461,7 +461,9 @@ The plot on the complete dataset gives:
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
 
-## Annex 1 - Note on processing the complete dataset
+# Annex
+
+## Note on processing the complete dataset
 
 Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. Note that you can check the conformity of the table `transdf` with the utility function `checkexptab`. 
 
@@ -573,7 +575,7 @@ plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
 ```
 
 
-## Annex 2 - Pre-processing with bash
+## Preprocessing with bash
 
 To perform the pre-processing steps, we provide a conda environment that can be activated with:
 
