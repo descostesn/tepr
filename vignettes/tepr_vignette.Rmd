@@ -134,9 +134,10 @@ TO DO
 
 # Standard workflow
 
-To run the analysis described below, the toy-example provided in the `Quick start` section is used. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section 5.12. Here we will focus on 100 transcripts. 
 
 ## Pre-processing
+
+The pre-processing consists in the following steps:
 
 ### Input files
 
@@ -144,7 +145,8 @@ To run the analysis described below, the toy-example provided in the `Quick star
 
 ## tepr analysis
 
-In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed.
+In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed with the toy-data limited to 100 transcripts. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section 5.12.
+
 
 ### Input files
 
