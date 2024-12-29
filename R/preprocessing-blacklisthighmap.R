@@ -311,7 +311,7 @@
 #' - Removing scores overlapping with blacklisted or low mappability regions.
 #' - Computing weighted means for overlapping scores in genomic windows.
 #' - Saving the processed results to specified path (tmpfold).
-#' 
+#'
 #' If chromtab is left to NA, the chromosome information is automatically
 #' retrieved from the UCSC server using `genomename`. Otherwise, the Seqinfo
 #' object can be retrieved with:
@@ -353,9 +353,16 @@
 
 
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
-    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
+    nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
     tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
     chromtab = NA, verbose = TRUE) {
+
+        if (is.na(genomename) && is.na(chromtab))
+            stop("Either the genome name or chromtab should be provided")
+
+        if (!is.na(chromtab) && !isTRUE(all.equal(is(chromtab), "Seqinfo")))
+            stop("chromtab should be a Seqinfo object. ",
+                "See rtracklayer::SeqinfoForUCSCGenome")
 
         if (showtime) start_time_fun <- Sys.time()
 
