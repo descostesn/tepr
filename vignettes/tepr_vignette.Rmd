@@ -428,26 +428,20 @@ print(head(res, 2))
 
 ## Plotting
 
-tepr enables the visualization of the cumulative transcription density along a
-selected transcription unit (`plotecdf`); the comparison of the AUC between two
-conditions (`plotauc`); the average transcription density of a user-selected
-collection of transcripts (`plotmetagenes`); and of the histogram of the
-distance of the knees to the transcription start sites (TSS).
+tepr enables the visualization of the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of the AUC between two conditions (`plotauc`); the average transcription density of a user-selected collection of transcripts (`plotmetagenes`); and of the histogram of the distance of the knees to the transcription start sites (TSS).
 
-### ECDF
+### plotecdf
 
-The visualization of the ecdf distribution for a particular transcript (or gene)
-can be obtained with:
+The visualization of the ecdf probability distribution for a particular transcript (here EGFR) can be obtained with:
 
 ```{r plotecdf}
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 ```
 
-### AUC
+### plotauc
 
-The AUC values between conditions can be compared by highlighting the
-two conditions on the plot:
+The AUC values between conditions can be compared by highlighting the two conditions on the plot:
 
 ```{r plotaucgroups}
 plotauc(res, plottype = "groups", plot = TRUE)
@@ -457,9 +451,7 @@ The plot on the complete dataset gives:
 
 <img src="pictures/AUCcompare_group.png" alt="AUC group plot" width="400"/>
 
-It is also possible to compare the AUC by coloring points according to the
-Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the
-points corresponding to a group of genes:
+It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
 ```{r plotaucpval}
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
@@ -471,10 +463,9 @@ The plot on the complete dataset gives:
 <img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
 
 
-### Metagenes
+### plotmetagenes
 
-The average transcription density along a meta-transcript or a meta-gene can be
-visualized with:
+The average transcription density along a meta-transcript or a meta-gene can be visualized with:
 
 ```{r metageneplot}
 plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
@@ -484,13 +475,9 @@ The plot on the complete dataset gives:
 
 <img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
 
-Note that the second parameter tells to plot the distribution for the
-transcripts identified as "attenuated" by the function `universegroup`. The
-function also enables to select the transcripts categorized as "outgroup",
-all the transcripts belonging to the "universe", or all the transcripts of the
-initial table ("all").
+Note that the second parameter tells to plot the distribution for the transcripts identified as "attenuated" by the function `universegroup`. The function also enables to select the transcripts categorized as "outgroup", all the transcripts belonging to the "universe", or all the transcripts of the initial table ("all").
 
-### Histogram
+### plothistoknee
 
 One can visualize the distance of the knees from the TSS by percentage:
 
@@ -502,8 +489,7 @@ The plot on the complete dataset gives:
 
 <img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
 
-The distance can also be visualised in kilobases (kb) by changing the *plottype*
-parameter:
+The distance can also be visualised in kilobases (kb) by changing the *plottype* parameter to "kb":
 
 ```{r kneekb}
 plothistoknee(res, plottype = "kb", plot = TRUE)
