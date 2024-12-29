@@ -145,7 +145,6 @@ The code below runs on chromosome 13 only to limit the time of computation.
 - **gencode**: Gencode annotation file that can be retrieved at https://www.gencodegenes.org/.
 - **maptrack**: Files containing the low mappability intervals of the genome of interest. For hg38, the track [k50.Unique.Mappability.bb](https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb) was retrieved on the ucsc server and scores lower than 0.8 were set to `NA`. 
 - **blacklist**: Files for several organisms are available at https://github.com/Boyle-Lab/Blacklist/blob/master/lists/. 
-- `genomename`: Valid UCSC genome name that is used to retrieve the chromosome lengths.
 
 
 ### Retrieving transcript annotations from gencode
@@ -205,10 +204,7 @@ nbcputrans <- 1
 genomename <- "hg38"
 tmpfolder <- "./tmp"
 
-## Retrieving chromosome information (optional)
-chrominfo <- rtracklayer::SeqinfoForUCSCGenome(genomename)
-
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, chromtab = chrominfo, tmpfold = tmpfolder)
+blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
 ```
 
 ### Create the final table
