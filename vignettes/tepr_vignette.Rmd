@@ -13,22 +13,7 @@ vignette: >
 
 # Introduction
 
-TepR (Transcription elongation profile in R) is a package for analyzing data
-from nascent RNA sequencing technologies (TT-seq, mNET-seq, PRO-seq, etc.).
-The general principle relies on calculating the cumulative signal of nascent RNA
-sequencing over the gene body of any given gene or transcription unit. TePR can
-identify transcription attenuation sites by comparing profile to a null model
-which assumes uniform read density over the entirety of the transcriptional
-unit. It can also identify increased or diminished transcription attenuation by
-comparing two conditions. Besides rigorous statistical testing and high
-sensitivity, a major feature of TepR is its ability to provide the elongation
-pattern of each individual gene, including the position of the main attenuation
-point when such a phenomenon occurs.
-Using TepR, users can visualize and refine genome-wide aggregated analyses of
-elongation patterns to robustly identify effects specific to subsets of genes.
-These metrics are suitable for internal comparisons (between genes in each
-condition) and for studying elongation of the same gene in different conditions
-or comparing it to a perfect theoretical uniform elongation.
+TepR (Transcription elongation profile in R) is a package for analyzing data from nascent RNA sequencing technologies (TT-seq, mNET-seq, PRO-seq, etc.). The general principle relies on calculating the probability distribution of nascent RNA sequencing signal over the gene body of any given gene or transcription unit. TePR can identify transcription attenuation sites by comparing profile to a uniform signal over the entirety of the transcriptional unit. It can also identify increased or diminished transcription attenuation by comparing two conditions. Besides rigorous statistical testing and high sensitivity, a major feature of TepR is its ability to provide the elongation pattern of each individual gene, including the position of the main attenuation point when such a phenomenon occurs. Using TepR, users can visualize and refine genome-wide aggregated analyses of elongation patterns to robustly identify effects specific to subsets of genes. These metrics are suitable for internal comparisons (between genes in each condition) and for studying elongation of the same gene in different conditions or comparing it to a perfect theoretical uniform elongation.
 
 # Getting help
 
