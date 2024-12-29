@@ -197,7 +197,7 @@ The main steps include:
 
 Note that no result is returned but files are saved to a temporary folder. These files will be used by the following function `createtablescores`.
 
-```{r blacklisthighmap}
+```{r blacklisthighmap, eval = FALSE}
 ## Parameters
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed", package = "tepr")
 blacklistshpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
@@ -215,11 +215,15 @@ blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindo
 
 This function merges files stored in `tmpfolder` and belonging to the same experiment and direction. These files are combined into a single table providing two columns per experiment. The first gives the name of the experiment and the second the scores. The resulting table also includes annotations for each transcript.
 
-```{r createtablescores}
+```{r createtablescores, eval = FALSE}
 finaltab <- createtablescores(tmpfolder, exptabpath, showtime = TRUE, savefinaltable = FALSE)
-head(finaltab, 3)
 ```
 
+The final table should look like:
+
+```{r showfinaltab}
+finaltab <- 
+```
 
 ## tepr analysis
 
