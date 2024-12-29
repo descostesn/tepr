@@ -221,8 +221,10 @@ finaltab <- createtablescores(tmpfolder, exptabpath, showtime = TRUE, savefinalt
 
 The final table should look like:
 
-```{r showfinaltab}
-finaltab <- 
+```{r showfinaltab, echo = FALSE}
+finaltabpath <- system.file("extdata", "finaltab-chr13.tsv", package = "tepr")
+finaltab <- read.delim(finaltabpath, header = FALSE)
+print(finaltab)
 ```
 
 ## tepr analysis
