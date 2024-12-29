@@ -42,6 +42,9 @@ time.}
 \item{showmemory}{A logical value indicating whether to display memory usage 
 during processing.}
 
+\item{chromtab}{A Seqinfo object containing chromosome information. See
+details. Default to NA.}
+
 \item{verbose}{A logical value indicating whether to display detailed
 processing messages.}
 
@@ -71,6 +74,11 @@ The main steps include:
 - Removing scores overlapping with blacklisted or low mappability regions.
 - Computing weighted means for overlapping scores in genomic windows.
 - Saving the processed results to specified path (tmpfold).
+
+If chromtab is left to NA, the chromosome information is automatically
+retrieved from the UCSC server using `genomename`. Otherwise, the Seqinfo
+object can be retrieved with:
+     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 }
 \examples{
 # Define paths to required files
