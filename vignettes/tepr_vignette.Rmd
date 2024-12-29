@@ -134,10 +134,26 @@ TO DO
 
 # Standard workflow
 
+## Preprocessing
 
-## Pre-processing
+The preprocessing consists in the following steps:
 
-The pre-processing consists in the following steps:
+1. Filters Gencode annotations to retrieve "transcript" annotations.
+2. Differentiates between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
+3. Splits transcripts into windows of size `windsize` defined by the user.
+4. Processes bedgraph files to retrieve values, exclude blacklisted regions, and retain scores in high-mappability intervals.
+5. Generates a final annotated table with scores derived from the above steps.
+
+Important: The `preprocessing` function gives the possibility to store intermediate objects. This avoid recomputing steps in the case of failing because of memory or time limit. See the parameters `saveobjectpath` and `deletetmp` in `?preprocessing`. Here are indications of resources required in order to process the complete dataset:
+
+| nb CPU | RAM | Time |
+|--------|-----|------|
+| 15 | 113.5 G | 3h47 |
+| 10 | 78.9 G | 4h24 |
+| 7 | 57.4 G | 5h27 |
+| 5 | 43G | 6h58 |
+| 3 | 28.7G | 9h02|
+
 
 ### Input files
 
