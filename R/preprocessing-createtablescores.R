@@ -94,7 +94,7 @@
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
     showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
-    finaltabname = "anno.tsv", verbose) {
+    finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
         if (verbose) message("\n ## Merging results of each bedgraph into a ",
