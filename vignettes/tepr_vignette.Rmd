@@ -169,7 +169,7 @@ library(tepr)
 exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
-allannobed <- retrieveanno(exptabpath, gencodepath, showtime = TRUE)
+allannobed <- retrieveanno(exptabpath, gencodepath)
 print(head(allannobed, 3))
 ```
 
@@ -181,7 +181,7 @@ print(head(allannobed, 3))
 ## Parameters
 windsize = 200
 
-allwindowsbed <- makewindows(allannobed, windsize, showtime = TRUE)
+allwindowsbed <- makewindows(allannobed, windsize)
 print(head(allwindowsbed, 3))
 ```
 
@@ -208,7 +208,7 @@ tmpfolder <- "./tmp"
 ## Retrieving chromosome information (optional)
 chrominfo <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, chromtab = chrominfo, tmpfold = tmpfolder, showtime = TRUE)
+blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, chromtab = chrominfo, tmpfold = tmpfolder)
 ```
 
 ### Create the final table
@@ -216,7 +216,7 @@ blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindo
 This function merges files stored in `tmpfolder` and belonging to the same experiment and direction. These files are combined into a single table providing two columns per experiment. The first gives the name of the experiment and the second the scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE}
-finaltab <- createtablescores(tmpfolder, exptabpath, showtime = TRUE, savefinaltable = FALSE)
+finaltab <- createtablescores(tmpfolder, exptabpath, savefinaltable = FALSE)
 ```
 
 The final table should look like:
