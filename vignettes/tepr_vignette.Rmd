@@ -180,7 +180,7 @@ The function `retrieveanno` performs the following steps:
 6. Optionally reports the total time taken for analysis (if showtime = TRUE).
 
 
-```{r reading-anno-scores}
+```{r retrieveanno}
 library(tepr)
 
 ## Parameters
@@ -189,6 +189,15 @@ gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath, showtime = TRUE)
 head(allannobed, 3)
+```
+
+### Defining windows for each transcript
+
+`makewindows` removes any ensembl names containing "PAR_Y". It filters out intervals smaller than windsize and splits each transcript into "windsize" windows. The result includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and the window number.
+
+```{r retrieveanno}
+allwindowsbed <- makewindows(allannobed, windsize = 200, showtime = TRUE)
+head(allwindowsbed, 3)
 ```
 
 
