@@ -184,7 +184,7 @@ The function `retrieveanno` performs the following steps:
 library(tepr)
 
 ## Parameters
-exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath, showtime = TRUE)
@@ -221,8 +221,18 @@ maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed", package = 
 blacklistshpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
 nbcputrans <- 1
 genomename <- "hg38"
+tmpfolder <- "./tmp"
 
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime = TRUE)
+blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder, showtime = TRUE)
+```
+
+### Create the final table
+
+This function merges files stored in `tmpfolder` and belonging to the same experiment and direction. These files are combined into a single table providing two columns per experiment. The first gives the name of the experiment and the second the scores. The resulting table also includes annotations for each transcript.
+
+```{r createtablescores}
+finaltab <- createtablescores(tmpfolder, exptabpath, showtime = TRUE, savefinaltable = FALSE)
+head(finaltab, 3)
 ```
 
 
