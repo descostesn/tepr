@@ -195,9 +195,34 @@ head(allannobed, 3)
 
 `makewindows` removes any ensembl names containing "PAR_Y". It filters out intervals smaller than windsize and splits each transcript into "windsize" windows. The result includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and the window number.
 
-```{r retrieveanno}
-allwindowsbed <- makewindows(allannobed, windsize = 200, showtime = TRUE)
+```{r makewindows}
+## Parameters
+windsize = 200
+
+allwindowsbed <- makewindows(allannobed, windsize, showtime = TRUE)
 head(allwindowsbed, 3)
+```
+
+### Retrieving bedgraph scores, removing those in black list and low mappability intervals
+
+The `blacklisthighmap` function iterates through chromosomes, processes genomic scores by removing those overlapping with blacklisted regions, and ensures that scores within windows are computed using a weighted mean. The function uses parallel processing for efficiency and supports saving (saveobjectpath) and reloading (reload) intermediate results to optimize workflow.
+
+The main steps include:
+ - Reading and processing bedGraph values.
+ - Removing scores overlapping with blacklisted or low mappability regions.
+ - Computing weighted means for overlapping scores in genomic windows.
+ - Saving the processed results to specified path (tmpfold).
+
+Note that no result is returned but files are saved to a temporary folder. These files will be used by the following function `createtablescores`.
+
+```{r blacklisthighmap}
+## Parameters
+maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed", package = "tepr")
+blacklistshpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
+nbcputrans <- 1
+genomename <- "hg38"
+
+blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime = TRUE)
 ```
 
 
