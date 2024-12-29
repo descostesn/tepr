@@ -289,6 +289,8 @@
 #'   time.
 #' @param showmemory A logical value indicating whether to display memory usage 
 #'   during processing.
+#' @param chromtab A Seqinfo object containing chromosome information. See
+#'  details. Default to NA.
 #' @param verbose A logical value indicating whether to display detailed
 #'   processing messages.
 #'
@@ -309,6 +311,11 @@
 #' - Removing scores overlapping with blacklisted or low mappability regions.
 #' - Computing weighted means for overlapping scores in genomic windows.
 #' - Saving the processed results to specified path (tmpfold).
+#' 
+#' If chromtab is left to NA, the chromosome information is automatically
+#' retrieved from the UCSC server using `genomename`. Otherwise, the Seqinfo
+#' object can be retrieved with:
+#'      chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 #'
 #' @examples
 #' # Define paths to required files
@@ -348,7 +355,7 @@
 blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
     tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-    verbose = TRUE) {
+    chromtab = NA, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
 
@@ -356,7 +363,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             dir.create(tmpfold, recursive = TRUE)
 
         ## Retrieving chromosome lengths
-        chromtab <- .retrievechrom(genomename, verbose)
+        if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
