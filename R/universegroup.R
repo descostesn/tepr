@@ -71,6 +71,7 @@
 #'
 #' @seealso
 #' [attenuation]
+#'
 #' @importFrom dplyr mutate relocate select filter
 #' @importFrom rlang sym .data
 #' @importFrom magrittr %>%
@@ -119,7 +120,8 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
 
     if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
 
     return(completedf)

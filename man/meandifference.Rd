@@ -11,8 +11,8 @@ verbose = TRUE)
 \item{resultsecdf}{A data frame containing ECDF results for each transcript
 and condition (see genesECDF).}
 
-\item{expdf}{A data frame containing experimental information including a
-\code{condition} column.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbwindows}{An integer representing the number of windows (or segments)
 in each transcript.}

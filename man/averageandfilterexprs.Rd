@@ -8,8 +8,8 @@ averageandfilterexprs(expdf, alldf, expthres, showtime = FALSE,
 verbose = TRUE)
 }
 \arguments{
-\item{expdf}{A data frame containing expression data that should have
-columns named 'condition', 'replicate', and 'strand'.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{alldf}{A data frame containing all transcript-related information,
 including biotype, chromosome, coordinates, transcript, gene,

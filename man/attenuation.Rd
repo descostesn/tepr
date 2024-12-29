@@ -19,8 +19,8 @@ transcript (see countna).}
 
 \item{bytranslistmean}{A list of data frames with mean values by transcripts.}
 
-\item{expdf}{A data frame containing experimental conditions, must include
-a column named 'condition'.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{dfmeandiff}{A data frame containing means and differences in mean
 values, if more than one condition. (see meandifference).}
@@ -38,7 +38,7 @@ attenuation values. Defaults to \code{FALSE}.}
 Defaults to \code{NA}.}
 
 \item{pval}{A numeric value specifying the p-value threshold for significance
-Defaults to \code{0.1}.}
+of the KS test. Defaults to \code{0.1}.}
 
 \item{showtime}{A logical value indicating if the duration of the function
 processing should be indicated before ending. Defaults to

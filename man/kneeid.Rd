@@ -10,8 +10,8 @@ kneeid(transdflist, expdf, nbcpu = 1, showtime = FALSE, verbose = TRUE)
 \item{transdflist}{A list of data frames where each data frame contains
 transcript data with ECDF values for each condition.}
 
-\item{expdf}{A data frame containing experimental information including a
-\code{condition} column.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. The parallelization is performed on the elements of

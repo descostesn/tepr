@@ -1,5 +1,6 @@
 #' Calculate Average Expression and Filter Transcript Data
 #'
+#' @description
 #' This function calculates the average expression levels for transcripts from
 #' a provided expression data frame and filters out transcripts based on a
 #' specified expression threshold. The function also renames the columns in the
@@ -9,8 +10,8 @@
 #' averageandfilterexprs(expdf, alldf, expthres, showtime = FALSE,
 #' verbose = TRUE)
 #'
-#' @param expdf A data frame containing expression data that should have
-#'              columns named 'condition', 'replicate', and 'strand'.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param alldf A data frame containing all transcript-related information,
 #'              including biotype, chromosome, coordinates, transcript, gene,
 #'              strand, window, ID and scores retrieved from the bedgraph
@@ -97,7 +98,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
 
     if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
     return(list(maintable = alldf, exptranlist = exptranstab))
 }

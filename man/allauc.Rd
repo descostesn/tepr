@@ -13,8 +13,8 @@ verbose = TRUE)
 level data with mean values for one or more
 conditions.}
 
-\item{expdf}{A data frame containing experimental conditions associated with
-the transcript data. It should have a column named 'condition'.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbwindows}{An integer specifying the number of windows to consider for
 AUC calculations.}

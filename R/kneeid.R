@@ -27,8 +27,8 @@ return(reslist)
 #'
 #' @param transdflist A list of data frames where each data frame contains
 #'    transcript data with ECDF values for each condition.
- #' @param expdf A data frame containing experimental information including a
- #'   \code{condition} column.
+ #' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation. The parallelization is performed on the elements of
 #'  transdflist. Defaults to 1.
@@ -68,7 +68,8 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
   if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
   }
 
   return(res)

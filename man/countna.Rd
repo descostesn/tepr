@@ -12,8 +12,8 @@ first element is assumed to be the main table. The second element is a
 vector of transcript names that passed the filtering of
 'averageandfilterexprs'.}
 
-\item{expdf}{A data frame containing experimental conditions and strand
-information. Must have columns \code{condition} and \code{strand}.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation on transcripts. The number of transcripts is equal to

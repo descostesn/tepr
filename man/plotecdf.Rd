@@ -15,7 +15,8 @@ windows around the TSS (see meandifference).}
 \item{unigroupdf}{A data frame containing gene-specific statistics, including
 their belonging to Universe or Group (see universegroup).}
 
-\item{expdf}{A data frame with experimental conditions and replicates.}
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{genename}{A string specifying the name of the gene of interest to plot.}
 

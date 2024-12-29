@@ -102,8 +102,8 @@
 #'
 #' @param resultsecdf A data frame containing ECDF results for each transcript
 #'  and condition (see genesECDF).
-#' @param expdf A data frame containing experimental information including a
- #'   \code{condition} column.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbwindows An integer representing the number of windows (or segments)
 #'  in each transcript.
 #' @param showtime A logical value indicating if the duration of the function
@@ -170,7 +170,8 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
 
     if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
 
     return(cbind(resultsecdf, res))

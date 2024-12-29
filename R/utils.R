@@ -189,10 +189,10 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 
 checkexptab <- function(exptab) {
 
-    colnamevec <- c("condition", "replicate", "direction", "strand")
+    colnamevec <- c("condition", "replicate", "direction", "strand", "path")
     if (!isTRUE(all.equal(sort(colnames(exptab)), sort(colnamevec))))
         stop("The experiment table should have the columns: ",
-            "'condition', 'replicate', 'direction', 'strand'")
+            "'condition', 'replicate', 'direction', 'strand', 'path'")
 
     directionvec <- unique(exptab$direction)
     if (!isTRUE(all.equal(length(directionvec), 2)) ||

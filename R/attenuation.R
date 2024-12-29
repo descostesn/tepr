@@ -92,8 +92,8 @@
 #' @param matnatrans A data frame containing the number of missing values per
 #'                   transcript (see countna).
 #' @param bytranslistmean A list of data frames with mean values by transcripts.
-#' @param expdf A data frame containing experimental conditions, must include
-#'              a column named 'condition'.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param dfmeandiff A data frame containing means and differences in mean
 #'                  values, if more than one condition. (see meandifference).
 #' @param nbcpu An integer specifying the number of CPU cores to use for
@@ -106,7 +106,7 @@
 #' @param replaceval A value to replace non-significant attenuation values
 #'                   Defaults to \code{NA}.
 #' @param pval A numeric value specifying the p-value threshold for significance
-#'              Defaults to \code{0.1}.
+#'              of the KS test. Defaults to \code{0.1}.
 #' @param showtime A logical value indicating if the duration of the function
 #'                  processing should be indicated before ending. Defaults to
 #'                  \code{FALSE}.

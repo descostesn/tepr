@@ -15,8 +15,8 @@
 #'  first element is assumed to be the main table. The second element is a
 #'  vector of transcript names that passed the filtering of
 #'  'averageandfilterexprs'.
-#' @param expdf A data frame containing experimental conditions and strand
-#'  information. Must have columns \code{condition} and \code{strand}.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation on transcripts. The number of transcripts is equal to
 #'  the number of lines provided as input of 'averageandfilterexprs'.
@@ -76,8 +76,9 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
 
         ## Retrieving total NA and transcript info
         if (!isTRUE(all.equal(res[[1]], res[[2]])))
-            stop("Number of NA is different between conditions. This should ",
-                "not happen. Contact the developer.")
+            stop("Number of NA is different between conditions for ",
+              unique(transtable$gene), ": ", res[[1]], " - ", res[[2]],
+              ". This should not happen. Contact the developer.")
         ## I drop the other NA columns because it is the same value for all the
         ## conditions (NA depends on blacklist and unmmapable region)
         countna <- res[1]
@@ -89,7 +90,8 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
 
   if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
   }
 
   return(do.call("rbind", nabytranslist))

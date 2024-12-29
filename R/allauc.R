@@ -21,7 +21,7 @@
     controlcondname = "ctrl", stresscondname = "HS", dontcompare = NULL) {
 
     condvec <- unique(expdf$condition)
-    resdflist <- mclapply(bytranslist, function(transtab, condvec,
+    resdflist <- parallel::mclapply(bytranslist, function(transtab, condvec,
         controlcondname, stresscondname) {
 
         ## Retrieve the column names for each comparison
@@ -147,8 +147,8 @@
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more
 #'                        conditions.
-#' @param expdf A data frame containing experimental conditions associated with
-#'              the transcript data. It should have a column named 'condition'.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbwindows An integer specifying the number of windows to consider for
 #'                  AUC calculations.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
@@ -216,7 +216,8 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
 
     if (showtime) {
       end_time <- Sys.time()
-      message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+      timing <- end_time - start_time
+      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
     return(allauc)
 }
