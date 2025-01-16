@@ -265,7 +265,7 @@
 #' blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
 #'    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-#'    verbose = TRUE)
+#'    chromtab = NA, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
 #' @param blacklistpath Character string. Path to the blacklist regions file.
@@ -291,6 +291,9 @@
 #'   during processing.
 #' @param chromtab A Seqinfo object containing chromosome information. See
 #'  details. Default to NA.
+#' @param chromtab A Seqinfo object retrieved with the rtracklayer method
+#' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
+#' NA.
 #' @param verbose A logical value indicating whether to display detailed
 #'   processing messages.
 #'

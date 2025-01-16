@@ -204,6 +204,17 @@ nbcputrans <- 1
 genomename <- "hg38"
 tmpfolder <- "./tmp"
 
+## The path to the bedgraph files provided with the package depends on your installation. Modify exptab with the\
+## correct path and create a new file in the current folder.
+## IMPORTANT: You can skip these steps if your exptab contains the correct paths
+expdf <- read.csv(exptabpath)
+bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
+    package = "tepr"))
+expdf$path <- bgpathvec
+write.csv(expdf, file = "./exptab.csv", row.names = FALSE, quote = FALSE)
+exptabpath <- "./exptab.csv"
+
+## Retrieving bedgraph scores, removing those in black list and low mappability intervals
 blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
 ```
 

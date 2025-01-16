@@ -8,7 +8,7 @@ preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
 finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
 savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-deletetmp = TRUE, verbose = TRUE)
+deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{exptabpath}{Character. Path to the experiment table file.}
@@ -52,6 +52,10 @@ Default is FALSE.}
 
 \item{deletetmp}{Logical. Whether to delete temporary files after processing.
 Default is TRUE.}
+
+\item{chromtab}{A Seqinfo object retrieved with the rtracklayer method
+SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
+NA.}
 
 \item{verbose}{Logical. Whether to display detailed progress messages.
 Default is TRUE.}

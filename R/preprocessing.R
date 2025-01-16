@@ -32,14 +32,14 @@
 
 .createbedgraphlistwmean <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, showtime, showmemory,
-    saveobjectpath, reload, tmpfold, verbose) {
+    saveobjectpath, reload, tmpfold, chromtab, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
         blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
             nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
-            tmpfold, reload, showtime, showmemory, verbose)
+            tmpfold, reload, showtime, showmemory, chromtab, verbose)
 }
 
 
@@ -55,7 +55,7 @@
 #' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
 #' finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
 #' savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-#' deletetmp = TRUE, verbose = TRUE)
+#' deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 #'
 #' @param exptabpath Character. Path to the experiment table file.
 #' @param gencodepath Character. Path to the Gencode annotation file.
@@ -83,6 +83,9 @@
 #'  Default is FALSE.
 #' @param deletetmp Logical. Whether to delete temporary files after processing.
 #'  Default is TRUE.
+#' @param chromtab A Seqinfo object retrieved with the rtracklayer method
+#' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
+#' NA.
 #' @param verbose Logical. Whether to display detailed progress messages.
 #'  Default is TRUE.
 #'
@@ -134,7 +137,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
     finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
     savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-    deletetmp = TRUE, verbose = TRUE) {
+    deletetmp = TRUE, chromtab = NA, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("The final table already exists, set reload = FALSE to create",
@@ -164,7 +167,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     ## keeping scores landing on high mappability intervals
     .createbedgraphlistwmean(maptrackpath, blacklistshpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime,
-        showmemory, saveobjectpath, reload, tmpfold, verbose)
+        showmemory, saveobjectpath, reload, tmpfold, chromtab, verbose)
 
     ## Creating the final table from the information retrieved from
     ## blacklisthighmap

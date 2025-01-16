@@ -127,7 +127,10 @@
     if (is.null(chromtab))
         stop("The genome ", genomename, " was not found with the function ",
         " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
-        " if the genome is available on UCSC.")
+        " if the genome is available on UCSC. The connection to UCSC can ",
+        "also have some hickup. You can callagain the function using the ",
+        "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome(",
+        "genomename)")
     idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
         GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]
     chromtab <- chromtab[idxkeep,]
