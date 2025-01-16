@@ -7,7 +7,7 @@
 blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-   verbose = TRUE)
+   chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{maptrackpath}{Character string. Path to the mappability track file.}
@@ -42,8 +42,9 @@ time.}
 \item{showmemory}{A logical value indicating whether to display memory usage 
 during processing.}
 
-\item{chromtab}{A Seqinfo object containing chromosome information. See
-details. Default to NA.}
+\item{chromtab}{A Seqinfo object retrieved with the rtracklayer method
+SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
+NA.}
 
 \item{verbose}{A logical value indicating whether to display detailed
 processing messages.}
