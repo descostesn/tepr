@@ -17,12 +17,12 @@ pval <- 0.1
 significant <- FALSE
 windsizethres <- 50
 countnathres <- 20
-meanctrlthres <- 0.5
-meanstressthres <- 0.5
+meancond1thres <- 0.5
+meancond2thres <- 0.5
 pvaltheorythres <- 0.1
-aucctrlthreshigher <- -10
-aucctrlthreslower <- 15
-aucstressthres <- 15
+auccond1threshigher <- -10
+auccond1threslower <- 15
+auccond2thres <- 15
 attenuatedpvalksthres <- 2
 outgrouppvalksthres <- 0.2
 showtime <- FALSE
