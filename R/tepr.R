@@ -241,15 +241,13 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## Building vectors with the column names specific to the two conditions
         namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
             ".", expdf2cond$strand)
-        scorecols <- paste(namecols, "score", sep = "_")
-        idxcol2conds <- match(c(namecols, scorecols), colnames(alldf))
+        idxcol2conds <- unlist(lapply(namecols,
+            function(x, alldf) grep(x, colnames(alldf)), alldf))
 
         ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
-        ## strand, window, id
-        idxcolinfo <- seq_len(9)
-
+        ## strand, window, id. This is reflected by seq_len(9)
         ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(idxcol2conds, idxcolinfo)]
+        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
