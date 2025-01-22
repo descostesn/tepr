@@ -270,9 +270,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         rm(alldf2cond)
         if (showmemory) print(gc()) else invisible(gc())
 
-        !!!!!!!!!!
-        list(resmeandiff, res)
-        !!!!!!!!!!!!!
+        names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
+            paste("resunigroupatt", compname, sep = "_"))
 
         return(restepr)
 
