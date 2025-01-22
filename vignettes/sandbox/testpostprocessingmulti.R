@@ -25,7 +25,7 @@ auccond1threslower <- 15
 auccond2thres <- 15
 attenuatedpvalksthres <- 2
 outgrouppvalksthres <- 0.2
-showtime <- FALSE
+showtime <- TRUE
 verbose <- TRUE
 
 
@@ -35,3 +35,10 @@ verbose <- TRUE
 
 expdf <- read.csv(exptabpath, header = TRUE)
 alldf <- read.delim(finaltabpath, header = FALSE)
+
+expdf_backup = expdf
+alldf_backup = alldf
+expdf = expdf2cond; alldf = alldf2cond; controlcondname = cond1name
+stresscondname = cond2name; meanctrlthres = meancond1thres
+meanstressthres = meancond2thres; aucctrlthreshigher = auccond1threshigher
+aucctrlthreslower = auccond1threslower; aucstressthres = auccond2thres
