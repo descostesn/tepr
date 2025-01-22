@@ -212,8 +212,21 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## Create matrix with all comparisons
     matcond <- combn(condvec, 2, simplify = TRUE)
 
+    ## Building col names for alldf
+    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+        "gene", "strand", "window", "id")
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }, simplify = FALSE))
+    colnames(alldf) <- c(infocolnames, expcolnames)
+
+    !!!!!!!!!
+
+    !!!!!!!!!!!!!
     ## Calling tepr by pairs of contions
-    reslist <- apply(matcond, 2, function(currentcol, verbose, expdf) {
+    reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
+        nbcpu, rounding) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
@@ -225,12 +238,25 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             return(which(expdf$condition == condname))}, expdf))
         expdf2cond <- expdf[idxexp, ]
 
+        ## Building vectors with the column names specific to the two conditions
+        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
+            ".", expdf2cond$strand)
+        scorecols <- paste(namecols, "score", sep = "_")
+        idxcol2conds <- match(c(namecols, scorecols), colnames(alldf))
+
+        ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
+        ## strand, window, id
+        idxcolinfo <- seq_len(9)
+
+        ## Limiting alldf to the two defined conditions
+        alldf2cond <- alldf[, c(idxcol2conds, idxcolinfo)]
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ## Calling tepr on the defined conditions
     !!!!!!!!!!!!!!!!
-        restepr <- tepr(expdf2cond,
-        
-        
-        alldf, expthres, nbcpu = 1, rounding = 10,
+        restepr <- tepr(expdf2cond, alldf2cond, expthres, nbcpu, rounding,
+
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
     replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
     countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
@@ -239,5 +265,5 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE)
     !!!!!!!!!!!!!!!!!
 
-    }, verbose, expdf)
+    }, verbose, expdf, alldf, expthres, nbcpu, rounding)
 }
