@@ -201,7 +201,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     outgrouppvalksthres = 0.2, showtime = FALSE, showmemory = FALSE,
     verbose = TRUE) {
 
-    if (showtime) start_tepr <- Sys.time()
+    if (showtime) start_teprmulti <- Sys.time()
 
     if (!length(unique(expdf$condition)) > 2)
         stop("There are less than two conditions in your experiment ",
@@ -269,5 +269,12 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
         outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
+
+    if (showtime) {
+      end_teprmulti <- Sys.time()
+      timing <- end_teprmulti - start_teprmulti
+      message("\t\t ## Analysis teprmulti performed in: ",
+        format(timing, digits = 2))
+    }
 
 }
