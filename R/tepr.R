@@ -213,16 +213,24 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     matcond <- combn(condvec, 2, simplify = TRUE)
 
     ## Calling tepr by pairs of contions
-    reslist <- apply(matcond, 2, function(x, verbose) {
+    reslist <- apply(matcond, 2, function(currentcol, verbose, expdf) {
 
-        cond1name <- x[1]
-        cond2name <- x[2]
+        cond1name <- currentcol[1]
+        cond2name <- currentcol[2]
         if (verbose) message("Comparison of ", paste(cond1name, cond2name,
             sep = "_vs_"))
 
+        ## Limiting expdf on the two defined conditions
+        idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
+            return(which(expdf$condition == condname))}, expdf))
+        expdf2cond <- expdf[idxexp, ]
+
         ## Calling tepr on the defined conditions
     !!!!!!!!!!!!!!!!
-        restepr <- (expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+        restepr <- tepr(expdf2cond,
+        
+        
+        alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
     replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
     countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
@@ -231,5 +239,5 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE)
     !!!!!!!!!!!!!!!!!
 
-    }, verbose)
+    }, verbose, expdf)
 }
