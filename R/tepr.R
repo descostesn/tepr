@@ -233,8 +233,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
-        if (verbose) message("Comparison of ", paste(cond1name, cond2name,
-            sep = "_vs_"))
+        compname <- paste(cond1name, cond2name, sep = "_vs_")
+        if (verbose) message("Comparison of ", compname)
 
         ## Limiting expdf on the two defined conditions
         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
@@ -267,7 +267,13 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
 
+        rm(alldf2cond)
         if (showmemory) print(gc()) else invisible(gc())
+
+        !!!!!!!!!!
+        list(resmeandiff, res)
+        !!!!!!!!!!!!!
+
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
