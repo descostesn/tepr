@@ -281,6 +281,10 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
         outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
 
+    ## Naming each element with the comparison title
+    names(reslist) <- apply(matcond, 2, function(currentcol) {
+        return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
+
     if (showtime) {
       end_teprmulti <- Sys.time()
       timing <- end_teprmulti - start_teprmulti
