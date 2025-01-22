@@ -196,8 +196,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-    attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2, showtime = FALSE,
-    verbose = TRUE) {
+    meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
+    auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
+    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_tepr <- Sys.time()
 
@@ -212,10 +213,23 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     matcond <- combn(condvec, 2, simplify = TRUE)
 
     ## Calling tepr by pairs of contions
-    apply(matcond, 2, function (x) {
-        controlcondname = "ctrl", stresscondname = "HS",
-        meanctrlthres = 0.5, meanstressthres = 0.5,
-        aucctrlthreshigher = -10, aucctrlthreslower = 15,
-        aucstressthres = 15,
-    })
+    reslist <- apply(matcond, 2, function(x, verbose) {
+
+        cond1name <- x[1]
+        cond2name <- x[2]
+        if (verbose) message("Comparison of ", paste(cond1name, cond2name,
+            sep = "_vs_"))
+
+        ## Calling tepr on the defined conditions
+    !!!!!!!!!!!!!!!!
+        restepr <- (expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
+    replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
+    countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
+    pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
+    aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
+    showtime = FALSE, verbose = TRUE)
+    !!!!!!!!!!!!!!!!!
+
+    }, verbose)
 }
