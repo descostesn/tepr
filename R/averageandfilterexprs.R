@@ -53,10 +53,10 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
     ## Adding column names to alldf
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
-    expcolnames <- unlist(apply(expdf, 1, function(x) {
+    expcolnames <- as.vector(unlist(apply(expdf, 1, function(x) {
         res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
         return(c(res, paste(res, "score", sep = "_")))
-    }, simplify = FALSE))
+    }, simplify = FALSE)))
     colnames(alldf) <- c(infocolnames, expcolnames)
 
     scorecolvec <- expcolnames[grep("_score", expcolnames)]
