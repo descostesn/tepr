@@ -226,7 +226,10 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     !!!!!!!!!!!!!
     ## Calling tepr by pairs of contions
     reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
-        nbcpu, rounding) {
+        nbcpu, rounding, replaceval, pval, significant, windsizethres,
+        countnathres, meancond1thres, meancond2thres, pvaltheorythres,
+        auccond1threshigher, auccond1threslower, auccond2thres,
+        attenuatedpvalksthres, outgrouppvalksthres, showtime) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
@@ -249,19 +252,22 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## Limiting alldf to the two defined conditions
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ## Calling tepr on the defined conditions
-    !!!!!!!!!!!!!!!!
         restepr <- tepr(expdf2cond, alldf2cond, expthres, nbcpu, rounding,
+            dontcompare = NULL, controlcondname = cond1name,
+            stresscondname = cond2name, replaceval, pval, significant,
+            windsizethres, countnathres, meanctrlthres = meancond1thres,
+            meanstressthres = meancond2thres, pvaltheorythres,
+            aucctrlthreshigher = auccond1threshigher,
+            aucctrlthreslower = auccond1threslower,
+            aucstressthres = auccond2thres, attenuatedpvalksthres,
+            outgrouppvalksthres, showtime, verbose)
+    !!!!!!!!!!!
 
-    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-    replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
-    countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
-    pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
-    aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
-    showtime = FALSE, verbose = TRUE)
-    !!!!!!!!!!!!!!!!!
+    }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
+        replaceval, pval, significant, windsizethres, countnathres,
+        meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
+        auccond1threslower, auccond2thres, attenuatedpvalksthres,
+        outgrouppvalksthres, showtime)
 
-    }, verbose, expdf, alldf, expthres, nbcpu, rounding)
 }
