@@ -198,7 +198,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
     meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
     auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
+    outgrouppvalksthres = 0.2, showtime = FALSE, showmemory = FALSE,
+    verbose = TRUE) {
 
     if (showtime) start_tepr <- Sys.time()
 
@@ -226,7 +227,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         nbcpu, rounding, replaceval, pval, significant, windsizethres,
         countnathres, meancond1thres, meancond2thres, pvaltheorythres,
         auccond1threshigher, auccond1threslower, auccond2thres,
-        attenuatedpvalksthres, outgrouppvalksthres, showtime) {
+        attenuatedpvalksthres, outgrouppvalksthres, showmemory, showtime) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
@@ -260,12 +261,13 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             aucstressthres = auccond2thres, attenuatedpvalksthres,
             outgrouppvalksthres, showtime, verbose)
 
+        if (showmemory) print(gc()) else invisible(gc())
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
         replaceval, pval, significant, windsizethres, countnathres,
         meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
-        outgrouppvalksthres, showtime, simplify = FALSE)
+        outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
 
 }
