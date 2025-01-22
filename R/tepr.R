@@ -251,15 +251,19 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
         ## Calling tepr on the defined conditions
-        restepr <- tepr(expdf2cond, alldf2cond, expthres, nbcpu, rounding,
-            dontcompare = NULL, controlcondname = cond1name,
-            stresscondname = cond2name, replaceval, pval, significant,
-            windsizethres, countnathres, meanctrlthres = meancond1thres,
-            meanstressthres = meancond2thres, pvaltheorythres,
+        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+            expthres = expthres, nbcpu = nbcpu, rounding = rounding,
+            dontcompare = dontcompare, controlcondname = cond1name,
+            stresscondname = cond2name, replaceval = replaceval, pval = pval,
+            significant = significant, windsizethres = windsizethres,
+            countnathres = countnathres, meanctrlthres = meancond1thres,
+            meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
             aucctrlthreshigher = auccond1threshigher,
             aucctrlthreslower = auccond1threslower,
-            aucstressthres = auccond2thres, attenuatedpvalksthres,
-            outgrouppvalksthres, showtime, verbose)
+            aucstressthres = auccond2thres,
+            attenuatedpvalksthres = attenuatedpvalksthres,
+            outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
+            verbose = verbose)
 
         if (showmemory) print(gc()) else invisible(gc())
         return(restepr)
