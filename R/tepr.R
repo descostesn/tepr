@@ -117,7 +117,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     if (length(unique(expdf$condition)) > 2)
         stop("There are more than two conditions in your experiment ",
-            "table. Use teprmulti.")
+            "table. Use teprmulti function instead.")
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
@@ -186,3 +186,24 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## Return variables necessary for plotting
     return(list(resmeandiff, res))
 }
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
+    replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
+    countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
+    pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
+    aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
+    showtime = FALSE, verbose = TRUE) {
+
+    if (showtime) start_tepr <- Sys.time()
+
+    if (!length(unique(expdf$condition)) > 2)
+        stop("There are less than two conditions in your experiment ",
+            "table. Use tepr function instead.")
+
