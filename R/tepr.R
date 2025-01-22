@@ -207,6 +207,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         stop("There are less than two conditions in your experiment ",
             "table. Use tepr function instead.")
 
+    checkexptab(expdf)
+
     ## Retrieve the condition names without duplicates
     condvec <- unique(expdf$condition)
 
