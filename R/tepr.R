@@ -194,12 +194,10 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
-    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-    replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
-    countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
-    pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
-    aucstressthres = 15, attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
-    showtime = FALSE, verbose = TRUE) {
+    dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
+    windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
+    attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2, showtime = FALSE,
+    verbose = TRUE) {
 
     if (showtime) start_tepr <- Sys.time()
 
@@ -207,3 +205,17 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         stop("There are less than two conditions in your experiment ",
             "table. Use tepr function instead.")
 
+    ## Retrieve the condition names without duplicates
+    condvec <- unique(expdf$condition)
+
+    ## Create matrix with all comparisons
+    matcond <- combn(condvec, 2, simplify = TRUE)
+
+    ## Calling tepr by pairs of contions
+    apply(matcond, 2, function (x) {
+        controlcondname = "ctrl", stresscondname = "HS",
+        meanctrlthres = 0.5, meanstressthres = 0.5,
+        aucctrlthreshigher = -10, aucctrlthreslower = 15,
+        aucstressthres = 15,
+    })
+}
