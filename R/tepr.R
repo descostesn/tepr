@@ -226,10 +226,10 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     ## Calling tepr by pairs of contions
     reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
-        nbcpu, rounding, replaceval, pval, significant, windsizethres,
-        countnathres, meancond1thres, meancond2thres, pvaltheorythres,
-        auccond1threshigher, auccond1threslower, auccond2thres,
-        attenuatedpvalksthres, outgrouppvalksthres, showmemory, showtime) {
+        expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
+        windsizethres, countnathres, meancond1thres, meancond2thres,
+        pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
+        attenuatedpvalksthres, outgrouppvalksthres, showtime, showmemory) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
