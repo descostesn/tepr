@@ -29,6 +29,9 @@ outgrouppvalksthres <- 0.2
 showtime <- TRUE
 verbose <- TRUE
 
+## vic input for figures
+AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
+
 
 ##################
 # MAIN
