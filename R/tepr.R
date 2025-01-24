@@ -199,8 +199,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
     meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
     auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, showtime = FALSE, showmemory = FALSE,
-    verbose = TRUE) {
+    outgrouppvalksthres = 0.2, saveobjectpath = NA, showtime = FALSE,
+    showmemory = FALSE, verbose = TRUE) {
 
     if (showtime) start_teprmulti <- Sys.time()
 
@@ -209,6 +209,9 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             "table. Use tepr function instead.")
 
     checkexptab(expdf)
+
+    if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
+        dir.create(saveobjectpath, recursive = TRUE)
 
     ## Retrieve the condition names without duplicates
     condvec <- unique(expdf$condition)
@@ -230,7 +233,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
         windsizethres, countnathres, meancond1thres, meancond2thres,
         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
-        attenuatedpvalksthres, outgrouppvalksthres, showtime, showmemory) {
+        attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
+        showtime, showmemory) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
@@ -274,13 +278,17 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
             paste("resunigroupatt", compname, sep = "_"))
 
+        if (!is.na(saveobjectpath))
+            saveRDS(restepr, file = file.path(saveobjectpath,
+                paste0(compname, ".rds")))
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
         replaceval, pval, significant, windsizethres, countnathres,
         meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
-        outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
+        outgrouppvalksthres, saveobjectpath, showtime, showmemory,
+        simplify = FALSE)
 
     ## Naming each element with the comparison title
     names(reslist) <- apply(matcond, 2, function(currentcol) {
