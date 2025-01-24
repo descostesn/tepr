@@ -184,7 +184,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             format(timing, digits = 2))
     }
     ## Return variables necessary for plotting
-    return(list(resmeandiff, res))
+    reslist <- list(resmeandiff, res)
+    return(reslist)
 }
 
 
