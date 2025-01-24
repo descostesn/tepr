@@ -191,106 +191,106 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
-    dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
-    windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-    meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
-    auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, showtime = FALSE, showmemory = FALSE,
-    verbose = TRUE) {
+# teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+#     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
+#     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
+#     meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
+#     auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
+#     outgrouppvalksthres = 0.2, showtime = FALSE, showmemory = FALSE,
+#     verbose = TRUE) {
 
-    if (showtime) start_teprmulti <- Sys.time()
+#     if (showtime) start_teprmulti <- Sys.time()
 
-    if (!length(unique(expdf$condition)) > 2)
-        stop("There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.")
+#     if (!length(unique(expdf$condition)) > 2)
+#         stop("There are less than two conditions in your experiment ",
+#             "table. Use tepr function instead.")
 
-    checkexptab(expdf)
+#     checkexptab(expdf)
 
-    ## Retrieve the condition names without duplicates
-    condvec <- unique(expdf$condition)
+#     ## Retrieve the condition names without duplicates
+#     condvec <- unique(expdf$condition)
 
-    ## Create matrix with all comparisons
-    matcond <- combn(condvec, 2, simplify = TRUE)
+#     ## Create matrix with all comparisons
+#     matcond <- combn(condvec, 2, simplify = TRUE)
 
-    ## Building col names for alldf
-    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
-        "gene", "strand", "window", "id")
-    expcolnames <- unlist(apply(expdf, 1, function(x) {
-        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
-        return(c(res, paste(res, "score", sep = "_")))
-    }, simplify = FALSE))
-    colnames(alldf) <- c(infocolnames, expcolnames)
+#     ## Building col names for alldf
+#     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+#         "gene", "strand", "window", "id")
+#     expcolnames <- unlist(apply(expdf, 1, function(x) {
+#         res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+#         return(c(res, paste(res, "score", sep = "_")))
+#     }, simplify = FALSE))
+#     colnames(alldf) <- c(infocolnames, expcolnames)
 
-    ## Calling tepr by pairs of contions
-    reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
-        expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
-        windsizethres, countnathres, meancond1thres, meancond2thres,
-        pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
-        attenuatedpvalksthres, outgrouppvalksthres, showtime, showmemory) {
+#     ## Calling tepr by pairs of contions
+#     reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
+#         expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
+#         windsizethres, countnathres, meancond1thres, meancond2thres,
+#         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
+#         attenuatedpvalksthres, outgrouppvalksthres, showtime, showmemory) {
 
-        cond1name <- currentcol[1]
-        cond2name <- currentcol[2]
-        compname <- paste(cond1name, cond2name, sep = "_vs_")
-        if (verbose) message("Comparison of ", compname)
+#         cond1name <- currentcol[1]
+#         cond2name <- currentcol[2]
+#         compname <- paste(cond1name, cond2name, sep = "_vs_")
+#         if (verbose) message("Comparison of ", compname)
 
-        ## Limiting expdf on the two defined conditions
-        idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
-            return(which(expdf$condition == condname))}, expdf))
-        expdf2cond <- expdf[idxexp, ]
+#         ## Limiting expdf on the two defined conditions
+#         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
+#             return(which(expdf$condition == condname))}, expdf))
+#         expdf2cond <- expdf[idxexp, ]
 
-        ## Building vectors with the column names specific to the two conditions
-        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
-        idxcol2conds <- unlist(lapply(namecols,
-            function(x, alldf) grep(x, colnames(alldf)), alldf))
+#         ## Building vectors with the column names specific to the two conditions
+#         namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
+#             ".", expdf2cond$strand)
+#         idxcol2conds <- unlist(lapply(namecols,
+#             function(x, alldf) grep(x, colnames(alldf)), alldf))
 
-        ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
-        ## strand, window, id. This is reflected by seq_len(9)
-        ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
+#         ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
+#         ## strand, window, id. This is reflected by seq_len(9)
+#         ## Limiting alldf to the two defined conditions
+#         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
-        ## Calling tepr on the defined conditions
-        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
-            expthres = expthres, nbcpu = nbcpu, rounding = rounding,
-            dontcompare = dontcompare, controlcondname = cond1name,
-            stresscondname = cond2name, replaceval = replaceval, pval = pval,
-            significant = significant, windsizethres = windsizethres,
-            countnathres = countnathres, meanctrlthres = meancond1thres,
-            meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
-            aucctrlthreshigher = auccond1threshigher,
-            aucctrlthreslower = auccond1threslower,
-            aucstressthres = auccond2thres,
-            attenuatedpvalksthres = attenuatedpvalksthres,
-            outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
-            verbose = verbose)
+#         ## Calling tepr on the defined conditions
+#         restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+#             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
+#             dontcompare = dontcompare, controlcondname = cond1name,
+#             stresscondname = cond2name, replaceval = replaceval, pval = pval,
+#             significant = significant, windsizethres = windsizethres,
+#             countnathres = countnathres, meanctrlthres = meancond1thres,
+#             meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
+#             aucctrlthreshigher = auccond1threshigher,
+#             aucctrlthreslower = auccond1threslower,
+#             aucstressthres = auccond2thres,
+#             attenuatedpvalksthres = attenuatedpvalksthres,
+#             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
+#             verbose = verbose)
 
-        rm(alldf2cond)
-        if (showmemory) print(gc()) else invisible(gc())
+#         rm(alldf2cond)
+#         if (showmemory) print(gc()) else invisible(gc())
 
-        names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
-            paste("resunigroupatt", compname, sep = "_"))
+#         names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
+#             paste("resunigroupatt", compname, sep = "_"))
 
-        return(restepr)
+#         return(restepr)
 
-    }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
-        replaceval, pval, significant, windsizethres, countnathres,
-        meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
-        auccond1threslower, auccond2thres, attenuatedpvalksthres,
-        outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
+#     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
+#         replaceval, pval, significant, windsizethres, countnathres,
+#         meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
+#         auccond1threslower, auccond2thres, attenuatedpvalksthres,
+#         outgrouppvalksthres, showtime, showmemory, simplify = FALSE)
 
-    ## Naming each element with the comparison title
-    names(reslist) <- apply(matcond, 2, function(currentcol) {
-        return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
+#     ## Naming each element with the comparison title
+#     names(reslist) <- apply(matcond, 2, function(currentcol) {
+#         return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
 
-    if (showtime) {
-      end_teprmulti <- Sys.time()
-      timing <- end_teprmulti - start_teprmulti
-      message("\t\t ## Analysis teprmulti performed in: ",
-        format(timing, digits = 2))
-    }
+#     if (showtime) {
+#       end_teprmulti <- Sys.time()
+#       timing <- end_teprmulti - start_teprmulti
+#       message("\t\t ## Analysis teprmulti performed in: ",
+#         format(timing, digits = 2))
+#     }
 
-}
+# }
