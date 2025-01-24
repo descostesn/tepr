@@ -278,9 +278,12 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
             paste("resunigroupatt", compname, sep = "_"))
 
-        if (!is.na(saveobjectpath))
-            saveRDS(restepr, file = file.path(saveobjectpath,
-                paste0(compname, ".rds")))
+        if (!is.na(saveobjectpath)) {
+            filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
+            if (verbose) message("\t\t Saving to ", filepathname)
+            saveRDS(restepr, file = filepathname)
+        }
+
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
