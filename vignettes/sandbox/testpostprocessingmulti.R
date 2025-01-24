@@ -29,8 +29,9 @@ outgrouppvalksthres <- 0.2
 showtime <- TRUE
 verbose <- TRUE
 
-## vic input for figures
-AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
+
+## matcond <- matcond[, c(1, 6, 10, 24)]
+
 
 
 ##################
@@ -39,7 +40,13 @@ AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downlo
 
 expdf <- read.csv(exptabpath, header = TRUE)
 alldf <- read.delim(finaltabpath, header = FALSE)
-alldfvic <- read.delim(finaltabpathvic, header = FALSE)
+
+## vic input for figures
+AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
+
+
+
+#alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
 expdf_backup = expdf
 alldf_backup = alldf
