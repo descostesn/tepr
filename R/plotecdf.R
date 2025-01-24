@@ -23,7 +23,8 @@
     subtext <- paste(sapply(reslist, "[", 1), collapse = "\n")
     vlinedf <- do.call("rbind", sapply(reslist, "[", 2))
     kneeval <- sapply(reslist, "[", 3)
-    return(list(subtext, vlinedf, kneeval))
+    res <- list(subtext, vlinedf, kneeval)
+    return(res)
 }
 
 .valcolbuild <- function(condvec, repvec) {
