@@ -6,6 +6,7 @@ library("tepr")
 
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
 finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
+finaltabpathvic <- "/g/romebioinfo/Projects/tepr-data/downloads/bedgraphs-DRB/DRB_Cugusi_20240619.tsv"
 expthres <- 0.1
 nbcpu <- 5
 rounding <- 10
@@ -35,6 +36,7 @@ verbose <- TRUE
 
 expdf <- read.csv(exptabpath, header = TRUE)
 alldf <- read.delim(finaltabpath, header = FALSE)
+alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
 expdf_backup = expdf
 alldf_backup = alldf
