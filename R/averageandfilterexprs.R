@@ -102,7 +102,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
       message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
 
-    res <- list(maintable = alldf, exptranlist = exptranstab)
+    res <- list(maintable = alldf, exptranslist = exptranstab)
 
     return(res)
 }
