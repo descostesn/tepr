@@ -190,9 +190,98 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+#' Perform tepr differential nascent rna-seq analysis for multiple conditions
+#'
+#' @description
+#' This function performs tepr differential nascent RNA-seq analysis for
+#' multiple conditions. It iterates over all pairwise comparisons of
+#' conditions within the experiment table and calls the `tepr` function for
+#' each pair.
+#'
+#' @usage
+#' teprmulti(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
+#'  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
+#'  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
+#'  meancond1thres = 0.5, meancond2thres = 0.5,
+#'  auccond1threshigher = -10, auccond1threslower = 15, auccond2thres = 15,
+#'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
+#'  saveobjectpath = NA, showtime = FALSE, showmemory = FALSE, verbose = TRUE)
+#'
+#' @param expdf A data frame containing experiment data that should have
+#'          columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param alldf A data frame containing all transcript-related information,
+#'          including biotype, chromosome, coordinates, transcript, gene,
+#'          strand, window, ID and scores retrieved from the bedgraph files.
+#' @param expthres A numeric value specifying the expression threshold.
+#'          Transcripts with average expression values below this threshold
+#'          will be filtered out from the returned transcript vector.
+#' @param nbcpu An integer specifying the number of CPU cores to use for
+#'          parallel computation on transcripts. Defaults to \code{1}.
+#' @param rounding An integer specifying the rounding factor for computing ECDF.
+#'          Default is \code{10}.
+#' @param dontcompare An optional parameter to specify any conditions to exclude
+#'          from the comparison. Defaults to \code{NULL}.
+#' @param replaceval A value to replace non-significant attenuation values.
+#'          Defaults to \code{NA}.
+#' @param pval A numeric value specifying the p-value threshold for significance
+#'          of the KS test. Defaults to \code{0.1}.
+#' @param significant A logical indicating whether to filter out non-significant
+#'          attenuation values. Defaults to \code{FALSE}.
+#' @param windsizethres A numeric threshold for the minimum window size.
+#'          Default is 50.
+#' @param countnathres A numeric threshold for the maximum number of missing
+#'          data points for an experiment (NA values). Default is 20.
+#' @param pvaltheorythres A numeric threshold for the minimum p-value used to
+#'          define the universe of genes. Default is 0.1.
+#' @param meancond1thres A numeric threshold for the minimum mean transcription
+#'          value in the first condition of each comparison. Default is 0.5.
+#' @param meancond2thres A numeric threshold for the minimum mean transcription
+#'          value in the second condition of each comparison. Default is 0.5.
+#' @param auccond1threshigher A numeric threshold for the lower bound of the
+#'          first condition AUC value in the outgroup classification.
+#'          Default is -10.
+#' @param auccond1threslower A numeric threshold for the upper bound of the
+#'          first condition AUC value in the outgroup classification.
+#'          Default is 15.
+#' @param auccond2thres A numeric threshold for the minimum second condition
+#'          AUC value used to classify attenuated genes. Default is 15.
+#' @param attenuatedpvalksthres A numeric threshold for the negative log10 of
+#'          the p-value (from KS test) for defining attenuated genes.
+#'          Default is 2.
+#' @param outgrouppvalksthres A numeric threshold for the maximum KS p-value
+#'          used to define the outgroup. Default is 0.2.
+#' @param saveobjectpath A character string specifying the path to save
+#'          the object of the results for each comparison. The file names are
+#'          defined with the 'condition' column of expdf. Defaults to \code{NA}.
+#' @param showtime A logical value indicating if the duration of the function
+#'          processing should be indicated before ending. Defaults to
+#'          \code{FALSE}.
+#' @param showmemory A logical value indicating if memory usage should be
+#'          printed during the execution. Defaults to \code{FALSE}.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'          Defaults to \code{TRUE}.
+#'
+#' @return
+#' A list of lists. Each inner list corresponds to a pairwise comparison
+#' and contains two data frames:
+#'   - `resmeandiff_<comparison>`: Results from the `meandifference` function
+#'     for the specific comparison.
+#'   - `resunigroupatt_<comparison>`: Results from the `universegroup` function
+#'     for the specific comparison.
+#'
+#' @examples
+#' # Example usage:
+#' # exptabpath <- "exp.csv"
+#' # alldfpath <- "result-preprocessing.tsv"
+#' # expdf <- read.csv(exptabpath)
+#' # alldf <- read.delim(alldfpath, header = FALSE)
+#' # expthres <- 0.1
+#' # reslist <- teprmulti(expdf, alldf, expthres)
+#'
+#' @seealso
+#' [tepr]
+#'
+#' @export
 
 teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
@@ -304,4 +393,5 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         format(timing, digits = 2))
     }
 
+    return(reslist)
 }
