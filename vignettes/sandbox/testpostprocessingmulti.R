@@ -28,7 +28,7 @@ attenuatedpvalksthres <- 2
 outgrouppvalksthres <- 0.2
 showtime <- TRUE
 verbose <- TRUE
-
+saveobjectpath <- "/g/romebioinfo/tmp/multitest"
 
 ## matcond <- matcond[, c(1, 6, 10, 24)]
 
@@ -44,19 +44,21 @@ alldf <- read.delim(finaltabpath, header = FALSE)
 ## vic input for figures
 AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
 
+## subset of the result of tepr multi
+reslist <- readRDS(file.path(saveobjectpath, "reslist.rds"))
 
 
 #alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
-expdf_backup = expdf
-alldf_backup = alldf
-alldf_backupvic = alldfvic
-expdf = expdf2cond
+# expdf_backup = expdf
+# alldf_backup = alldf
+# alldf_backupvic = alldfvic
+# expdf = expdf2cond
 
-alldf = alldf2cond
-alldfvic = alldf2condvic
+# alldf = alldf2cond
+# alldfvic = alldf2condvic
 
-controlcondname = cond1name
-stresscondname = cond2name; meanctrlthres = meancond1thres
-meanstressthres = meancond2thres; aucctrlthreshigher = auccond1threshigher
-aucctrlthreslower = auccond1threslower; aucstressthres = auccond2thres
+# controlcondname = cond1name
+# stresscondname = cond2name; meanctrlthres = meancond1thres
+# meanstressthres = meancond2thres; aucctrlthreshigher = auccond1threshigher
+# aucctrlthreslower = auccond1threslower; aucstressthres = auccond2thres
