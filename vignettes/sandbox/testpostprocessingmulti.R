@@ -40,7 +40,13 @@ alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
 expdf_backup = expdf
 alldf_backup = alldf
-expdf = expdf2cond; alldf = alldf2cond; controlcondname = cond1name
+alldf_backupvic = alldfvic
+expdf = expdf2cond
+
+alldf = alldf2cond
+alldfvic = alldf2condvic
+
+controlcondname = cond1name
 stresscondname = cond2name; meanctrlthres = meancond1thres
 meanstressthres = meancond2thres; aucctrlthreshigher = auccond1threshigher
 aucctrlthreslower = auccond1threslower; aucstressthres = auccond2thres
