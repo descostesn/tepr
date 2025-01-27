@@ -166,6 +166,10 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
         stop("The outfold should be defined to save the figure. Otherwise ",
             "set plot = TRUE")
 
+    if (!isTRUE(all.equal(length(colvec), 4)))
+        stop("The vector of colours colvec should have 4 values.")
+
+
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
     idxgene <- which(dfmeandiff$gene == genename)
