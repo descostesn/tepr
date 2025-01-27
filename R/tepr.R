@@ -370,7 +370,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
 
-                    names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
+            names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
             paste("resunigroupatt", compname, sep = "_"))
 
         if (!is.na(saveobjectpath)) {
@@ -380,8 +380,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
         } else {
-                        if (verbose) message("\t\t\t Loading ", filepathname)
-            reslist <- readRDS(filepathname)
+            if (verbose) message("\t\t\t Loading ", filepathname)
+            restepr <- readRDS(filepathname)
 
         }
 
