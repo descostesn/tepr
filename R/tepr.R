@@ -330,7 +330,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         windsizethres, countnathres, meancond1thres, meancond2thres,
         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
-        showtime, showmemory) {
+        reload, showtime, showmemory) {
 
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
@@ -354,7 +354,9 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
         ## Calling tepr on the defined conditions
-        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+        filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
+        if (!reload || !file.exists(filepathname)) {
+            restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
             dontcompare = dontcompare, controlcondname = cond1name,
             stresscondname = cond2name, replaceval = replaceval, pval = pval,
@@ -368,17 +370,24 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
 
-        rm(alldf2cond)
-        if (showmemory) print(gc()) else invisible(gc())
-
-        names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
+                    names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
             paste("resunigroupatt", compname, sep = "_"))
 
         if (!is.na(saveobjectpath)) {
-            filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
             if (verbose) message("\t\t Saving to ", filepathname)
             saveRDS(restepr, file = filepathname)
         }
+
+
+        } else {
+                        if (verbose) message("\t\t\t Loading ", filepathname)
+            reslist <- readRDS(filepathname)
+
+        }
+
+        rm(alldf2cond)
+        if (showmemory) print(gc()) else invisible(gc())
+
 
         return(restepr)
 
@@ -386,7 +395,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         replaceval, pval, significant, windsizethres, countnathres,
         meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
-        outgrouppvalksthres, saveobjectpath, showtime, showmemory,
+        outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
         simplify = FALSE)
 
     ## Naming each element with the comparison title
@@ -400,8 +409,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     } else {
             if (verbose) message("\t\t\t Loading ", filepathname)
             reslist <- readRDS(filepathname)
-        }
-    
+    }
 
     if (showtime) {
       end_teprmulti <- Sys.time()
