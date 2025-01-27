@@ -1,19 +1,25 @@
 
 ## See also: teprmulti, plotecdf
 
-plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
-    digits = 2, colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-    middlewind = 100, pval = 0.01, formatname = "pdf", verbose = TRUE) {
+plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec,
+    outfold = ".", digits = 2, middlewind = 100, pval = 0.01,
+    colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
+    aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10, aucaxismaxy = 100,
+    aucmaintitle = "", aucsubtitle = "", auclegendpos = "bottom",
+    formatname = "pdf", aucuniname = "Universe", aucgroupname = "Group",
+    verbose = TRUE) {
 
     if (!length(unique(expdf$condition)) > 2)
         stop("There are less than two conditions in your experiment ",
             "table. The input list must be the result of teprmulti.")
 
     ## complist <- resteprmulti[[1]]; compname <- names(resteprmulti)[1]
-    invisible(mapply(function(complist, compname, expdf, ecdfgenevec, colvec,
-        digits, middlewind, pval, formatname, verbose) {
+    invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
+        genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
+        aucaxismaxx, aucaxisminy, aucaxismaxy, aucsubtitle, auclegendpos,
+        aucuniname, aucgroupname, verbose) {
 
-        if (verbose) message("Generating plots for ", compname)
+        if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
 
         ## Generating the plot of the ecdf empirical distribution and
@@ -30,7 +36,28 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
         }, complist, expdf, colvec, outfoldcomp, digits, middlewind,
                 pval, formatname, verbose)
 
+        ## Generate the plot of auc by groups
+        if (verbose) message("\t ## plot auc by groups")
+        expnamevec <- unique(expdf$condition)
+        name1 <- expnamevec[1]
+        name2 <- expnamevec[2]
+        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name1, "_", name2)
+        labelx <- paste0("AUC in ", name1)
+        labely <- paste0("AUC in ", name2)
+        aucfilename <- paste0("AUCcompare_groups_", name1, "_", name2)
+        plotauc(tab = complist[[2]], genevec = genaucvec, auc_ctrlname = name1,
+            auc_stressname = name2, pvalkstestcolname = pvalks, labelx = labelx,
+            labely = labely, axismin_x = aucaxisminx, axismax_x = aucaxismaxx,
+            axismin_y = aucaxisminy, axismax_y = aucaxismaxy,
+            maintitle = aucmaintitle, subtitle = aucsubtitle,
+            legendpos = auclegendpos, formatname = formatname,
+            outfold = outfoldcomp, outfile = aucfilename, plottype = "groups",
+            plot = FALSE, universename = aucuniname, groupname = aucgroupname,
+            verbose = verbose)
+
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
-        colvec, digits, middlewind, pval, formatname, verbose)))
+        genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
+        aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
+        auclegendpos, aucuniname, aucgroupname, verbose)))
 
 }
