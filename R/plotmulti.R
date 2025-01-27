@@ -1,7 +1,7 @@
 
 ## See also: teprmulti, plotecdf
 
-plotmulti <- function(resteprmulti, expdf, genenameecdf, outfold = ".",
+plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
     digits = 2, colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
     middlewind = 100, pval = 0.01, formatname = "pdf", verbose = TRUE) {
 
@@ -10,7 +10,7 @@ plotmulti <- function(resteprmulti, expdf, genenameecdf, outfold = ".",
             "table. The input list must be the result of teprmulti.")
 
     ## complist <- resteprmulti[[1]]; compname <- names(resteprmulti)[1]
-    invisible(mapply(function(complist, compname, expdf, genenameecdf, colvec,
+    invisible(mapply(function(complist, compname, expdf, ecdfgenevec, colvec,
         digits, middlewind, pval, formatname, verbose) {
 
         if (verbose) message("Generating plots for ", compname)
@@ -18,13 +18,19 @@ plotmulti <- function(resteprmulti, expdf, genenameecdf, outfold = ".",
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
-        plotecdf(dfmeandiff = complist[[1]], unigroupdf = complist[[2]],
-            expdf = expdf, genename = genenameecdf, colvec = colvec,
-            outfold = outfoldcomp, digits = digits, middlewind = middlewind,
-            pval = pval, plot = FALSE, formatname = formatname,
-            verbose = verbose)
+        if (verbose) message("\t ## plot ecdf")
+        sapply(ecdfgenevec, function(currentgene, complist, expdf, colvec,
+            outfoldcomp, digits, middlewind, pval, formatname, verbose) {
+            if (verbose) message("\t\t plot ecdf for ", currentgene)
+            plotecdf(dfmeandiff = complist[[1]], unigroupdf = complist[[2]],
+                expdf = expdf, genename = currentgene, colvec = colvec,
+                outfold = outfoldcomp, digits = digits, middlewind = middlewind,
+                pval = pval, plot = FALSE, formatname = formatname,
+                verbose = verbose)
+        }, complist, expdf, colvec, outfoldcomp, digits, middlewind,
+                pval, formatname, verbose)
 
-    }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, genenameecdf,
+    }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         colvec, digits, middlewind, pval, formatname, verbose)))
 
 }
