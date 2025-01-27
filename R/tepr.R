@@ -322,8 +322,10 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     colnames(alldf) <- c(infocolnames, expcolnames)
 
     ## Calling tepr by pairs of contions
-    if (!reload || !file.exists(!!))
-    reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
+    filepathname <- file.path(saveobjectpath, "allcomplist.rds")
+
+    if (!reload || !file.exists(filepathname)) {
+        reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
         windsizethres, countnathres, meancond1thres, meancond2thres,
         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
@@ -392,10 +394,14 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
 
     if (!is.na(saveobjectpath)) {
-        filepathname <- file.path(saveobjectpath, "allcomplist.rds")
         if (verbose) message("\t\t Saving to ", filepathname)
         saveRDS(reslist, file = filepathname)
     }
+    } else {
+            if (verbose) message("\t\t\t Loading ", filepathname)
+            reslist <- readRDS(filepathname)
+        }
+    
 
     if (showtime) {
       end_teprmulti <- Sys.time()
