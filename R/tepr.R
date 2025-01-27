@@ -294,8 +294,11 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
     auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
     verbose) {
+
     filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
+
     if (!reload || !file.exists(filepathname)) {
+
         restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
             dontcompare = dontcompare, controlcondname = cond1name,
@@ -309,6 +312,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             attenuatedpvalksthres = attenuatedpvalksthres,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
+
         names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
             paste("resunigroupatt", compname, sep = "_"))
 
@@ -316,10 +320,12 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             if (verbose) message("\t\t Saving to ", filepathname)
             saveRDS(restepr, file = filepathname)
         }
+
     } else {
         if (verbose) message("\t\t\t Loading ", filepathname)
         restepr <- readRDS(filepathname)
     }
+
     return(restepr)
 }
 
