@@ -223,6 +223,71 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     return(restepr)
 }
 
+.reslist <- function(filepathname, matcond, verbose, expdf, alldf, expthres,
+    nbcpu, rounding, dontcompare, replaceval, pval, significant, windsizethres,
+    countnathres, meancond1thres, meancond2thres, pvaltheorythres,
+    auccond1threshigher, auccond1threslower, auccond2thres,
+    attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath, reload,
+    showtime, showmemory) {
+
+        reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
+        expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
+        windsizethres, countnathres, meancond1thres, meancond2thres,
+        pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
+        attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
+        reload, showtime, showmemory) {
+
+        cond1name <- currentcol[1]
+        cond2name <- currentcol[2]
+        compname <- paste(cond1name, cond2name, sep = "_vs_")
+        if (verbose) message("Comparison of ", compname)
+
+        ## Limiting expdf on the two defined conditions
+        idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
+            return(which(expdf$condition == condname))}, expdf))
+        expdf2cond <- expdf[idxexp, ]
+
+        ## Building vectors with the column names specific to the two conditions
+        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
+            ".", expdf2cond$strand)
+        idxcol2conds <- unlist(lapply(namecols,
+            function(x, alldf) grep(x, colnames(alldf)), alldf))
+
+        ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
+        ## strand, window, id. This is reflected by seq_len(9)
+        ## Limiting alldf to the two defined conditions
+        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
+
+        ## Calling tepr on the defined conditions
+        restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
+            alldf2cond, expthres, nbcpu, rounding, dontcompare, cond1name,
+            cond2name, replaceval, pval, significant, windsizethres,
+            countnathres, meancond1thres, meancond2thres, pvaltheorythres,
+            auccond1threshigher, auccond1threslower, auccond2thres,
+            attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
+
+        rm(alldf2cond)
+        if (showmemory) print(gc()) else invisible(gc())
+        return(restepr)
+
+    }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
+        replaceval, pval, significant, windsizethres, countnathres,
+        meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
+        auccond1threslower, auccond2thres, attenuatedpvalksthres,
+        outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
+        simplify = FALSE)
+
+    ## Naming each element with the comparison title
+    names(reslist) <- apply(matcond, 2, function(currentcol) {
+        return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
+
+    if (!is.na(saveobjectpath)) {
+        if (verbose) message("\t\t Saving to ", filepathname)
+        saveRDS(reslist, file = filepathname)
+    }
+
+    return(reslist)
+}
 
 #' Perform tepr differential nascent rna-seq analysis for multiple conditions
 #'
@@ -359,64 +424,15 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     filepathname <- file.path(saveobjectpath, "allcomplist.rds")
 
     if (!reload || !file.exists(filepathname)) {
-        reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
-        expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
-        windsizethres, countnathres, meancond1thres, meancond2thres,
-        pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
-        attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
-        reload, showtime, showmemory) {
-
-        cond1name <- currentcol[1]
-        cond2name <- currentcol[2]
-        compname <- paste(cond1name, cond2name, sep = "_vs_")
-        if (verbose) message("Comparison of ", compname)
-
-        ## Limiting expdf on the two defined conditions
-        idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
-            return(which(expdf$condition == condname))}, expdf))
-        expdf2cond <- expdf[idxexp, ]
-
-        ## Building vectors with the column names specific to the two conditions
-        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
-        idxcol2conds <- unlist(lapply(namecols,
-            function(x, alldf) grep(x, colnames(alldf)), alldf))
-
-        ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
-        ## strand, window, id. This is reflected by seq_len(9)
-        ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
-
-        ## Calling tepr on the defined conditions
-        restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
-            alldf2cond, expthres, nbcpu, rounding, dontcompare, cond1name,
-            cond2name, replaceval, pval, significant, windsizethres,
-            countnathres, meancond1thres, meancond2thres, pvaltheorythres,
-            auccond1threshigher, auccond1threslower, auccond2thres,
-            attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
-
-        rm(alldf2cond)
-        if (showmemory) print(gc()) else invisible(gc())
-        return(restepr)
-
-    }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
-        replaceval, pval, significant, windsizethres, countnathres,
-        meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
-        auccond1threslower, auccond2thres, attenuatedpvalksthres,
-        outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
-        simplify = FALSE)
-
-    ## Naming each element with the comparison title
-    names(reslist) <- apply(matcond, 2, function(currentcol) {
-        return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
-
-    if (!is.na(saveobjectpath)) {
-        if (verbose) message("\t\t Saving to ", filepathname)
-        saveRDS(reslist, file = filepathname)
-    }
+        reslit <- .reslist(filepathname, matcond, verbose, expdf, alldf,
+            expthres, nbcpu, rounding, dontcompare, replaceval, pval,
+            significant, windsizethres, countnathres, meancond1thres,
+            meancond2thres, pvaltheorythres, auccond1threshigher,
+            auccond1threslower, auccond2thres, attenuatedpvalksthres,
+            outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory)
     } else {
-            if (verbose) message("\t\t\t Loading ", filepathname)
-            reslist <- readRDS(filepathname)
+        if (verbose) message("\t\t\t Loading ", filepathname)
+        reslist <- readRDS(filepathname)
     }
 
     if (showtime) {
