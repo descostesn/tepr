@@ -205,7 +205,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'  meancond1thres = 0.5, meancond2thres = 0.5,
 #'  auccond1threshigher = -10, auccond1threslower = 15, auccond2thres = 15,
 #'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
-#'  saveobjectpath = NA, showtime = FALSE, showmemory = FALSE, verbose = TRUE)
+#'  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
+#'  verbose = TRUE)
 #'
 #' @param expdf A data frame containing experiment data that should have
 #'          columns named 'condition', 'replicate', 'strand', and 'path'.
@@ -253,6 +254,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #' @param saveobjectpath A character string specifying the path to save
 #'          the object of the results for each comparison. The file names are
 #'          defined with the 'condition' column of expdf. Defaults to \code{NA}.
+#' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
+#'  recomputation. Default is `FALSE`. If the function failed during object
+#'  saving, make sure to delete the corresponding object.
 #' @param showtime A logical value indicating if the duration of the function
 #'          processing should be indicated before ending. Defaults to
 #'          \code{FALSE}.
@@ -288,8 +292,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
     meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
     auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, saveobjectpath = NA, showtime = FALSE,
-    showmemory = FALSE, verbose = TRUE) {
+    outgrouppvalksthres = 0.2, saveobjectpath = NA, reload = FALSE,
+    showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
 
     if (showtime) start_teprmulti <- Sys.time()
 
@@ -318,6 +322,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     colnames(alldf) <- c(infocolnames, expcolnames)
 
     ## Calling tepr by pairs of contions
+    
     reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
         windsizethres, countnathres, meancond1thres, meancond2thres,
