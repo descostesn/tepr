@@ -424,7 +424,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     filepathname <- file.path(saveobjectpath, "allcomplist.rds")
 
     if (!reload || !file.exists(filepathname)) {
-        reslit <- .reslist(filepathname, matcond, verbose, expdf, alldf,
+        reslist <- .reslist(filepathname, matcond, verbose, expdf, alldf,
             expthres, nbcpu, rounding, dontcompare, replaceval, pval,
             significant, windsizethres, countnathres, meancond1thres,
             meancond2thres, pvaltheorythres, auccond1threshigher,
