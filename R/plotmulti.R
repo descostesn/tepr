@@ -55,6 +55,23 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
             plot = FALSE, universename = aucuniname, groupname = aucgroupname,
             verbose = verbose)
 
+        ## Generate the plot of auc by pval
+        if (!is.na(genaucvec)) {
+            if (verbose) message("\t ## plot auc by pval for the given genes")
+            aucfilename <- paste0("AUCcompare_pval_", name1, "_", name2)
+            plotauc(tab = complist[[2]], genevec = genaucvec,
+                auc_ctrlname = name1, auc_stressname = name2,
+                pvalkstestcolname = pvalks, labelx = labelx, labely = labely,
+                axismin_x = aucaxisminx, axismax_x = aucaxismaxx,
+                axismin_y = aucaxisminy, axismax_y = aucaxismaxy,
+                maintitle = aucmaintitle, subtitle = aucsubtitle,
+                legendpos = auclegendpos, formatname = formatname,
+                outfold = outfoldcomp, outfile = aucfilename, plottype = "pval",
+                plot = FALSE, universename = aucuniname,
+                groupname = aucgroupname, verbose = verbose)
+        }
+
+
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
         aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
