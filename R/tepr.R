@@ -322,7 +322,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     colnames(alldf) <- c(infocolnames, expcolnames)
 
     ## Calling tepr by pairs of contions
-    
+    if (!reload || !file.exists(!!))
     reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
         windsizethres, countnathres, meancond1thres, meancond2thres,
@@ -390,6 +390,12 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## Naming each element with the comparison title
     names(reslist) <- apply(matcond, 2, function(currentcol) {
         return(paste(currentcol[1], currentcol[2], sep = "_vs_"))})
+
+    if (!is.na(saveobjectpath)) {
+        filepathname <- file.path(saveobjectpath, "allcomplist.rds")
+        if (verbose) message("\t\t Saving to ", filepathname)
+        saveRDS(reslist, file = filepathname)
+    }
 
     if (showtime) {
       end_teprmulti <- Sys.time()
