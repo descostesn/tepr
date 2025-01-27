@@ -46,7 +46,7 @@ AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downlo
 
 ## subset of the result of tepr multi
 reslist <- readRDS(file.path(saveobjectpath, "reslist.rds"))
-
+resteprmulti <- reslist
 
 #alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
