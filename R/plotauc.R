@@ -153,6 +153,9 @@ plotauc <- function(tab, genevec = NA, # nolint
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
             pvalkstestcolname, genevec, tab)
 
+        if (!file.exists(outfold))
+            dir.create(outfold, recursive = TRUE)
+
         if (isTRUE(all.equal(plottype, "pval"))) {
             df <- cbind(tab, kstestlog10 = -log10(tab[, pvalkstestcolname]))
             kstestlog10str <- "kstestlog10"
