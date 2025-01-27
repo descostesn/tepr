@@ -1,5 +1,5 @@
 
-## See also: teprmulti, plotecdf
+## See also: teprmulti, plotecdf, plotauc, plotmetagenes
 
 plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01,
