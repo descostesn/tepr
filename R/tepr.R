@@ -188,6 +188,40 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     return(reslist)
 }
 
+.restepr <- function(saveobjectpath, compname, reload, expdf2cond, alldf2cond,
+    expthres, nbcpu, rounding, dontcompare, cond1name, cond2name, replaceval,
+    pval, significant, windsizethres, countnathres, meancond1thres,
+    meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
+    auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
+    verbose) {
+    filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
+    if (!reload || !file.exists(filepathname)) {
+        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+            expthres = expthres, nbcpu = nbcpu, rounding = rounding,
+            dontcompare = dontcompare, controlcondname = cond1name,
+            stresscondname = cond2name, replaceval = replaceval, pval = pval,
+            significant = significant, windsizethres = windsizethres,
+            countnathres = countnathres, meanctrlthres = meancond1thres,
+            meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
+            aucctrlthreshigher = auccond1threshigher,
+            aucctrlthreslower = auccond1threslower,
+            aucstressthres = auccond2thres,
+            attenuatedpvalksthres = attenuatedpvalksthres,
+            outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
+            verbose = verbose)
+        names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
+            paste("resunigroupatt", compname, sep = "_"))
+
+        if (!is.na(saveobjectpath)) {
+            if (verbose) message("\t\t Saving to ", filepathname)
+            saveRDS(restepr, file = filepathname)
+        }
+    } else {
+        if (verbose) message("\t\t\t Loading ", filepathname)
+        restepr <- readRDS(filepathname)
+    }
+    return(restepr)
+}
 
 
 #' Perform tepr differential nascent rna-seq analysis for multiple conditions
@@ -354,41 +388,15 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
         ## Calling tepr on the defined conditions
-        filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
-        if (!reload || !file.exists(filepathname)) {
-            restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
-            expthres = expthres, nbcpu = nbcpu, rounding = rounding,
-            dontcompare = dontcompare, controlcondname = cond1name,
-            stresscondname = cond2name, replaceval = replaceval, pval = pval,
-            significant = significant, windsizethres = windsizethres,
-            countnathres = countnathres, meanctrlthres = meancond1thres,
-            meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
-            aucctrlthreshigher = auccond1threshigher,
-            aucctrlthreslower = auccond1threslower,
-            aucstressthres = auccond2thres,
-            attenuatedpvalksthres = attenuatedpvalksthres,
-            outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
-            verbose = verbose)
-
-            names(restepr) <- c(paste("resmeandiff", compname, sep = "_"),
-            paste("resunigroupatt", compname, sep = "_"))
-
-        if (!is.na(saveobjectpath)) {
-            if (verbose) message("\t\t Saving to ", filepathname)
-            saveRDS(restepr, file = filepathname)
-        }
-
-
-        } else {
-            if (verbose) message("\t\t\t Loading ", filepathname)
-            restepr <- readRDS(filepathname)
-
-        }
+        restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
+            alldf2cond, expthres, nbcpu, rounding, dontcompare, cond1name,
+            cond2name, replaceval, pval, significant, windsizethres,
+            countnathres, meancond1thres, meancond2thres, pvaltheorythres,
+            auccond1threshigher, auccond1threslower, auccond2thres,
+            attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
         rm(alldf2cond)
         if (showmemory) print(gc()) else invisible(gc())
-
-
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
