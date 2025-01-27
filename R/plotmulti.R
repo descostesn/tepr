@@ -104,6 +104,14 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
 
+        ## plothistoknee by percent
+        if (verbose) message("\t ## plothistoknee by percent")
+        plothistoknee <- function(unigroupdf = !!, plottype = "percent", xlimvec = NA, # nolint
+    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+    formatname = "pdf", universename = "Universe", groupname = "Group",
+    verbose = TRUE)
+
+        ## plothistoknee by kb
 
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
