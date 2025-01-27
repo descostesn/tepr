@@ -1,5 +1,5 @@
 
-## See also: teprmulti
+## See also: teprmulti, plotecdf
 
 plotmulti <- function(resteprmulti, expdf, genename, outfold = ".", digits = 2,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
