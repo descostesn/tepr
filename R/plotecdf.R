@@ -98,7 +98,7 @@
 #' statistics, and knee points, with options to display or save the plot.
 #'
 #' @usage
-#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = NA,
+#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = ".",
 #' digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
@@ -112,7 +112,7 @@
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot.
 #' @param outfold A string specifying the output folder where the plot will be
-#'  saved if \code{plot = FALSE}. Default is \code{NA}.
+#'  saved if \code{plot = FALSE}. Default is \code{"."}.
 #' @param digits The number of decimal places to round the AUC and KS values.
 #'  Default is \code{2}.
 #' @param middlewind The index of the middle window representing the region
@@ -159,16 +159,11 @@
 #' @export
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
-    outfold = NA, digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+    outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
-
-    if (is.na(outfold) && !plot)
-        stop("The outfold should be defined to save the figure. Otherwise ",
-            "set plot = TRUE")
 
     if (!isTRUE(all.equal(length(colvec), 4)))
         stop("The vector of colours colvec should have 4 values.")
-
 
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
