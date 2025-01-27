@@ -165,6 +165,9 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
     if (!isTRUE(all.equal(length(colvec), 4)))
         stop("The vector of colours colvec should have 4 values.")
 
+    if (!file.exists(outfold))
+        dir.create(outfold, recursive = TRUE)
+
     ## Retrieving rows concerning the gene of interest
     if (verbose) message("\t Retrieving rows concerning the gene of interest")
     idxgene <- which(dfmeandiff$gene == genename)
