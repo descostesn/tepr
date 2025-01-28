@@ -43,7 +43,11 @@ alldf <- read.delim(finaltabpath, header = FALSE)
 
 expdf <- expdf[which(expdf$condition == "ctrl10" | expdf$condition == "ctrl20" |
  expdf$condition == "HS20"), ]
-resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE)
+resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE,
+    saveobjectpath = "/g/romebioinfo/tmp/testmultifun/objbackup")
+
+plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"),
+    outfold = "/g/romebioinfo/tmp/testmultifun")
 
 ## vic input for figures
 # AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
