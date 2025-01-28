@@ -62,6 +62,10 @@
 #'  automatically selects a bin width based on \code{plottype}.
 #' @param verbose A logical flag indicating whether to display detailed
 #'  messages about the function's progress. Default is \code{TRUE}.
+#'
+#' @return Nothing is returned. Figures are written to outfold in the subfolder
+#'  of the corresponding comparison.
+#'
 #' 
 
 
