@@ -515,6 +515,20 @@ The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
+## teprmulti analysis
+
+It is possible to analyze more than two experiments with the function `teprmulti`. This function performs a "all vs all" analysis and returns a list whose elements, for each comparison, is a list of two data frames: 
+
+- `resmeandiff_<comparison>`: Results from the `meandifference` function for the specific comparison.
+- `resunigroupatt_<comparison>`: Results from the `universegroup` function for the specific comparison. 
+
+!!!!!!!!!!!!!!!!!!!!!
+
+
+## plotmulti
+
+!!!!!!!!!
+
 
 # Annex
 
