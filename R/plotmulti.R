@@ -47,10 +47,14 @@
 #' empty string.
 #' @param auclegendpos For the auc plot, position of the legend. Default is
 #' \code{"bottom"}.
-#' 
-#' 
-#' formatname = "pdf", uniname = "Universe",
-#' groupname = "Group", histkneexlim = NA, binwidthvalhistknee = NA,
+#' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
+#'  \code{"pdf"}.
+#' @param uniname Column name in the second element of \code{resteprmulti}
+#'  representing the universe selection. Default is \code{"Universe"}.
+#' @param groupname Column name in the second element of \code{resteprmulti}
+#'  representing the type of group a transcript belong to. Default is
+#' \code{"Group"}.
+#' @param histkneexlim = NA, binwidthvalhistknee = NA,
 #' verbose = TRUE)
 
 
