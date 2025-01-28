@@ -1,6 +1,22 @@
 
 ## See also: teprmulti, plotecdf, plotauc, plotmetagenes
 
+.multiplotecdf <- function(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
+    digits, middlewind, pval, formatname, verbose) {
+
+        if (verbose) message("\t ## plot ecdf")
+        sapply(ecdfgenevec, function(currentgene, complist, expdf, colvec,
+            outfoldcomp, digits, middlewind, pval, formatname, verbose) {
+            if (verbose) message("\t\t plot ecdf for ", currentgene)
+            plotecdf(dfmeandiff = complist[[1]], unigroupdf = complist[[2]],
+                expdf = expdf, genename = currentgene, colvec = colvec,
+                outfold = outfoldcomp, digits = digits, middlewind = middlewind,
+                pval = pval, plot = FALSE, formatname = formatname,
+                verbose = verbose)
+        }, complist, expdf, colvec, outfoldcomp, digits, middlewind,
+                pval, formatname, verbose)
+}
+
 plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
@@ -24,17 +40,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
-        if (verbose) message("\t ## plot ecdf")
-        sapply(ecdfgenevec, function(currentgene, complist, expdf, colvec,
-            outfoldcomp, digits, middlewind, pval, formatname, verbose) {
-            if (verbose) message("\t\t plot ecdf for ", currentgene)
-            plotecdf(dfmeandiff = complist[[1]], unigroupdf = complist[[2]],
-                expdf = expdf, genename = currentgene, colvec = colvec,
-                outfold = outfoldcomp, digits = digits, middlewind = middlewind,
-                pval = pval, plot = FALSE, formatname = formatname,
-                verbose = verbose)
-        }, complist, expdf, colvec, outfoldcomp, digits, middlewind,
-                pval, formatname, verbose)
+        .multiplotecdf(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
+            digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups
         if (verbose) message("\t ## plot auc by groups")
