@@ -49,6 +49,12 @@ resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE,
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"),
     outfold = "/g/romebioinfo/tmp/testmultifun")
 
+!!!!!!!!!!!!!!!!!
+Error in (function (complist, compname, expdf, ecdfgenevec, genaucvec,  :
+  unused argument (TRUE)
+!!!!!!!!!!!!!!
+
+
 ## vic input for figures
 # AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
 
