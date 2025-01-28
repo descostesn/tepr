@@ -66,16 +66,30 @@
 #' @return Nothing is returned. Figures are written to outfold in the subfolder
 #'  of the corresponding comparison.
 #'
-#' 
-
-
-
-
-
-
-
-
-## See also: teprmulti, plotecdf, plotauc, plotmetagenes, plothistoknee
+#' @details
+#' The function goes through each element of resteprmulti which corresponds to
+#' a comparison of two conditions. For each element it calls the following
+#' functions:
+#' #' \itemize{
+#'   \item \code{"plotecdf"}: The function generates a figure for each gene
+#'  given in ecdfgenevec.
+#'   \item \code{"plotauc"}: Generates figures by groups and pval. The lattest
+#'  figure is not generated if genaucvec = NA.
+#'   \item \code{"plotmetagenes"}: Generates the figures by \code{attenuation},
+#'  \code{outgroup}, \code{universe}, and \code{all}.
+#'   \item \code{"plothistoknee"}: Generate the figures by \code{percent} and
+#'  \code{kb}.
+#' }
+#'
+#' @examples
+#' # Assuming resteprmulti is the object returned by the function teprmulti
+#' # and expdf contains the necessary data:
+#' plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))
+#'
+#' @seealso
+#' [teprmulti], [plotecdf], [plotauc], [plotmetagenes], [plothistoknee]
+#'
+#' @export
 
 .multiplotecdf <- function(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
     digits, middlewind, pval, formatname, verbose) {
