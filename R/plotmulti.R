@@ -60,7 +60,9 @@
 #' @param binwidthvalhistknee For the plot histoknee, a numeric value for the
 #'  width of the bins in the histogram. Default is \code{NA}, which
 #'  automatically selects a bin width based on \code{plottype}.
-#' verbose = TRUE)
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
+#' 
 
 
 
