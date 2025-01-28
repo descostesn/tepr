@@ -54,7 +54,12 @@
 #' @param groupname Column name in the second element of \code{resteprmulti}
 #'  representing the type of group a transcript belong to. Default is
 #' \code{"Group"}.
-#' @param histkneexlim = NA, binwidthvalhistknee = NA,
+#' @param histkneexlim For the plot histoknee, a numeric vector of length 2
+#'  specifying the limits of the x-axis. Default is \code{NA}, which
+#' automatically sets the limits based on \code{plottype}.
+#' @param binwidthvalhistknee For the plot histoknee, a numeric value for the
+#'  width of the bins in the histogram. Default is \code{NA}, which
+#'  automatically selects a bin width based on \code{plottype}.
 #' verbose = TRUE)
 
 
