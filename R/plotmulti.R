@@ -17,6 +17,50 @@
                 pval, formatname, verbose)
 }
 
+.multiplotauc <- function(name1, name2, complist, genaucvec, pvalks, labelx,
+            labely, aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy,
+            aucmaintitle, aucsubtitle, auclegendpos, formatname,
+            outfoldcomp, aucfilename, uniname, groupname, verbose) {
+
+                ## Generate the plot of auc by groups
+                if (verbose) message("\t ## plot auc by groups")
+                pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name1, "_",
+                    name2)
+                labelx <- paste0("AUC in ", name1)
+                labely <- paste0("AUC in ", name2)
+                aucfilename <- paste0("AUCcompare_groups_", name1, "_",
+                    name2)
+                plotauc(tab = complist[[2]], genevec = genaucvec,
+                    auc_ctrlname = name1, auc_stressname = name2,
+                    pvalkstestcolname = pvalks, labelx = labelx,
+                    labely = labely, axismin_x = aucaxisminx,
+                    axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
+                    axismax_y = aucaxismaxy, maintitle = aucmaintitle,
+                    subtitle = aucsubtitle, legendpos = auclegendpos,
+                    formatname = formatname, outfold = outfoldcomp,
+                    outfile = aucfilename, plottype = "groups",
+                    plot = FALSE, universename = uniname, groupname = groupname,
+                    verbose = verbose)
+
+                ## Generate the plot of auc by pval
+                if (!is.na(genaucvec)) {
+                    if (verbose) message("\t ## plot auc by pval for the ",
+                        "given genes")
+                    aucfilename <- paste0("AUCcompare_pval_", name2, "_", name1)
+                    plotauc(tab = complist[[2]], genevec = genaucvec,
+                        auc_ctrlname = name1, auc_stressname = name2,
+                        pvalkstestcolname = pvalks, labelx = labelx,
+                        labely = labely, axismin_x = aucaxisminx,
+                        axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
+                        axismax_y = aucaxismaxy, maintitle = aucmaintitle,
+                        subtitle = aucsubtitle, legendpos = auclegendpos,
+                        formatname = formatname, outfold = outfoldcomp,
+                        outfile = aucfilename, plottype = "pval",
+                        plot = FALSE, universename = uniname,
+                        groupname = groupname, verbose = verbose)
+                }
+}
+
 plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
@@ -37,46 +81,20 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
 
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
+        expnamevec <- unique(expdf$condition)
+        name1 <- expnamevec[1]
+        name2 <- expnamevec[2]
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
         .multiplotecdf(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
             digits, middlewind, pval, formatname, verbose)
 
-        ## Generate the plot of auc by groups
-        if (verbose) message("\t ## plot auc by groups")
-        expnamevec <- unique(expdf$condition)
-        name1 <- expnamevec[1]
-        name2 <- expnamevec[2]
-        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name1, "_", name2)
-        labelx <- paste0("AUC in ", name1)
-        labely <- paste0("AUC in ", name2)
-        aucfilename <- paste0("AUCcompare_groups_", name1, "_", name2)
-        plotauc(tab = complist[[2]], genevec = genaucvec, auc_ctrlname = name1,
-            auc_stressname = name2, pvalkstestcolname = pvalks, labelx = labelx,
-            labely = labely, axismin_x = aucaxisminx, axismax_x = aucaxismaxx,
-            axismin_y = aucaxisminy, axismax_y = aucaxismaxy,
-            maintitle = aucmaintitle, subtitle = aucsubtitle,
-            legendpos = auclegendpos, formatname = formatname,
-            outfold = outfoldcomp, outfile = aucfilename, plottype = "groups",
-            plot = FALSE, universename = uniname, groupname = groupname,
-            verbose = verbose)
-
-        ## Generate the plot of auc by pval
-        if (!is.na(genaucvec)) {
-            if (verbose) message("\t ## plot auc by pval for the given genes")
-            aucfilename <- paste0("AUCcompare_pval_", name2, "_", name1)
-            plotauc(tab = complist[[2]], genevec = genaucvec,
-                auc_ctrlname = name1, auc_stressname = name2,
-                pvalkstestcolname = pvalks, labelx = labelx, labely = labely,
-                axismin_x = aucaxisminx, axismax_x = aucaxismaxx,
-                axismin_y = aucaxisminy, axismax_y = aucaxismaxy,
-                maintitle = aucmaintitle, subtitle = aucsubtitle,
-                legendpos = auclegendpos, formatname = formatname,
-                outfold = outfoldcomp, outfile = aucfilename, plottype = "pval",
-                plot = FALSE, universename = uniname,
-                groupname = groupname, verbose = verbose)
-        }
+        ## Generate the plot of auc by groups and pval
+        .multiplotauc(name1, name2, complist, genaucvec, pvalks, labelx, labely,
+            aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
+            aucsubtitle, auclegendpos, formatname, outfoldcomp, aucfilename,
+            uniname, groupname, verbose)
 
         ## Plot metagene by attenuation
         if (verbose) message("\t ## Plot metagene by attenuation")
