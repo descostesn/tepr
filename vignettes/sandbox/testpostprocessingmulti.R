@@ -41,12 +41,16 @@ saveobjectpath <- "/g/romebioinfo/tmp/multitest"
 expdf <- read.csv(exptabpath, header = TRUE)
 alldf <- read.delim(finaltabpath, header = FALSE)
 
-## vic input for figures
-AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
+expdf <- expdf[which(expdf$condition == "ctrl10" | expdf$condition == "ctrl20" |
+ expdf$condition == "HS20"), ]
+resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE)
 
-## subset of the result of tepr multi
-reslist <- readRDS(file.path(saveobjectpath, "reslist.rds"))
-resteprmulti <- reslist
+## vic input for figures
+# AUC_knee_DRB_vic <- read.delim( file = "/g/romebioinfo/Projects/tepr-data/downloads/inputfiles-DRBanalysis/AUC_knee_DRB.tsv", sep = "\t",  header = TRUE)
+
+# ## subset of the result of tepr multi
+# reslist <- readRDS(file.path(saveobjectpath, "reslist.rds"))
+# resteprmulti <- reslist
 
 #alldfvic <- read.delim(finaltabpathvic, header = FALSE)
 
