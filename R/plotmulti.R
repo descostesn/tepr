@@ -6,8 +6,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
     aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10, aucaxismaxy = 100,
     aucmaintitle = "", aucsubtitle = "", auclegendpos = "bottom",
-    formatname = "pdf", aucuniname = "Universe", aucgroupname = "Group",
-    verbose = TRUE) {
+    formatname = "pdf", uniname = "Universe", groupname = "Group",
+    histkneexlim = NA, binwidthvalhistknee = NA, verbose = TRUE) {
 
     if (!length(unique(expdf$condition)) > 2)
         stop("There are less than two conditions in your experiment ",
@@ -17,7 +17,7 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
         aucaxismaxx, aucaxisminy, aucaxismaxy, aucsubtitle, auclegendpos,
-        aucuniname, aucgroupname, verbose) {
+        uniname, groupname, histkneexlim, binwidthvalhistknee, verbose) {
 
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
@@ -52,7 +52,7 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
             maintitle = aucmaintitle, subtitle = aucsubtitle,
             legendpos = auclegendpos, formatname = formatname,
             outfold = outfoldcomp, outfile = aucfilename, plottype = "groups",
-            plot = FALSE, universename = aucuniname, groupname = aucgroupname,
+            plot = FALSE, universename = uniname, groupname = groupname,
             verbose = verbose)
 
         ## Generate the plot of auc by pval
@@ -67,8 +67,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
                 maintitle = aucmaintitle, subtitle = aucsubtitle,
                 legendpos = auclegendpos, formatname = formatname,
                 outfold = outfoldcomp, outfile = aucfilename, plottype = "pval",
-                plot = FALSE, universename = aucuniname,
-                groupname = aucgroupname, verbose = verbose)
+                plot = FALSE, universename = uniname,
+                groupname = groupname, verbose = verbose)
         }
 
         ## Plot metagene by attenuation
@@ -106,16 +106,19 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
 
         ## plothistoknee by percent
         if (verbose) message("\t ## plothistoknee by percent")
-        plothistoknee <- function(unigroupdf = !!, plottype = "percent", xlimvec = NA, # nolint
-    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
-    formatname = "pdf", universename = "Universe", groupname = "Group",
-    verbose = TRUE)
+        kneename <- paste0("knee_AUC_", name2)
+        plothistoknee(unigroupdf = complist[[2]], plottype = "percent",
+            xlimvec = histkneexlim, binwidthval = binwidthvalhistknee, !!
+            kneename = kneename, plot = FALSE, outfold = outfoldcomp,
+            formatname = formatname = , universename = uniname,
+            groupname = groupname, verbose = verbose)
 
         ## plothistoknee by kb
 
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
         aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
-        auclegendpos, aucuniname, aucgroupname, verbose)))
+        auclegendpos, uniname, groupname, histkneexlim,
+        binwidthvalhistknee, verbose)))
 
 }
