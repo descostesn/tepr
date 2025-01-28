@@ -30,10 +30,26 @@
 #' @param colvec For the ecdf plot, a vector of 4 colors used to distinguish
 #'  the different conditions. Default is \code{c("#90AFBB", "#10AFBB",
 #'  "#FF9A04", "#FC4E07")}.
+#' @param genaucvec For the auc plot, vector of gene names to highlight,
+#'  Used for the plot of type "pval". Default is \code{NA}. If left to NA, the
+#'  plot taking into account the p-values is not generated.
+#' @param aucaxisminx For the auc plot, minimum value for the x-axis. Default
+#'  is \code{-10}.
+#' @param aucaxismaxx For the auc plot, maximum value for the x-axis. Default
+#'  is \code{100}.
+#' @param aucaxisminy For the auc plot, minimum value for the y-axis. Default
+#'  is \code{-10}.
+#' @param aucaxismaxy For the auc plot, maximum value for the y-axis. Default
+#'  is \code{100}.
+#' @param aucmaintitle For the auc plot, main title of the plot. Default is an
+#' empty string.
+#' @param aucsubtitle For the auc plot, subtitle of the plot. Default is an
+#' empty string.
+#' @param auclegendpos For the auc plot, position of the legend. Default is
+#' \code{"bottom"}.
 #' 
-#' genaucvec = NA, aucaxisminx = -10, aucaxismaxx = 100,
-#' aucaxisminy = -10, aucaxismaxy = 100, aucmaintitle = "", aucsubtitle = "",
-#' auclegendpos = "bottom", formatname = "pdf", uniname = "Universe",
+#' 
+#' formatname = "pdf", uniname = "Universe",
 #' groupname = "Group", histkneexlim = NA, binwidthvalhistknee = NA,
 #' verbose = TRUE)
 
