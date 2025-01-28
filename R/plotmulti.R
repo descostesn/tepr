@@ -1,96 +1,3 @@
-#' Generate all tepr plots for all experiment comparisons
-#'
-#' @description
-#' This function generates for all experiment comparisons contained in the
-#' object \code{resteprmulti} all plots of tepr: ECDF, auc, metagene, and
-#' histtoknee.
-#'
-#' @usage
-#' plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = ".", digits = 2,
-#' middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB", "#FF9A04",
-#' "#FC4E07"), aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10,
-#' aucaxismaxy = 100, aucmaintitle = "", aucsubtitle = "",
-#' auclegendpos = "bottom", formatname = "pdf", uniname = "Universe",
-#' groupname = "Group", histkneexlim = NA, binwidthvalhistknee = NA,
-#' verbose = TRUE)
-#'
-#' @param resteprmulti Result returned by the function \code{teprmulti}.
-#' @param expdf A data frame containing experiment data that should have
-#'              columns named 'condition', 'replicate', 'strand', and 'path'.
-#' @param ecdfgenevec A vector specifying the names of the genes of interest to
-#'  plot the ecdf of.
-#' @param outfold Path to the output folder where the plots will be written.
-#'  Subfolders with the names of the comparisons are automatically created.
-#' @param digits For the ecdf plot, the number of decimal places to round the
-#'  AUC and KS values. Default is \code{2}.
-#' @param middlewind For the ecdf plot, the index of the middle window
-#'  representing the region centered around the TSS. Default is \code{100}.
-#' @param pval For the ecdf plot, a numeric value for the p-value threshold to
-#'  determine the significance of the KS test. Default is \code{0.01}.
-#' @param colvec For the ecdf plot, a vector of 4 colors used to distinguish
-#'  the different conditions. Default is \code{c("#90AFBB", "#10AFBB",
-#'  "#FF9A04", "#FC4E07")}.
-#' @param genaucvec For the auc plot, vector of gene names to highlight,
-#'  Used for the plot of type "pval". Default is \code{NA}. If left to NA, the
-#'  plot taking into account the p-values is not generated.
-#' @param aucaxisminx For the auc plot, minimum value for the x-axis. Default
-#'  is \code{-10}.
-#' @param aucaxismaxx For the auc plot, maximum value for the x-axis. Default
-#'  is \code{100}.
-#' @param aucaxisminy For the auc plot, minimum value for the y-axis. Default
-#'  is \code{-10}.
-#' @param aucaxismaxy For the auc plot, maximum value for the y-axis. Default
-#'  is \code{100}.
-#' @param aucmaintitle For the auc plot, main title of the plot. Default is an
-#' empty string.
-#' @param aucsubtitle For the auc plot, subtitle of the plot. Default is an
-#' empty string.
-#' @param auclegendpos For the auc plot, position of the legend. Default is
-#' \code{"bottom"}.
-#' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
-#'  \code{"pdf"}.
-#' @param uniname Column name in the second element of \code{resteprmulti}
-#'  representing the universe selection. Default is \code{"Universe"}.
-#' @param groupname Column name in the second element of \code{resteprmulti}
-#'  representing the type of group a transcript belong to. Default is
-#' \code{"Group"}.
-#' @param histkneexlim For the plot histoknee, a numeric vector of length 2
-#'  specifying the limits of the x-axis. Default is \code{NA}, which
-#' automatically sets the limits based on \code{plottype}.
-#' @param binwidthvalhistknee For the plot histoknee, a numeric value for the
-#'  width of the bins in the histogram. Default is \code{NA}, which
-#'  automatically selects a bin width based on \code{plottype}.
-#' @param verbose A logical flag indicating whether to display detailed
-#'  messages about the function's progress. Default is \code{TRUE}.
-#'
-#' @return Nothing is returned. Figures are written to outfold in the subfolder
-#'  of the corresponding comparison.
-#'
-#' @details
-#' The function goes through each element of resteprmulti which corresponds to
-#' a comparison of two conditions. For each element it calls the following
-#' functions:
-#' #' \itemize{
-#'   \item \code{"plotecdf"}: The function generates a figure for each gene
-#'  given in ecdfgenevec.
-#'   \item \code{"plotauc"}: Generates figures by groups and pval. The lattest
-#'  figure is not generated if genaucvec = NA.
-#'   \item \code{"plotmetagenes"}: Generates the figures by \code{attenuation},
-#'  \code{outgroup}, \code{universe}, and \code{all}.
-#'   \item \code{"plothistoknee"}: Generate the figures by \code{percent} and
-#'  \code{kb}.
-#' }
-#'
-#' @examples
-#' # Assuming resteprmulti is the object returned by the function teprmulti
-#' # and expdf contains the necessary data:
-#' plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))
-#'
-#' @seealso
-#' [teprmulti], [plotecdf], [plotauc], [plotmetagenes], [plothistoknee]
-#'
-#' @export
-
 .multiplotecdf <- function(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
     digits, middlewind, pval, formatname, verbose) {
 
@@ -210,6 +117,99 @@
                     formatname = formatname, universename = uniname,
                     groupname = groupname, verbose = verbose)
 }
+
+#' Generate all tepr plots for all experiment comparisons
+#'
+#' @description
+#' This function generates for all experiment comparisons contained in the
+#' object \code{resteprmulti} all plots of tepr: ECDF, auc, metagene, and
+#' histtoknee.
+#'
+#' @usage
+#' plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = ".", digits = 2,
+#' middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB", "#FF9A04",
+#' "#FC4E07"), aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10,
+#' aucaxismaxy = 100, aucmaintitle = "", aucsubtitle = "",
+#' auclegendpos = "bottom", formatname = "pdf", uniname = "Universe",
+#' groupname = "Group", histkneexlim = NA, binwidthvalhistknee = NA,
+#' verbose = TRUE)
+#'
+#' @param resteprmulti Result returned by the function \code{teprmulti}.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param ecdfgenevec A vector specifying the names of the genes of interest to
+#'  plot the ecdf of.
+#' @param outfold Path to the output folder where the plots will be written.
+#'  Subfolders with the names of the comparisons are automatically created.
+#' @param digits For the ecdf plot, the number of decimal places to round the
+#'  AUC and KS values. Default is \code{2}.
+#' @param middlewind For the ecdf plot, the index of the middle window
+#'  representing the region centered around the TSS. Default is \code{100}.
+#' @param pval For the ecdf plot, a numeric value for the p-value threshold to
+#'  determine the significance of the KS test. Default is \code{0.01}.
+#' @param colvec For the ecdf plot, a vector of 4 colors used to distinguish
+#'  the different conditions. Default is \code{c("#90AFBB", "#10AFBB",
+#'  "#FF9A04", "#FC4E07")}.
+#' @param genaucvec For the auc plot, vector of gene names to highlight,
+#'  Used for the plot of type "pval". Default is \code{NA}. If left to NA, the
+#'  plot taking into account the p-values is not generated.
+#' @param aucaxisminx For the auc plot, minimum value for the x-axis. Default
+#'  is \code{-10}.
+#' @param aucaxismaxx For the auc plot, maximum value for the x-axis. Default
+#'  is \code{100}.
+#' @param aucaxisminy For the auc plot, minimum value for the y-axis. Default
+#'  is \code{-10}.
+#' @param aucaxismaxy For the auc plot, maximum value for the y-axis. Default
+#'  is \code{100}.
+#' @param aucmaintitle For the auc plot, main title of the plot. Default is an
+#' empty string.
+#' @param aucsubtitle For the auc plot, subtitle of the plot. Default is an
+#' empty string.
+#' @param auclegendpos For the auc plot, position of the legend. Default is
+#' \code{"bottom"}.
+#' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
+#'  \code{"pdf"}.
+#' @param uniname Column name in the second element of \code{resteprmulti}
+#'  representing the universe selection. Default is \code{"Universe"}.
+#' @param groupname Column name in the second element of \code{resteprmulti}
+#'  representing the type of group a transcript belong to. Default is
+#' \code{"Group"}.
+#' @param histkneexlim For the plot histoknee, a numeric vector of length 2
+#'  specifying the limits of the x-axis. Default is \code{NA}, which
+#' automatically sets the limits based on \code{plottype}.
+#' @param binwidthvalhistknee For the plot histoknee, a numeric value for the
+#'  width of the bins in the histogram. Default is \code{NA}, which
+#'  automatically selects a bin width based on \code{plottype}.
+#' @param verbose A logical flag indicating whether to display detailed
+#'  messages about the function's progress. Default is \code{TRUE}.
+#'
+#' @return Nothing is returned. Figures are written to outfold in the subfolder
+#'  of the corresponding comparison.
+#'
+#' @details
+#' The function goes through each element of resteprmulti which corresponds to
+#' a comparison of two conditions. For each element it calls the following
+#' functions:
+#' #' \itemize{
+#'   \item \code{"plotecdf"}: The function generates a figure for each gene
+#'  given in ecdfgenevec.
+#'   \item \code{"plotauc"}: Generates figures by groups and pval. The lattest
+#'  figure is not generated if genaucvec = NA.
+#'   \item \code{"plotmetagenes"}: Generates the figures by \code{attenuation},
+#'  \code{outgroup}, \code{universe}, and \code{all}.
+#'   \item \code{"plothistoknee"}: Generate the figures by \code{percent} and
+#'  \code{kb}.
+#' }
+#'
+#' @examples
+#' # Assuming resteprmulti is the object returned by the function teprmulti
+#' # and expdf contains the necessary data:
+#' plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))
+#'
+#' @seealso
+#' [teprmulti], [plotecdf], [plotauc], [plotmetagenes], [plothistoknee]
+#'
+#' @export
 
 plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
     digits = 2, middlewind = 100, pval = 0.01,
