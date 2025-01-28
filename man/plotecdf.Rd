@@ -4,7 +4,7 @@
 \alias{plotecdf}
 \title{Plot Empirical Cumulative Distribution Function (ECDF)}
 \usage{
-plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = NA,
+plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = ".",
 digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 }
 \arguments{
@@ -24,7 +24,7 @@ columns named 'condition', 'replicate', 'strand', and 'path'.}
 the plot.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
-saved if \code{plot = FALSE}. Default is \code{NA}.}
+saved if \code{plot = FALSE}. Default is \code{"."}.}
 
 \item{digits}{The number of decimal places to round the AUC and KS values.
 Default is \code{2}.}
