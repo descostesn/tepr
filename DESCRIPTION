@@ -60,6 +60,7 @@ Collate:
     'plotecdf.R'
     'plothistoknee.R'
     'plotmetagenes.R'
+    'plotmulti.R'
     'preprocessing-blacklisthighmap-utils.R'
     'preprocessing-blacklisthighmap.R'
     'preprocessing-createtablescores.R'
