@@ -1,5 +1,5 @@
 
-## See also: teprmulti, plotecdf, plotauc, plotmetagenes
+## See also: teprmulti, plotecdf, plotauc, plotmetagenes, plothistoknee
 
 .multiplotecdf <- function(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
     digits, middlewind, pval, formatname, verbose) {
