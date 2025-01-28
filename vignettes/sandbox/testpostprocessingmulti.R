@@ -49,6 +49,8 @@ resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE,
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"),
     outfold = "/g/romebioinfo/tmp/testmultifun")
 
+!!!!!! -> saveRDS(resteprmulti, file="/g/romebioinfo/tmp/testmultifun/resteprmulti.rds")
+
 !!!!!!!!!!!!!!!!!
 Error in (function (complist, compname, expdf, ecdfgenevec, genaucvec,  :
   unused argument (TRUE)
