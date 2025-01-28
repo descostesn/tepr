@@ -61,6 +61,43 @@
                 }
 }
 
+.multiplotmetagenes <- function(complist, daucname, name1, name2, formatname,
+    outfoldcomp, verbose) {
+
+        ## Plot metagene by attenuation
+        if (verbose) message("\t ## Plot metagene by attenuation")
+        daucname <- paste0("dAUC_Diff_meanFx_", name2, "_", name1)
+        plotmetagenes(unigroupdf = complist[[2]],
+            dfmeandiff = complist[[2]], plottype = "attenuation",
+            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
+            verbose = verbose)
+
+        ## Plot metagene by outgroup
+        if (verbose) message("\t ## Plot metagene by outgroup")
+        plotmetagenes(unigroupdf = complist[[2]],
+            dfmeandiff = complist[[2]], plottype = "outgroup",
+            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
+            verbose = verbose)
+
+        ## Plot metagene by universe
+        if (verbose) message("\t ## Plot metagene by universe")
+        plotmetagenes(unigroupdf = complist[[2]],
+            dfmeandiff = complist[[2]], plottype = "universe",
+            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
+            verbose = verbose)
+
+        ## Plot metagene by all
+        if (verbose) message("\t ## Plot metagene for all transcripts")
+        plotmetagenes(unigroupdf = complist[[2]],
+            dfmeandiff = complist[[2]], plottype = "all",
+            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
+            verbose = verbose)
+}
+
 plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
@@ -96,38 +133,9 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, genaucvec = NA,
             aucsubtitle, auclegendpos, formatname, outfoldcomp, aucfilename,
             uniname, groupname, verbose)
 
-        ## Plot metagene by attenuation
-        if (verbose) message("\t ## Plot metagene by attenuation")
-        daucname <- paste0("dAUC_Diff_meanFx_", name2, "_", name1)
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "attenuation",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
-            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
-            verbose = verbose)
-
-        ## Plot metagene by outgroup
-        if (verbose) message("\t ## Plot metagene by outgroup")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "outgroup",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
-            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
-            verbose = verbose)
-
-        ## Plot metagene by universe
-        if (verbose) message("\t ## Plot metagene by universe")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "universe",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
-            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
-            verbose = verbose)
-
-        ## Plot metagene by all
-        if (verbose) message("\t ## Plot metagene for all transcripts")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "all",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
-            plot = FALSE, formatname = formatname, outfold = outfoldcomp,
-            verbose = verbose)
+        ## Plot metagene by attenuation, outgroup, universe, and all
+        .multiplotmetagenes(complist, daucname, name1, name2, formatname,
+            outfoldcomp, verbose)
 
         ## plothistoknee by percent
         if (verbose) message("\t ## plothistoknee by percent")
