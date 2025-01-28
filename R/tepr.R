@@ -250,7 +250,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         cond1name <- currentcol[1]
         cond2name <- currentcol[2]
         compname <- paste(cond1name, cond2name, sep = "_vs_")
-        if (verbose) message("Comparison of ", compname)
+        if (verbose) message("\n\n Comparison of ", compname)
 
         ## Limiting expdf on the two defined conditions
         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
