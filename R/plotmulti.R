@@ -102,7 +102,7 @@
 }
 
 .multiplothistoknee <- function(complist, histkneexlim, binwidthvalhistknee,
-            outfoldcomp, formatname, uniname, groupname, name2, verbose) {
+            outfoldcomp, formatname, uniname, groupname, verbose) {
 
                 ## plothistoknee by percent
                 if (verbose) message("\t ## plothistoknee by percent")
