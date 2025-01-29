@@ -2,8 +2,10 @@
     digits, middlewind, pval, formatname, verbose) {
 
         if (verbose) message("\t ## plot ecdf")
+
         sapply(ecdfgenevec, function(currentgene, complist, expdf, colvec,
             outfoldcomp, digits, middlewind, pval, formatname, verbose) {
+
             if (verbose) message("\t\t plot ecdf for ", currentgene)
             plotecdf(dfmeandiff = complist[[1]], unigroupdf = complist[[2]],
                 expdf = expdf, genename = currentgene, colvec = colvec,
