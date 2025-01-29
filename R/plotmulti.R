@@ -235,9 +235,11 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
 
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
-        expdf2cond <- unlist(strsplit(compname, "_vs_"))
-        name1 <- expdf2cond[1]
-        name2 <- expdf2cond[2]
+        expnamevec <- unlist(strsplit(compname, "_vs_"))
+        name1 <- expnamevec[1]
+        name2 <- expnamevec[2]
+        idx2cond <- which(expdf$condition == name1 | expdf$condition == name2)
+        expdf2cond <- expdf[idx2cond, ]
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
