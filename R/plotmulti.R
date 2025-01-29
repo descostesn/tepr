@@ -227,8 +227,9 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
     ## complist <- resteprmulti[[1]]; compname <- names(resteprmulti)[1]
     invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
-        aucaxismaxx, aucaxisminy, aucaxismaxy, aucsubtitle, auclegendpos,
-        uniname, groupname, histkneexlim, binwidthvalhistknee, verbose) {
+        aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
+        auclegendpos, uniname, groupname, histkneexlim, binwidthvalhistknee,
+        verbose) {
 
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
