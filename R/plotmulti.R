@@ -102,8 +102,7 @@
 }
 
 .multiplothistoknee <- function(complist, histkneexlim, binwidthvalhistknee,
-            kneename, outfoldcomp, formatname, uniname, groupname, name2,
-            verbose) {
+            outfoldcomp, formatname, uniname, groupname, name2, verbose) {
 
                 ## plothistoknee by percent
                 if (verbose) message("\t ## plothistoknee by percent")
@@ -261,7 +260,7 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
 
         ## plothistoknee by percent and kb
         .multiplothistoknee(complist, histkneexlim, binwidthvalhistknee,
-            kneename, outfoldcomp, formatname, uniname, groupname, verbose)
+            outfoldcomp, formatname, uniname, groupname, verbose)
 
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
