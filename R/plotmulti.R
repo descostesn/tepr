@@ -70,7 +70,7 @@
 
         ## Plot metagene by attenuation
         if (verbose) message("\t ## Plot metagene by attenuation")
-        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
             plottype = "attenuation", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
@@ -78,7 +78,7 @@
 
         ## Plot metagene by outgroup
         if (verbose) message("\t ## Plot metagene by outgroup")
-        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
             plottype = "outgroup", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
@@ -86,7 +86,7 @@
 
         ## Plot metagene by universe
         if (verbose) message("\t ## Plot metagene by universe")
-        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
             plottype = "universe", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
@@ -94,7 +94,7 @@
 
         ## Plot metagene by all
         if (verbose) message("\t ## Plot metagene for all transcripts")
-        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
             plottype = "all", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
