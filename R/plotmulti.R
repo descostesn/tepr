@@ -29,7 +29,8 @@
         aucfilename <- paste0("AUCcompare_groups_", name1, "_",
             name2)
         plotauc(tab = complist[[2]], genevec = genaucvec,
-            auc_ctrlname = name1, auc_stressname = name2,
+            auc_ctrlname = paste0("AUC_", name1),
+            auc_stressname = paste0("AUC_", name2),
             pvalkstestcolname = pvalks, labelx = labelx,
             labely = labely, axismin_x = aucaxisminx,
             axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
@@ -46,7 +47,8 @@
                 "given genes")
             aucfilename <- paste0("AUCcompare_pval_", name2, "_", name1)
             plotauc(tab = complist[[2]], genevec = genaucvec,
-                auc_ctrlname = name1, auc_stressname = name2,
+                auc_ctrlname = paste0("AUC_", name1),
+                auc_stressname = paste0("AUC_", name2),
                 pvalkstestcolname = pvalks, labelx = labelx,
                 labely = labely, axismin_x = aucaxisminx,
                 axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
