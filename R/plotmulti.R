@@ -61,7 +61,7 @@
         }
 }
 
-.multiplotmetagenes <- function(complist, daucname, name1, name2, formatname,
+.multiplotmetagenes <- function(complist, name1, name2, formatname,
     outfoldcomp, verbose) {
 
         ## Plot metagene by attenuation
@@ -253,8 +253,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
             auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose)
 
         ## Plot metagene by attenuation, outgroup, universe, and all
-        .multiplotmetagenes(complist, daucname, name1, name2, formatname,
-            outfoldcomp, verbose)
+        .multiplotmetagenes(complist, name1, name2, formatname, outfoldcomp,
+            verbose)
 
         ## plothistoknee by percent and kb
         .multiplothistoknee(complist, histkneexlim, binwidthvalhistknee,
