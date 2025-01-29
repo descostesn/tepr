@@ -64,36 +64,39 @@
 .multiplotmetagenes <- function(complist, name1, name2, formatname,
     outfoldcomp, verbose) {
 
+        daucname <- paste0("dAUC_Diff_meanFx_", name2, "_", name1)
+        aucctrlname <- paste0("AUC_", name1)
+        aucstressname <- paste0("AUC_", name2)
+
         ## Plot metagene by attenuation
         if (verbose) message("\t ## Plot metagene by attenuation")
-        daucname <- paste0("dAUC_Diff_meanFx_", name2, "_", name1)
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "attenuation",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+            plottype = "attenuation", daucname = daucname,
+            auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
 
         ## Plot metagene by outgroup
         if (verbose) message("\t ## Plot metagene by outgroup")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "outgroup",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+            plottype = "outgroup", daucname = daucname,
+            auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
 
         ## Plot metagene by universe
         if (verbose) message("\t ## Plot metagene by universe")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "universe",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+            plottype = "universe", daucname = daucname,
+            auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
 
         ## Plot metagene by all
         if (verbose) message("\t ## Plot metagene for all transcripts")
-        plotmetagenes(unigroupdf = complist[[2]],
-            dfmeandiff = complist[[2]], plottype = "all",
-            daucname = daucname, auc_ctrlname = name1, auc_stressname = name2,
+        plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[2]],
+            plottype = "all", daucname = daucname,
+            auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
 }
