@@ -62,6 +62,14 @@ plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"),
 dfmeandiff = complist[[1]]; unigroupdf = complist[[2]]
 genename = currentgene; outfold = outfoldcomp; plot = FALSE
 
+## test plotauc
+tab = complist[[2]]; genevec = genaucvec;auc_ctrlname = name1
+auc_stressname = name2;pvalkstestcolname = pvalks; axismin_x = aucaxisminx;
+axismax_x = aucaxismaxx; axismin_y = aucaxisminy;axismax_y = aucaxismaxy
+maintitle = aucmaintitle;subtitle = aucsubtitle; legendpos = auclegendpos
+outfold = outfoldcomp;outfile = aucfilename; plottype = "groups"
+plot = FALSE; universename = uniname; groupname = groupname
+            
 
 
 
