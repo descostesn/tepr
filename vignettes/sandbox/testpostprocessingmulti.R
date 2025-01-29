@@ -58,6 +58,9 @@ groupname = "Group"; histkneexlim = NA; binwidthvalhistknee = NA
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"),
     outfold = "/g/romebioinfo/tmp/testmultifun")
 
+## test plotecdf
+dfmeandiff = complist[[1]]; unigroupdf = complist[[2]]
+genename = currentgene; outfold = outfoldcomp; plot = FALSE
 
 
 
