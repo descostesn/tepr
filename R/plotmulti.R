@@ -229,7 +229,6 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
         stop("There are less than two conditions in your experiment ",
             "table. The input list must be the result of teprmulti.")
 
-    ## complist <- resteprmulti[[1]]; compname <- names(resteprmulti)[1]
     invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
         aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
