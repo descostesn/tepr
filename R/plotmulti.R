@@ -42,7 +42,7 @@
             verbose = verbose)
 
         ## Generate the plot of auc by pval
-        if (!is.na(genaucvec)) {
+        if (!is.na(genaucvec[1])) {
             if (verbose) message("\t ## plot auc by pval for the ",
                 "given genes")
             aucfilename <- paste0("AUCcompare_pval_", name2, "_", name1)
