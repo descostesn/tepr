@@ -16,8 +16,7 @@
                 pval, formatname, verbose)
 }
 
-.multiplotauc <- function(name1, name2, complist, genaucvec, pvalks, labelx,
-            labely, aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy,
+.multiplotauc <- function(name1, name2, complist, genaucvec, pvalks, aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy,
             aucmaintitle, aucsubtitle, auclegendpos, formatname,
             outfoldcomp, aucfilename, uniname, groupname, verbose) {
 
@@ -247,9 +246,9 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
-        .multiplotauc(name1, name2, complist, genaucvec, pvalks, labelx, labely,
-            aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
-            aucsubtitle, auclegendpos, formatname, outfoldcomp, aucfilename,
+        .multiplotauc(name1, name2, complist, genaucvec, pval, aucaxisminx,
+            aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
+            auclegendpos, formatname, outfoldcomp, aucfilename,
             uniname, groupname, verbose)
 
         ## Plot metagene by attenuation, outgroup, universe, and all
