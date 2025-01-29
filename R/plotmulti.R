@@ -235,13 +235,13 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
 
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
-        expnamevec <- unique(expdf$condition)
-        name1 <- expnamevec[1]
-        name2 <- expnamevec[2]
+        expdf2cond <- unlist(strsplit(compname, "_vs_"))
+        name1 <- expdf2cond[1]
+        name2 <- expdf2cond[2]
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
-        .multiplotecdf(ecdfgenevec, complist, expdf, colvec, outfoldcomp,
+        .multiplotecdf(ecdfgenevec, complist, expdf2cond, colvec, outfoldcomp,
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
