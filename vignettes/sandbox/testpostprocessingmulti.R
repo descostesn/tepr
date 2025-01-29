@@ -45,16 +45,21 @@ expdf <- expdf[which(expdf$condition == "ctrl10" | expdf$condition == "ctrl20" |
  expdf$condition == "HS20"), ]
 resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE,
     saveobjectpath = "/g/romebioinfo/tmp/testmultifun/objbackup")
+# resteprmulti <- readRDS("/g/romebioinfo/tmp/testmultifun/resteprmulti.rds")
 
-plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"),
+
+digits = 2; middlewind = 100; pval = 0.01
+colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+genaucvec = NA; aucaxisminx = -10; aucaxismaxx = 100; aucaxisminy = -10
+aucaxismaxy = 100; aucmaintitle = ""; aucsubtitle = ""
+auclegendpos = "bottom"; formatname = "pdf"; uniname = "Universe"
+groupname = "Group"; histkneexlim = NA; binwidthvalhistknee = NA
+
+plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"),
     outfold = "/g/romebioinfo/tmp/testmultifun")
 
-!!!!!! -> saveRDS(resteprmulti, file="/g/romebioinfo/tmp/testmultifun/resteprmulti.rds")
 
-!!!!!!!!!!!!!!!!!
-Error in (function (complist, compname, expdf, ecdfgenevec, genaucvec,  :
-  unused argument (TRUE)
-!!!!!!!!!!!!!!
+
 
 
 ## vic input for figures
