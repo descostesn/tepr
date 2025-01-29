@@ -28,7 +28,7 @@
         labely <- paste0("AUC in ", name2)
         aucfilename <- paste0("AUCcompare_groups_", name1, "_",
             name2)
-        plotauc(tab = complist[[2]], genevec = genaucvec,
+        plotauc(tab = complist[[2]],
             auc_ctrlname = paste0("AUC_", name1),
             auc_stressname = paste0("AUC_", name2),
             pvalkstestcolname = pvalks, labelx = labelx,
