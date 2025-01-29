@@ -16,15 +16,14 @@
                 pval, formatname, verbose)
 }
 
-.multiplotauc <- function(name1, name2, complist, genaucvec, pvalks,
-    aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
-    aucsubtitle, auclegendpos, formatname, outfoldcomp, uniname, groupname,
-    verbose) {
+.multiplotauc <- function(name1, name2, complist, genaucvec, aucaxisminx,
+    aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
+    auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose) {
 
         ## Generate the plot of auc by groups
         if (verbose) message("\t ## plot auc by groups")
-        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name1, "_",
-            name2)
+        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name2, "_",
+            name1)
         labelx <- paste0("AUC in ", name1)
         labely <- paste0("AUC in ", name2)
         aucfilename <- paste0("AUCcompare_groups_", name1, "_",
@@ -247,7 +246,7 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
-        .multiplotauc(name1, name2, complist, genaucvec, pval, aucaxisminx,
+        .multiplotauc(name1, name2, complist, genaucvec, aucaxisminx,
             aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
             auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose)
 
