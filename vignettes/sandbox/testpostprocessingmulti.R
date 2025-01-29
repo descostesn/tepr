@@ -48,12 +48,12 @@ resteprmulti <- teprmulti(expdf, alldf, expthres, nbcpu = 5, showtime = TRUE,
 # resteprmulti <- readRDS("/g/romebioinfo/tmp/testmultifun/resteprmulti.rds")
 
 
-digits = 2; middlewind = 100; pval = 0.01
-colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
-genaucvec = NA; aucaxisminx = -10; aucaxismaxx = 100; aucaxisminy = -10
-aucaxismaxy = 100; aucmaintitle = ""; aucsubtitle = ""
-auclegendpos = "bottom"; formatname = "pdf"; uniname = "Universe"
-groupname = "Group"; histkneexlim = NA; binwidthvalhistknee = NA
+# digits = 2; middlewind = 100; pval = 0.01
+# colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+# genaucvec = NA; aucaxisminx = -10; aucaxismaxx = 100; aucaxisminy = -10
+# aucaxismaxy = 100; aucmaintitle = ""; aucsubtitle = ""
+# auclegendpos = "bottom"; formatname = "pdf"; uniname = "Universe"
+# groupname = "Group"; histkneexlim = NA; binwidthvalhistknee = NA
 
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"),
     outfold = "/g/romebioinfo/tmp/testmultifun")
