@@ -105,6 +105,9 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
     colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
     .colnamecheck(colnamevec, unigroupdf)
 
+    if (!file.exists(outfold))
+        dir.create(outfold, recursive = TRUE)
+
     ## Selection of transcripts and define plot title
     if (isTRUE(all.equal(plottype, "attenuation"))) {
         idx <- which(unigroupdf$Group == "Attenuated")

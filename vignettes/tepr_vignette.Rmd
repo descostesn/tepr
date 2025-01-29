@@ -515,6 +515,33 @@ The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
+## teprmulti analysis
+
+It is possible to analyze more than two experiments with the function `teprmulti`. This function performs a "all vs all" analysis and returns a list whose elements, for each comparison, is a list of two data frames: 
+
+- `resmeandiff_<comparison>`: Results of the `meandifference` function for the specific two condition comparison.
+- `resunigroupatt_<comparison>`: Results from the `universegroup` function for the specific two condition comparison. 
+
+```{r teprmulti, eval = FALSE}
+resteprmulti <- teprmulti(expdf, transdf, expthres)
+```
+
+
+## plotmulti
+
+Using the result list `resteprmulti`, all plots for all comparisons can be generated with `plotmulti`. The function goes through each element of `resteprmulti` which corresponds to a comparison of two conditions. For each element it calls the following functions:
+
+- `plotecdf`: The function generates a figure for each gene given in ecdfgenevec.
+- `plotauc`: Generates figures by groups and pval. The lattest figure is not generated if genaucvec = NA.
+- `plotmetagenes`: Generates the figures by attenuation, outgroup, universe, and all.
+- `plothistoknee`: Generate the figures by percent and kb.
+
+Figures are written to `outfold` and subfolders are automatically created with the names of the comparisons.
+
+```{r plotmulti, eval = FALSE}
+plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
+```
+
 
 # Annex
 

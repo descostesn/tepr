@@ -70,6 +70,9 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             !isTRUE(all.equal(plottype, "kb")))
                 stop("Plot type should be percent or kb")
 
+        if (!file.exists(outfold))
+            dir.create(outfold, recursive = TRUE)
+
         colnamevec <- c(universename, groupname, kneename)
         .colnamecheck(colnamevec, unigroupdf)
 

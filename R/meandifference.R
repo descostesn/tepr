@@ -174,5 +174,6 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
       message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
 
-    return(cbind(resultsecdf, res))
+    res <- cbind(resultsecdf, res)
+    return(res)
 }

@@ -31,8 +31,8 @@
     ## Add exp name prefix to column score
     idxscore <- which(colnames(currenttrans) == "score")
     colnames(currenttrans)[idxscore] <- paste(currentname, "score", sep = "_")
-
-    return(list(currenttrans, idxscore))
+    res <- list(currenttrans, idxscore)
+    return(res)
 }
 
 .dupidx <- function(currenttrans, windsize) {

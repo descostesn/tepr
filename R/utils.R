@@ -204,4 +204,9 @@ checkexptab <- function(exptab) {
     if (!isTRUE(all.equal(strandvec, c("plus", "minus"))))
         stop("The strand column of the experiment table should only contain",
             " 'plus' and 'minus'.")
+
+    idxchar <- grep("_|-", exptab$condition)
+    if (!isTRUE(all.equal(length(idxchar), 0)))
+        stop("The condition names should not contain any special characters",
+            " such as '_' or '-'.")
 }
