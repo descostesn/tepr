@@ -96,12 +96,13 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         return(resmat)
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
+  finalres <- do.call("rbind", nabytranslist)
+
   if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
       message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
   }
 
-  finalres <- do.call("rbind", nabytranslist)
   return(finalres)
 }
