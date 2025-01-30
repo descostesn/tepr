@@ -200,7 +200,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
           nbcpu, controlcondname, stresscondname)
     } else {
-        warning("dAUC not performed, only one condition submitted.")
+        message("dAUC not performed, only one condition submitted.")
     }
 
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
