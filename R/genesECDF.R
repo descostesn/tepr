@@ -164,5 +164,6 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
       message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
     }
 
-    return(list(concatdf, nbrows))
+    finalres <- list(concatdf, nbrows)
+    return(finalres)
 }
