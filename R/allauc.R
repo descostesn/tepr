@@ -211,9 +211,14 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
       nbcpu = nbcpu)
 
     ## Merging the two tables by transcript
-    if (verbose) message("Merging results")
-    allauc <- merge(aucallcond, daucallcond,
-      by = c("gene", "transcript", "strand", "window_size"))
+    if (!isTRUE(all.equal(length(unique(expdf$condition)), 1))) {
+
+      if (verbose) message("Merging results")
+      allauc <- merge(aucallcond, daucallcond,
+        by = c("gene", "transcript", "strand", "window_size"))
+    } else {
+      allauc <- aucallcond
+    }
 
     if (showtime) {
       end_time <- Sys.time()
