@@ -62,6 +62,11 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         str <- .extractstr(transtable)
         colnamestr <- scorecolvec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
+        ## If there is only one condition and one replicate
+        if (isTRUE(all.equal(length(colnamestr), 1))) {
+          scoremat <- as.matrix(scoremat)
+          colnames(scoremat) <- colnamestr
+        }
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
         res <- sapply(condvec, function(c, m, n) {
