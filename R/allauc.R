@@ -138,7 +138,8 @@
 #' @description
 #' This function computes the Area Under Curve (AUC) and the differences of AUC
 #' between two conditions for a list of transcript data. It supports parallel
-#' computation for efficiency.
+#' computation for efficiency. If only one condition is given, the differences
+#' are not computed.
 #'
 #' @usage
 #' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
@@ -171,8 +172,8 @@
 #'
 #' @details The function first checks if exactly two conditions are present in
 #'          `expdf`. If so, it computes the differences in AUC between the two
-#'          conditions using a Kolmogorov-Smirnov test and calculates the AUC
-#'          for all conditions against a reference line (y=x). Results are
+#'          conditions using a Kolmogorov-Smirnov test. It then calculates the
+#'          AUC for all conditions against a reference line (y=x). Results are
 #'          merged by transcript and include adjusted p-values.
 #'
 #' @examples
