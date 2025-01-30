@@ -5,7 +5,7 @@ library("tepr")
 ##################
 
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
-finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
+# finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 tabonecond <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv"
 tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv"
 
@@ -19,15 +19,20 @@ expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
 !!expdfonecondonerep <- expdfonecond[c(), ]
 
 ## Reading and filtering alldf
-alldf <- read.delim(finaltabpath, header = FALSE)
+#alldf <- read.delim(finaltabpath, header = FALSE)
 
-df <- alldf[, c(1:9, 18:25)]
-write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
-    quote = FALSE, row.names = FALSE, col.names = FALSE)
+# df <- alldf[, c(1:9, 18:25)]
+# write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
+#     quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-dfrep <- df[, c(1:13)]
-write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t",
-    quote = FALSE, row.names = FALSE, col.names = FALSE)
+# dfrep <- df[, c(1:13)]
+# write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t",
+#     quote = FALSE, row.names = FALSE, col.names = FALSE)
+
 
 ## Reading table with one cond several rep
+df <- read.delim(tabonecond, header = FALSE)
+
+## Reading table with one cond one rep
+dfrep <- read.delim(tabonecondonerep, header = FALSE)
 
