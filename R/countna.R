@@ -97,5 +97,6 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
       message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
   }
 
-  return(do.call("rbind", nabytranslist))
+  finalres <- do.call("rbind", nabytranslist)
+  return(finalres)
 }
