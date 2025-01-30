@@ -174,7 +174,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
         "differences on mean columns.")
       res <- resmean
     }
-    
+
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
