@@ -117,7 +117,8 @@
 
   aucallconditions <- do.call("rbind", resdflist)
   idxdup <- which(duplicated(colnames(aucallconditions)))
-  aucallconditions <- aucallconditions[, -idxdup]
+  if (!isTRUE(all.equal(length(idxdup), 0)))
+    aucallconditions <- aucallconditions[, -idxdup]
 
   ## Correcting p-val with FDR
   idxpvalvec <- grep("p_AUC", colnames(aucallconditions))
