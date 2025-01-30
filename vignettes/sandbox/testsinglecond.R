@@ -35,3 +35,12 @@ df <- read.delim(tabonecond, header = FALSE)
 
 ## Reading table with one cond one rep
 dfrep <- read.delim(tabonecondonerep, header = FALSE)
+
+## Parameters to enter tepr
+expdf = expdfonecond; alldf = df; expthres = 0.1; nbcpu = 5; rounding = 10
+dontcompare = NULL; controlcondname = "ctrl10"; stresscondname = "HS"
+replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50
+countnathres = 20; meanctrlthres = 0.5; meanstressthres = 0.5
+pvaltheorythres = 0.1; aucctrlthreshigher = -10; aucctrlthreslower = 15
+aucstressthres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2
+showtime = FALSE; verbose = TRUE
