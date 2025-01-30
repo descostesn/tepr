@@ -75,7 +75,8 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         }, scoremat, colnamestr)
 
         ## Retrieving total NA and transcript info
-        if (!isTRUE(all.equal(res[[1]], res[[2]])))
+        if (!isTRUE(all.equal(length(condvec), 1)) && 
+          !isTRUE(all.equal(res[[1]], res[[2]])))
             stop("Number of NA is different between conditions for ",
               unique(transtable$gene), ": ", res[[1]], " - ", res[[2]],
               ". This should not happen. Contact the developer.")
@@ -85,7 +86,9 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         info <- data.frame(gene = unique(transtable$gene),
           transcript = unique(transtable$transcript),
           strand = unique(transtable$strand))
-        return(cbind(info, Count_NA = countna))
+        resmat <- cbind(info, Count_NA = countna)
+
+        return(resmat)
     }, scorecolvec, condvec, mc.cores = nbcpu)
 
   if (showtime) {
