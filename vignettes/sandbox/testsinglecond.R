@@ -37,7 +37,7 @@ df <- read.delim(tabonecond, header = FALSE)
 dfrep <- read.delim(tabonecondonerep, header = FALSE)
 
 ## Parameters to enter tepr
-expdf = expdfonecond; alldf = df; expthres = 0.1; nbcpu = 5; rounding = 10
+expdf = expdfonerep; alldf = dfrep; expthres = 0.1; nbcpu = 5; rounding = 10
 dontcompare = NULL; controlcondname = "ctrl10"; stresscondname = "HS"
 replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50
 countnathres = 20; meanctrlthres = 0.5; meanstressthres = 0.5
