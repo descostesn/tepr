@@ -47,7 +47,10 @@
   }, condvec, mc.cores = nbcpu)
 
   updowndf <- do.call("rbind", updownbytranslist)
-  updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+  idxdup <- which(duplicated(colnames(updowndf)))
+  if (!isTRUE(all.equal(length(idxdup), 0)))
+    updowndf <- updowndf[, -idxdup]
+
   return(updowndf)
 }
 
