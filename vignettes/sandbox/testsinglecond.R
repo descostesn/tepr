@@ -16,7 +16,7 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-on
 ## Reading and filtering on one cond several rep
 expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
-!!expdfonecondonerep <- expdfonecond[c(), ]
+expdfonerep <- expdfonecond[c(1, 2), ]
 
 ## Reading and filtering alldf
 #alldf <- read.delim(finaltabpath, header = FALSE)
@@ -35,4 +35,3 @@ df <- read.delim(tabonecond, header = FALSE)
 
 ## Reading table with one cond one rep
 dfrep <- read.delim(tabonecondonerep, header = FALSE)
-
