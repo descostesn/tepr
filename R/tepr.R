@@ -172,9 +172,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## This function categorizes genes into a "Universe" and assigns them into
     ## groups such as "Attenuated" or "Outgroup" based on transcription data and
     ## thresholds.
-    res <- universegroup(resatt, controlcondname, stresscondname, windsizethres,
-        countnathres, meanctrlthres, meanstressthres, pvaltheorythres,
-        aucctrlthreshigher, aucctrlthreslower, aucstressthres,
+    res <- universegroup(resatt, expdf, controlcondname, stresscondname,
+        windsizethres, countnathres, meanctrlthres, meanstressthres,
+        pvaltheorythres, aucctrlthreshigher, aucctrlthreslower, aucstressthres,
         attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
     if (showtime) {
