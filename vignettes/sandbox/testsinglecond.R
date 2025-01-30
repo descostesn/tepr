@@ -7,6 +7,12 @@ library("tepr")
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
 finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 
+!!!!!
+
+df <- alldf[, c()]
+write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
+    quote = FALSE, row.names = FALSE, col.names = FALSE)
+!!!!!!!
 
 ##################
 # MAIN
