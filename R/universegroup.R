@@ -94,10 +94,13 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
     aucctrl <- paste("AUC", controlname, sep = "_")
     aucstress <- paste("AUC", stressname, sep = "_")
     pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", stressname, "_", controlname)
+    condvec <- unique(expdf$condition)
 
-    ## Computing the Universe column
+    ## Computing the Universe column: If only one condition is provided, only
+    ## control columns are used
     if (verbose) message("Computing the Universe column")
-    completedf <- completedf %>%
+    if (!isTRUE(all.equal(length(condvec), 1))) {
+        completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
             .data$window_size > windsizethres &
             .data$Count_NA < countnathres &
@@ -105,10 +108,20 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
             dplyr::relocate(.data$Universe, .before = 1)  # nolint
+    } else {
+        completedf <- completedf %>%
+        dplyr::mutate(Universe = ifelse(
+            .data$window_size > windsizethres &
+            .data$Count_NA < countnathres &
+            !!sym(meanctrl) > meanctrlthres & # nolint
+            !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
+            dplyr::relocate(.data$Universe, .before = 1)  # nolint
+    }
 
     ## Computing the Group column
     if (verbose) message("Computing the Group column")
-    completedf <- completedf %>%
+    if (!isTRUE(all.equal(length(condvec), 1))) {
+        completedf <- completedf %>%
         dplyr::mutate(
             Group = ifelse(.data$Universe == TRUE &
                 !!sym(aucstress) > aucstressthres &
@@ -120,6 +133,15 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
                     .data$Group)) %>%
                 dplyr::relocate(.data$Group, .before = 2)
+    } else {
+        completedf <- completedf %>%
+        dplyr::mutate(
+            Group = ifelse(.data$Universe == TRUE &
+                !!sym(aucctrl) > aucctrlthreshigher &
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
+                    NA)) %>%
+                dplyr::relocate(.data$Group, .before = 2)
+    }
 
     if (showtime) {
       end_time <- Sys.time()
