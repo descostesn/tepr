@@ -94,7 +94,8 @@
 #'
 #' @description
 #' This function calculates the mean values, mean Fx (ECDF) and ECDF differences
-#' (Fx) for expression data, across different experimental conditions.
+#' (Fx) for expression data, across different experimental conditions. If only
+#' one condition is provided, skips computation of mean differences.
 #'
 #' @usage
 #' meandifference(resultsecdf, expdf, nbwindows, showtime = FALSE,
@@ -119,6 +120,8 @@
 #'   \item Differences between the \code{Fx} column and coordinate ratios
 #'    (e.g., \code{diff_Fx_ctrl}).
 #' }
+#' If only one condition is provided, the differences on mean columns are not
+#' performed.
 #'
 #' @examples
 #' # Assuming resultsecdf is a data frame with ECDF results and expdf contains
