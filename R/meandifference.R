@@ -160,14 +160,21 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
     resmean <- do.call("cbind", rescondlist)
 
     ## Computing all differences on mean columns
-    if (verbose) message("Commputing all differences on mean columns")
-    matdiff <- .creatematdiff(condvec, resmean)
+    if (!isTRUE(all.equal(length(condvec), 1))) {
 
-    res <- cbind(resmean, matdiff)
-    if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
-        stop("The results of mean and diff should have the same number of ",
-            "rows than resultsecdf, contact the developer")
+      if (verbose) message("Computing all differences on mean columns")
+      matdiff <- .creatematdiff(condvec, resmean)
 
+      res <- cbind(resmean, matdiff)
+      if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
+          stop("The results of mean and diff should have the same number of ",
+              "rows than resultsecdf, contact the developer")
+    } else {
+      if (verbose) message("There is only one condition. Skip Computing all ",
+        "differences on mean columns.")
+      res <- resmean
+    }
+    
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
