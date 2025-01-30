@@ -9,13 +9,15 @@
 #' thresholds.
 #'
 #' @usage
-#' universegroup(completedf, controlname = "ctrl", stressname = "HS",
+#' universegroup(completedf, expdf, controlname = "ctrl", stressname = "HS",
 #' windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
 #' meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
 #' aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
 #' outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE)
 #'
 #' @param completedf A data frame obtained with the function attenuation.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param controlname A string representing the control condition name. Default
 #'  is \code{"ctrl"}.
 #' @param stressname A string representing the stress condition name. Default
@@ -66,7 +68,7 @@
 #'
 #' @examples
 #' # Example usage:
-#' # classified_df <- universegroup(completedf, controlname = "ctrl",
+#' # classified_df <- universegroup(completedf, expdf, controlname = "ctrl",
 #' # stressname = "HS")
 #'
 #' @seealso
@@ -78,11 +80,12 @@
 #'
 #' @export
 
-universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", # nolint
-    windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
-    meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
-    aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
+universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
+    stressname = "HS", windsizethres = 50, countnathres = 20,
+    meanctrlthres = 0.5, meanstressthres = 0.5, pvaltheorythres = 0.1,
+    aucctrlthreshigher = -10, aucctrlthreslower = 15, aucstressthres = 15,
+    attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2, showtime = FALSE,
+    verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
