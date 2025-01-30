@@ -15,16 +15,17 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-on
 
 ## Reading and filtering on one cond several rep
 expdf <- read.csv(exptabpath, header = TRUE)
-expdf <- expdf[which(expdf$condition == "ctrl10"), ]
+expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
+!!expdfonecondonerep <- expdfonecond[c(), ]
 
 ## Reading and filtering alldf
 alldf <- read.delim(finaltabpath, header = FALSE)
 
-df <- alldf[, c()]
+df <- alldf[, c(1:9, 18:25)]
 write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
     quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-dfrep <- df[, c()]
+dfrep <- df[, c(1:13)]
 write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t",
     quote = FALSE, row.names = FALSE, col.names = FALSE)
 
