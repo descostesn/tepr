@@ -196,7 +196,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
-    if (verbose) message("\n\t ## Computing AUC")
+    if (verbose) message("\n\t ## Computing AUC and difference")
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
