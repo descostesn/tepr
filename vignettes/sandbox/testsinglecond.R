@@ -16,6 +16,14 @@ exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-be
 tabonecond <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv" # nolint
 tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv" # nolint
 
+!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!
+CREATE TABLES AND EXPDF ON HS CONDITION FOR CUGUSI
+!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!
+
 
 ##################
 # MAIN
