@@ -141,6 +141,8 @@
 #' representing significant changes in transcription density, are also displayed
 #' if the KS test passes the specified p-value threshold.
 #'
+#' Colvec: If expdf has two conditions, the number of colors should be 4. If
+#' only one condition is provided, the number of colors should be 2.
 #'
 #' @examples
 #' # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
