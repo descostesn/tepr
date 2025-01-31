@@ -165,65 +165,59 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
 
-    if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
-        if (!isTRUE(all.equal(length(colvec), 4)))
-            stop("The vector of colours colvec should have 4 values.")
-    } else if (isTRUE(all.equal(length(unique(expdf$condition)), 1))) {
-        if (!isTRUE(all.equal(length(colvec), 2)))
-            stop("expdf contains one condition. The vector of colours ",
-                "colvec should have 2 values.")
-    } else {
-        stop("This function handles one or two conditions only.")
-    }
+        nbrep <- length(expdf$replicate) / 2
+        if (!isTRUE(all.equal(length(colvec), nbrep)))
+            stop("The vector of colours colvec should have ", nbrep, "values.")
 
-    if (!file.exists(outfold))
-        dir.create(outfold, recursive = TRUE)
+        if (!file.exists(outfold))
+            dir.create(outfold, recursive = TRUE)
 
-    ## Retrieving rows concerning the gene of interest
-    if (verbose) message("\t Retrieving rows concerning the gene of interest")
-    idxgene <- which(dfmeandiff$gene == genename)
-    if (isTRUE(all.equal(length(idxgene), 0)))
-        stop("The gene ", genename, " was not found")
-    df <- dfmeandiff[idxgene, ]
-    idxinfo <- which(unigroupdf$gene == genename)
-    if (isTRUE(all.equal(length(idxinfo), 0)))
-        stop("The gene ", genename, " was not found in unigroupdf")
-    geneinfo <- unigroupdf[idxinfo, ]
+        ## Retrieving rows concerning the gene of interest
+        if (verbose) message("\t Retrieving rows concerning the gene of ",
+            "interest")
+        idxgene <- which(dfmeandiff$gene == genename)
+        if (isTRUE(all.equal(length(idxgene), 0)))
+            stop("The gene ", genename, " was not found")
+        df <- dfmeandiff[idxgene, ]
+        idxinfo <- which(unigroupdf$gene == genename)
+        if (isTRUE(all.equal(length(idxinfo), 0)))
+            stop("The gene ", genename, " was not found in unigroupdf")
+        geneinfo <- unigroupdf[idxinfo, ]
 
-    if (verbose) message("\t Gathering statistics about each condition")
-    ## Computing the window size factor
-    windsizefact <- .windowsizefactor(df, middlewind)
+        if (verbose) message("\t Gathering statistics about each condition")
+        ## Computing the window size factor
+        windsizefact <- .windowsizefactor(df, middlewind)
 
-    ## Retrieving auc, ks, and knee
-    condvec <- unique(expdf$condition)
-    restmp <- .subtextvline(condvec, geneinfo, digits, pval)
-    subtext <- restmp[[1]]
-    vlinedf <- restmp[[2]]
-    kneeval <- restmp[[3]]
+        ## Retrieving auc, ks, and knee
+        condvec <- unique(expdf$condition)
+        restmp <- .subtextvline(condvec, geneinfo, digits, pval)
+        subtext <- restmp[[1]]
+        vlinedf <- restmp[[2]]
+        kneeval <- restmp[[3]]
 
-    ## Building data.frame for plotting with fx and value
-    if (verbose) message("\t Building df for plotting with fx and value")
-    repvec <- unique(expdf$replicate)
-    colnamedfvec <- colnames(df)
-    fxcolvec <- colnamedfvec[grep("^Fx_", colnamedfvec)]
-    valcolvec <- .valcolbuild(condvec, repvec)
-    ## Apply pivot
-    dflongfx <- df %>% tidyr::pivot_longer(
-        cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
-        values_to = "Fx") %>%
-        dplyr::mutate(conditions = gsub("Fx_|_score", "",
-            .data$conditions))
-    dflongval <- df %>% tidyr::pivot_longer(
-        cols = tidyselect::all_of(valcolvec), names_to = "conditions",
-        values_to = "value") %>%
-        dplyr::mutate(conditions = gsub("value_|_score", "",
-            .data$conditions))
-    ## merging
-    commoncols <- intersect(names(dflongfx), names(dflongval))
-    dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
+        ## Building data.frame for plotting with fx and value
+        if (verbose) message("\t Building df for plotting with fx and value")
+        repvec <- unique(expdf$replicate)
+        colnamedfvec <- colnames(df)
+        fxcolvec <- colnamedfvec[grep("^Fx_", colnamedfvec)]
+        valcolvec <- .valcolbuild(condvec, repvec)
+        ## Apply pivot
+        dflongfx <- df %>% tidyr::pivot_longer(
+            cols = tidyselect::all_of(fxcolvec), names_to = "conditions",
+            values_to = "Fx") %>%
+            dplyr::mutate(conditions = gsub("Fx_|_score", "",
+                .data$conditions))
+        dflongval <- df %>% tidyr::pivot_longer(
+            cols = tidyselect::all_of(valcolvec), names_to = "conditions",
+            values_to = "value") %>%
+            dplyr::mutate(conditions = gsub("value_|_score", "",
+                .data$conditions))
+        ## merging
+        commoncols <- intersect(names(dflongfx), names(dflongval))
+        dflongecdf <- merge(dflongfx, dflongval, by = commoncols)
 
-    ## Plotting
-    if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
-    .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-        genename, kneeval, plot, formatname, verbose)
+        ## Plotting
+        if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
+        .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
+            genename, kneeval, plot, formatname, verbose)
 }
