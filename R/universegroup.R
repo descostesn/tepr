@@ -67,9 +67,8 @@
 #' - \strong{Attenuated}: if Universe == TRUE & aucstress > aucstressthres & -log10(pvalks) > attenuatedpvalksthres
 #' - \strong{Outgroup}: if Universe == TRUE & pvalks > outgrouppvalksthres & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 #'
-#' If only one condition is provided, transcripts cannot be identified as
-#' \code{Attenuated}. A transcript is labelled \code{Outgroup} if:
-#'      Universe == TRUE & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
+#' If only one condition is provided, a transcript cannot be labeled as
+#' "Attenuated" or "outgroup" since no comparison can be made.
 #'
 #' This function is useful for classifying genes in transcriptomics data based
 #' on their transcriptional response to different experimental conditions.
@@ -142,13 +141,8 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
                     .data$Group)) %>%
                 dplyr::relocate(.data$Group, .before = 2)
     } else {
-        completedf <- completedf %>%
-        dplyr::mutate(
-            Group = ifelse(.data$Universe == TRUE &
-                !!sym(aucctrl) > aucctrlthreshigher &
-                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
-                    NA)) %>%
-                dplyr::relocate(.data$Group, .before = 2)
+        message("Only one condition is provided. The 'Group' column cannot be",
+            " computed")
     }
 
     if (showtime) {
