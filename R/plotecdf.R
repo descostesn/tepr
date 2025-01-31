@@ -221,6 +221,6 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
 
         ## Plotting
         if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
-        .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext, outfold,
-            genename, kneeval, plot, formatname, verbose)
+        .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext,
+            outfold, genename, kneeval, plot, formatname, verbose)
 }
