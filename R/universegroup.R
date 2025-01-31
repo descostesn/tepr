@@ -96,6 +96,8 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
     verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing universe and group columns")
+
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
     meanstress <- paste("MeanValueFull", stressname, sep = "_")
     pvaltheory <- paste("adjFDR_p_AUC", controlname, sep = "_")
@@ -106,7 +108,6 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
 
     ## Computing the Universe column: If only one condition is provided, only
     ## control columns are used
-    if (verbose) message("Computing the Universe column")
     if (!isTRUE(all.equal(length(condvec), 1))) {
         completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
@@ -127,7 +128,6 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
     }
 
     ## Computing the Group column
-    if (verbose) message("Computing the Group column")
     if (!isTRUE(all.equal(length(condvec), 1))) {
         completedf <- completedf %>%
         dplyr::mutate(
@@ -156,7 +156,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     return(completedf)
