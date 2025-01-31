@@ -168,7 +168,7 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
         nbrep <- length(expdf$replicate) / 2
         if (!isTRUE(all.equal(length(colvec), nbrep)))
             stop("\n\t The vector of colours colvec should have ", nbrep,
-                "values.\n")
+                " values.\n")
 
         if (verbose) message("\n Plotting ecdf for gene ", genename)
 
