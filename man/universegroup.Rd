@@ -87,9 +87,9 @@ A transcript belongs to the groups:
 - \strong{Attenuated}: if Universe == TRUE & aucstress > aucstressthres & -log10(pvalks) > attenuatedpvalksthres
 - \strong{Outgroup}: if Universe == TRUE & pvalks > outgrouppvalksthres & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 
-If only one condition is provided, transcripts cannot be identified as
-\code{Attenuated}. A transcript is labelled \code{Outgroup} if:
-     Universe == TRUE & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
+If only one condition is provided:
+- \strong{Attenuated}: if Universe == TRUE & aucctrl > aucctrlthreslower
+- \strong{Outgroup}: if Universe == TRUE & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 
 This function is useful for classifying genes in transcriptomics data based
 on their transcriptional response to different experimental conditions.
