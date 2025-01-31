@@ -169,6 +169,8 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
         if (!isTRUE(all.equal(length(colvec), nbrep)))
             stop("The vector of colours colvec should have ", nbrep, "values.")
 
+        if (verbose) message("\n Plotting ecdf for gene ", genename)
+
         if (!file.exists(outfold))
             dir.create(outfold, recursive = TRUE)
 
