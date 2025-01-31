@@ -196,13 +196,14 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing AUC")
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
           nbcpu, controlcondname, stresscondname)
     } else {
-        message("dAUC not performed, only one condition submitted.")
+        message("\t dAUC not performed, only one condition submitted.")
     }
 
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
@@ -224,7 +225,7 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
     return(allauc)
 }
