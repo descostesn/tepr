@@ -98,8 +98,9 @@
 #' statistics, and knee points, with options to display or save the plot.
 #'
 #' @usage
-#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = ".",
-#' digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
+#' plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec = c("#90AFBB",
+#' "#10AFBB", "#FF9A04", "#FC4E07"), outfold = ".", digits = 2,
+#' middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
 #'  transcription levels and cumulative distribution values (Fx) for different
@@ -110,7 +111,7 @@
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param genename A string specifying the name of the gene of interest to plot.
 #' @param colvec A vector of colors used to distinguish different conditions in
-#'  the plot.
+#'  the plot. Default is \code{c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")}.
 #' @param outfold A string specifying the output folder where the plot will be
 #'  saved if \code{plot = FALSE}. Default is \code{"."}.
 #' @param digits The number of decimal places to round the AUC and KS values.
@@ -144,8 +145,7 @@
 #' @examples
 #' # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
 #' # data:
-#' # plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX",
-#' # colvec = c("blue", "red"))
+#' # plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX")
 #'
 #' @seealso
 #' [meandifference], [universegroup]
@@ -158,7 +158,8 @@
 #' @importFrom rlang .data
 #' @export
 
-plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename, colvec, # nolint
+plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
+    colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
 
