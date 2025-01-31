@@ -52,3 +52,9 @@ rescond <- tepr(expdf = expdfonecond, alldf = df, expthres = 0.1, nbcpu = 5,
 # load tepr on one cond one rep
 resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
     controlcondname = "ctrl10", showtime = TRUE, verbose = TRUE)
+
+## Testing plotecdf on one cond
+dfmeandiff = rescond[[1]]; unigroupdf = rescond[[2]]; expdf = expdfonecond
+genename = "COQ9"; colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+outfold = "."; digits = 2; middlewind = 100; pval = 0.01; plot = TRUE
+formatname = "pdf", verbose = TRUE
