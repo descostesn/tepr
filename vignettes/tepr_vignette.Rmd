@@ -405,6 +405,15 @@ meanstress > meanstressthreshold &
 pvaladj > pvalthreshold
 ```
 
+If only one condition is given, only the control threshold is used:
+
+```{r uniselect, eval = FALSE}
+window_size > windsizethreshold &
+Count_NA < countnathreshold &
+meanctrl > meanctrlthreshold &
+pvaladj > pvalthreshold
+```
+
 What a satisfying threshold for each criterion is depends on the experiments. The user can adjust the different threshold along the analysis. A transcript satisfying the above criterion is defined as belonging to the `Universe` of the transcripts to analyze (Universe column contains TRUE or FALSE).
 
 The transcripts of the Universe are further divided into `Group`. A transcript belongs to the "Attenuated" group if:
@@ -440,6 +449,8 @@ Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. T
 res <- universegroup(resatt)
 print(head(res, 2))
 ```
+
+If only one condition is provided, a transcript cannot be labeled as "Attenuated" or "outgroup" since no comparison can be made.
 
 
 ## Plotting
