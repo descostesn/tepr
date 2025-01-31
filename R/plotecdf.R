@@ -163,8 +163,16 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
     outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
 
-    if (!isTRUE(all.equal(length(colvec), 4)))
-        stop("The vector of colours colvec should have 4 values.")
+    if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
+        if (!isTRUE(all.equal(length(colvec), 4)))
+            stop("The vector of colours colvec should have 4 values.")
+    } else if (isTRUE(all.equal(length(unique(expdf$condition)), 1))) {
+        if (!isTRUE(all.equal(length(colvec), 2)))
+            stop("expdf contains one condition. The vector of colours ",
+                "colvec should have 2 values.")
+    } else {
+        stop("This function handles one or two conditions only.")
+    }
 
     if (!file.exists(outfold))
         dir.create(outfold, recursive = TRUE)
