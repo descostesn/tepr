@@ -4,7 +4,7 @@
 \alias{universegroup}
 \title{Define Universe and Group of Genes Based on Expression Data}
 \usage{
-universegroup(completedf, controlname = "ctrl", stressname = "HS",
+universegroup(completedf, expdf, controlname = "ctrl", stressname = "HS",
 windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
 meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
 aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
@@ -12,6 +12,9 @@ outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{completedf}{A data frame obtained with the function attenuation.}
+
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{controlname}{A string representing the control condition name. Default
 is \code{"ctrl"}.}
@@ -76,16 +79,24 @@ A transcript belongs to "Universe" if:
      meanctrl > meanctrlthres & meanstress > meanstressthres &
       pvaltheory > pvaltheorythres
 
+If only one condition is provided, a transcript belongs to "Universe" if:
+     window_size > windsizethres & Count_NA < countnathres &
+     meanctrl > meanctrlthres & pvaltheory > pvaltheorythres
+
 A transcript belongs to the groups:
 - \strong{Attenuated}: if Universe == TRUE & aucstress > aucstressthres & -log10(pvalks) > attenuatedpvalksthres
 - \strong{Outgroup}: if Universe == TRUE & pvalks > outgrouppvalksthres & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
+
+If only one condition is provided, transcripts cannot be identified as
+\code{Attenuated}. A transcript is labelled \code{Outgroup} if:
+     Universe == TRUE & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 
 This function is useful for classifying genes in transcriptomics data based
 on their transcriptional response to different experimental conditions.
 }
 \examples{
 # Example usage:
-# classified_df <- universegroup(completedf, controlname = "ctrl",
+# classified_df <- universegroup(completedf, expdf, controlname = "ctrl",
 # stressname = "HS")
 
 }
