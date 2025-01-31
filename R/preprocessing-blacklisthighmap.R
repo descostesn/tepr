@@ -10,8 +10,8 @@
         windowend <- unique(allframedf$end.window)
         if (!isTRUE(all.equal(length(windowstart), 1)) ||
             !isTRUE(all.equal(length(windowend), 1)))
-            stop("The size of the window is not unique for the frame rows ",
-                "selected, this should not happen, contact the developper.")
+            stop("\n\t The size of the window is not unique for the frame rows",
+                " selected, this should not happen, contact the developper.\n")
 
         ## Retrieve the nb of overlapping nt for each score
         overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
@@ -41,8 +41,8 @@
                 sep = "-")
             idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
             if (isTRUE(all.equal(length(idxblack), 0)))
-                stop("Problem in setting scores overlapping black list to NA.",
-                    " This should not happen. Contact the developer.")
+                stop("\n\t Problem in setting scores overlapping black list to",
+                    " NA. This should not happen. Contact the developer.\n")
             currenttrans[idxblack, idxscore] <- NA
         }
 
@@ -168,8 +168,9 @@
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
                     windsize)))
-                    stop("All elements of the list should contain ", windsize,
-                        " rows. This should not happen. Contact the developer.")
+                    stop("\n\t All elements of the list should contain ",
+                        windsize, " rows. This should not happen. Contact the",
+                        " developer.\n")
 
                 ## Formatting columns and adding rowid column
                 res <- .rowidandcols(bytranslist, currentcond, currentrep,
@@ -361,11 +362,12 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
     chromtab = NA, verbose = TRUE) {
 
         if (is.na(genomename) && is.na(chromtab))
-            stop("Either the genome name or chromtab should be provided")
+            stop("\n\t Either the genome name or chromtab should be ",
+                "provided.\n")
 
         if (!is.na(chromtab) && !isTRUE(all.equal(is(chromtab), "Seqinfo")))
-            stop("chromtab should be a Seqinfo object. ",
-                "See rtracklayer::SeqinfoForUCSCGenome")
+            stop("\n\t chromtab should be a Seqinfo object. ",
+                "See rtracklayer::SeqinfoForUCSCGenome.\n")
 
         if (showtime) start_time_fun <- Sys.time()
 

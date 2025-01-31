@@ -78,8 +78,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
                 isTRUE(all.equal(directname, "reverse"))) ||
                 (isTRUE(all.equal(strandname, "minus")) &&
                 isTRUE(all.equal(directname, "forward"))))
-                    stop("Strand and direction do not match, contact the ",
-                        "developer")
+                    stop("\n\t Strand and direction do not match, contact the ",
+                        "developer.\n")
             dfstrand <- dfbytranscript %>%
                 dplyr::filter(.data$strand == strandname) %>%
                 dplyr::select(gene, transcript, strand,

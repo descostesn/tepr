@@ -116,8 +116,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) start_tepr <- Sys.time()
 
     if (length(unique(expdf$condition)) > 2)
-        stop("There are more than two conditions in your experiment ",
-            "table. Use teprmulti function instead.")
+        stop("\n\t There are more than two conditions in your experiment ",
+            "table. Use teprmulti function instead.\n")
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
@@ -407,8 +407,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) start_teprmulti <- Sys.time()
 
     if (!length(unique(expdf$condition)) > 2)
-        stop("There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.")
+        stop("\n\t There are less than two conditions in your experiment ",
+            "table. Use tepr function instead.\n")
 
     checkexptab(expdf)
 

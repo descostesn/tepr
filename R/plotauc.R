@@ -44,13 +44,14 @@
 
         if (!isTRUE(all.equal(plottype, "pval")) &&
             !isTRUE(all.equal(plottype, "groups")))
-                stop("plottype should be equal to 'pval' or 'groups'.")
+                stop("\n\t plottype should be equal to 'pval' or 'groups'.\n")
 
         colnamevec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
         .colnamecheck(colnamevec, tab)
 
         if (isTRUE(all.equal(plottype, "groups")) && !is.na(genevec[1]))
-            stop("The vector of genes is not necessary for plotting groups")
+            stop("\n\t The vector of genes is not necessary for plotting ",
+                "groups.\n")
 }
 
 #' Plot AUC Comparison Between Conditions

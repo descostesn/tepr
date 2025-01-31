@@ -1,8 +1,8 @@
 .condcolidx <- function(currentcond, df) {
     idxcond <- grep(currentcond, colnames(df))
     if (isTRUE(all.equal(length(idxcond), 0)))
-        stop("Problem in function meandifference, condition not found in ",
-                "column names. Contact the developer.")
+        stop("\n\t Problem in function meandifference, condition not found in ",
+                "column names. Contact the developer.\n")
     return(idxcond)
 }
 
@@ -11,8 +11,8 @@
     idxcondval <- grep("value_", colnames(df[idxcond]))
     if (isTRUE(all.equal(length(idxcondfx), 0)) ||
         isTRUE(all.equal(length(idxcondval), 0)))
-        stop("Problem in function meandifference, column Fx or val not found ",
-            "in column names. Contact the developer.")
+        stop("\n\t Problem in function meandifference, column Fx or val not ",
+            "found in column names. Contact the developer.\n")
     idxcondlist <- list(value = idxcond[idxcondval],
             Fx = idxcond[idxcondfx])
     return(idxcondlist)
@@ -171,8 +171,8 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
 
       res <- cbind(resmean, matdiff)
       if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
-          stop("The results of mean and diff should have the same number of ",
-              "rows than resultsecdf, contact the developer")
+          stop("\n\t The results of mean and diff should have the same number ",
+              "of rows than resultsecdf, contact the developer.\n")
     } else {
       if (verbose) message("\t There is only one condition. Skip Computing all",
         " differences on mean columns.")

@@ -81,9 +81,9 @@
 
     idxmiddle <- which(df$coord == middlewind)
     if (isTRUE(all.equal(length(idxmiddle), 0)))
-        stop("The window ", middlewind, " was not found. Did you define a ",
-        "number of windows equal to ", middlewind*2, "? If not, adjust the ",
-        "parameter 'middlewind' to the half of the number of windows.")
+        stop("\n\t The window ", middlewind, " was not found. Did you define a",
+        " number of windows equal to ", middlewind*2, "? If not, adjust the ",
+        "parameter 'middlewind' to the half of the number of windows.\n")
     dfmid <- df[idxmiddle, ]
     windsizefact <- (dfmid$coor2 - dfmid$coor1) / 1000
     return(windsizefact)
@@ -180,11 +180,11 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
             "interest")
         idxgene <- which(dfmeandiff$gene == genename)
         if (isTRUE(all.equal(length(idxgene), 0)))
-            stop("The gene ", genename, " was not found")
+            stop("\n\t The gene ", genename, " was not found.\n")
         df <- dfmeandiff[idxgene, ]
         idxinfo <- which(unigroupdf$gene == genename)
         if (isTRUE(all.equal(length(idxinfo), 0)))
-            stop("The gene ", genename, " was not found in unigroupdf")
+            stop("\n\t The gene ", genename, " was not found in unigroupdf.\n")
         geneinfo <- unigroupdf[idxinfo, ]
 
         if (verbose) message("\t Gathering statistics about each condition")

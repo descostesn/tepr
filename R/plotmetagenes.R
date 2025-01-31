@@ -25,7 +25,8 @@
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
-        stop("plot type should be one of: attenuation, outgroup, universe, all")
+        stop("\n\t plottype should be one of: 'attenuation', 'outgroup', ",
+            "'universe', or 'all'.\n")
 }
 
 #' Plot Metagenes for Gene Groups
@@ -124,7 +125,8 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
     }
 
     if (isTRUE(all.equal(length(idx), 0)))
-        stop("No transcripts were found for the criteria ", plottype)
+        stop("\n\t No transcripts were found for the criteria ", plottype,
+            ".\n")
 
      transvec <- unigroupdf[idx, "transcript"]
      df <- .normalizeandsummarize(transvec, dfmeandiff, unigroupdf, daucname,

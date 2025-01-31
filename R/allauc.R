@@ -13,8 +13,8 @@
 .checkempty <- function(idx, namestr) {
 
     if (isTRUE(all.equal(length(idx), 0)))
-        stop("Your condition ", namestr, " was not found in the ",
-            "experiment table expdf. Please verify")
+        stop("\n\t Your condition ", namestr, " was not found in the ",
+            "experiment table expdf. Please verify.\n")
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,

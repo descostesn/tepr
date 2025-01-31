@@ -1,7 +1,7 @@
 .checkunique <- function(x, xname) {
         if (!isTRUE(all.equal(length(x), 1)))
-            stop("The element ", xname, # nolint
-                " should be unique, contact the developer.") # nolint
+            stop("\n\t The element ", xname, # nolint
+                " should be unique, contact the developer.\n") # nolint
 }
 
 .extractstr <- function(transtable) {
@@ -13,8 +13,8 @@
     } else if (isTRUE(all.equal(str, "-"))) {
         str <- "minus"
     } else {
-        stop("In .computeecdf, strand is neither plus or minus. This ",
-            "should not happen. Contact the developer.")
+        stop("\n\t In .computeecdf, strand is neither plus or minus. This ",
+            "should not happen. Contact the developer.\n")
     }
     return(str)
 }
@@ -23,8 +23,8 @@
             invisible(sapply(colnamevec, function(currentcol, tab) {
             idx <- grep(currentcol, colnames(tab))
             if (isTRUE(all.equal(length(idx), 0)))
-                stop("The column ", currentcol, " does not exist in the ",
-                    "provided table.")
+                stop("\n\t The column ", currentcol, " does not exist in the ",
+                    "provided table.\n")
         }, tab))
 }
 
@@ -191,22 +191,22 @@ checkexptab <- function(exptab) {
 
     colnamevec <- c("condition", "replicate", "direction", "strand", "path")
     if (!isTRUE(all.equal(sort(colnames(exptab)), sort(colnamevec))))
-        stop("The experiment table should have the columns: ",
-            "'condition', 'replicate', 'direction', 'strand', 'path'")
+        stop("\n\t The experiment table should have the columns: ",
+            "'condition', 'replicate', 'direction', 'strand', 'path'.\n")
 
     directionvec <- unique(exptab$direction)
     if (!isTRUE(all.equal(length(directionvec), 2)) ||
         !isTRUE(all.equal(directionvec, c("forward", "reverse"))))
-        stop("Only two values are allowed for the column direction of the",
-            "experiment table, 'forward' and 'reverse'")
+        stop("\n\t Only two values are allowed for the column direction of the",
+            "experiment table, 'forward' and 'reverse'.\n")
 
     strandvec <- unique(exptab$strand)
     if (!isTRUE(all.equal(strandvec, c("plus", "minus"))))
-        stop("The strand column of the experiment table should only contain",
-            " 'plus' and 'minus'.")
+        stop("\n\t The strand column of the experiment table should only ",
+            "contain 'plus' and 'minus'.\n")
 
     idxchar <- grep("_|-", exptab$condition)
     if (!isTRUE(all.equal(length(idxchar), 0)))
-        stop("The condition names should not contain any special characters",
-            " such as '_' or '-'.")
+        stop("\n\t The condition names should not contain any special ",
+            "characters such as '_' or '-'.\n")
 }

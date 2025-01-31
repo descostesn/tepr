@@ -25,13 +25,13 @@
 
       idxup <- which(trans$coord <= trans[, kneecolname])
       if (isTRUE(all.equal(length(idxup), 0)))
-        stop("Problem in retrieving idxup, contact the developer.")
+        stop("\n\t Problem in retrieving idxup, contact the developer.\n")
       upmean <- mean(trans[idxup, meancolname])
 
       idxdown <- which(trans$coord >= trans[, kneecolname] &
                           trans$coord <= max(trans$coord))
       if (isTRUE(all.equal(length(idxdown), 0)))
-        stop("Problem in retrieving idxdown, contact the developer.")
+        stop("\n\t Problem in retrieving idxdown, contact the developer.\n")
       downmean <- mean(trans[idxdown, meancolname])
 
       ## Calculating attenuation
