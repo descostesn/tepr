@@ -142,13 +142,6 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
                     .data$Group)) %>%
                 dplyr::relocate(.data$Group, .before = 2)
     } else {
-        message("Only one condition is provided. A transcript is considered",
-            "'Attenuated' if it significantly differs from the theoretical",
-                " cumulative distribution and has an AUC high enough. In other",
-                "words, for a single condition, the transcripts of the ",
-                "Universe with aucctrl > aucctrlthreslower are attenuated and",
-                " those with aucctrl > aucctrlthreshigher & ",
-                "aucctrl < aucctrlthreslower are labeled Outgroup.")
         completedf <- completedf %>%
         dplyr::mutate(
             Group = ifelse(.data$Universe == TRUE &
