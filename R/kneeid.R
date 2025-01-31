@@ -59,6 +59,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
   verbose = TRUE) {
 
   if (showtime) start_time <- Sys.time()
+  if (verbose) message("\n\t Calculating knee")
   condvec <- unique(expdf$condition)
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
       bycondreslist <- .retrievekneeandmax(condvec, transtable)
@@ -70,7 +71,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
   if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
   }
 
   return(res)
