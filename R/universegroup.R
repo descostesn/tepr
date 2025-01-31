@@ -145,12 +145,20 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
     } else {
         message("Only one condition is provided. A transcript is considered",
             "'Attenuated' if it significantly differs from the theoretical",
-                " cumulative distribution. In other words, for a single ",
-                "condition, the transcripts of the Universe are attenuated.")
+                " cumulative distribution and has an AUC high enough. In other",
+                "words, for a single condition, the transcripts of the ",
+                "Universe with aucctrl > aucctrlthreslower are attenuated and",
+                " those with aucctrl > aucctrlthreshigher & ",
+                "aucctrl < aucctrlthreslower are labeled Outgroup.")
         completedf <- completedf %>%
         dplyr::mutate(
-            Group = ifelse(.data$Universe == TRUE, "Attenuated",
-                NA)) %>% dplyr::relocate(.data$Group, .before = 2)
+            Group = ifelse(.data$Universe == TRUE &
+                !!sym(aucctrl) > aucctrlthreslower, "Attenuated",
+                NA),
+            Group = ifelse(.data$Universe == TRUE &
+                !!sym(aucctrl) > aucctrlthreshigher &
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
+                    .data$Group)) %>% dplyr::relocate(.data$Group, .before = 2)
     }
 
     if (showtime) {
