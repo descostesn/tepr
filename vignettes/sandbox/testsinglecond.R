@@ -75,14 +75,6 @@ resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
 # aucstressthres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2
 # showtime = FALSE; verbose = TRUE
 
-# load tepr on one cond
-rescond <- tepr(expdf = expdfonecond, alldf = df, expthres = 0.1, nbcpu = 5,
-    controlcondname = "ctrl10", showtime = TRUE, verbose = TRUE)
-
-# load tepr on one cond one rep
-resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
-    controlcondname = "ctrl10", showtime = TRUE, verbose = TRUE)
-
 ## Testing plotecdf on one cond
 dfmeandiff = rescond[[1]]; unigroupdf = rescond[[2]]; expdf = expdfonecond
 genename = "COQ9"; colvec = c("#90AFBB", "#10AFBB")
