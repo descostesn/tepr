@@ -180,7 +180,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) {
         end_tepr <- Sys.time()
         timing <- end_tepr - start_tepr
-        message("\n\t\t ### tepr analysis performed in: ",
+        message("\n\t\t -- tepr analysis performed in: ",
             format(timing, digits = 2))
     }
     ## Return variables necessary for plotting
