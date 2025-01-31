@@ -67,8 +67,10 @@
 #' - \strong{Attenuated}: if Universe == TRUE & aucstress > aucstressthres & -log10(pvalks) > attenuatedpvalksthres
 #' - \strong{Outgroup}: if Universe == TRUE & pvalks > outgrouppvalksthres & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 #'
-#' If only one condition is provided, a transcript cannot be labeled as
-#' "Attenuated" or "outgroup" since no comparison can be made.
+#' If only one condition is provided, a transcript is considered 'Attenuated'
+#' if it significantly differs from the theoretical cumulative distribution.
+#' In other words, for a single condition, the transcripts of the Universe are
+#' attenuated.
 #'
 #' This function is useful for classifying genes in transcriptomics data based
 #' on their transcriptional response to different experimental conditions.
@@ -144,7 +146,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
         message("Only one condition is provided. A transcript is considered",
             "'Attenuated' if it significantly differs from the theoretical",
                 " cumulative distribution. In other words, for a single ",
-                "condition, the transcripts of the universe are attenuated.")
+                "condition, the transcripts of the Universe are attenuated.")
         completedf <- completedf %>%
         dplyr::mutate(
             Group = ifelse(.data$Universe == TRUE, "Attenuated",
