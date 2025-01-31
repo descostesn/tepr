@@ -8,35 +8,33 @@ library("tepr")
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
 finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 tabonecond <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv"
-tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv"
+tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv" # nolint
 
 ## Cugusi data
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph.csv" # nolint
 finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv"
-tabonecond <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv"
-tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv"
-
+tabonecond <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv" # nolint
+tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv" # nolint
 
 
 ##################
 # MAIN
 ##################
 
-## Reading and filtering on one cond several rep
-expdf <- read.csv(exptabpath, header = TRUE)
 
 ########################
 ## FILTERING DRB
 ########################
 
 ## Reading and filtering alldf
-#alldf <- read.delim(finaltabpath, header = FALSE)
-# df <- alldf[, c(1:9, 18:25)]
-# write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
+# alldf <- read.delim(finaltabpath, header = FALSE) # nolint
+# df <- alldf[, c(1:9, 18:25)] # nolint
+# write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t", # nolint
 #     quote = FALSE, row.names = FALSE, col.names = FALSE)
-# dfrep <- df[, c(1:13)]
-# write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t",
+# dfrep <- df[, c(1:13)] # nolint
+# write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t", # nolint
 #     quote = FALSE, row.names = FALSE, col.names = FALSE)
+expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
 expdfonerep <- expdfonecond[c(1, 2), ]
 
@@ -45,12 +43,14 @@ expdfonerep <- expdfonecond[c(1, 2), ]
 ########################
 
 ## Reading and filtering alldf
-    alldf <- read.delim(finaltabpath, header = FALSE)
-
+# alldf <- read.delim(finaltabpath, header = FALSE) # nolint
+# dfcond <- alldf[, 1:17] # nolint
+# dfrep <- alldf[, 1:13] # nolint
+# write.table(dfcond, file = "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv", sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE) # nolint
+# write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv", sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE) # nolint
+expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl"), ]
 expdfonerep <- expdfonecond[c(1, 2), ]
-
-
 
 
 ## Reading table with one cond several rep
