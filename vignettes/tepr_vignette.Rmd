@@ -388,12 +388,14 @@ print(head(resatt, 3))
 
 ### Universe and Group
 
-Before further downstream analysis, the list of transcript to study must be defined. tepr selects a transcript if:
+**Universe**
+
+Before further downstream analysis, the list of transcript to study must be defined. These transcripts are labeled as belonging to the Universe. tepr selects a transcript if:
 
 1. Its windows are long enough.
 2. It does not contain too many missing values (NA).
 3. Its mean expression value is high enough.
-4. It has a significant Kolmogorov-Smirnov test adjusted p-value.
+4. It has a significant Kolmogorov-Smirnov test adjusted p-value. The test was performed between the ecdf distribution and the theoretical cumulative distribution.
 
 Analytically it gives:
 
@@ -402,24 +404,26 @@ window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
 meanstress > meanstressthreshold &
-pvaladj > pvalthreshold
+pvaltheory > pvaltheorythres
 ```
 
 If only one condition is given, only the control threshold is used:
 
-```{r uniselect, eval = FALSE}
+```{r uniselectonecond, eval = FALSE}
 window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
-pvaladj > pvalthreshold
+pvaltheory > pvaltheorythres
 ```
 
 What a satisfying threshold for each criterion is depends on the experiments. The user can adjust the different threshold along the analysis. A transcript satisfying the above criterion is defined as belonging to the `Universe` of the transcripts to analyze (Universe column contains TRUE or FALSE).
 
+**Group**
+
 The transcripts of the Universe are further divided into `Group`. A transcript belongs to the "Attenuated" group if:
 
 1. It belongs to the Universe (TRUE).
-2. The AUC value is high enough.
+2. The "stress" AUC value is high enough.
 3. The `-log10` of the adjusted p-value of the Kolmogorov-Smirnov test is above a given threshold.
 
 Analytically it gives:
@@ -430,6 +434,12 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
+If one condition is provided, no comparison by ks test with another condition was performed. A transcript will be considered as attenuated if it differs significantly from the theoretical cumulative distribution and if its AUC value is high enough. The differing status has been evaluated when computing the Universe column above (pvaltheory > pvaltheorythres). Therefore, for one condition, a transcript is considered as attenuated if:
+
+```{r attselectonecond, eval = FALSE}
+Universe == TRUE & aucctrl > aucctrlthreslower
+```
+
 A transcript is considered as non-attenuated ("Outgroup") if:
 
 1. The Kolmogorov-Smirnov adjusted p-value is above a threshold.
@@ -438,10 +448,15 @@ A transcript is considered as non-attenuated ("Outgroup") if:
 Analytically it gives:
 
 ```{r outgroup, eval = FALSE}
-pvalks > outgrouppvalksthreshold &
+Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
+For one condition, no ks test was performed against another. Therefore we define a transcript as belonging to 'Outgroup' if it belongs to the Universe and the control AUC is between two user-defined thresholds:
+
+```{r outgroup, eval = FALSE}
+Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
+```
 Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. The columns `Universe` and `Group` are computed with:
 
 ```{r universegroup}
@@ -449,8 +464,6 @@ Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. T
 res <- universegroup(resatt)
 print(head(res, 2))
 ```
-
-If only one condition is provided, a transcript cannot be labeled as "Attenuated" or "outgroup" since no comparison can be made.
 
 
 ## Plotting
