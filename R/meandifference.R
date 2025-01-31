@@ -138,6 +138,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
   verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing meandifference")
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
@@ -145,7 +146,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
     rescondlist <- lapply(condvec, function(currentcond, df, nbwindows,
       verbose) {
 
-        if (verbose) message("Merging columns for condition ", currentcond)
+        if (verbose) message("\t Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
         idxcond <- .condcolidx(currentcond, df)
         ## Separating idx of column names by scores and Fx
@@ -165,7 +166,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
     ## Computing all differences on mean columns
     if (!isTRUE(all.equal(length(condvec), 1))) {
 
-      if (verbose) message("Computing all differences on mean columns")
+      if (verbose) message("\t Computing all differences on mean columns")
       matdiff <- .creatematdiff(condvec, resmean)
 
       res <- cbind(resmean, matdiff)
@@ -173,15 +174,15 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
           stop("The results of mean and diff should have the same number of ",
               "rows than resultsecdf, contact the developer")
     } else {
-      if (verbose) message("There is only one condition. Skip Computing all ",
-        "differences on mean columns.")
+      if (verbose) message("\t There is only one condition. Skip Computing all",
+        " differences on mean columns.")
       res <- resmean
     }
 
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     res <- cbind(resultsecdf, res)
