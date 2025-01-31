@@ -12,8 +12,7 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-on
 
 ## Cugusi data
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph.csv" # nolint
-dTAG_Cugusi_stranded_20230810.tsv
-finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi.tsv"
+finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv"
 tabonecond <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv"
 tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv"
 
@@ -25,19 +24,33 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-
 
 ## Reading and filtering on one cond several rep
 expdf <- read.csv(exptabpath, header = TRUE)
-expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
-expdfonerep <- expdfonecond[c(1, 2), ]
+
+########################
+## FILTERING DRB
+########################
 
 ## Reading and filtering alldf
 #alldf <- read.delim(finaltabpath, header = FALSE)
-
 # df <- alldf[, c(1:9, 18:25)]
 # write.table(df, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv", sep = "\t",
 #     quote = FALSE, row.names = FALSE, col.names = FALSE)
-
 # dfrep <- df[, c(1:13)]
 # write.table(dfrep, file = "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv", sep = "\t",
 #     quote = FALSE, row.names = FALSE, col.names = FALSE)
+expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
+expdfonerep <- expdfonecond[c(1, 2), ]
+
+########################
+## FILTERING CUGUSI
+########################
+
+## Reading and filtering alldf
+    alldf <- read.delim(finaltabpath, header = FALSE)
+
+expdfonecond <- expdf[which(expdf$condition == "ctrl"), ]
+expdfonerep <- expdfonecond[c(1, 2), ]
+
+
 
 
 ## Reading table with one cond several rep
