@@ -6,13 +6,13 @@ library("tepr")
 
 ## DRB data
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
-finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
+#finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 tabonecond <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv"
 tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv" # nolint
 
 ## Cugusi data
-exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph.csv" # nolint
-finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv"
+exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
+#finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv" # nolint
 tabonecond <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond.tsv" # nolint
 tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-onecond-onerep.tsv" # nolint
 
@@ -23,7 +23,7 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-
 
 
 ########################
-## FILTERING DRB
+## DRB
 ########################
 
 ## Reading and filtering alldf
@@ -37,9 +37,15 @@ tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-15cpus/cugusi-
 expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl10"), ]
 expdfonerep <- expdfonecond[c(1, 2), ]
+df <- read.delim(tabonecond, header = FALSE)
+dfrep <- read.delim(tabonecondonerep, header = FALSE)
+rescond <- tepr(expdf = expdfonecond, alldf = df, expthres = 0.1, nbcpu = 5,
+    controlcondname = "ctrl10", showtime = TRUE, verbose = TRUE)
+resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
+    controlcondname = "ctrl10", showtime = TRUE, verbose = TRUE)
 
 ########################
-## FILTERING CUGUSI
+## CUGUSI
 ########################
 
 ## Reading and filtering alldf
@@ -51,13 +57,14 @@ expdfonerep <- expdfonecond[c(1, 2), ]
 expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl"), ]
 expdfonerep <- expdfonecond[c(1, 2), ]
-
-
-## Reading table with one cond several rep
 df <- read.delim(tabonecond, header = FALSE)
-
-## Reading table with one cond one rep
 dfrep <- read.delim(tabonecondonerep, header = FALSE)
+rescond <- tepr(expdf = expdfonecond, alldf = df, expthres = 0.1, nbcpu = 5,
+    showtime = TRUE, verbose = TRUE)
+resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
+    showtime = TRUE, verbose = TRUE)
+
+
 
 ## Parameters to enter tepr
 # expdf = expdfonerep; alldf = dfrep; expthres = 0.1; nbcpu = 5; rounding = 10
