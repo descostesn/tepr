@@ -47,6 +47,7 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
   verbose = TRUE) {
 
   if (showtime) start_time <- Sys.time()
+  if (verbose) message("\n\t ## Counting NA values") # nolint
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
   condvec <- unique(expdf$condition)
@@ -101,7 +102,7 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
   if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
   }
 
   return(finalres)
