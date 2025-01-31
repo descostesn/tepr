@@ -62,7 +62,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
     scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
     ## Calculate the average expression per transcript (over each frame)
-    if (verbose) message("\t Calculating average expression per transcript") # nolint
+    if (verbose) message("\t ## Calculating average expression per transcript") # nolint
     dfbytranscript <- alldf %>% dplyr::group_by(.data$transcript) %>%
         dplyr::summarize(gene = .data$gene[1],
             strand = .data$strand[1],
@@ -99,7 +99,7 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     res <- list(maintable = alldf, exptranslist = exptranstab)
