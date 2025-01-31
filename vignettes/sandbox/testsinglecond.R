@@ -58,9 +58,9 @@ expdf <- read.csv(exptabpath, header = TRUE)
 expdfonecond <- expdf[which(expdf$condition == "ctrl"), ]
 expdfonerep <- expdfonecond[c(1, 2), ]
 df <- read.delim(tabonecond, header = FALSE)
-dfrep <- read.delim(tabonecondonerep, header = FALSE)
 rescond <- tepr(expdf = expdfonecond, alldf = df, expthres = 0.1, nbcpu = 5,
     showtime = TRUE, verbose = TRUE)
+dfrep <- read.delim(tabonecondonerep, header = FALSE)
 resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
     showtime = TRUE, verbose = TRUE)
 
@@ -77,6 +77,12 @@ resrep <- tepr(expdf = expdfonerep, alldf = dfrep, expthres = 0.1, nbcpu = 5,
 
 ## Testing plotecdf on one cond
 dfmeandiff = rescond[[1]]; unigroupdf = rescond[[2]]; expdf = expdfonecond
-genename = "COQ9"; colvec = c("#90AFBB", "#10AFBB")
+genename = "TIGAR"; colvec = c("#90AFBB", "#10AFBB")
+outfold = "."; digits = 2; middlewind = 100; pval = 0.5; plot = TRUE
+formatname = "pdf"; verbose = TRUE
+
+## Testing plotecdf on one cond one rep
+dfmeandiff = resrep[[1]]; unigroupdf = resrep[[2]]; expdf = expdfonerep
+genename = "RIN3"; colvec = c("#10AFBB")
 outfold = "."; digits = 2; middlewind = 100; pval = 0.5; plot = TRUE
 formatname = "pdf"; verbose = TRUE
