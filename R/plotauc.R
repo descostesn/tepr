@@ -40,7 +40,12 @@
 }
 
 .checkplotaucparams <- function(plottype, auc_ctrlname, auc_stressname,
-    pvalkstestcolname, genevec, tab) {
+    pvalkstestcolname, genevec, tab, expdf) {
+
+        nbcond <- length(unique(expdf$condition))
+        if (!isTRUE(all.equal(nbcond, 2)))
+            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
+                ".\n")
 
         if (!isTRUE(all.equal(plottype, "pval")) &&
             !isTRUE(all.equal(plottype, "groups")))
@@ -62,7 +67,7 @@
 #' or groups. The plot can be saved as a file or displayed interactively.
 #'
 #' @usage
-#' plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+#' plotauc(tab, expdf, genevec = NA, auc_ctrlname = "AUC_ctrl",
 #' auc_stressname = "AUC_HS",
 #' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 #' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
@@ -142,7 +147,7 @@
 #'
 #' @export
 
-plotauc <- function(tab, genevec = NA, # nolint
+plotauc <- function(tab, expdf, genevec = NA, # nolint
     auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
@@ -152,7 +157,7 @@ plotauc <- function(tab, genevec = NA, # nolint
     universename = "Universe", groupname = "Group", verbose = TRUE) {
 
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
-            pvalkstestcolname, genevec, tab)
+            pvalkstestcolname, genevec, tab, expdf)
 
         if (!file.exists(outfold))
             dir.create(outfold, recursive = TRUE)
