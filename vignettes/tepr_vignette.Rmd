@@ -23,7 +23,7 @@ Please submit issues or questions on Github for a most efficient communication.
 
 The example below shows a complete run of the package. The preprocessing is done on chr13. The postprocessing is limited to 100 transcripts. The command `system.file` retrieves the file paths inside the "extdata" folder of the package.
 
-```{r quickstart, eval = TRUE, message = FALSE}
+```{r quickstart, eval = FALSE}
 
 library(tepr)
 
@@ -61,13 +61,13 @@ genomename <- "hg38"
 
 finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
-    showtime = FALSE, verbose = FALSE)
+    showtime = TRUE, verbose = TRUE)
 
 #########
 # tepr analysis - takes ~ 11 seconds
 #########
 
-reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
+reslist <- tepr(expdf, transdf, expthres, showtime = TRUE, verbose = TRUE)
 resmeandiff <- reslist[[1]]
 res <- reslist[[2]]
 ```
