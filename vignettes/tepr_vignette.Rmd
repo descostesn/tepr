@@ -582,7 +582,7 @@ transdfonecond <- transdf[, c(seq_len(9), 18, 19, 20, 21)]
 print(head(transdfonecond, 2))
 
 message("\n Computing the object 'res' with tepr on one condition:\n")
-resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS")
+resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
 ```
 
 
