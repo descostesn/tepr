@@ -23,7 +23,7 @@ Please submit issues or questions on Github for a most efficient communication.
 
 The example below shows a complete run of the package. The preprocessing is done on chr13. The postprocessing is limited to 100 transcripts. The command `system.file` retrieves the file paths inside the "extdata" folder of the package.
 
-```{r quickstart, eval = FALSE}
+```{r quickstart, eval = TRUE, message = FALSE}
 
 library(tepr)
 
@@ -61,14 +61,14 @@ genomename <- "hg38"
 
 finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
-    showtime = TRUE)
+    showtime = FALSE, verbose = FALSE)
 
 #########
 # tepr analysis - takes ~ 11 seconds
 #########
 
-reslist <- tepr(expdf, transdf, expthres, showtime = TRUE)
-resmeandiff <- restlist[[1]]
+reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
+resmeandiff <- reslist[[1]]
 res <- reslist[[2]]
 ```
 
@@ -169,6 +169,7 @@ exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath)
+message("\n The result is:")
 print(head(allannobed, 3))
 ```
 
@@ -181,6 +182,7 @@ print(head(allannobed, 3))
 windsize = 200
 
 allwindowsbed <- makewindows(allannobed, windsize)
+message("\n The result is:")
 print(head(allwindowsbed, 3))
 ```
 
