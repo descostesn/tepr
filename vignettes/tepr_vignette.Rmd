@@ -486,7 +486,7 @@ plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 The AUC values between conditions can be compared by highlighting the two conditions on the plot:
 
 ```{r plotaucgroups}
-plotauc(res, plottype = "groups", plot = TRUE)
+plotauc(res, expdf, plottype = "groups", plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -497,7 +497,7 @@ It is also possible to compare the AUC by coloring points according to the Kolmo
 
 ```{r plotaucpval}
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(res, genevec, plot = TRUE)
+plotauc(res, expdf, genevec, plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -692,10 +692,10 @@ colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = ".",
     formatname = "png")
 
-plotauc(res, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
+plotauc(res, expdf, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
     formatname = "png")
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval",
+plotauc(res, expdf, genevec, plottype = "pval", outfile = "AUCcompare_pval",
     outfold = ".", formatname = "png")
 
 plotmetagenes(res, resmeandiff, plottype = "attenuation", formatname = "png",
