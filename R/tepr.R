@@ -123,7 +123,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## from a provided expression data frame and filters out transcripts based
     ## on a specified expression threshold.
     resallexprs <- averageandfilterexprs(expdf, alldf, expthres, showtime,
-        verbose = TRUE)
+        verbose)
 
     ## This function takes a list of expression data frames, a condition
     ## information data frame, and counts the number of NA values for each
