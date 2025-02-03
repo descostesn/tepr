@@ -40,17 +40,23 @@
 }
 
 .checkplotaucparams <- function(plottype, auc_ctrlname, auc_stressname,
-    pvalkstestcolname, genevec, tab) {
+    pvalkstestcolname, genevec, tab, expdf) {
+
+        nbcond <- length(unique(expdf$condition))
+        if (!isTRUE(all.equal(nbcond, 2)))
+            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
+                ".\n")
 
         if (!isTRUE(all.equal(plottype, "pval")) &&
             !isTRUE(all.equal(plottype, "groups")))
-                stop("plottype should be equal to 'pval' or 'groups'.")
+                stop("\n\t plottype should be equal to 'pval' or 'groups'.\n")
 
         colnamevec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
         .colnamecheck(colnamevec, tab)
 
         if (isTRUE(all.equal(plottype, "groups")) && !is.na(genevec[1]))
-            stop("The vector of genes is not necessary for plotting groups")
+            stop("\n\t The vector of genes is not necessary for plotting ",
+                "groups.\n")
 }
 
 #' Plot AUC Comparison Between Conditions
@@ -61,7 +67,7 @@
 #' or groups. The plot can be saved as a file or displayed interactively.
 #'
 #' @usage
-#' plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+#' plotauc(tab, expdf, genevec = NA, auc_ctrlname = "AUC_ctrl",
 #' auc_stressname = "AUC_HS",
 #' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 #' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
@@ -73,6 +79,8 @@
 #' @param tab A data frame containing the AUC values for control and stress
 #'  conditions, and other columns required for plotting (e.g., p-values or
 #'  group memberships, see allauc).
+#' @param expdf A data frame containing experiment data that should have
+#'  columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param genevec A vector of gene names to highlight on the plot, applicable
 #'  when \code{plottype} is set to "pval". Default is \code{NA}.
 #' @param auc_ctrlname The column name in \code{tab} for the AUC under control
@@ -128,11 +136,11 @@
 #'
 #' @examples
 #' # Assuming `tab` contains AUC values and p-values:
-#' # plotauc(tab, genevec = c("Gene1", "Gene2"), plottype = "pval")
+#' # plotauc(tab, expdf, genevec = c("Gene1", "Gene2"), plottype = "pval")
 #'
 #' @seealso
 #' [allauc]
-#' 
+#'
 #' @importFrom dplyr arrange filter
 #' @importFrom ggplot2 ggplot aes geom_point geom_density_2d labs coord_fixed theme_classic theme xlim ylim ggsave
 #' @importFrom ggrepel geom_label_repel
@@ -141,7 +149,7 @@
 #'
 #' @export
 
-plotauc <- function(tab, genevec = NA, # nolint
+plotauc <- function(tab, expdf, genevec = NA, # nolint
     auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
@@ -151,7 +159,7 @@ plotauc <- function(tab, genevec = NA, # nolint
     universename = "Universe", groupname = "Group", verbose = TRUE) {
 
         .checkplotaucparams(plottype, auc_ctrlname, auc_stressname,
-            pvalkstestcolname, genevec, tab)
+            pvalkstestcolname, genevec, tab, expdf)
 
         if (!file.exists(outfold))
             dir.create(outfold, recursive = TRUE)

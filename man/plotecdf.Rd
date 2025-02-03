@@ -4,8 +4,9 @@
 \alias{plotecdf}
 \title{Plot Empirical Cumulative Distribution Function (ECDF)}
 \usage{
-plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec, outfold = ".",
-digits = 2, middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
+plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec = c("#90AFBB",
+"#10AFBB", "#FF9A04", "#FC4E07"), outfold = ".", digits = 2,
+middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{dfmeandiff}{A data frame containing the mean differences of
@@ -21,7 +22,7 @@ columns named 'condition', 'replicate', 'strand', and 'path'.}
 \item{genename}{A string specifying the name of the gene of interest to plot.}
 
 \item{colvec}{A vector of colors used to distinguish different conditions in
-the plot.}
+the plot. Default is \code{c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")}.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
 saved if \code{plot = FALSE}. Default is \code{"."}.}
@@ -64,12 +65,15 @@ conditions. The ECDF plot is constructed with optional annotation of key
 statistics such as AUC values and significant KS test results. Knee points,
 representing significant changes in transcription density, are also displayed
 if the KS test passes the specified p-value threshold.
+
+Colvec: The number of colors should be equal to the number of rows of expdf
+divided by two (a forward and reverse files are provided for each
+experiment).
 }
 \examples{
 # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
 # data:
-# plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX",
-# colvec = c("blue", "red"))
+# plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX")
 
 }
 \seealso{

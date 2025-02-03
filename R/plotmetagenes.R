@@ -25,7 +25,8 @@
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
-        stop("plot type should be one of: attenuation, outgroup, universe, all")
+        stop("\n\t plottype should be one of: 'attenuation', 'outgroup', ",
+            "'universe', or 'all'.\n")
 }
 
 #' Plot Metagenes for Gene Groups
@@ -37,7 +38,7 @@
 #' attenuated genes, outgroup genes, the entire universe of genes, or all genes.
 #'
 #' @usage
-#' plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
+#' plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
 #' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
 #' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = ".",
 #' verbose = TRUE)
@@ -47,6 +48,8 @@
 #'  universegroup).
 #' @param dfmeandiff A data frame containing mean transcription values and
 #'  coordinates for each transcript (see meandifference).
+#' @param expdf A data frame containing experiment data that should have
+#'  columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param plottype A string specifying the group of genes to plot. Options are
 #'  \code{"attenuation"}, \code{"outgroup"}, \code{"universe"}, or \code{"all"}.
 #'  Default is \code{"attenuation"}.
@@ -83,7 +86,8 @@
 #'
 #' @examples
 #' # Assuming `unigroupdf` and `dfmeandiff` contain the necessary data:
-#' # plotmetagenes(unigroupdf, dfmeandiff, plottype = "universe", plot = TRUE)
+#' # plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "universe",
+#' plot = TRUE)
 #'
 #' @seealso
 #' [universegroup], [meandifference]
@@ -96,62 +100,68 @@
 #'
 #' @export
 
-plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
+plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
     outfold = ".", verbose = TRUE) {
 
-    .checkmetagenes(plottype)
-    colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
-    .colnamecheck(colnamevec, unigroupdf)
+        nbcond <- length(unique(expdf$condition))
+        if (!isTRUE(all.equal(nbcond, 2)))
+            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
+                ".\n")
 
-    if (!file.exists(outfold))
-        dir.create(outfold, recursive = TRUE)
+        .checkmetagenes(plottype)
+        colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
+        .colnamecheck(colnamevec, unigroupdf)
 
-    ## Selection of transcripts and define plot title
-    if (isTRUE(all.equal(plottype, "attenuation"))) {
-        idx <- which(unigroupdf$Group == "Attenuated")
-        titleplot <- "Attenuated genes"
-    } else if (isTRUE(all.equal(plottype, "outgroup"))) {
-        idx <- which(unigroupdf$Group == "Outgroup")
-        titleplot <- "Outgroup genes"
-    } else if (isTRUE(all.equal(plottype, "universe"))) {
-        idx <- which(unigroupdf$Universe)
-        titleplot <- "Universe genes"
-    } else {
-        idx <- seq_len(nrow(unigroupdf))
-        titleplot <- "All genes"
-    }
+        if (!file.exists(outfold))
+            dir.create(outfold, recursive = TRUE)
 
-    if (isTRUE(all.equal(length(idx), 0)))
-        stop("No transcripts were found for the criteria ", plottype)
-
-     transvec <- unigroupdf[idx, "transcript"]
-     df <- .normalizeandsummarize(transvec, dfmeandiff, unigroupdf, daucname,
-        auc_ctrlname, auc_stressname)
-    meanvalctrl <-  colnames(df)[2]
-    meanvalstress <- colnames(df)[3]
-
-    ## plotting
-    g <-  ggplot2::ggplot() +
-        ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
-        y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
-        ggplot2::geom_line(data = df,
-            aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
-            color = "#FC4E07", size = 1.5) +
-        ggplot2::theme_bw() + ggplot2::ylim(0,7) +
-        ggplot2::labs(x = "TSS to TTS", title = titleplot,
-            subtitle = length(transvec), y = "Transcription density") +
-        ggplot2::theme(legend.position = "none", legend.box = "vertical")
-
-    if (plot) {
-        warning("You chose to plot the auc, the figure is not saved.") # nolint
-        print(g)
-    } else {
-        outfile <- paste0("metagene_", plottype)
-        if (verbose) message("\t\t Saving plot to ", file.path(outfold,
-            paste0(outfile, ".", formatname)))
-        ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
-                plot = g, device = formatname, path = outfold)
+        ## Selection of transcripts and define plot title
+        if (isTRUE(all.equal(plottype, "attenuation"))) {
+            idx <- which(unigroupdf$Group == "Attenuated")
+            titleplot <- "Attenuated genes"
+        } else if (isTRUE(all.equal(plottype, "outgroup"))) {
+            idx <- which(unigroupdf$Group == "Outgroup")
+            titleplot <- "Outgroup genes"
+        } else if (isTRUE(all.equal(plottype, "universe"))) {
+            idx <- which(unigroupdf$Universe)
+            titleplot <- "Universe genes"
+        } else {
+            idx <- seq_len(nrow(unigroupdf))
+            titleplot <- "All genes"
         }
+
+        if (isTRUE(all.equal(length(idx), 0)))
+            stop("\n\t No transcripts were found for the criteria ", plottype,
+                ".\n")
+
+        transvec <- unigroupdf[idx, "transcript"]
+        df <- .normalizeandsummarize(transvec, dfmeandiff, unigroupdf, daucname,
+            auc_ctrlname, auc_stressname)
+        meanvalctrl <-  colnames(df)[2]
+        meanvalstress <- colnames(df)[3]
+
+        ## plotting
+        g <-  ggplot2::ggplot() +
+            ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
+            y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
+            ggplot2::geom_line(data = df,
+                aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
+                color = "#FC4E07", size = 1.5) +
+            ggplot2::theme_bw() + ggplot2::ylim(0,7) +
+            ggplot2::labs(x = "TSS to TTS", title = titleplot,
+                subtitle = length(transvec), y = "Transcription density") +
+            ggplot2::theme(legend.position = "none", legend.box = "vertical")
+
+        if (plot) {
+            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            print(g)
+        } else {
+            outfile <- paste0("metagene_", plottype)
+            if (verbose) message("\t\t Saving plot to ", file.path(outfold,
+                paste0(outfile, ".", formatname)))
+            ggplot2::ggsave(filename = paste0(outfile, ".", formatname),
+                    plot = g, device = formatname, path = outfold)
+            }
 }

@@ -140,8 +140,8 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     deletetmp = TRUE, chromtab = NA, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
-        stop("The final table already exists, set reload = FALSE to create",
-            "it again.")
+        stop("\n\t The final table already exists, set reload = FALSE to ",
+            "create it again.\n")
 
     if (showtime) start_time_preprocessing <- Sys.time()
 

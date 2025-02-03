@@ -226,8 +226,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = ".",
     verbose = TRUE) {
 
     if (!length(unique(expdf$condition)) > 2)
-        stop("There are less than two conditions in your experiment ",
-            "table. The input list must be the result of teprmulti.")
+        stop("\n\t There are less than two conditions in your experiment ",
+            "table. The input list must be the result of teprmulti.\n")
 
     invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,

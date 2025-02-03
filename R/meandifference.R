@@ -1,8 +1,8 @@
 .condcolidx <- function(currentcond, df) {
     idxcond <- grep(currentcond, colnames(df))
     if (isTRUE(all.equal(length(idxcond), 0)))
-        stop("Problem in function meandifference, condition not found in ",
-                "column names. Contact the developer.")
+        stop("\n\t Problem in function meandifference, condition not found in ",
+                "column names. Contact the developer.\n")
     return(idxcond)
 }
 
@@ -11,8 +11,8 @@
     idxcondval <- grep("value_", colnames(df[idxcond]))
     if (isTRUE(all.equal(length(idxcondfx), 0)) ||
         isTRUE(all.equal(length(idxcondval), 0)))
-        stop("Problem in function meandifference, column Fx or val not found ",
-            "in column names. Contact the developer.")
+        stop("\n\t Problem in function meandifference, column Fx or val not ",
+            "found in column names. Contact the developer.\n")
     idxcondlist <- list(value = idxcond[idxcondval],
             Fx = idxcond[idxcondfx])
     return(idxcondlist)
@@ -94,7 +94,8 @@
 #'
 #' @description
 #' This function calculates the mean values, mean Fx (ECDF) and ECDF differences
-#' (Fx) for expression data, across different experimental conditions.
+#' (Fx) for expression data, across different experimental conditions. If only
+#' one condition is provided, skips computation of mean differences.
 #'
 #' @usage
 #' meandifference(resultsecdf, expdf, nbwindows, showtime = FALSE,
@@ -119,6 +120,8 @@
 #'   \item Differences between the \code{Fx} column and coordinate ratios
 #'    (e.g., \code{diff_Fx_ctrl}).
 #' }
+#' If only one condition is provided, the differences on mean columns are not
+#' performed.
 #'
 #' @examples
 #' # Assuming resultsecdf is a data frame with ECDF results and expdf contains
@@ -135,6 +138,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
   verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing meandifference")
     ## for each condition, creates three columns:
     ##   - "mean_value_ctrl", "mean_Fx_ctrl", "diff_Fx_ctrl"
     ##   - "mean_value_HS", "mean_Fx_HS", "diff_Fx_HS"
@@ -142,7 +146,7 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
     rescondlist <- lapply(condvec, function(currentcond, df, nbwindows,
       verbose) {
 
-        if (verbose) message("Merging columns for condition ", currentcond)
+        if (verbose) message("\t Merging columns for condition ", currentcond)
         ## Retrieving columns having condition name as substring
         idxcond <- .condcolidx(currentcond, df)
         ## Separating idx of column names by scores and Fx
@@ -160,18 +164,25 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
     resmean <- do.call("cbind", rescondlist)
 
     ## Computing all differences on mean columns
-    if (verbose) message("Commputing all differences on mean columns")
-    matdiff <- .creatematdiff(condvec, resmean)
+    if (!isTRUE(all.equal(length(condvec), 1))) {
 
-    res <- cbind(resmean, matdiff)
-    if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
-        stop("The results of mean and diff should have the same number of ",
-            "rows than resultsecdf, contact the developer")
+      if (verbose) message("\t Computing all differences on mean columns")
+      matdiff <- .creatematdiff(condvec, resmean)
+
+      res <- cbind(resmean, matdiff)
+      if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
+          stop("\n\t The results of mean and diff should have the same number ",
+              "of rows than resultsecdf, contact the developer.\n")
+    } else {
+      if (verbose) message("\t There is only one condition. Skip Computing all",
+        " differences on mean columns.")
+      res <- resmean
+    }
 
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     res <- cbind(resultsecdf, res)

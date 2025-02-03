@@ -61,14 +61,14 @@ genomename <- "hg38"
 
 finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
-    showtime = TRUE)
+    showtime = TRUE, verbose = TRUE)
 
 #########
 # tepr analysis - takes ~ 11 seconds
 #########
 
-reslist <- tepr(expdf, transdf, expthres, showtime = TRUE)
-resmeandiff <- restlist[[1]]
+reslist <- tepr(expdf, transdf, expthres, showtime = TRUE, verbose = TRUE)
+resmeandiff <- reslist[[1]]
 res <- reslist[[2]]
 ```
 
@@ -169,6 +169,7 @@ exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath)
+message("\n The result is:\n")
 print(head(allannobed, 3))
 ```
 
@@ -181,6 +182,7 @@ print(head(allannobed, 3))
 windsize = 200
 
 allwindowsbed <- makewindows(allannobed, windsize)
+message("\n The result is:\n")
 print(head(allwindowsbed, 3))
 ```
 
@@ -388,12 +390,14 @@ print(head(resatt, 3))
 
 ### Universe and Group
 
-Before further downstream analysis, the list of transcript to study must be defined. tepr selects a transcript if:
+**Universe**
+
+Before further downstream analysis, the list of transcript to study must be defined. These transcripts are labeled as belonging to the Universe. tepr selects a transcript if:
 
 1. Its windows are long enough.
 2. It does not contain too many missing values (NA).
 3. Its mean expression value is high enough.
-4. It has a significant Kolmogorov-Smirnov test adjusted p-value.
+4. It has a significant Kolmogorov-Smirnov test adjusted p-value. The test was performed between the ecdf distribution and the theoretical cumulative distribution.
 
 Analytically it gives:
 
@@ -402,15 +406,26 @@ window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
 meanstress > meanstressthreshold &
-pvaladj > pvalthreshold
+pvaltheory > pvaltheorythres
+```
+
+If only one condition is given, only the control threshold is used:
+
+```{r uniselectonecond, eval = FALSE}
+window_size > windsizethreshold &
+Count_NA < countnathreshold &
+meanctrl > meanctrlthreshold &
+pvaltheory > pvaltheorythres
 ```
 
 What a satisfying threshold for each criterion is depends on the experiments. The user can adjust the different threshold along the analysis. A transcript satisfying the above criterion is defined as belonging to the `Universe` of the transcripts to analyze (Universe column contains TRUE or FALSE).
 
+**Group**
+
 The transcripts of the Universe are further divided into `Group`. A transcript belongs to the "Attenuated" group if:
 
 1. It belongs to the Universe (TRUE).
-2. The AUC value is high enough.
+2. The "stress" AUC value is high enough.
 3. The `-log10` of the adjusted p-value of the Kolmogorov-Smirnov test is above a given threshold.
 
 Analytically it gives:
@@ -421,6 +436,12 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
+If one condition is provided, no comparison by ks test with another condition was performed. A transcript will be considered as attenuated if it differs significantly from the theoretical cumulative distribution and if its AUC value is high enough. The differing status has been evaluated when computing the Universe column above (pvaltheory > pvaltheorythres). Therefore, for one condition, a transcript is considered as attenuated if:
+
+```{r attselectonecond, eval = FALSE}
+Universe == TRUE & aucctrl > aucctrlthreslower
+```
+
 A transcript is considered as non-attenuated ("Outgroup") if:
 
 1. The Kolmogorov-Smirnov adjusted p-value is above a threshold.
@@ -429,15 +450,20 @@ A transcript is considered as non-attenuated ("Outgroup") if:
 Analytically it gives:
 
 ```{r outgroup, eval = FALSE}
-pvalks > outgrouppvalksthreshold &
+Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
+For one condition, no ks test was performed against another. Therefore we define a transcript as belonging to 'Outgroup' if it belongs to the Universe and the control AUC is between two user-defined thresholds:
+
+```{r outgroup2, eval = FALSE}
+Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
+```
 Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. The columns `Universe` and `Group` are computed with:
 
 ```{r universegroup}
 ## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt)
+res <- universegroup(resatt, expdf)
 print(head(res, 2))
 ```
 
@@ -460,7 +486,7 @@ plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 The AUC values between conditions can be compared by highlighting the two conditions on the plot:
 
 ```{r plotaucgroups}
-plotauc(res, plottype = "groups", plot = TRUE)
+plotauc(res, expdf, plottype = "groups", plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -471,7 +497,7 @@ It is also possible to compare the AUC by coloring points according to the Kolmo
 
 ```{r plotaucpval}
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(res, genevec, plot = TRUE)
+plotauc(res, expdf, genevec, plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -484,7 +510,7 @@ The plot on the complete dataset gives:
 The average transcription density along a meta-transcript or a meta-gene can be visualized with:
 
 ```{r metageneplot}
-plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
+plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -542,6 +568,36 @@ Figures are written to `outfold` and subfolders are automatically created with t
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
 
+## Single condition
+
+If your dataset contains only one condition, either with one or more than one replicate, it is possible to analyse the data by comparing the signal to a linear "theoretical" distribution representing a uniform signal. The difference of means and AUC are skipped when running `meandifference` and `allauc`. The criterion to define the columns "Universe" and "Group" are also different (see details in previous section). 
+
+```{r singlecond}
+## The experiment table is limited to one condition and one replicate
+expdfonecond <- expdf[which(expdf$condition == "HS" & expdf$replicate == 1), ]
+
+## The table obtained by preprocessing is limited to the condition 'HS' and replicate 1
+transdfonecond <- transdf[, c(seq_len(9), 18, 19, 20, 21)]
+
+## Computing the object 'res' with tepr on one condition
+resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
+```
+
+The AUC and metagene plots require two conditions and thus cannot be generated. The ecdf on a given gene can be obtained with:
+
+```{r ecdfcond}
+plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
+    colvec = c("#90AFBB"), plot = TRUE)
+```
+
+The histogram of knee positions can be obtained with:
+
+```{r histocond}
+## Randomly marking 10 transcripts as attenuated as a mock example
+idxatt <- sample(seq_len(100), 10)
+resonecond[[2]][idxatt, "Group"] <- "Attenuated"
+plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
+```
 
 # Annex
 
@@ -643,13 +699,13 @@ colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = ".",
     formatname = "png")
 
-plotauc(res, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
+plotauc(res, expdf, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
     formatname = "png")
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
-plotauc(res, genevec, plottype = "pval", outfile = "AUCcompare_pval",
+plotauc(res, expdf, genevec, plottype = "pval", outfile = "AUCcompare_pval",
     outfold = ".", formatname = "png")
 
-plotmetagenes(res, resmeandiff, plottype = "attenuation", formatname = "png",
+plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", formatname = "png",
     outfold = ".")
 
 plothistoknee(res, outfold = ".", formatname = "png")

@@ -13,8 +13,8 @@
 .checkempty <- function(idx, namestr) {
 
     if (isTRUE(all.equal(length(idx), 0)))
-        stop("Your condition ", namestr, " was not found in the ",
-            "experiment table expdf. Please verify")
+        stop("\n\t Your condition ", namestr, " was not found in the ",
+            "experiment table expdf. Please verify.\n")
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
@@ -117,7 +117,8 @@
 
   aucallconditions <- do.call("rbind", resdflist)
   idxdup <- which(duplicated(colnames(aucallconditions)))
-  aucallconditions <- aucallconditions[, -idxdup]
+  if (!isTRUE(all.equal(length(idxdup), 0)))
+    aucallconditions <- aucallconditions[, -idxdup]
 
   ## Correcting p-val with FDR
   idxpvalvec <- grep("p_AUC", colnames(aucallconditions))
@@ -137,7 +138,8 @@
 #' @description
 #' This function computes the Area Under Curve (AUC) and the differences of AUC
 #' between two conditions for a list of transcript data. It supports parallel
-#' computation for efficiency.
+#' computation for efficiency. If only one condition is given, the differences
+#' are not computed.
 #'
 #' @usage
 #' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
@@ -170,8 +172,8 @@
 #'
 #' @details The function first checks if exactly two conditions are present in
 #'          `expdf`. If so, it computes the differences in AUC between the two
-#'          conditions using a Kolmogorov-Smirnov test and calculates the AUC
-#'          for all conditions against a reference line (y=x). Results are
+#'          conditions using a Kolmogorov-Smirnov test. It then calculates the
+#'          AUC for all conditions against a reference line (y=x). Results are
 #'          merged by transcript and include adjusted p-values.
 #'
 #' @examples
@@ -194,13 +196,15 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
   showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing AUC and difference")
 
     if (isTRUE(all.equal(length(unique(expdf$condition)), 2))) {
         if (verbose) message("\t Computing the differences (d or delta) of AUC")
         daucallcond <- .dauc_allconditions(bytranslistmean, expdf, nbwindows,
           nbcpu, controlcondname, stresscondname)
     } else {
-        warning("dAUC not performed, only one condition submitted.")
+        if (verbose) message("\t dAUC not performed, only one condition",
+          " submitted.")
     }
 
     ## Calculate the Area Under Curve (AUC), All conditions vs y=x
@@ -210,14 +214,19 @@ allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
       nbcpu = nbcpu)
 
     ## Merging the two tables by transcript
-    if (verbose) message("Merging results")
-    allauc <- merge(aucallcond, daucallcond,
-      by = c("gene", "transcript", "strand", "window_size"))
+    if (!isTRUE(all.equal(length(unique(expdf$condition)), 1))) {
+
+      if (verbose) message("Merging results")
+      allauc <- merge(aucallcond, daucallcond,
+        by = c("gene", "transcript", "strand", "window_size"))
+    } else {
+      allauc <- aucallcond
+    }
 
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
     return(allauc)
 }

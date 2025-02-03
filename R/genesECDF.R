@@ -126,6 +126,7 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
   showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing ecdf")
     ## Defining variables
     maintable <- allexprsdfs[[1]]
     exprstransnames <- allexprsdfs[[2]]
@@ -135,10 +136,12 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
     if (verbose) message("\t Filtering to keep only the expressed transcripts") # nolint
     idx <- match(maintable$transcript, exprstransnames)
     idxnoexpr <- which(is.na(idx))
-    if (isTRUE(all.equal(length(idxnoexpr), 0)))
-      warning("All the transcripts are expressed", immediate. = TRUE) # nolint
-    else
+    if (isTRUE(all.equal(length(idxnoexpr), 0))) {
+      if (verbose)
+        warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+    } else {
       maintable <- maintable[-idxnoexpr, ]
+    }
 
     ## Splitting the table by each transcript to perform transcript specific
     ## operations
@@ -161,8 +164,9 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
-    return(list(concatdf, nbrows))
+    finalres <- list(concatdf, nbrows)
+    return(finalres)
 }

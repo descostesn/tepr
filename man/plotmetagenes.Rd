@@ -4,7 +4,7 @@
 \alias{plotmetagenes}
 \title{Plot Metagenes for Gene Groups}
 \usage{
-plotmetagenes(unigroupdf, dfmeandiff, plottype = "attenuation",
+plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
 daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
 auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = ".",
 verbose = TRUE)
@@ -16,6 +16,9 @@ universegroup).}
 
 \item{dfmeandiff}{A data frame containing mean transcription values and
 coordinates for each transcript (see meandifference).}
+
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{plottype}{A string specifying the group of genes to plot. Options are
 \code{"attenuation"}, \code{"outgroup"}, \code{"universe"}, or \code{"all"}.
@@ -67,7 +70,8 @@ under different conditions.
 }
 \examples{
 # Assuming `unigroupdf` and `dfmeandiff` contain the necessary data:
-# plotmetagenes(unigroupdf, dfmeandiff, plottype = "universe", plot = TRUE)
+# plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "universe",
+plot = TRUE)
 
 }
 \seealso{

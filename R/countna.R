@@ -47,6 +47,7 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
   verbose = TRUE) {
 
   if (showtime) start_time <- Sys.time()
+  if (verbose) message("\n\t ## Counting NA values") # nolint
   maintable <- allexprsdfs[[1]]
   scorecolvec <- grep("_score", colnames(maintable), value = TRUE)
   condvec <- unique(expdf$condition)
@@ -62,6 +63,11 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         str <- .extractstr(transtable)
         colnamestr <- scorecolvec[which(expdf$strand == str)]
         scoremat <- transtable[, colnamestr]
+        ## If there is only one condition and one replicate
+        if (isTRUE(all.equal(length(colnamestr), 1))) {
+          scoremat <- as.matrix(scoremat)
+          colnames(scoremat) <- colnamestr
+        }
 
         ## Counting NA for each condition (c=condition, m=matrix, n=colnames)
         res <- sapply(condvec, function(c, m, n) {
@@ -75,24 +81,29 @@ countna <- function(allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
         }, scoremat, colnamestr)
 
         ## Retrieving total NA and transcript info
-        if (!isTRUE(all.equal(res[[1]], res[[2]])))
-            stop("Number of NA is different between conditions for ",
+        if (!isTRUE(all.equal(length(condvec), 1)) && 
+          !isTRUE(all.equal(res[[1]], res[[2]])))
+            stop("\n\t Number of NA is different between conditions for ",
               unique(transtable$gene), ": ", res[[1]], " - ", res[[2]],
-              ". This should not happen. Contact the developer.")
+              ". This should not happen. Contact the developer.\n")
         ## I drop the other NA columns because it is the same value for all the
         ## conditions (NA depends on blacklist and unmmapable region)
         countna <- res[1]
         info <- data.frame(gene = unique(transtable$gene),
           transcript = unique(transtable$transcript),
           strand = unique(transtable$strand))
-        return(cbind(info, Count_NA = countna))
+        resmat <- cbind(info, Count_NA = countna)
+
+        return(resmat)
     }, scorecolvec, condvec, mc.cores = nbcpu)
+
+  finalres <- do.call("rbind", nabytranslist)
 
   if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
   }
 
-  return(do.call("rbind", nabytranslist))
+  return(finalres)
 }

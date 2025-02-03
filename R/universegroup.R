@@ -9,13 +9,15 @@
 #' thresholds.
 #'
 #' @usage
-#' universegroup(completedf, controlname = "ctrl", stressname = "HS",
+#' universegroup(completedf, expdf, controlname = "ctrl", stressname = "HS",
 #' windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
 #' meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
 #' aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
 #' outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE)
 #'
 #' @param completedf A data frame obtained with the function attenuation.
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param controlname A string representing the control condition name. Default
 #'  is \code{"ctrl"}.
 #' @param stressname A string representing the stress condition name. Default
@@ -56,17 +58,25 @@
 #'      window_size > windsizethres & Count_NA < countnathres &
 #'      meanctrl > meanctrlthres & meanstress > meanstressthres &
 #'       pvaltheory > pvaltheorythres
-#' 
+#'
+#' If only one condition is provided, a transcript belongs to "Universe" if:
+#'      window_size > windsizethres & Count_NA < countnathres &
+#'      meanctrl > meanctrlthres & pvaltheory > pvaltheorythres
+#'
 #' A transcript belongs to the groups:
 #' - \strong{Attenuated}: if Universe == TRUE & aucstress > aucstressthres & -log10(pvalks) > attenuatedpvalksthres
 #' - \strong{Outgroup}: if Universe == TRUE & pvalks > outgrouppvalksthres & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
+#'
+#' If only one condition is provided:
+#' - \strong{Attenuated}: if Universe == TRUE & aucctrl > aucctrlthreslower
+#' - \strong{Outgroup}: if Universe == TRUE & aucctrl > aucctrlthreshigher & aucctrl < aucctrlthreslower
 #'
 #' This function is useful for classifying genes in transcriptomics data based
 #' on their transcriptional response to different experimental conditions.
 #'
 #' @examples
 #' # Example usage:
-#' # classified_df <- universegroup(completedf, controlname = "ctrl",
+#' # classified_df <- universegroup(completedf, expdf, controlname = "ctrl",
 #' # stressname = "HS")
 #'
 #' @seealso
@@ -78,23 +88,28 @@
 #'
 #' @export
 
-universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", # nolint
-    windsizethres = 50, countnathres = 20, meanctrlthres = 0.5,
-    meanstressthres = 0.5, pvaltheorythres = 0.1, aucctrlthreshigher = -10,
-    aucctrlthreslower = 15, aucstressthres = 15, attenuatedpvalksthres = 2,
-    outgrouppvalksthres = 0.2, showtime = FALSE, verbose = TRUE) {
+universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
+    stressname = "HS", windsizethres = 50, countnathres = 20,
+    meanctrlthres = 0.5, meanstressthres = 0.5, pvaltheorythres = 0.1,
+    aucctrlthreshigher = -10, aucctrlthreslower = 15, aucstressthres = 15,
+    attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2, showtime = FALSE,
+    verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
+    if (verbose) message("\n\t ## Computing universe and group columns")
+
     meanctrl <- paste("MeanValueFull", controlname, sep = "_")
     meanstress <- paste("MeanValueFull", stressname, sep = "_")
     pvaltheory <- paste("adjFDR_p_AUC", controlname, sep = "_")
     aucctrl <- paste("AUC", controlname, sep = "_")
     aucstress <- paste("AUC", stressname, sep = "_")
     pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", stressname, "_", controlname)
+    condvec <- unique(expdf$condition)
 
-    ## Computing the Universe column
-    if (verbose) message("Computing the Universe column")
-    completedf <- completedf %>%
+    ## Computing the Universe column: If only one condition is provided, only
+    ## control columns are used
+    if (!isTRUE(all.equal(length(condvec), 1))) {
+        completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
             .data$window_size > windsizethres &
             .data$Count_NA < countnathres &
@@ -102,10 +117,19 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
             dplyr::relocate(.data$Universe, .before = 1)  # nolint
+    } else {
+        completedf <- completedf %>%
+        dplyr::mutate(Universe = ifelse(
+            .data$window_size > windsizethres &
+            .data$Count_NA < countnathres &
+            !!sym(meanctrl) > meanctrlthres & # nolint
+            !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
+            dplyr::relocate(.data$Universe, .before = 1)  # nolint
+    }
 
     ## Computing the Group column
-    if (verbose) message("Computing the Group column")
-    completedf <- completedf %>%
+    if (!isTRUE(all.equal(length(condvec), 1))) {
+        completedf <- completedf %>%
         dplyr::mutate(
             Group = ifelse(.data$Universe == TRUE &
                 !!sym(aucstress) > aucstressthres &
@@ -117,11 +141,22 @@ universegroup <- function(completedf, controlname = "ctrl", stressname = "HS", #
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
                     .data$Group)) %>%
                 dplyr::relocate(.data$Group, .before = 2)
+    } else {
+        completedf <- completedf %>%
+        dplyr::mutate(
+            Group = ifelse(.data$Universe == TRUE &
+                !!sym(aucctrl) > aucctrlthreslower, "Attenuated",
+                NA),
+            Group = ifelse(.data$Universe == TRUE &
+                !!sym(aucctrl) > aucctrlthreshigher &
+                !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
+                    .data$Group)) %>% dplyr::relocate(.data$Group, .before = 2)
+    }
 
     if (showtime) {
       end_time <- Sys.time()
       timing <- end_time - start_time
-      message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     return(completedf)

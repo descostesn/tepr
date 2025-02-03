@@ -4,7 +4,7 @@
 \alias{plotauc}
 \title{Plot AUC Comparison Between Conditions}
 \usage{
-plotauc(tab, genevec = NA, auc_ctrlname = "AUC_ctrl",
+plotauc(tab, expdf, genevec = NA, auc_ctrlname = "AUC_ctrl",
 auc_stressname = "AUC_HS",
 pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
@@ -17,6 +17,9 @@ universename = "Universe", groupname = "Group", verbose = TRUE)
 \item{tab}{A data frame containing the AUC values for control and stress
 conditions, and other columns required for plotting (e.g., p-values or
 group memberships, see allauc).}
+
+\item{expdf}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{genevec}{A vector of gene names to highlight on the plot, applicable
 when \code{plottype} is set to "pval". Default is \code{NA}.}
@@ -99,7 +102,7 @@ If \code{plot = TRUE}, the plot is displayed interactively. If
 }
 \examples{
 # Assuming `tab` contains AUC values and p-values:
-# plotauc(tab, genevec = c("Gene1", "Gene2"), plottype = "pval")
+# plotauc(tab, expdf, genevec = c("Gene1", "Gene2"), plottype = "pval")
 
 }
 \seealso{

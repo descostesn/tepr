@@ -25,13 +25,13 @@
 
       idxup <- which(trans$coord <= trans[, kneecolname])
       if (isTRUE(all.equal(length(idxup), 0)))
-        stop("Problem in retrieving idxup, contact the developer.")
+        stop("\n\t Problem in retrieving idxup, contact the developer.\n")
       upmean <- mean(trans[idxup, meancolname])
 
       idxdown <- which(trans$coord >= trans[, kneecolname] &
                           trans$coord <= max(trans$coord))
       if (isTRUE(all.equal(length(idxdown), 0)))
-        stop("Problem in retrieving idxdown, contact the developer.")
+        stop("\n\t Problem in retrieving idxdown, contact the developer.\n")
       downmean <- mean(trans[idxdown, meancolname])
 
       ## Calculating attenuation
@@ -47,7 +47,10 @@
   }, condvec, mc.cores = nbcpu)
 
   updowndf <- do.call("rbind", updownbytranslist)
-  updowndf <- updowndf[, -which(duplicated(colnames(updowndf)))]
+  idxdup <- which(duplicated(colnames(updowndf)))
+  if (!isTRUE(all.equal(length(idxdup), 0)))
+    updowndf <- updowndf[, -idxdup]
+
   return(updowndf)
 }
 
@@ -146,6 +149,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
   showtime = FALSE, verbose = TRUE) {
 
       if (showtime) start_time <- Sys.time()
+      if (verbose) message("\n\t ## Calculating attenuation")
       if (verbose) message("\t Merging tables")
       allaucknee <- merge(allaucdf, kneedf, by = "transcript")
       mergecolnames <- c("gene", "transcript", "strand")
@@ -182,7 +186,7 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
       if (showtime) {
         end_time <- Sys.time()
-        message("\t\t ## Analysis performed in: ", end_time - start_time) # nolint
+        message("\t\t -- Analysis performed in: ", end_time - start_time) # nolint
       }
 
       return(auckneenasumatt)

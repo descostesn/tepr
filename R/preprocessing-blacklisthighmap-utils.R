@@ -47,16 +47,16 @@
         ## Remove duplicated frames and replace scores by wmean
         currenttrans <- currenttrans[-dupidx, ]
         if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
-            stop("The number of frames should be equal to ",
+            stop("\n\t The number of frames should be equal to ",
                 "windsize: ", windsize, " for transcript ",
-                unique(currenttrans$transcript.window))
+                unique(currenttrans$transcript.window), ".\n")
         idxscorereplace <- match(dupframenbvec,
             currenttrans$window.window)
 
         if (!isTRUE(all.equal(dupframenbvec,
             currenttrans$window.window[idxscorereplace])))
-                stop("Problem in replacing scores by wmean, ",
-                    "contact the developer.")
+                stop("\n\t Problem in replacing scores by wmean, ",
+                    "contact the developer.\n")
             currenttrans[idxscorereplace, "score"] <- wmeanvec
     }
     return(currenttrans)
@@ -82,9 +82,9 @@
 
             idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
             if (!isTRUE(all.equal(length(idxvec), 2)))
-                stop("Columns 'name' and 'width' were not found in the ",
+                stop("\n\t Columns 'name' and 'width' were not found in the ",
                     "maptrack file. This should not happen. Contact the ",
-                    "developer.")
+                    "developer.\n")
             maptrackbedchrom <- maptrackbedchrom[, -idxvec]
             colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
                 "mapscore")
@@ -125,12 +125,12 @@
     if (verbose) message("Retrieving chromosome lengths")
     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
     if (is.null(chromtab))
-        stop("The genome ", genomename, " was not found with the function ",
+        stop("\n\t The genome ", genomename, " was not found with the function",
         " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
         " if the genome is available on UCSC. The connection to UCSC can ",
         "also have some hickup. You can callagain the function using the ",
         "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome(",
-        "genomename)")
+        "genomename).\n")
     idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
         GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]
     chromtab <- chromtab[idxkeep,]

@@ -116,14 +116,14 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) start_tepr <- Sys.time()
 
     if (length(unique(expdf$condition)) > 2)
-        stop("There are more than two conditions in your experiment ",
-            "table. Use teprmulti function instead.")
+        stop("\n\t There are more than two conditions in your experiment ",
+            "table. Use teprmulti function instead.\n")
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
     ## on a specified expression threshold.
     resallexprs <- averageandfilterexprs(expdf, alldf, expthres, showtime,
-        verbose = TRUE)
+        verbose)
 
     ## This function takes a list of expression data frames, a condition
     ## information data frame, and counts the number of NA values for each
@@ -144,12 +144,12 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     ## Split the results by transcripts
     if (showtime) start_time_split <- Sys.time()
-    if (verbose) message("Split the results by transcripts")
+    if (verbose) message("\n\t ## Split the results by transcripts")
     bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
     if (showtime) {
         end_time_split <- Sys.time()
         timing <- end_time_split - start_time_split
-        message("\t\t ## Analysis performed in: ", format(timing, digits = 2))
+        message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
     }
 
     ## This function computes the Area Under Curve (AUC) and the differences of
@@ -172,15 +172,15 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     ## This function categorizes genes into a "Universe" and assigns them into
     ## groups such as "Attenuated" or "Outgroup" based on transcription data and
     ## thresholds.
-    res <- universegroup(resatt, controlcondname, stresscondname, windsizethres,
-        countnathres, meanctrlthres, meanstressthres, pvaltheorythres,
-        aucctrlthreshigher, aucctrlthreslower, aucstressthres,
+    res <- universegroup(resatt, expdf, controlcondname, stresscondname,
+        windsizethres, countnathres, meanctrlthres, meanstressthres,
+        pvaltheorythres, aucctrlthreshigher, aucctrlthreslower, aucstressthres,
         attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
     if (showtime) {
         end_tepr <- Sys.time()
         timing <- end_tepr - start_tepr
-        message("\n\t\t ### tepr analysis performed in: ",
+        message("\n\t\t -- tepr analysis performed in: ",
             format(timing, digits = 2))
     }
     ## Return variables necessary for plotting
@@ -407,8 +407,8 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) start_teprmulti <- Sys.time()
 
     if (!length(unique(expdf$condition)) > 2)
-        stop("There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.")
+        stop("\n\t There are less than two conditions in your experiment ",
+            "table. Use tepr function instead.\n")
 
     checkexptab(expdf)
 
