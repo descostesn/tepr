@@ -585,6 +585,12 @@ message("\n Computing the object 'res' with tepr on one condition:\n")
 resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
 ```
 
+The AUC and metagene plots require two conditions and thus cannot be generated. The ecdf on a given gene can be obtained with:
+
+```{r ecdfcond}
+plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
+    colvec = c("#90AFBB"), plot = TRUE)
+```
 
 # Annex
 
