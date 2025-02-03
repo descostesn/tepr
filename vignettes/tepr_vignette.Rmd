@@ -592,6 +592,16 @@ plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
     colvec = c("#90AFBB"), plot = TRUE)
 ```
 
+The histogram of knee positions can be obtained with:
+
+```{r histocond}
+## Randomly marking 10 transcripts as attenuated as a mock example
+idxatt <- sample(seq_len(100), 10)
+resonecond[[2]][idxatt, "Group"] <- "Attenuated"
+plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
+```
+
+
 # Annex
 
 ## Note on processing the complete dataset
