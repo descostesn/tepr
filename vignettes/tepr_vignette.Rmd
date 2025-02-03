@@ -601,16 +601,6 @@ resonecond[[2]][idxatt, "Group"] <- "Attenuated"
 plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
 ```
 
-!!!!!!!!!!!!!!!
-
-plotmetagenes <- function(unigroupdf, dfmeandiff, plottype = "attenuation",
-    daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
-    auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = ".", verbose = TRUE)
-!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
 # Annex
 
 ## Note on processing the complete dataset
