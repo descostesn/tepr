@@ -66,8 +66,9 @@ statistics such as AUC values and significant KS test results. Knee points,
 representing significant changes in transcription density, are also displayed
 if the KS test passes the specified p-value threshold.
 
-Colvec: If expdf has two conditions, the number of colors should be 4. If
-only one condition is provided, the number of colors should be 2.
+Colvec: The number of colors should be equal to the number of rows of expdf
+divided by two (a forward and reverse files are provided for each
+experiment).
 }
 \examples{
 # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
