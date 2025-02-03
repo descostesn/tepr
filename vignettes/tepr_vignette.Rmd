@@ -456,7 +456,7 @@ aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 
 For one condition, no ks test was performed against another. Therefore we define a transcript as belonging to 'Outgroup' if it belongs to the Universe and the control AUC is between two user-defined thresholds:
 
-```{r outgroup, eval = FALSE}
+```{r outgroup2, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. The columns `Universe` and `Group` are computed with:
