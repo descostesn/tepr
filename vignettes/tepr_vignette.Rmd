@@ -510,7 +510,7 @@ The plot on the complete dataset gives:
 The average transcription density along a meta-transcript or a meta-gene can be visualized with:
 
 ```{r metageneplot}
-plotmetagenes(res, resmeandiff, plottype = "attenuation", plot = TRUE)
+plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 ```
 
 The plot on the complete dataset gives:
@@ -707,7 +707,7 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, expdf, genevec, plottype = "pval", outfile = "AUCcompare_pval",
     outfold = ".", formatname = "png")
 
-plotmetagenes(res, resmeandiff, plottype = "attenuation", formatname = "png",
+plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", formatname = "png",
     outfold = ".")
 
 plothistoknee(res, outfold = ".", formatname = "png")
