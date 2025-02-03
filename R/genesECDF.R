@@ -136,10 +136,12 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
     if (verbose) message("\t Filtering to keep only the expressed transcripts") # nolint
     idx <- match(maintable$transcript, exprstransnames)
     idxnoexpr <- which(is.na(idx))
-    if (isTRUE(all.equal(length(idxnoexpr), 0)))
-      warning("All the transcripts are expressed", immediate. = TRUE) # nolint
-    else
+    if (isTRUE(all.equal(length(idxnoexpr), 0))) {
+      if (verbose)
+        warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+    } else {
       maintable <- maintable[-idxnoexpr, ]
+    }
 
     ## Splitting the table by each transcript to perform transcript specific
     ## operations
