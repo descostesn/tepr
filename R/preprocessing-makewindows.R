@@ -71,7 +71,7 @@
     idxsmall <- which((expbed$end - expbed$start) < nbwindows)
     lsmall <- length(idxsmall)
     if (!isTRUE(all.equal(lsmall, 0))) {
-        message("\t Excluding ", lsmall, "/", nrow(expbed),
+        if (verbose) message("\t Excluding ", lsmall, "/", nrow(expbed),
             " annotations that are too short.")
         expbed <- expbed[-idxsmall, ]
     }
