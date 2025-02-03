@@ -169,7 +169,7 @@ exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
 allannobed <- retrieveanno(exptabpath, gencodepath)
-message("\n The result is:")
+message("\n The result is:\n")
 print(head(allannobed, 3))
 ```
 
@@ -182,7 +182,7 @@ print(head(allannobed, 3))
 windsize = 200
 
 allwindowsbed <- makewindows(allannobed, windsize)
-message("\n The result is:")
+message("\n The result is:\n")
 print(head(allwindowsbed, 3))
 ```
 
