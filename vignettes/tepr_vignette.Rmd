@@ -463,7 +463,7 @@ Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. T
 
 ```{r universegroup}
 ## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt)
+res <- universegroup(resatt, expdf)
 print(head(res, 2))
 ```
 
