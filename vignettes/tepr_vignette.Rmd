@@ -568,6 +568,16 @@ Figures are written to `outfold` and subfolders are automatically created with t
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
 
+## Single condition
+
+If your dataset contains only one condition, either with one or more than one replicate, it is possible to analyse the data by comparing the signal to a linear "theoretical" distribution representing a uniform signal.
+
+```{r singlecond}
+expdfonecond <- expdf[which(expdf$condition == "HS" & expdf$replicate == 1), ]
+message("The experiment table is limited to one condition and one replicate:")
+print(expdfonecond)
+```
+
 
 # Annex
 
