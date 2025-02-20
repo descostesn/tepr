@@ -24,7 +24,7 @@ expdf <- read.csv(exptabpath, header = TRUE)
 
 ## Enter teprmulti
 
-dontcompare_test<- c("ctrl0_vs_ctrl10","ctrl0_vs_ctrl20","ctrl0_vs_ctrl30","ctrl0_vs_ctrl40")
+dontcompare <- c("ctrl0_vs_ctrl10","ctrl0_vs_ctrl20","ctrl0_vs_ctrl30","ctrl0_vs_ctrl40")
 
 expthres = 0.1; nbcpu = 1; rounding = 10; replaceval = NA; pval = 0.1
 significant = FALSE;windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1
