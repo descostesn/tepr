@@ -8,10 +8,6 @@ library("tepr")
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-DRB.csv" # nolint
 finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 
-## Cugusi data
-exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
-finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv" # nolint
-
 
 ##################
 # MAIN
@@ -26,19 +22,22 @@ finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv" 
 alldf <- read.delim(finaltabpath, header = FALSE) # nolint
 expdf <- read.csv(exptabpath, header = TRUE)
 
-########################
-## CUGUSI
-########################
-
-## Reading and filtering alldf
-alldf <- read.delim(finaltabpath, header = FALSE) # nolint
-expdf <- read.csv(exptabpath, header = TRUE)
 
 
 
 
 
 # ----------------------------------------
+########################
+## CUGUSI
+########################
+## Cugusi data
+# exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
+# finaltabpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv" # nolint
+## Reading and filtering alldf
+# alldf <- read.delim(finaltabpath, header = FALSE) # nolint
+# expdf <- read.csv(exptabpath, header = TRUE)
+
 # one cond
 # tabonecond <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond.tsv"
 # tabonecondonerep <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq-onecond-onerep.tsv" # nolint
