@@ -26,8 +26,8 @@ dontcompvec <- showallcomp(expdf)
 dontcompvec <- dontcompvec[- c(1,2,3)]
 
 ## Enter kneemulti
-alldf, expdf, expthres, nbcpu = 1, rounding = 10,
-    dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE
+expthres = 0.1; nbcpu = 5; rounding = 10
+dontcompare = NULL; saveobjectpath = NA; showtime = FALSE; verbose = TRUE
 
 
 !!!!!!!!!!!!!! add kneemulti in vignette and showallcomp
