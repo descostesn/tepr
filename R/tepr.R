@@ -299,6 +299,38 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     return(reslist)
 }
 
+.dontcompare <- function(dontcompare, matcond, verbose) {
+
+    if (!is.null(dontcompare)) {
+
+        if (!is.vector(dontcompare))
+            stop("\n The variable dontcompare should be a vector.\n")
+
+        ## Building all comparisons from matcond
+        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
+
+        ## Retrieving the comparisons to exclude
+        idx <- match(dontcompare, compvec)
+        idxna <- which(is.na(idx))
+
+        if (isTRUE(all.equal(length(idx), 0)) ||
+            !isTRUE(all.equal(length(idxna), 0)))
+            stop("\n Problem with the values contained in the dontcompare ",
+                "vector. Make sure that your vector contains one of these:\n",
+                paste(compvec, collapse = " - "))
+
+        if (isTRUE(all.equal(length(dontcompare), ncol(matcond))))
+            stop("\n All comparisons are removed, the function cannot be ",
+                "executed\n")
+
+        matcond <- matcond[, -idx]
+
+        if (verbose) message("The following comparisons were excluded:\n ",
+            paste(dontcompare, collapse = " - "))
+    }
+    return(matcond)
+}
+
 #' Perform tepr differential nascent rna-seq analysis for multiple conditions
 #'
 #' @description
@@ -431,32 +463,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     colnames(alldf) <- c(infocolnames, expcolnames)
 
     ## Eliminating comparisons if dontcompare not NULL
-    if (!is.null(dontcompare)) {
-        if (!is.vector(dontcompare))
-            stop("\n The variable dontcompare should be a vector.\n")
-
-        ## Building all comparisons from matcond
-        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
-
-        ## Retrieving the comparisons to exclude
-        idx <- match(dontcompare, compvec)
-        idxna <- which(is.na(idx))
-
-        if (isTRUE(all.equal(length(idx), 0)) ||
-            !isTRUE(all.equal(length(idxna), 0)))
-            stop("\n Problem with the values contained in the dontcompare ",
-                "vector. Make sure that your vector contains one of these:\n",
-                paste(compvec, collapse = " - "))
-
-        if (isTRUE(all.equal(length(dontcompare), ncol(matcond))))
-            stop("\n All comparisons are removed, the function cannot be ",
-                "executed\n")
-
-        matcond <- matcond[, -idx]
-
-        if (verbose) message("The following comparisons were excluded:\n ",
-            paste(dontcompare, collapse = " - "))
-    }
+    matcond <- .dontcompare(dontcompare, matcond, verbose)
 
     ## Calling tepr by pairs of contions
     filepathname <- file.path(saveobjectpath, "allcomplist.rds")
