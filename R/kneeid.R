@@ -95,7 +95,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
     return(alldfcond)
 }
 
-kneeallcond <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
+kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_kneemulti <- Sys.time()
