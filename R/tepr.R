@@ -5,7 +5,7 @@
 #' with a significantly different nascent rna-seq signal.
 #'
 #' @usage
-#' tepr(expdf, alldf, expthres, nbcpu = 1, rounding = 10, dontcompare = NULL,
+#' tepr(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #' controlcondname = "ctrl", stresscondname = "HS", replaceval = NA, pval = 0.1,
 #' significant = FALSE, windsizethres = 50, countnathres = 20,
 #' meanctrlthres = 0.5, meanstressthres = 0.5, pvaltheorythres = 0.1,
@@ -27,8 +27,6 @@
 #'  Defaults to \code{1}.
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
 #'  Default is \code{10}.
-#' @param dontcompare An optional parameter to specify any conditions to exclude
-#'  from the comparison. Defaults to \code{NULL}.
 #' @param controlcondname A string specifying the name of the control condition
 #'  Defaults to \code{"ctrl"}.
 #' @param stresscondname A string specifying the name of the stress condition.
@@ -106,7 +104,7 @@
 #' @export
 
 tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
-    dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
+    controlcondname = "ctrl", stresscondname = "HS",
     replaceval = NA, pval = 0.1, significant = FALSE, windsizethres = 50,
     countnathres = 20, meanctrlthres = 0.5, meanstressthres = 0.5,
     pvaltheorythres = 0.1, aucctrlthreshigher = -10, aucctrlthreslower = 15,
@@ -154,8 +152,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     ## This function computes the Area Under Curve (AUC) and the differences of
     ## AUC between two conditions for a list of transcript data.
-    resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu,
-        dontcompare, controlcondname, stresscondname, showtime, verbose)
+    resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu, controlcondname,
+        stresscondname, showtime, verbose)
 
     ## This function identifies the knee point (i.e., point of maximum change)
     ## and the maximum difference in the empirical cumulative distribution
@@ -193,7 +191,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 .restepr <- function(saveobjectpath, compname, reload, expdf2cond, alldf2cond,
-    expthres, nbcpu, rounding, dontcompare, cond1name, cond2name, replaceval,
+    expthres, nbcpu, rounding, cond1name, cond2name, replaceval,
     pval, significant, windsizethres, countnathres, meancond1thres,
     meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
     auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
@@ -205,11 +203,11 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
         restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
-            dontcompare = dontcompare, controlcondname = cond1name,
-            stresscondname = cond2name, replaceval = replaceval, pval = pval,
-            significant = significant, windsizethres = windsizethres,
-            countnathres = countnathres, meanctrlthres = meancond1thres,
-            meanstressthres = meancond2thres, pvaltheorythres = pvaltheorythres,
+            controlcondname = cond1name, stresscondname = cond2name,
+            replaceval = replaceval, pval = pval, significant = significant,
+            windsizethres = windsizethres, countnathres = countnathres,
+            meanctrlthres = meancond1thres, meanstressthres = meancond2thres,
+            pvaltheorythres = pvaltheorythres,
             aucctrlthreshigher = auccond1threshigher,
             aucctrlthreslower = auccond1threslower,
             aucstressthres = auccond2thres,
@@ -234,14 +232,14 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 }
 
 .reslist <- function(filepathname, matcond, verbose, expdf, alldf, expthres,
-    nbcpu, rounding, dontcompare, replaceval, pval, significant, windsizethres,
+    nbcpu, rounding, replaceval, pval, significant, windsizethres,
     countnathres, meancond1thres, meancond2thres, pvaltheorythres,
     auccond1threshigher, auccond1threslower, auccond2thres,
     attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath, reload,
     showtime, showmemory) {
 
         reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
-        expthres, nbcpu, rounding, dontcompare, replaceval, pval, significant,
+        expthres, nbcpu, rounding, replaceval, pval, significant,
         windsizethres, countnathres, meancond1thres, meancond2thres,
         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
@@ -270,9 +268,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
         ## Calling tepr on the defined conditions
         restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
-            alldf2cond, expthres, nbcpu, rounding, dontcompare, cond1name,
-            cond2name, replaceval, pval, significant, windsizethres,
-            countnathres, meancond1thres, meancond2thres, pvaltheorythres,
+            alldf2cond, expthres, nbcpu, rounding, cond1name, cond2name,
+            replaceval, pval, significant, windsizethres, countnathres,
+            meancond1thres, meancond2thres, pvaltheorythres,
             auccond1threshigher, auccond1threslower, auccond2thres,
             attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
@@ -280,9 +278,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         if (showmemory) print(gc()) else invisible(gc())
         return(restepr)
 
-    }, verbose, expdf, alldf, expthres, nbcpu, rounding, dontcompare,
-        replaceval, pval, significant, windsizethres, countnathres,
-        meancond1thres, meancond2thres, pvaltheorythres, auccond1threshigher,
+    }, verbose, expdf, alldf, expthres, nbcpu, rounding, replaceval, pval,
+        significant, windsizethres, countnathres, meancond1thres,
+        meancond2thres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
         outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
         simplify = FALSE)
@@ -471,11 +469,11 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     if (!reload || !file.exists(filepathname)) {
         reslist <- .reslist(filepathname, matcond, verbose, expdf, alldf,
-            expthres, nbcpu, rounding, dontcompare, replaceval, pval,
-            significant, windsizethres, countnathres, meancond1thres,
-            meancond2thres, pvaltheorythres, auccond1threshigher,
-            auccond1threslower, auccond2thres, attenuatedpvalksthres,
-            outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory)
+            expthres, nbcpu, rounding, replaceval, pval, significant,
+            windsizethres, countnathres, meancond1thres, meancond2thres,
+            pvaltheorythres, auccond1threshigher, auccond1threslower,
+            auccond2thres, attenuatedpvalksthres, outgrouppvalksthres,
+            saveobjectpath, reload, showtime, showmemory)
     } else {
         if (verbose) message("\t\t\t Loading ", filepathname)
         reslist <- readRDS(filepathname)
