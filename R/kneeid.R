@@ -82,7 +82,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
 !!!!!!!!!!!!!!!!!!!!!!!!
 
-kneemulti <- function(alldf, expdf, dontcompare = NULL, saveobjectpath = NA, showtime = FALSE) {
+kneemulti <- function(alldf, expdf, dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_kneemulti <- Sys.time()
 
@@ -106,6 +106,14 @@ kneemulti <- function(alldf, expdf, dontcompare = NULL, saveobjectpath = NA, sho
 
     ## Eliminating comparisons if dontcompare not NULL
     matcond <- .dontcompare(dontcompare, matcond, verbose)
+
+    ## Calling building of knee for each comparison of matcond
+    kneelist <- apply(matcond, 2, function() {
+
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    })
 
 
 
