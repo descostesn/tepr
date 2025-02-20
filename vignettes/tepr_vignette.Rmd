@@ -541,7 +541,7 @@ The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
-### More than two conditions
+## More than two conditions
 
 ### teprmulti analysis
 
