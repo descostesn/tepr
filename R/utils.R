@@ -200,9 +200,8 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 #' @usage
 #' checkexptab(exptab)
 #'
-#' @param exptab A data frame representing the experiment table. The table must
-#' contain the following columns: `"condition"`, `"replicate"`, `"direction"`,
-#' and `"strand"`.
+#' @param exptab A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #'
 #' @return
 #' If the experiment table is valid, the function returns `NULL`. If the table
@@ -263,7 +262,39 @@ checkexptab <- function(exptab) {
 }
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#' Retrieve all the comparison names from the experiment table
+#'
+#' @description
+#' The `showallcomp` function build the string of all comparisons possible
+#' using the condition column of a provided experiment table.
+#'
+#' @usage
+#' showallcomp(expdf, verbose = TRUE)
+#'
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'                Defaults to \code{TRUE}.
+#'
+#' @return
+#' If less than three conditions, nothing. Otherwise a character vector of all
+#' comparisons.
+#'
+#' @examples
+#' \dontrun{
+#'   # Create a valid experiment table
+#'   exptab <- data.frame(
+#'     condition = c("cond1", "cond2", "cond3"),
+#'     replicate = c(1, 1, 1),
+#'     direction = c("forward", "reverse", "forward"),
+#'     strand = c("plus", "minus", "plus")
+#'   )
+#'   checkexptab(exptab)  # Should pass without errors
+#'   showallcomp(exptab)
+#' }
+#'
+#' @export
 
 showallcomp <- function(expdf, verbose = TRUE) {
 
