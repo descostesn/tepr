@@ -81,8 +81,22 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!
+.expdf2cond <- function(currentcol, expdf, verbose) {
 
-kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10, dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE) {
+    cond1name <- currentcol[1]
+    cond2name <- currentcol[2]
+    compname <- paste(cond1name, cond2name, sep = "_vs_")
+    if (verbose) message("\n\n Comparison of ", compname)
+
+    ## Limiting expdf on the two defined conditions
+    idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
+        return(which(expdf$condition == condname))}, expdf))
+    expdf2cond <- expdf[idxexp, ]
+    return(expdf2cond)
+}
+
+kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
+    dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_kneemulti <- Sys.time()
 
@@ -102,24 +116,17 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10, dontcomp
     matcond <- .dontcompare(dontcompare, expdf, verbose)
 
     ## Calling building of knee for each comparison of matcond
-    kneelist <- apply(matcond, 2, function(currentcol, expdf, alldf, expthres, nbcpu, rounding, showtime, verbose) {
+    kneelist <- apply(matcond, 2, function(currentcol, expdf, alldf, expthres,
+        nbcpu, rounding, showtime, verbose) {
 
-        cond1name <- currentcol[1]
-        cond2name <- currentcol[2]
-        compname <- paste(cond1name, cond2name, sep = "_vs_")
-        if (verbose) message("\n\n Comparison of ", compname)
-
-        ## Limiting expdf on the two defined conditions
-        idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
-            return(which(expdf$condition == condname))}, expdf))
-        expdf2cond <- expdf[idxexp, ]
+            expdf2cond <- .expdf2cond(currentcol, expdf, verbose)
 
         ## Building vectors with the column names specific to the two conditions
         namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
             ".", expdf2cond$strand)
         idxcol2conds <- unlist(lapply(namecols,
             function(x, alldf) grep(x, colnames(alldf)), alldf))
-        
+
         ## Limiting alldf to the two defined conditions
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
