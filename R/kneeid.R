@@ -59,7 +59,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
   verbose = TRUE) {
 
   if (showtime) start_time <- Sys.time()
-  if (verbose) message("\n\t Calculating knee")
+  if (verbose) message("\n\t ## Calculating knee")
   condvec <- unique(expdf$condition)
   bytransres <- parallel::mclapply(transdflist, function(transtable, condvec) {
       bycondreslist <- .retrievekneeandmax(condvec, transtable)
@@ -141,7 +141,7 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
                 showtime, verbose)
             resmeandiff <- meandifference(resecdflist[[1]], expdf2cond,
                 resecdflist[[2]], showtime, verbose)
-            if (verbose) message("## Splitting by transcript")
+            if (verbose) message("\t ## Splitting by transcript")
             bytranslistmean <- split(resmeandiff,
                 factor(resmeandiff$transcript))
             resknee <- kneeid(bytranslistmean, expdf2cond, nbcpu, showtime,
