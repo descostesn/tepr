@@ -27,7 +27,7 @@ dontcompvec <- dontcompvec[- c(1,2,3)]
 
 ## Enter kneemulti
 expthres = 0.1; nbcpu = 5; rounding = 10
-dontcompare = NULL; saveobjectpath = NA; showtime = FALSE; verbose = TRUE
+dontcompare = dontcompvec; saveobjectpath = NA; showtime = FALSE; verbose = TRUE
 
 
 !!!!!!!!!!!!!! add kneemulti in vignette and showallcomp
