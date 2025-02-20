@@ -261,3 +261,25 @@ checkexptab <- function(exptab) {
         stop("\n\t The condition names should not contain any special ",
             "characters such as '_' or '-'.\n")
 }
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!
+
+showallcomp <- function(expdf, verbose = TRUE) {
+
+    condvec <- unique(expdf$condition)
+
+    if (isTRUE(all.equal(length(condvec), 2))) {
+        message("\n Your table has only two conditions: ", condvec[1], "_vs_",
+            condvec[2])
+    } else if (isTRUE(all.equal(length(condvec), 1))) {
+        message("\n Your table has only one conditions: ", condvec)
+    } else {
+
+        matcond <- combn(condvec, 2, simplify = TRUE)
+        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
+        if (verbose) message("All comparisons: ", paste(compvec,
+            collapse = " - "))
+        return(compvec)
+    }
+}
