@@ -4,9 +4,9 @@
 \alias{allauc}
 \title{Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data}
 \usage{
-allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
-controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
-verbose = TRUE)
+allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1,
+ controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+ verbose = TRUE)
 }
 \arguments{
 \item{bytranslistmean}{A list of data frames, each containing transcript
@@ -21,9 +21,6 @@ AUC calculations.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel processing on bytranslistmean. Defaults to \code{1}.}
-
-\item{dontcompare}{An optional parameter to specify any conditions to exclude
-from the comparison. Defaults to \code{NULL}.}
 
 \item{controlcondname}{A string specifying the name of the control condition
 Defaults to \code{"ctrl"}.}

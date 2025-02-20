@@ -4,7 +4,7 @@
 \alias{tepr}
 \title{Perform the tepr differential nascent rna-seq analysis}
 \usage{
-tepr(expdf, alldf, expthres, nbcpu = 1, rounding = 10, dontcompare = NULL,
+tepr(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 controlcondname = "ctrl", stresscondname = "HS", replaceval = NA, pval = 0.1,
 significant = FALSE, windsizethres = 50, countnathres = 20,
 meanctrlthres = 0.5, meanstressthres = 0.5, pvaltheorythres = 0.1,
@@ -31,9 +31,6 @@ Defaults to \code{1}.}
 
 \item{rounding}{An integer specifying the rounding factor for computing ECDF.
 Default is \code{10}.}
-
-\item{dontcompare}{An optional parameter to specify any conditions to exclude
-from the comparison. Defaults to \code{NULL}.}
 
 \item{controlcondname}{A string specifying the name of the control condition
 Defaults to \code{"ctrl"}.}
