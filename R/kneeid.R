@@ -135,18 +135,16 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
             expdf2cond <- .expdf2cond(currentcol, expdf, verbose)
             alldf2cond <- .alldf2cond(expdf2cond, alldf)
 
-
-
-
-        resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond, expthres, showtime,
-        verbose)
-        resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding, showtime,
-        verbose)
-        resmeandiff <- meandifference(resecdflist[[1]], expdf, resecdflist[[2]], showtime, verbose)
-        bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-        resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
-        return(resknee)
-        
+            resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond,
+                expthres, showtime, verbose)
+            resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding,
+                showtime, verbose)
+            resmeandiff <- meandifference(resecdflist[[1]], expdf,
+                resecdflist[[2]], showtime, verbose)
+            bytranslistmean <- split(resmeandiff,
+                factor(resmeandiff$transcript))
+            resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
+            return(resknee)
     }, expdf, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
     !!!!!!!!!!!!!! combine results
