@@ -541,7 +541,9 @@ The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
-## teprmulti analysis
+## More than two conditions
+
+### teprmulti analysis
 
 It is possible to analyze more than two experiments with the function `teprmulti`. This function performs a "all vs all" analysis and returns a list whose elements, for each comparison, is a list of two data frames: 
 
@@ -552,8 +554,18 @@ It is possible to analyze more than two experiments with the function `teprmulti
 resteprmulti <- teprmulti(expdf, transdf, expthres)
 ```
 
+The function `showallcomp` enables to return a vector of all comparison names that will be performed by `teprmulti`. This gives the possibility to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` takes a vector of all the comparisons to exclude. The code below limits teprmulti to three comparisons:
 
-## plotmulti
+```{r teprmultithree, eval = FALSE}
+## Returns a vector with all the comparison names to exclude
+dontcompvec <- showallcomp(expdf)
+dontcompvec <- dontcompvec[- c(1,2,3)]
+
+resteprmulti <- teprmulti(expdf, transdf, expthres, dontcompare = dontcompvec)
+```
+
+
+### plotmulti
 
 Using the result list `resteprmulti`, all plots for all comparisons can be generated with `plotmulti`. The function goes through each element of `resteprmulti` which corresponds to a comparison of two conditions. For each element it calls the following functions:
 
@@ -567,6 +579,15 @@ Figures are written to `outfold` and subfolders are automatically created with t
 ```{r plotmulti, eval = FALSE}
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
+
+### Calculating knee for each condition
+
+The function `kneeallconds` aims at retrieving knee values without having to perform the entire `teprmulti` analysis. It computes the knee values `knee_AUC_` and `max_diff_Fx_` for each condition separately.
+
+```{r kneeallconds, eval = FALSE}
+kneedf <- kneeallconds(alldf, expdf, expthres)
+```
+
 
 ## Single condition
 

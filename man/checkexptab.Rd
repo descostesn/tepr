@@ -7,9 +7,8 @@
 checkexptab(exptab)
 }
 \arguments{
-\item{exptab}{A data frame representing the experiment table. The table must
-contain the following columns: `"condition"`, `"replicate"`, `"direction"`,
-and `"strand"`.}
+\item{exptab}{A data frame containing experiment data that should have
+columns named 'condition', 'replicate', 'strand', and 'path'.}
 }
 \value{
 If the experiment table is valid, the function returns `NULL`. If the table

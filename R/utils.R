@@ -28,6 +28,57 @@
         }, tab))
 }
 
+.buildcolnames <- function(expdf, alldf) {
+
+    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+        "gene", "strand", "window", "id")
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }, simplify = FALSE))
+    colnames(alldf) <- c(infocolnames, expcolnames)
+    return(alldf)
+}
+
+.dontcompare <- function(dontcompare, expdf, verbose) {
+
+    ## Retrieve the condition names without duplicates
+    condvec <- unique(expdf$condition)
+
+    ## Create matrix with all comparisons
+    matcond <- combn(condvec, 2, simplify = TRUE)
+
+    if (!is.null(dontcompare)) {
+
+        if (!is.vector(dontcompare))
+            stop("\n The variable dontcompare should be a vector.\n")
+
+        ## Building all comparisons from matcond
+        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
+
+        ## Retrieving the comparisons to exclude
+        idx <- match(dontcompare, compvec)
+        idxna <- which(is.na(idx))
+
+        if (isTRUE(all.equal(length(idx), 0)) ||
+            !isTRUE(all.equal(length(idxna), 0)))
+            stop("\n Problem with the values contained in the dontcompare ",
+                "vector. Make sure that your vector contains one of these:\n",
+                paste(compvec, collapse = " - "))
+
+        if (isTRUE(all.equal(length(dontcompare), ncol(matcond))))
+            stop("\n All comparisons are removed, the function cannot be ",
+                "executed\n")
+
+        matcond <- matcond[, -idx]
+
+        if (verbose) message("The following comparisons were excluded:\n ",
+            paste(dontcompare, collapse = " - "))
+    }
+    return(matcond)
+}
+
+
 #' Join Bedgraph Files for Protein-Coding and lncRNA Data
 #'
 #' @description
@@ -149,9 +200,8 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 #' @usage
 #' checkexptab(exptab)
 #'
-#' @param exptab A data frame representing the experiment table. The table must
-#' contain the following columns: `"condition"`, `"replicate"`, `"direction"`,
-#' and `"strand"`.
+#' @param exptab A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #'
 #' @return
 #' If the experiment table is valid, the function returns `NULL`. If the table
@@ -209,4 +259,58 @@ checkexptab <- function(exptab) {
     if (!isTRUE(all.equal(length(idxchar), 0)))
         stop("\n\t The condition names should not contain any special ",
             "characters such as '_' or '-'.\n")
+}
+
+
+
+#' Retrieve all the comparison names from the experiment table
+#'
+#' @description
+#' The `showallcomp` function build the string of all comparisons possible
+#' using the condition column of a provided experiment table.
+#'
+#' @usage
+#' showallcomp(expdf, verbose = TRUE)
+#'
+#' @param expdf A data frame containing experiment data that should have
+#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param verbose A logical flag indicating whether to print progress messages.
+#'                Defaults to \code{FALSE}.
+#'
+#' @return
+#' If less than three conditions, nothing. Otherwise a character vector of all
+#' comparisons.
+#'
+#' @examples
+#' \dontrun{
+#'   # Create a valid experiment table
+#'   exptab <- data.frame(
+#'     condition = c("cond1", "cond2", "cond3"),
+#'     replicate = c(1, 1, 1),
+#'     direction = c("forward", "reverse", "forward"),
+#'     strand = c("plus", "minus", "plus")
+#'   )
+#'   checkexptab(exptab)  # Should pass without errors
+#'   showallcomp(exptab)
+#' }
+#'
+#' @export
+
+showallcomp <- function(expdf, verbose = FALSE) {
+
+    condvec <- unique(expdf$condition)
+
+    if (isTRUE(all.equal(length(condvec), 2))) {
+        message("\n Your table has only two conditions: ", condvec[1], "_vs_",
+            condvec[2])
+    } else if (isTRUE(all.equal(length(condvec), 1))) {
+        message("\n Your table has only one conditions: ", condvec)
+    } else {
+
+        matcond <- combn(condvec, 2, simplify = TRUE)
+        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
+        if (verbose) message("All comparisons: ", paste(compvec,
+            collapse = " - "))
+        return(compvec)
+    }
 }

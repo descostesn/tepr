@@ -1,0 +1,26 @@
+v1.1.0:
+- create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
+- create a kneeallconds function that enables to calculate knees for each condition separately
+- create section 5.4 "More than two conditions" in the vignette with the "teprmulti analysis", "plotmulti", and "Calculating knee for each condition" subsections.
+
+v1.0.4:
+- remove dontcompare parameter from allauc and tepr
+- add code to remove conditions with a dontcompare vector in teprmulti
+
+v1.0.3:
+- tepr can now handle a single condition. See section 5.6 of the vignette.
+
+v1.0.2:
+- Add functions teprmulti and plotmulti to use when more than two conditions are present. New sections 5.4 and 5.5 of the vignette.
+
+v1.0.1:
+- Solve bug due to chromtab parameter
+- chromtab is now a parameter in case of connection hickups
+- Manual has been updated
+- Add code to vignette to use the data provided with the package
+
+v1.0.0:
+- preprocessing is now done in R
+
+v0.0.99:
+- pre-processing with bash

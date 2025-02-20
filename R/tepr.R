@@ -297,37 +297,6 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     return(reslist)
 }
 
-.dontcompare <- function(dontcompare, matcond, verbose) {
-
-    if (!is.null(dontcompare)) {
-
-        if (!is.vector(dontcompare))
-            stop("\n The variable dontcompare should be a vector.\n")
-
-        ## Building all comparisons from matcond
-        compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
-
-        ## Retrieving the comparisons to exclude
-        idx <- match(dontcompare, compvec)
-        idxna <- which(is.na(idx))
-
-        if (isTRUE(all.equal(length(idx), 0)) ||
-            !isTRUE(all.equal(length(idxna), 0)))
-            stop("\n Problem with the values contained in the dontcompare ",
-                "vector. Make sure that your vector contains one of these:\n",
-                paste(compvec, collapse = " - "))
-
-        if (isTRUE(all.equal(length(dontcompare), ncol(matcond))))
-            stop("\n All comparisons are removed, the function cannot be ",
-                "executed\n")
-
-        matcond <- matcond[, -idx]
-
-        if (verbose) message("The following comparisons were excluded:\n ",
-            paste(dontcompare, collapse = " - "))
-    }
-    return(matcond)
-}
 
 #' Perform tepr differential nascent rna-seq analysis for multiple conditions
 #'
@@ -446,23 +415,11 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
         dir.create(saveobjectpath, recursive = TRUE)
 
-    ## Retrieve the condition names without duplicates
-    condvec <- unique(expdf$condition)
-
-    ## Create matrix with all comparisons
-    matcond <- combn(condvec, 2, simplify = TRUE)
-
     ## Building col names for alldf
-    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
-        "gene", "strand", "window", "id")
-    expcolnames <- unlist(apply(expdf, 1, function(x) {
-        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
-        return(c(res, paste(res, "score", sep = "_")))
-    }, simplify = FALSE))
-    colnames(alldf) <- c(infocolnames, expcolnames)
+    alldf <- .buildcolnames(expdf, alldf)
 
     ## Eliminating comparisons if dontcompare not NULL
-    matcond <- .dontcompare(dontcompare, matcond, verbose)
+    matcond <- .dontcompare(dontcompare, expdf, verbose)
 
     ## Calling tepr by pairs of contions
     filepathname <- file.path(saveobjectpath, "allcomplist.rds")
