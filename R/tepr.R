@@ -415,17 +415,11 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
         dir.create(saveobjectpath, recursive = TRUE)
 
-    ## Retrieve the condition names without duplicates
-    condvec <- unique(expdf$condition)
-
-    ## Create matrix with all comparisons
-    matcond <- combn(condvec, 2, simplify = TRUE)
-
     ## Building col names for alldf
     alldf <- .buildcolnames(expdf, alldf)
 
     ## Eliminating comparisons if dontcompare not NULL
-    matcond <- .dontcompare(dontcompare, matcond, verbose)
+    matcond <- .dontcompare(dontcompare, expdf, verbose)
 
     ## Calling tepr by pairs of contions
     filepathname <- file.path(saveobjectpath, "allcomplist.rds")

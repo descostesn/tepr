@@ -40,7 +40,13 @@
     return(alldf)
 }
 
-.dontcompare <- function(dontcompare, matcond, verbose) {
+.dontcompare <- function(dontcompare, expdf, verbose) {
+
+    ## Retrieve the condition names without duplicates
+    condvec <- unique(expdf$condition)
+
+    ## Create matrix with all comparisons
+    matcond <- combn(condvec, 2, simplify = TRUE)
 
     if (!is.null(dontcompare)) {
 
