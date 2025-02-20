@@ -361,8 +361,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'          parallel computation on transcripts. Defaults to \code{1}.
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
 #'          Default is \code{10}.
-#' @param dontcompare An optional parameter to specify any conditions to exclude
-#'          from the comparison. Defaults to \code{NULL}.
+#' @param dontcompare An optional vector specifying conditions to exclude
+#'          from the comparison. It should use condition names from expdf and
+#'          follow the pattern \code{cond1_vs_cond2}. Defaults to \code{NULL}.
 #' @param replaceval A value to replace non-significant attenuation values.
 #'          Defaults to \code{NA}.
 #' @param pval A numeric value specifying the p-value threshold for significance
