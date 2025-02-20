@@ -76,3 +76,37 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
   return(res)
 }
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!
+
+kneemulti <- function(alldf, expdf, dontcompare = NULL, saveobjectpath = NA, showtime = FALSE) {
+
+    if (showtime) start_kneemulti <- Sys.time()
+
+    if (!length(unique(expdf$condition)) > 2)
+        stop("\n\t There are less than two conditions in your experiment ",
+            "table. Use tepr function instead.\n")
+
+    checkexptab(expdf)
+
+    if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
+        dir.create(saveobjectpath, recursive = TRUE)
+
+    ## Retrieve the condition names without duplicates
+    condvec <- unique(expdf$condition)
+
+    ## Create matrix with all comparisons
+    matcond <- combn(condvec, 2, simplify = TRUE)
+
+    ## Building col names for alldf
+    alldf <- .buildcolnames(expdf, alldf)
+
+    ## Eliminating comparisons if dontcompare not NULL
+    matcond <- .dontcompare(dontcompare, matcond, verbose)
+
+
+
+}
