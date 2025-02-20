@@ -28,6 +28,20 @@
         }, tab))
 }
 
+.buildcolnames <- function(expdf, alldf) {
+
+    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+        "gene", "strand", "window", "id")
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }, simplify = FALSE))
+    colnames(alldf) <- c(infocolnames, expcolnames)
+    return(alldf)
+}
+
+
+
 #' Join Bedgraph Files for Protein-Coding and lncRNA Data
 #'
 #' @description
