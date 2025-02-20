@@ -113,24 +113,26 @@ kneeallcond <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     expdfcondlist <- split(expdf, factor(expdf$condition))
 
     ## Calling building of knee for each comparison of matcond
-    kneelist <- lapply(expdfcondlist, 2, function(currentexpdf, alldf, expthres,
+    kneelist <- lapply(expdfcondlist, function(currentexpdf, alldf, expthres,
         nbcpu, rounding, showtime, verbose) {
 
-            !!alldfcond <- .alldfcond(currentexpdf, alldf)
+            if (verbose) message("\n ## Calculating knee for ",
+                unique(currentexpdf$condition))
+            alldfcond <- .alldfcond(currentexpdf, alldf)
 
-            resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond,
+            resallexprs <- averageandfilterexprs(currentexpdf, alldfcond,
                 expthres, showtime, verbose)
-            resecdflist <- genesECDF(resallexprs, expdf2cond, nbcpu, rounding,
+            resecdflist <- genesECDF(resallexprs, currentexpdf, nbcpu, rounding,
                 showtime, verbose)
-            resmeandiff <- meandifference(resecdflist[[1]], expdf2cond,
+            resmeandiff <- meandifference(resecdflist[[1]], currentexpdf,
                 resecdflist[[2]], showtime, verbose)
             if (verbose) message("\n\t ## Splitting by transcript")
             bytranslistmean <- split(resmeandiff,
                 factor(resmeandiff$transcript))
-            resknee <- kneeid(bytranslistmean, expdf2cond, nbcpu, showtime,
+            resknee <- kneeid(bytranslistmean, currentexpdf, nbcpu, showtime,
                 verbose)
             return(resknee)
-    }, expdf, alldf, expthres, nbcpu, rounding, showtime, verbose)
+    }, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
     !!!!!!!!!!!!!! combine results
     !!!!!!!!!!!!!! add time
