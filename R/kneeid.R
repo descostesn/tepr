@@ -95,6 +95,19 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
     return(expdf2cond)
 }
 
+.alldf2cond <- function(expdf2cond, alldf) {
+
+    ## Building vectors with the column names specific to the two conditions
+    namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
+            ".", expdf2cond$strand)
+    idxcol2conds <- unlist(lapply(namecols,
+            function(x, alldf) grep(x, colnames(alldf)), alldf))
+
+    ## Limiting alldf to the two defined conditions
+    alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
+    return(alldf2cond)
+}
+
 kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE) {
 
@@ -120,17 +133,11 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
         nbcpu, rounding, showtime, verbose) {
 
             expdf2cond <- .expdf2cond(currentcol, expdf, verbose)
+            alldf2cond <- .alldf2cond(expdf2cond, alldf)
 
-        ## Building vectors with the column names specific to the two conditions
-        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
-        idxcol2conds <- unlist(lapply(namecols,
-            function(x, alldf) grep(x, colnames(alldf)), alldf))
 
-        ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond, expthres, showtime,
         verbose)
         resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding, showtime,
