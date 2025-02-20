@@ -98,7 +98,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE) {
 
-    if (showtime) start_kneemulti <- Sys.time()
+    if (showtime) start_knee <- Sys.time()
 
     if (!length(unique(expdf$condition)) > 2)
         stop("\n\t There are less than two conditions in your experiment ",
@@ -136,8 +136,12 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
     ## Combine results
     kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = "transcript")
-    
-    !!!!!!!!!!!!!! add time
-    !!!!!!!!!!!!!!! return results
 
+    if (showtime) {
+      end_knee <- Sys.time()
+      timing <- end_knee - start_knee
+      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
+    }
+
+    return(kneedf)
 }
