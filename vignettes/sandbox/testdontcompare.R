@@ -22,8 +22,16 @@ finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 alldf <- read.delim(finaltabpath, header = FALSE) # nolint
 expdf <- read.csv(exptabpath, header = TRUE)
 
+## Enter teprmulti
 
+dontcompare_test<- c("ctrl0_vs_ctrl10","ctrl0_vs_ctrl20","ctrl0_vs_ctrl30","ctrl0_vs_ctrl40")
 
+expthres = 0.1; nbcpu = 1; rounding = 10; replaceval = NA; pval = 0.1
+significant = FALSE;windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1
+meancond1thres = 0.5; meancond2thres = 0.5; auccond1threshigher = -10
+auccond1threslower = 15; auccond2thres = 15; attenuatedpvalksthres = 2;
+outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE
+showtime = FALSE; showmemory = FALSE; verbose = TRUE
 
 
 
