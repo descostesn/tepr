@@ -137,13 +137,15 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
             resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond,
                 expthres, showtime, verbose)
-            resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding,
+            resecdflist <- genesECDF(resallexprs, expdf2cond, nbcpu, rounding,
                 showtime, verbose)
-            resmeandiff <- meandifference(resecdflist[[1]], expdf,
+            resmeandiff <- meandifference(resecdflist[[1]], expdf2cond,
                 resecdflist[[2]], showtime, verbose)
+            if (verbose) message("## Splitting by transcript")
             bytranslistmean <- split(resmeandiff,
                 factor(resmeandiff$transcript))
-            resknee <- kneeid(bytranslistmean, expdf, nbcpu, showtime, verbose)
+            resknee <- kneeid(bytranslistmean, expdf2cond, nbcpu, showtime,
+                verbose)
             return(resknee)
     }, expdf, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
