@@ -80,8 +80,6 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!
-
 .alldfcond <- function(currentexpdf, alldf) {
 
     ## Building vectors with the column names specific to the two conditions
