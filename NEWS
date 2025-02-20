@@ -1,7 +1,5 @@
 v1.0.5:
-- move .dontcompare to utils
-- add .buildcolnames in utils.R that add column names to the table obtained with the preprocessing
-- call .buildcolnames in teprmulti in tepr.R
+- create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
 
 v1.0.4:
 - remove dontcompare parameter from allauc and tepr
