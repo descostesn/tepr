@@ -18,7 +18,7 @@
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
-    controlcondname = "ctrl", stresscondname = "HS", dontcompare = NULL) {
+    controlcondname = "ctrl", stresscondname = "HS") {
 
     condvec <- unique(expdf$condition)
     resdflist <- parallel::mclapply(bytranslist, function(transtab, condvec,
@@ -142,9 +142,9 @@
 #' are not computed.
 #'
 #' @usage
-#' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1, dontcompare = NULL,
-#' controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
-#' verbose = TRUE)
+#' allauc(bytranslistmean, expdf, nbwindows, nbcpu = 1,
+#'  controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+#'  verbose = TRUE)
 #'
 #' @param bytranslistmean A list of data frames, each containing transcript
 #'                        level data with mean values for one or more
@@ -155,8 +155,6 @@
 #'                  AUC calculations.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'               parallel processing on bytranslistmean. Defaults to \code{1}.
-#' @param dontcompare An optional parameter to specify any conditions to exclude
-#'                    from the comparison. Defaults to \code{NULL}.
 #' @param controlcondname A string specifying the name of the control condition
 #'                         Defaults to \code{"ctrl"}.
 #' @param stresscondname A string specifying the name of the stress condition.
@@ -192,8 +190,8 @@
 #' @export
 
 allauc <- function(bytranslistmean, expdf, nbwindows, nbcpu = 1,
-  dontcompare = NULL, controlcondname = "ctrl", stresscondname = "HS",
-  showtime = FALSE, verbose = TRUE) {
+  controlcondname = "ctrl", stresscondname = "HS", showtime = FALSE,
+  verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
     if (verbose) message("\n\t ## Computing AUC and difference")
