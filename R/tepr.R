@@ -453,13 +453,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     matcond <- combn(condvec, 2, simplify = TRUE)
 
     ## Building col names for alldf
-    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
-        "gene", "strand", "window", "id")
-    expcolnames <- unlist(apply(expdf, 1, function(x) {
-        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
-        return(c(res, paste(res, "score", sep = "_")))
-    }, simplify = FALSE))
-    colnames(alldf) <- c(infocolnames, expcolnames)
+    alldf <- .buildcolnames(expdf, alldf)
 
     ## Eliminating comparisons if dontcompare not NULL
     matcond <- .dontcompare(dontcompare, matcond, verbose)
