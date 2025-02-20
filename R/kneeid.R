@@ -134,7 +134,9 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
             return(resknee)
     }, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
-    !!!!!!!!!!!!!! combine results
+    ## Combine results
+    kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = "transcript")
+    
     !!!!!!!!!!!!!! add time
     !!!!!!!!!!!!!!! return results
 
