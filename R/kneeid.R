@@ -81,31 +81,18 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!
-.expdf2cond <- function(currentcol, expdf, verbose) {
 
-    cond1name <- currentcol[1]
-    cond2name <- currentcol[2]
-    compname <- paste(cond1name, cond2name, sep = "_vs_")
-    if (verbose) message("\n\n Comparison of ", compname)
-
-    ## Limiting expdf on the two defined conditions
-    idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
-        return(which(expdf$condition == condname))}, expdf))
-    expdf2cond <- expdf[idxexp, ]
-    return(expdf2cond)
-}
-
-.alldf2cond <- function(expdf2cond, alldf) {
+.alldfcond <- function(currentexpdf, alldf) {
 
     ## Building vectors with the column names specific to the two conditions
-    namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
-    idxcol2conds <- unlist(lapply(namecols,
+    namecols <- paste0(currentexpdf$condition, "_rep", currentexpdf$replicate,
+            ".", currentexpdf$strand)
+    idxcolcond <- unlist(lapply(namecols,
             function(x, alldf) grep(x, colnames(alldf)), alldf))
 
     ## Limiting alldf to the two defined conditions
-    alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
-    return(alldf2cond)
+    alldfcond <- alldf[, c(seq_len(9), idxcolcond)]
+    return(alldfcond)
 }
 
 kneeallcond <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
@@ -126,11 +113,10 @@ kneeallcond <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     expdfcondlist <- split(expdf, factor(expdf$condition))
 
     ## Calling building of knee for each comparison of matcond
-    kneelist <- apply(matcond, 2, function(currentcol, expdf, alldf, expthres,
+    kneelist <- lapply(expdfcondlist, 2, function(currentexpdf, alldf, expthres,
         nbcpu, rounding, showtime, verbose) {
 
-            expdf2cond <- .expdf2cond(currentcol, expdf, verbose)
-            alldf2cond <- .alldf2cond(expdf2cond, alldf)
+            !!alldfcond <- .alldfcond(currentexpdf, alldf)
 
             resallexprs <- averageandfilterexprs(expdf2cond, alldf2cond,
                 expthres, showtime, verbose)
