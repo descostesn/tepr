@@ -108,7 +108,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
     return(alldf2cond)
 }
 
-kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
+kneeallcond <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_kneemulti <- Sys.time()
@@ -119,14 +119,11 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
     checkexptab(expdf)
 
-    if (!is.na(saveobjectpath) && !file.exists(saveobjectpath))
-        dir.create(saveobjectpath, recursive = TRUE)
-
     ## Building col names for alldf
     alldf <- .buildcolnames(expdf, alldf)
 
-    ## Eliminating comparisons if dontcompare not NULL
-    matcond <- .dontcompare(dontcompare, expdf, verbose)
+    ## Splitting expdf by conditions
+    expdfcondlist <- split(expdf, factor(expdf$condition))
 
     ## Calling building of knee for each comparison of matcond
     kneelist <- apply(matcond, 2, function(currentcol, expdf, alldf, expthres,
