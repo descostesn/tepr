@@ -135,6 +135,8 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10, dontcomp
         
     }, expdf, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
-
+    !!!!!!!!!!!!!! combine results
+    !!!!!!!!!!!!!! add time
+    !!!!!!!!!!!!!!! return results
 
 }
