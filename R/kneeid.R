@@ -98,7 +98,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #' Calculate knee for each condition separately
 #'
 #' @description
-#' This function calculate knees for each condition
+#' This function calculate knees for each condition separately
 #'
 #' @usage
 #' kneeallconds(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
