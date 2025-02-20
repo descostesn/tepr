@@ -22,11 +22,12 @@ finaltabpath <- "/g/romebioinfo/tmp/preprocessing-drbseq/drbttseq.tsv"
 alldf <- read.delim(finaltabpath, header = FALSE) # nolint
 expdf <- read.csv(exptabpath, header = TRUE)
 
-## Enter teprmulti
+dontcompvec <- showallcomp(expdf)
+dontcompvec <- dontcompvec[- c(1,2,3)]
 
-dontcompare <- c("ctrl0_vs_ctrl10","ctrl0_vs_ctrl20","ctrl0_vs_ctrl30","ctrl0_vs_ctrl40")
+## Enter kneemulti
+alldf, expdf, expthres, nbcpu = 1, rounding = 10,
+    dontcompare = NULL, saveobjectpath = NA, showtime = FALSE, verbose = TRUE
 
 
-
-!!!!!!!!!! code utils show all comparisons
 !!!!!!!!!!!!!! add kneemulti in vignette and showallcomp
