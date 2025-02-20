@@ -275,7 +275,7 @@ checkexptab <- function(exptab) {
 #' @param expdf A data frame containing experiment data that should have
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param verbose A logical flag indicating whether to print progress messages.
-#'                Defaults to \code{TRUE}.
+#'                Defaults to \code{FALSE}.
 #'
 #' @return
 #' If less than three conditions, nothing. Otherwise a character vector of all
@@ -296,7 +296,7 @@ checkexptab <- function(exptab) {
 #'
 #' @export
 
-showallcomp <- function(expdf, verbose = TRUE) {
+showallcomp <- function(expdf, verbose = FALSE) {
 
     condvec <- unique(expdf$condition)
 
