@@ -1,6 +1,7 @@
 v1.0.5:
 - create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
 - create a kneeallconds function that enables to calculate knees for each condition separately
+- create section "More than two conditions" in the vignette with the "teprmulti analysis", "plotmulti", and "Calculating knee for each condition" subsections.
 
 v1.0.4:
 - remove dontcompare parameter from allauc and tepr
