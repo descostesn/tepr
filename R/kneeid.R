@@ -141,7 +141,7 @@ kneemulti <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
                 showtime, verbose)
             resmeandiff <- meandifference(resecdflist[[1]], expdf2cond,
                 resecdflist[[2]], showtime, verbose)
-            if (verbose) message("\t ## Splitting by transcript")
+            if (verbose) message("\n\t ## Splitting by transcript")
             bytranslistmean <- split(resmeandiff,
                 factor(resmeandiff$transcript))
             resknee <- kneeid(bytranslistmean, expdf2cond, nbcpu, showtime,
