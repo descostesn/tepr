@@ -1,4 +1,5 @@
-v1.0.5
+v1.0.5:
+- move .dontcompare to utils
 - add .buildcolnames in utils.R that add column names to the table obtained with the preprocessing
 - call .buildcolnames in teprmulti in tepr.R
 
