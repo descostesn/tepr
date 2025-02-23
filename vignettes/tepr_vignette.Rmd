@@ -284,9 +284,9 @@ You can verify the table's format using the `checkexptab` utility function.  Not
 checkexptab(expdf)
 ```
 
-### Expressed transcripts and average expression
+### Expressed Transcripts and Average Expression
 
-In order to study changes in patterns of nascent RNA, the first step is to select expressed transcripts. The expression value of a gene is defined as the mean score on each strand. Scores were extracted from bedgraphs. A gene is considered as expressed if all condition means are above a given expression threshold. The threshold above which a gene is considered as expressed is set to 0.1 by default.
+To study changes in nascent RNA patterns, the initial step is to select expressed transcripts. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1.
 
 ```{r averageandfilterexprs}
 ## Calculate Average Expression and Filter Transcript Data
@@ -294,13 +294,12 @@ expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ```
 
-`resallexprs` is a list which first element contains `transdf` with added columns such as means. The second element contains a vector of the transcripts considered as expressed. This vector will be used for further downstream analyses.
+`resallexprs` is a list.  Its first element is the input `transdf` with additional columns, such as the calculated mean expression values. The second element is a vector containing the IDs of the transcripts considered expressed. This vector will be used in subsequent downstream analyses.
 
 ```{r exprsvec}
 ## Print the first 6 expressed transcripts
 head(resallexprs[[2]])
 ```
-
 
 ### NA values per transcript and condition
 
