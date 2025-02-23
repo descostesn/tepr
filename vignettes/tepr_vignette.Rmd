@@ -17,7 +17,7 @@ TepR (Transcription Elongation Profile in R) is an R package designed for analyz
 
 # Getting help
 
-Please submit issues or questions on Github for a most efficient communication.
+For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
 
 # Quick start
 
