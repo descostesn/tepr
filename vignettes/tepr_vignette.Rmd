@@ -383,7 +383,7 @@ print(head(resknee))
 
 ### Attenuation
 
-The `attenuation` function calculates the mean value of all window mean scores before and after the knee location. It then provides an "attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x for multiplication). The three values *att*, *downmean*, and *upmean* are provided by the columns "UP_mean_", "DOWN_mean_", and "Attenuation_".
+The `attenuation` function calculates the mean score of all window means *before* the knee location and the mean score of all window means *after* the knee location. It then calculates an "attenuation score" using the following formula: *att <- 100 - (downmean / upmean) x 100* (x for multiplication). The function returns three values, stored in the columns "UP_mean_," "DOWN_mean_," and "Attenuation_," representing *att*, *downmean*, and *upmean*, respectively.
 
 ```{r attenuation}
 ## Calculate Attenuation from AUC and Other Transcript Features
