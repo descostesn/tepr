@@ -185,11 +185,16 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
             resmeandiff <- meandifference(resecdflist[[1]], currentexpdf,
                 resecdflist[[2]], showtime, verbose)
             if (verbose) message("\n\t ## Splitting by transcript")
-            bytranslistmean <- split(resmeandiff,
-                factor(resmeandiff$transcript))
-            resknee <- kneeid(bytranslistmean, currentexpdf, nbcpu, showtime,
+            bytranslist <- split(resmeandiff, factor(resmeandiff$transcript))
+            resauc <- allauc(bytranslist, currentexpdf,
+                nbwindows = resecdflist[[2]], nbcpu = nbcpu,
+                showtime = showtime, verbose = verbose)
+            resknee <- kneeid(bytranslist, currentexpdf, nbcpu, showtime,
                 verbose)
-            return(resknee)
+            resmerge <- merge(resauc, resknee, by = "transcript")
+
+            return(resmerge)
+
     }, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
     ## Combine results
