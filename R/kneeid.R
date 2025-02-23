@@ -204,8 +204,8 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
     ## Combine results
     if (verbose) message("\n Merging results into a single table.\n")
-    mergecols <- c("transcript", "gene", "strand", "window_size")
-    kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = mergecols)
+    joincols <- c("transcript", "gene", "strand", "window_size")
+    kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = joincols)
 
     if (showtime) {
       end_knee <- Sys.time()
