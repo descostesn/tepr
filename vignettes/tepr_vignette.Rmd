@@ -569,16 +569,16 @@ dontcompvec <- dontcompvec[- c(1,2,3)]
 resteprmulti <- teprmulti(expdf, transdf, expthres, dontcompare = dontcompvec)
 ```
 
-### plotmulti
+### `plotmulti`
 
-Using the result list `resteprmulti`, all plots for all comparisons can be generated with `plotmulti`. The function goes through each element of `resteprmulti` which corresponds to a comparison of two conditions. For each element it calls the following functions:
+Using the list of results from `resteprmulti`, all plots for all comparisons can be generated using the `plotmulti` function. This function iterates through each element of `resteprmulti` (each element representing a two-condition comparison) and calls the following functions for each:
 
-- `plotecdf`: The function generates a figure for each gene given in ecdfgenevec.
-- `plotauc`: Generates figures by groups and pval. The lattest figure is not generated if genaucvec = NA.
-- `plotmetagenes`: Generates the figures by attenuation, outgroup, universe, and all.
-- `plothistoknee`: Generate the figures by percent and kb.
+*   `plotecdf`: Generates a figure for each gene specified in `ecdfgenevec`.
+*   `plotauc`: Generates figures by group and p-value. The p-value figure is not generated if `genaucvec = NA`.
+*   `plotmetagenes`: Generates figures for attenuation, outgroup, universe, and all transcripts.
+*   `plothistoknee`: Generates figures for percent and kb.
 
-Figures are written to `outfold` and subfolders are automatically created with the names of the comparisons.
+Figures are written to the directory specified by `outfold`, and subfolders are automatically created for each comparison.
 
 ```{r plotmulti, eval = FALSE}
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
