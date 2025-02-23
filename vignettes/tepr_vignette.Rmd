@@ -508,9 +508,9 @@ The plot generated using the complete dataset is shown below:
 
 <img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
 
-### plotmetagenes
+### `plotmetagenes`
 
-The average transcription density along a meta-transcript or a meta-gene can be visualized with:
+The average transcription density along a meta-transcript or meta-gene can be visualized as follows:
 
 ```{r metageneplot}
 plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
@@ -520,7 +520,7 @@ The plot on the complete dataset gives:
 
 <img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
 
-Note that the second parameter tells to plot the distribution for the transcripts identified as "attenuated" by the function `universegroup`. The function also enables to select the transcripts categorized as "outgroup", all the transcripts belonging to the "universe", or all the transcripts of the initial table ("all").
+Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
 ### plothistoknee
 
@@ -543,6 +543,30 @@ plothistoknee(res, plottype = "kb", plot = TRUE)
 The plot on the complete dataset gives:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## More than two conditions
 
