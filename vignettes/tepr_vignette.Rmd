@@ -174,9 +174,15 @@ message("\n The result is:\n")
 print(head(allannobed, 3))
 ```
 
-### Defining windows for each transcript
+### Defining Windows for Each Transcript
 
-`makewindows` removes any ensembl names containing "PAR_Y". It filters out intervals smaller than windsize and splits each transcript into "windsize" windows. The result includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and the window number.
+The `makewindows` function performs the following operations:
+
+1.  Removes any Ensembl transcript names containing "PAR_Y."
+2.  Filters out intervals smaller than `windsize`.
+3.  Divides each remaining transcript into windows of size `windsize`.
+
+The output includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and window number.
 
 ```{r makewindows}
 ## Parameters
