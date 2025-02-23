@@ -1,6 +1,7 @@
 v1.1.1:
 - Optimize the vignette text with Gemini.
 - Update output of the full tepr analysis in annex of the vignette.
+- add allauc and update doc of kneeallconds
 
 v1.1.0:
 - create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
