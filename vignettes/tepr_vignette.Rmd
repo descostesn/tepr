@@ -642,67 +642,45 @@ exppath <- system.file("extdata", "exptab.csv", package="tepr")
 transdf <- read.delim(transpath, header = FALSE) 
 expdf <- read.csv(exppath)
 
-## Calculate Average Expression and Filter Transcript Data
-expthres <- 0.1
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
+reslist <- tepr(expdf, transdf, expthres = 0.1, nbcpu=5, showtime = TRUE, verbose = TRUE)
 
-         Calculating average expression per transcript
+         ## Calculating average expression per transcript
          Removing lines with values < expthres
-                 ## Analysis performed in: 7.67012810707092 (seconds)
+                 -- Analysis performed in: 8.1 secs
 
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
+         ## Counting NA values
          Splitting the table by each transcript
-                 ## Analysis performed in: 25.9511797428131 (seconds)
+                 -- Analysis performed in: 38 secs
 
-## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
+         ## Computing ecdf
          Filtering to keep only the expressed transcripts
          Splitting the table by each transcript
          Computing ecdf on each transcript
-                 ## Analysis performed in: 1.23920369148254 (minutes)
-resecdf <- resecdflist[[1]]
-nbwindows <- resecdflist[[2]]
+                 -- Analysis performed in: 3.2 mins
 
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
-
+         ## Computing meandifference
          Merging columns for condition ctrl
          Calculating average and difference between replicates for columns 'value' of ctrl
          Calculating average and difference between replicates for columns 'Fx' of ctrl
          Merging columns for condition HS
          Calculating average and difference between replicates for columns 'value' of HS
          Calculating average and difference between replicates for columns 'Fx' of HS
-         Commputing all differences on mean columns
-                 ## Analysis performed in: 0.953349590301514 (seconds)
+         Computing all differences on mean columns
+                 -- Analysis performed in: 4.3 secs
 
-## Split the results by transcripts
-start_time <- Sys.time()
-bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time)
+         ## Split the results by transcripts
+                 -- Analysis performed in: 6.3 secs
 
-                ## Analysis performed in: 6.54691791534424 (seconds)
-
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
-
+         ## Computing AUC and difference
          Computing the differences (d or delta) of AUC
          Computing the Area Under Curve (AUC)
          Merging results
-                 ## Analysis performed in: 27.2096176147461 (seconds)
+                 -- Analysis performed in: 1.6 mins
 
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
+         ## Calculating knee
+                 -- Analysis performed in: 26 secs
 
-                 ## Analysis performed in: 11.8020555973053 (seconds)
-
-## Calculate Attenuation from AUC and Other Transcript Features
-resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff, nbcpu = 20, showtime = TRUE)
-
+         ## Calculating attenuation
          Merging tables
          Building summary
          Merging summary
@@ -710,14 +688,12 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
          Splitting the previous table by transcript
          Computing up and down mean
          Merging attenuation to the complete table
-                 ## Analysis performed in: 1.17459278106689 (minutes)
+                 -- Analysis performed in: 1.26459248860677
 
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt, showtime = TRUE)
+         ## Computing universe and group columns
+                 -- Analysis performed in: 0.021 secs
 
-         Computing the Universe column
-         Computing the Group column
-                          ## Analysis performed in: 0.0214207172393799 (seconds)
+                 -- tepr analysis performed in: 7.4 mins
 
 ## Plotting and saving to current folder
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
