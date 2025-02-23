@@ -118,15 +118,15 @@ TO DO
 
 ## Preprocessing
 
-The preprocessing consists in the following steps:
+The preprocessing pipeline consists of the following steps:
 
-1. Filters Gencode annotations to retrieve "transcript" annotations.
-2. Differentiates between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
-3. Splits transcripts into windows of size `windsize` defined by the user.
-4. Processes bedgraph files to retrieve values, exclude blacklisted regions, and retain scores in high-mappability intervals.
-5. Generates a final annotated table with scores derived from the above steps.
+1.  Filtering Gencode annotations to extract "transcript" annotations.
+2.  Distinguishing between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
+3.  Dividing transcripts into windows of a user-defined size (`windsize`).
+4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
+5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-Important: The `preprocessing` function gives the possibility to store intermediate objects. This avoid recomputing steps in the case of failing because of memory or time limit. See the parameters `saveobjectpath` and `deletetmp` in `?preprocessing`. Here are indications of resources required in order to process the complete dataset:
+**Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time constraints.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
 | nb CPU | RAM | Time |
 |--------|-----|------|
@@ -136,8 +136,7 @@ Important: The `preprocessing` function gives the possibility to store intermedi
 | 5 | 43G | 6h58 |
 | 3 | 28.7G | 9h02|
 
-The code below runs on chromosome 13 only to limit the time of computation.
-
+The code below is executed on chromosome 13 only to reduce computation time.
 
 ### Input files
 
