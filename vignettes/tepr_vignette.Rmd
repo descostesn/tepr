@@ -472,31 +472,30 @@ res <- universegroup(resatt, expdf)
 print(head(res, 2))
 ```
 
-
 ## Plotting
 
-tepr enables the visualization of the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of the AUC between two conditions (`plotauc`); the average transcription density of a user-selected collection of transcripts (`plotmetagenes`); and of the histogram of the distance of the knees to the transcription start sites (TSS).
+TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of AUC between two conditions (`plotauc`); the average transcription density of a user-selected set of transcripts (`plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS).
 
-### plotecdf
+### `plotecdf`
 
-The visualization of the ecdf probability distribution for a particular transcript (here EGFR) can be obtained with:
+The empirical cumulative distribution function (ECDF) for a specific transcript (EGFR in this example) can be visualized using:
 
 ```{r plotecdf}
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 ```
 
-### plotauc
+### `plotauc`
 
-The AUC values between conditions can be compared by highlighting the two conditions on the plot:
+AUC values between conditions can be compared by highlighting the two conditions on the plot:
 
 ```{r plotaucgroups}
 plotauc(res, expdf, plottype = "groups", plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
-<img src="pictures/AUCcompare_group.png" alt="AUC group plot" width="400"/>
+[AUC group plot](pictures/AUCcompare_group.png)
 
 It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
@@ -505,10 +504,9 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, expdf, genevec, plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
-
 
 ### plotmetagenes
 
