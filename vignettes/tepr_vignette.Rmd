@@ -193,17 +193,18 @@ message("\n The result is:\n")
 print(head(allwindowsbed, 3))
 ```
 
-### Retrieving bedgraph scores, removing those in black list and low mappability intervals
+### Retrieving Bedgraph Scores and Filtering Blacklisted and Low-Mappability Regions
 
-The `blacklisthighmap` function iterates through chromosomes, processes genomic scores by removing those overlapping with blacklisted and low-mappability regions, and ensures that scores within windows are computed using a weighted mean. The function uses parallel processing for efficiency and supports saving (saveobjectpath) and reloading (reload) intermediate results to optimize workflow.
+The `blacklisthighmap` function iterates through each chromosome, processing genomic scores by removing those that overlap with blacklisted and low-mappability regions. It also calculates weighted means for scores within each window.  This function leverages parallel processing for efficiency and supports saving (`saveobjectpath`) and reloading (`reload`) intermediate results to optimize the workflow.
 
 The main steps include:
- - Reading and processing bedGraph values.
- - Removing scores overlapping with blacklisted and low mappability regions.
- - Computing weighted means for overlapping scores in genomic windows.
- - Saving the processed results to specified path (tmpfold).
 
-Note that no result is returned but files are saved to a temporary folder. These files will be used by the following function `createtablescores`.
+*   Reading and processing bedGraph values.
+*   Removing scores overlapping with blacklisted and low-mappability regions.
+*   Calculating weighted means for overlapping scores within each genomic window.
+*   Saving the processed results to a specified temporary folder (`tmpfold`).
+
+Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `createtablescores` function.
 
 ```{r blacklisthighmap, eval = FALSE}
 ## Parameters
