@@ -336,10 +336,9 @@ print(nbwindows)
 
 ### Mean and Differences of Scores for Each Condition
 
-The function `meandifference` computes three types of statistics, the mean values of scores, the ecdf for each replicate (if provided), and difference of mean ecdf with the uniform cumulative distribution respectively. The mean values between replicates implies that one column `mean_value` per condition will be returned. The score `mean_value` column(s) are necessary to calculate the attenuation scores later on (see `attenuation`). The ecdf `mean_value` are used to computes a difference with the cumulative distribution that we call *diff_Fx*. The
-*diff_Fx* statistics enables to calculate the area under the curve (AUC, see `allauc`) and the inflection point or *knee* (see `kneeid`).
+The `meandifference` function computes three types of statistics: mean score values, the ECDF for each replicate (if provided), and the difference between the mean ECDF and the uniform cumulative distribution.  Mean values across replicates are calculated, resulting in one `mean_value` column per condition. These `mean_value` score columns are required for subsequent attenuation score calculations (see `attenuation`). The mean ECDF values are used to calculate the difference from the cumulative distribution, which we term *diff_Fx*. The *diff_Fx* statistic is used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or *knee* (see `kneeid`).
 
-The difference is defined as: *diff_Fx = meanECDF - cumvec / nbwindows*
+The difference is calculated as: *diff_Fx = meanECDF - cumvec / nbwindows*
 
 ```{r meandifference}
 ## Compute Mean and Differences of Scores for Each Condition
@@ -347,7 +346,7 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 print(head(resmeandiff, 3))
 ```
 
-The result table is then splitted into a list of table per transcript. This enables to further perform operations by transcripts in parallel if more than one cpu is used.
+The resulting table is then split into a list of tables, one per transcript. This enables parallel processing by transcript for subsequent operations if multiple CPUs are available.
 
 ```{r splitmeans}
 ## Split the results by transcripts
