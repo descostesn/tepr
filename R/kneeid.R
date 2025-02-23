@@ -200,6 +200,7 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     }, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
     ## Combine results
+    if (verbose) message("\n Merging results into a single table.\n")
     kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = "transcript")
 
     if (showtime) {
