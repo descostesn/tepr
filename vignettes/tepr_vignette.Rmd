@@ -522,49 +522,27 @@ The plot on the complete dataset gives:
 
 Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
-### plothistoknee
+### `plothistoknee`
 
-One can visualize the distance of the knees from the TSS by percentage:
+The distribution of knee distances from the TSS can be visualized as a percentage:
 
 ```{r kneepercent}
 plothistoknee(res, plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
 
-The distance can also be visualised in kilobases (kb) by changing the *plottype* parameter to "kb":
+The distances can also be visualized in kilobases (kb) by setting the `plottype` parameter to "kb":
 
 ```{r kneekb}
 plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
