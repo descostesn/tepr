@@ -21,13 +21,13 @@ For any questions or bug reports, please open an [issue](https://github.com/retr
 
 # Quick start
 
-The example below shows a complete run of the package. The preprocessing is done on chr13. The postprocessing is limited to 100 transcripts. The command `system.file` retrieves the file paths inside the "extdata" folder of the package.
+The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
 ```{r quickstart, eval = FALSE}
 
 library(tepr)
 
-## Parameters
+## Parameters (transpath limited to 100 transcripts)
 exppath <-  system.file("extdata", "exptab.csv", package="tepr")
 transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
 expthres <- 0.1
