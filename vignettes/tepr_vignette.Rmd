@@ -13,21 +13,21 @@ vignette: >
 
 # Introduction
 
-TepR (Transcription elongation profile in R) is a package for analyzing data from nascent RNA sequencing technologies (TT-seq, mNET-seq, PRO-seq, etc.). The general principle relies on calculating the probability distribution of nascent RNA sequencing signal over the gene body of any given gene or transcription unit. TePR can identify transcription attenuation sites by comparing profile to a uniform signal over the entirety of the transcriptional unit. It can also identify increased or diminished transcription attenuation by comparing two conditions. Besides rigorous statistical testing and high sensitivity, a major feature of TepR is its ability to provide the elongation pattern of each individual gene, including the position of the main attenuation point when such a phenomenon occurs. Using TepR, users can visualize and refine genome-wide aggregated analyses of elongation patterns to robustly identify effects specific to subsets of genes. These metrics are suitable for internal comparisons (between genes in each condition) and for studying elongation of the same gene in different conditions or comparing it to a perfect theoretical uniform elongation.
+TepR (Transcription Elongation Profile in R) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, TepR can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of TepR is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
 
-# Getting help
+# Getting Help
 
-Please submit issues or questions on Github for a most efficient communication.
+For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
 
-# Quick start
+# Quick Start
 
-The example below shows a complete run of the package. The preprocessing is done on chr13. The postprocessing is limited to 100 transcripts. The command `system.file` retrieves the file paths inside the "extdata" folder of the package.
+The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
 ```{r quickstart, eval = FALSE}
 
 library(tepr)
 
-## Parameters
+## Parameters (transpath limited to 100 transcripts)
 exppath <-  system.file("extdata", "exptab.csv", package="tepr")
 transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
 expthres <- 0.1
@@ -76,7 +76,7 @@ res <- reslist[[2]]
 
 ## Description
 
-For a complete analysis, we will use the data of [Cugusi et al](https://doi.org/10.1016/j.molcel.2022.01.007). To validate this strategy and explore the relevance of TepR metrics in uncovering gene-specific characteristics of elongation, we re-analyzed previous experiments showing that heat shock (HS) induces attenuation in human cultured cells. We compared TT-seq data from HS-stressed and control MRC5-VA cells. The stressed cells were grown for 2h at 42°C, while control cells were kept at 37°C. Both samples underwent a 15-minute pulse of 4-thiouridine (4sU) labelling of nascent transcripts, followed by purification and sequencing.
+For a comprehensive analysis, we will use the data from [Cugusi et al.](https://doi.org/10.1016/j.molcel.2022.01.007). To validate our approach and explore the utility of TepR metrics in revealing gene-specific elongation characteristics, we re-analyzed previous experiments demonstrating that heat shock (HS) induces attenuation in human cultured cells.  We compared TT-seq data from HS-stressed and control MRC5-VA cells.  Stressed cells were cultured for 2 hours at 42°C, while control cells were maintained at 37°C.  Both samples were subjected to a 15-minute pulse of 4-thiouridine (4sU) labeling of nascent transcripts, followed by purification and sequencing.
 
 ## Download
 
@@ -114,19 +114,19 @@ TO DO
 ```
 
 
-# Standard workflow
+# Standard Workflow
 
 ## Preprocessing
 
-The preprocessing consists in the following steps:
+The preprocessing pipeline consists of the following steps:
 
-1. Filters Gencode annotations to retrieve "transcript" annotations.
-2. Differentiates between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
-3. Splits transcripts into windows of size `windsize` defined by the user.
-4. Processes bedgraph files to retrieve values, exclude blacklisted regions, and retain scores in high-mappability intervals.
-5. Generates a final annotated table with scores derived from the above steps.
+1.  Filtering Gencode annotations to extract "transcript" annotations.
+2.  Distinguishing between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
+3.  Dividing transcripts into windows of a user-defined size (`windsize`).
+4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
+5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-Important: The `preprocessing` function gives the possibility to store intermediate objects. This avoid recomputing steps in the case of failing because of memory or time limit. See the parameters `saveobjectpath` and `deletetmp` in `?preprocessing`. Here are indications of resources required in order to process the complete dataset:
+**Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time constraints.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
 | nb CPU | RAM | Time |
 |--------|-----|------|
@@ -136,29 +136,30 @@ Important: The `preprocessing` function gives the possibility to store intermedi
 | 5 | 43G | 6h58 |
 | 3 | 28.7G | 9h02|
 
-The code below runs on chromosome 13 only to limit the time of computation.
+The code below is executed on chromosome 13 only to reduce computation time.
+
+### Input Files
+
+The following input files are required for the analysis:
+
+*   **exptab:** A table describing the experiments, containing the columns "condition," "replicate," "direction," "strand," and "path." The "direction" column should contain the values "forward" and "reverse," and the "strand" column should contain "plus" and "minus."  The `checkexptab` utility function can be used to verify the table's format.
+*   **gencode:** The Gencode annotation file, available at [https://www.gencodegenes.org/](https://www.gencodegenes.org/).
+*   **maptrack:** Files containing low-mappability intervals for the genome of interest. For hg38, the track [k50.Unique.Mappability.bb](https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb) was downloaded from the UCSC server, and scores below 0.8 were set to `NA`.
+*   **blacklist:** Blacklist files for various organisms are available at [https://github.com/Boyle-Lab/Blacklist/blob/master/lists/](https://github.com/Boyle-Lab/Blacklist/blob/master/lists/).
 
 
-### Input files
+### Retrieving Transcript Annotations from Gencode
 
-- **exptab**: Table describing the experiments. It contains the columns "condition", "replicate", "direction", "strand", and "path". The column "direction" should contain the values "forward" and "reverse". The column "strand" should contain the values "plus" and "minus". You can check the conformity of the table with the utility function    `checkexptab`. 
-- **gencode**: Gencode annotation file that can be retrieved at https://www.gencodegenes.org/.
-- **maptrack**: Files containing the low mappability intervals of the genome of interest. For hg38, the track [k50.Unique.Mappability.bb](https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb) was retrieved on the ucsc server and scores lower than 0.8 were set to `NA`. 
-- **blacklist**: Files for several organisms are available at https://github.com/Boyle-Lab/Blacklist/blob/master/lists/. 
+The `retrieveanno` function performs the following steps:
 
-
-### Retrieving transcript annotations from gencode
-
-The function `retrieveanno` performs the following steps:
-
-1. Reads experimental data from the provided `exptab` CSV file and validates it.
-2. Reads genomic annotations from the gencode file and filters for 'transcripts'.
-3. Separately processes protein-coding and long non-coding RNA transcripts:
-    - For protein-coding genes, selects the most representative (MANE_Select or Ensembl_canonical) transcripts.
-    - For long non-coding RNAs, filters out transcripts with undesirable evidence levels (keywords "not_best_in_genome_evidence", "transcript_support_level 5", "transcript_support_level 4").
-4. Combines these annotations into a single data frame, labeling each transcript with its biotype (protein-coding or lncRNA).
-5. Optionally saves the resulting data frame as an RDS file in the specified `saveobjectpath` directory.
-6. Optionally reports the total time taken for analysis (if showtime = TRUE).
+1.  Reads and validates experimental data from the provided `exptab` CSV file.
+2.  Reads genomic annotations from the Gencode file and filters for "transcript" entries.
+3.  Processes protein-coding and long non-coding RNA (lncRNA) transcripts separately:
+    *   For protein-coding genes, it selects the most representative transcript (MANE_Select or Ensembl_canonical).
+    *   For lncRNAs, it filters out transcripts with undesirable evidence levels (containing keywords "not_best_in_genome_evidence," "transcript_support_level 5," or "transcript_support_level 4").
+4.  Combines the processed annotations into a single data frame, labeling each transcript with its biotype (protein-coding or lncRNA).
+5.  Optionally saves the resulting data frame as an RDS file in the specified `saveobjectpath` directory.
+6.  Optionally reports the total analysis time (if `showtime = TRUE`).
 
 
 ```{r retrieveanno}
@@ -173,9 +174,15 @@ message("\n The result is:\n")
 print(head(allannobed, 3))
 ```
 
-### Defining windows for each transcript
+### Defining Windows for Each Transcript
 
-`makewindows` removes any ensembl names containing "PAR_Y". It filters out intervals smaller than windsize and splits each transcript into "windsize" windows. The result includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and the window number.
+The `makewindows` function performs the following operations:
+
+1.  Removes any Ensembl transcript names containing "PAR_Y."
+2.  Filters out intervals smaller than `windsize`.
+3.  Divides each remaining transcript into windows of size `windsize`.
+
+The output includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and window number.
 
 ```{r makewindows}
 ## Parameters
@@ -186,17 +193,18 @@ message("\n The result is:\n")
 print(head(allwindowsbed, 3))
 ```
 
-### Retrieving bedgraph scores, removing those in black list and low mappability intervals
+### Retrieving Bedgraph Scores and Filtering Blacklisted and Low-Mappability Regions
 
-The `blacklisthighmap` function iterates through chromosomes, processes genomic scores by removing those overlapping with blacklisted and low-mappability regions, and ensures that scores within windows are computed using a weighted mean. The function uses parallel processing for efficiency and supports saving (saveobjectpath) and reloading (reload) intermediate results to optimize workflow.
+The `blacklisthighmap` function iterates through each chromosome, processing genomic scores by removing those that overlap with blacklisted and low-mappability regions. It also calculates weighted means for scores within each window.  This function leverages parallel processing for efficiency and supports saving (`saveobjectpath`) and reloading (`reload`) intermediate results to optimize the workflow.
 
 The main steps include:
- - Reading and processing bedGraph values.
- - Removing scores overlapping with blacklisted and low mappability regions.
- - Computing weighted means for overlapping scores in genomic windows.
- - Saving the processed results to specified path (tmpfold).
 
-Note that no result is returned but files are saved to a temporary folder. These files will be used by the following function `createtablescores`.
+*   Reading and processing bedGraph values.
+*   Removing scores overlapping with blacklisted and low-mappability regions.
+*   Calculating weighted means for overlapping scores within each genomic window.
+*   Saving the processed results to a specified temporary folder (`tmpfold`).
+
+Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `createtablescores` function.
 
 ```{r blacklisthighmap, eval = FALSE}
 ## Parameters
@@ -220,9 +228,9 @@ exptabpath <- "./exptab.csv"
 blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
 ```
 
-### Create the final table
+### Creating the Final Table
 
-This function merges files stored in `tmpfolder` and belonging to the same experiment and direction. These files are combined into a single table providing two columns per experiment. The first gives the name of the experiment and the second the scores. The resulting table also includes annotations for each transcript.
+The `createtablescores` function merges the files stored in `tmpfolder` that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE}
 finaltab <- createtablescores(tmpfolder, exptabpath, savefinaltable = FALSE)
@@ -236,19 +244,21 @@ finaltab <- read.delim(finaltabpath, header = FALSE)
 print(finaltab)
 ```
 
-## tepr analysis
 
-In the quick start section, it is indicated how to perform the tepr analysis in one call with the `tepr` function. Below, the different steps performed by `tepr` are detailed with the toy-data limited to 100 transcripts. For the plots, the figures obtained running the functions on the complete annotations are also provided. The complete table resulting from the preprocessing can be downloaded at `TO DO`. You can find a note on processing the complete dataset in section XXX.
 
-### Input files
+## TepR Analysis
 
-Two tables are needed as input:
+The quick start section demonstrates how to perform a TepR analysis in a single call using the `tepr` function.  Below, we detail the individual steps performed by `tepr` using a subset of 100 transcripts for demonstration purposes.  Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](TO DO). See section 6.1 for notes on processing the complete dataset.
 
-- **transdf**: Table obtained with the `preprocessing` function (see previous sections). It contains information about each experiment along with scores, for each protein-coding and lncRNA annotations. 
+### Input Files
 
-- **exptab**: Table describing the experiments. It contains the columns "condition", "replicate", "direction", "strand", and "path". The column "direction" should contain the values "forward" and "reverse". The column "strand" should contain the values "plus" and "minus". You can check the conformity of the table with the utility function    `checkexptab`. 
+Two tables are required as input:
 
-The two tables are provided with the package and can be retrieved with the command `system.file` in the folder “extdata”. We sampled 100 transcripts from the transdf table to describe the pipeline in order to reduce computation time. 
+*   **transdf:** The table generated by the `preprocessing` function (described in previous sections). This table contains information about each experiment, along with scores for each protein-coding and lncRNA annotation.
+
+*   **exptab:** A table describing the experiments, containing the columns "condition", "replicate", "direction", "strand", and "path". The "direction" column should contain the values "forward" and "reverse", and the "strand" column should contain "plus" and "minus". You can verify the table's format using the `checkexptab` utility function.
+
+These two tables are included with the package and can be accessed using the `system.file` command within the "extdata" directory.  For this demonstration, we have sampled 100 transcripts from the `transdf` table to reduce computation time.
 
 ```{r reading-anno-scores}
 transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
@@ -268,15 +278,15 @@ expdf <- read.csv(exppath)
 head(expdf)
 ```
 
-You can verify the conformity of the table with the utility function `checkexptab`. Note that this verification step is also performed by `averageandfilterexprs`.
+You can verify the table's format using the `checkexptab` utility function.  Note that this verification is also performed by `averageandfilterexprs`.
 
 ```{r checkexptab}
 checkexptab(expdf)
 ```
 
-### Expressed transcripts and average expression
+### Expressed Transcripts and Average Expression
 
-In order to study changes in patterns of nascent RNA, the first step is to select expressed transcripts. The expression value of a gene is defined as the mean score on each strand. Scores were extracted from bedgraphs. A gene is considered as expressed if all condition means are above a given expression threshold. The threshold above which a gene is considered as expressed is set to 0.1 by default.
+To study changes in nascent RNA patterns, the initial step is to select expressed transcripts. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1.
 
 ```{r averageandfilterexprs}
 ## Calculate Average Expression and Filter Transcript Data
@@ -284,17 +294,16 @@ expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ```
 
-`resallexprs` is a list which first element contains `transdf` with added columns such as means. The second element contains a vector of the transcripts considered as expressed. This vector will be used for further downstream analyses.
+`resallexprs` is a list.  Its first element is the input `transdf` with additional columns, such as the calculated mean expression values. The second element is a vector containing the IDs of the transcripts considered expressed. This vector will be used in subsequent downstream analyses.
 
 ```{r exprsvec}
 ## Print the first 6 expressed transcripts
 head(resallexprs[[2]])
 ```
 
+### NA Values per Transcript and Condition
 
-### NA values per transcript and condition
-
-During the preprocessing, scores falling in intervals belonging to the user-defined black list, low mappability regions of the genome, or any regions to exclude are replaced by NA. The function `countna` enables to retrieve the number of missing scores per transcript. This table can be used for further filtering of the data, such as filtering out transcripts with too many windows without scores.
+During preprocessing, scores within user-defined blacklisted regions, low-mappability regions, or any other excluded regions are replaced with NA values. The `countna` function retrieves the number of missing scores for each transcript. This table can be used for further data filtering, such as removing transcripts with an excessive number of windows lacking scores.
 
 ```{r countna}
 ## Count NA values per transcript and condition
@@ -302,37 +311,34 @@ rescountna <- countna(resallexprs, expdf)
 head(rescountna)
 ```
 
-### ECDF for Genes Based on Expression Data
+### Empirical Cumulative Distribution Function (ECDF) for Genes
 
-This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across transcripts. An ECDF is a probability distribution that is an estimator of the Cumulative Distribution Function, here we use the ecdf() function from R. It creates an ECDF for each transcript, which are then used to evaluate differences in signal with a Kolsmogorov-Smirnov test. The ECDF enables us to answer the question: How likely is it that we would see a distibution of signals like this if these signals were drawn from a uniform probability distribution? In other words, this statistics enables to identify specific loci from where transcription signal differs significantly from a uniform density. In the following steps, the ECDF is used to compute the difference with the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).  
-
+This function calculates the empirical cumulative distribution function (ECDF) for expressed genes across their transcripts.  An ECDF is a probability distribution that estimates the Cumulative Distribution Function; here, we use the `ecdf()` function from R. It generates an ECDF for each transcript, which are then used to assess differences in signal using a Kolmogorov-Smirnov test. The ECDF helps answer the question: How likely is it that we would observe a distribution of signals like this if the signals were drawn from a uniform probability distribution? In other words, this statistic helps identify specific loci where the transcription signal deviates significantly from a uniform density.  In the following steps, the ECDF is used to compute the difference from the cumulative distribution (see `meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or knee (see `kneeid`).
 
 ```{r ecdf}
 ## Compute ECDF for Genes Based on Expression Data
 resecdflist <- genesECDF(resallexprs, expdf)
 ```
 
-The genesECDF function returns a list which first element is the main table with additional ecdf columns denoted with the `Fx` prefix.
+The `genesECDF` function returns a list. The first element is the main table with added ECDF columns, prefixed with `Fx`.
 
 ```{r resecdf}
 resecdf <- resecdflist[[1]]
 print(head(as.data.frame(resecdf), 3))
 ```
 
-The second element returns the number of windows per transcript that is set to 200 by default during the pre-processing.
+The second element returns the number of windows per transcript, which is set to 200 by default during preprocessing.
 
 ```{r nbwindows}
 nbwindows <- resecdflist[[2]]
 print(nbwindows)
 ```
 
-
 ### Mean and Differences of Scores for Each Condition
 
-The function `meandifference` computes three types of statistics, the mean values of scores, the ecdf for each replicate (if provided), and difference of mean ecdf with the uniform cumulative distribution respectively. The mean values between replicates implies that one column `mean_value` per condition will be returned. The score `mean_value` column(s) are necessary to calculate the attenuation scores later on (see `attenuation`). The ecdf `mean_value` are used to computes a difference with the cumulative distribution that we call *diff_Fx*. The
-*diff_Fx* statistics enables to calculate the area under the curve (AUC, see `allauc`) and the inflection point or *knee* (see `kneeid`).
+The `meandifference` function computes three types of statistics: mean score values, the ECDF for each replicate (if provided), and the difference between the mean ECDF and the uniform cumulative distribution.  Mean values across replicates are calculated, resulting in one `mean_value` column per condition. These `mean_value` score columns are required for subsequent attenuation score calculations (see `attenuation`). The mean ECDF values are used to calculate the difference from the cumulative distribution, which we term *diff_Fx*. The *diff_Fx* statistic is used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or *knee* (see `kneeid`).
 
-The difference is defined as: *diff_Fx = meanECDF - cumvec / nbwindows*
+The difference is calculated as: *diff_Fx = meanECDF - cumvec / nbwindows*
 
 ```{r meandifference}
 ## Compute Mean and Differences of Scores for Each Condition
@@ -340,24 +346,22 @@ resmeandiff <- meandifference(resecdf, expdf, nbwindows)
 print(head(resmeandiff, 3))
 ```
 
-The result table is then splitted into a list of table per transcript. This enables to further perform operations by transcripts in parallel if more than one cpu is used.
+The resulting table is then split into a list of tables, one per transcript. This enables parallel processing by transcript for subsequent operations if multiple CPUs are available.
 
 ```{r splitmeans}
 ## Split the results by transcripts
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 ```
 
+### Area Under the Curve (AUC) and Differences in AUC for Transcript Data
 
-### Area Under Curve (AUC) and Differences of AUC for Transcript Data
+The Area Under the Curve (AUC) values enable comparison of the nascent RNA signal to a uniform distribution (representing no signal attenuation, where x = y) or comparison of the difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated using a Kolmogorov-Smirnov test with adjusted p-value. Finally, results are returned by transcript, along with a mean value termed *MeanValueFull*.
 
-The AUC values enable the comparison of the nascent-rna signal with a uniform distribution (no attenuation of signal, x = y), or to compare the difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated by a Kolmogorov-Smirnov test with adjusted p-value. Finally, results are returned by transcript along with a mean value that is called *MeanValueFull*.
-
-For each condition (if more than one), the Area Under the Curve (AUC) of *diff_Fx* (see previous section) is computed with a trapezoidal approximation (see pracma::trapz):
+For each condition (if more than one), the AUC of *diff_Fx* (described in the previous section) is computed using a trapezoidal approximation (see `pracma::trapz`):
 
 *AUC = pracma::trapz(transcoord, diff_Fx)*
 
-with transcoord being the positions along the transcript and *diff_Fx* the difference with the cumulative distribution.
-
+where `transcoord` represents the positions along the transcript and *diff_Fx* is the difference from the cumulative distribution.
 
 ```{r allauc}
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
@@ -367,9 +371,9 @@ print(head(resauc, 3))
 
 ### Knee and Max ECDF Differences for Each Transcript
 
-To assess attenuation in nascent-rna signal, one must identify a significant change in signal distribution. To acheive this, tepr identifies the maximum *diff_Fx*. In other words, it identifies the maximum variation in the signal progression of the empirical cumulative distribution (see `genesECDF` and `meandifference`). The window where maximum change is observed is termed *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the max difference between the ecdf and the y=x curve.
+To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `genesECDF` and `meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
 
-The function returns the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
+The function returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
 ```{r knee}
 ## Identify the Knee and Max ECDF Differences for Each Transcript
@@ -379,7 +383,7 @@ print(head(resknee))
 
 ### Attenuation
 
-The `attenuation` function calculates the mean value of all window mean scores before and after the knee location. It then provides an "attenuation score" with the formula: *att <- 100 - downmean / upmean x 100* (x for multiplication). The three values *att*, *downmean*, and *upmean* are provided by the columns "UP_mean_", "DOWN_mean_", and "Attenuation_".
+The `attenuation` function calculates the mean score of all window means *before* the knee location and the mean score of all window means *after* the knee location. It then calculates an "attenuation score" using the following formula: *att <- 100 - (downmean / upmean) x 100* (x for multiplication). The function returns three values, stored in the columns "UP_mean_," "DOWN_mean_," and "Attenuation_," representing *att*, *downmean*, and *upmean*, respectively.
 
 ```{r attenuation}
 ## Calculate Attenuation from AUC and Other Transcript Features
@@ -388,18 +392,18 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 print(head(resatt, 3))
 ```
 
-### Universe and Group
+### Defining the Universe and Groups
 
 **Universe**
 
-Before further downstream analysis, the list of transcript to study must be defined. These transcripts are labeled as belonging to the Universe. tepr selects a transcript if:
+Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe." TepR selects a transcript for inclusion in the Universe if it meets the following criteria:
 
-1. Its windows are long enough.
-2. It does not contain too many missing values (NA).
-3. Its mean expression value is high enough.
-4. It has a significant Kolmogorov-Smirnov test adjusted p-value. The test was performed between the ecdf distribution and the theoretical cumulative distribution.
+1.  Its windows are sufficiently long.
+2.  It does not contain too many missing values (NA).
+3.  Its mean expression value is sufficiently high.
+4.  It has a significant Kolmogorov-Smirnov test adjusted p-value. This test compares the ECDF distribution to the theoretical cumulative distribution.
 
-Analytically it gives:
+Analytically, this can be represented as:
 
 ```{r uniselect, eval = FALSE}
 window_size > windsizethreshold &
@@ -409,7 +413,7 @@ meanstress > meanstressthreshold &
 pvaltheory > pvaltheorythres
 ```
 
-If only one condition is given, only the control threshold is used:
+If only one condition is provided, only the control threshold is used:
 
 ```{r uniselectonecond, eval = FALSE}
 window_size > windsizethreshold &
@@ -418,17 +422,17 @@ meanctrl > meanctrlthreshold &
 pvaltheory > pvaltheorythres
 ```
 
-What a satisfying threshold for each criterion is depends on the experiments. The user can adjust the different threshold along the analysis. A transcript satisfying the above criterion is defined as belonging to the `Universe` of the transcripts to analyze (Universe column contains TRUE or FALSE).
+Appropriate threshold values for each criterion depend on the specific experiments. The user can adjust these thresholds throughout the analysis. A transcript that satisfies the above criteria is defined as belonging to the "Universe" of transcripts to be analyzed. The `Universe` column in the data will contain `TRUE` or `FALSE` to indicate membership.
 
-**Group**
+**Groups**
 
-The transcripts of the Universe are further divided into `Group`. A transcript belongs to the "Attenuated" group if:
+The transcripts in the Universe are further categorized into Groups. A transcript belongs to the "Attenuated" group if it meets the following criteria:
 
-1. It belongs to the Universe (TRUE).
-2. The "stress" AUC value is high enough.
-3. The `-log10` of the adjusted p-value of the Kolmogorov-Smirnov test is above a given threshold.
+1.  It belongs to the Universe (`Universe == TRUE`).
+2.  Its "stress" AUC value is sufficiently high.
+3.  The negative base-10 logarithm of the adjusted p-value from the Kolmogorov-Smirnov test exceeds a given threshold.
 
-Analytically it gives:
+Analytically, this is represented as:
 
 ```{r attselect, eval = FALSE}
 Universe == TRUE &
@@ -436,30 +440,31 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
-If one condition is provided, no comparison by ks test with another condition was performed. A transcript will be considered as attenuated if it differs significantly from the theoretical cumulative distribution and if its AUC value is high enough. The differing status has been evaluated when computing the Universe column above (pvaltheory > pvaltheorythres). Therefore, for one condition, a transcript is considered as attenuated if:
+If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
 
 ```{r attselectonecond, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthreslower
 ```
 
-A transcript is considered as non-attenuated ("Outgroup") if:
+A transcript is considered non-attenuated ("Outgroup") if it meets the following criteria:
 
-1. The Kolmogorov-Smirnov adjusted p-value is above a threshold.
-2. The control AUC is between two user-defined thresholds.
+1.  The Kolmogorov-Smirnov adjusted p-value is above a specified threshold.
+2.  The control AUC falls between two user-defined thresholds.
 
-Analytically it gives:
+Analytically, this is represented as:
 
 ```{r outgroup, eval = FALSE}
 Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
-For one condition, no ks test was performed against another. Therefore we define a transcript as belonging to 'Outgroup' if it belongs to the Universe and the control AUC is between two user-defined thresholds:
+For a single-condition analysis, where no Kolmogorov-Smirnov test against another condition is performed, a transcript belongs to the "Outgroup" if it belongs to the Universe *and* its control AUC falls between two user-defined thresholds:
 
 ```{r outgroup2, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
-Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. The columns `Universe` and `Group` are computed with:
+
+Note that transcripts belonging to neither "Attenuated" nor "Outgroup" are assigned NA to the `Group` column. The `Universe` and `Group` columns are computed as follows:
 
 ```{r universegroup}
 ## Define Universe and Group of Genes Based on Expression Data
@@ -467,31 +472,30 @@ res <- universegroup(resatt, expdf)
 print(head(res, 2))
 ```
 
-
 ## Plotting
 
-tepr enables the visualization of the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of the AUC between two conditions (`plotauc`); the average transcription density of a user-selected collection of transcripts (`plotmetagenes`); and of the histogram of the distance of the knees to the transcription start sites (TSS).
+TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of AUC between two conditions (`plotauc`); the average transcription density of a user-selected set of transcripts (`plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS).
 
-### plotecdf
+### `plotecdf`
 
-The visualization of the ecdf probability distribution for a particular transcript (here EGFR) can be obtained with:
+The empirical cumulative distribution function (ECDF) for a specific transcript (EGFR in this example) can be visualized using:
 
 ```{r plotecdf}
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
 plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
 ```
 
-### plotauc
+### `plotauc`
 
-The AUC values between conditions can be compared by highlighting the two conditions on the plot:
+AUC values between conditions can be compared by highlighting the two conditions on the plot:
 
 ```{r plotaucgroups}
 plotauc(res, expdf, plottype = "groups", plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
-<img src="pictures/AUCcompare_group.png" alt="AUC group plot" width="400"/>
+[AUC group plot](pictures/AUCcompare_group.png)
 
 It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
@@ -500,14 +504,13 @@ genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, expdf, genevec, plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
 
+### `plotmetagenes`
 
-### plotmetagenes
-
-The average transcription density along a meta-transcript or a meta-gene can be visualized with:
+The average transcription density along a meta-transcript or meta-gene can be visualized as follows:
 
 ```{r metageneplot}
 plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
@@ -517,44 +520,46 @@ The plot on the complete dataset gives:
 
 <img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
 
-Note that the second parameter tells to plot the distribution for the transcripts identified as "attenuated" by the function `universegroup`. The function also enables to select the transcripts categorized as "outgroup", all the transcripts belonging to the "universe", or all the transcripts of the initial table ("all").
+Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
-### plothistoknee
+### `plothistoknee`
 
-One can visualize the distance of the knees from the TSS by percentage:
+The distribution of knee distances from the TSS can be visualized as a percentage:
 
 ```{r kneepercent}
 plothistoknee(res, plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
 
-The distance can also be visualised in kilobases (kb) by changing the *plottype* parameter to "kb":
+The distances can also be visualized in kilobases (kb) by setting the `plottype` parameter to "kb":
 
 ```{r kneekb}
 plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
 
-The plot on the complete dataset gives:
+The plot generated using the complete dataset is shown below:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
-## More than two conditions
 
-### teprmulti analysis
 
-It is possible to analyze more than two experiments with the function `teprmulti`. This function performs a "all vs all" analysis and returns a list whose elements, for each comparison, is a list of two data frames: 
+## Analysis of More Than Two Conditions
 
-- `resmeandiff_<comparison>`: Results of the `meandifference` function for the specific two condition comparison.
-- `resunigroupatt_<comparison>`: Results from the `universegroup` function for the specific two condition comparison. 
+### `teprmulti` Analysis
+
+Analyzing more than two experimental conditions is possible using the `teprmulti` function. This function performs an "all vs. all" comparison and returns a list. Each element of this list corresponds to a specific pairwise comparison and contains another list with two data frames:
+
+*   `resmeandiff_<comparison>`: The results of the `meandifference` function for the specified two-condition comparison.
+*   `resunigroupatt_<comparison>`: The results of the `universegroup` function for the specified two-condition comparison.
 
 ```{r teprmulti, eval = FALSE}
 resteprmulti <- teprmulti(expdf, transdf, expthres)
 ```
 
-The function `showallcomp` enables to return a vector of all comparison names that will be performed by `teprmulti`. This gives the possibility to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` takes a vector of all the comparisons to exclude. The code below limits teprmulti to three comparisons:
+The `showallcomp` function returns a vector of all comparison names that `teprmulti` will perform. This allows users to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` accepts a vector of comparison names to exclude. The following code limits `teprmulti` to only three comparisons:
 
 ```{r teprmultithree, eval = FALSE}
 ## Returns a vector with all the comparison names to exclude
@@ -564,34 +569,32 @@ dontcompvec <- dontcompvec[- c(1,2,3)]
 resteprmulti <- teprmulti(expdf, transdf, expthres, dontcompare = dontcompvec)
 ```
 
+### `plotmulti`
 
-### plotmulti
+Using the list of results from `resteprmulti`, all plots for all comparisons can be generated using the `plotmulti` function. This function iterates through each element of `resteprmulti` (each element representing a two-condition comparison) and calls the following functions for each:
 
-Using the result list `resteprmulti`, all plots for all comparisons can be generated with `plotmulti`. The function goes through each element of `resteprmulti` which corresponds to a comparison of two conditions. For each element it calls the following functions:
+*   `plotecdf`: Generates a figure for each gene specified in `ecdfgenevec`.
+*   `plotauc`: Generates figures by group and p-value. The p-value figure is not generated if `genaucvec = NA`.
+*   `plotmetagenes`: Generates figures for attenuation, outgroup, universe, and all transcripts.
+*   `plothistoknee`: Generates figures for percent and kb.
 
-- `plotecdf`: The function generates a figure for each gene given in ecdfgenevec.
-- `plotauc`: Generates figures by groups and pval. The lattest figure is not generated if genaucvec = NA.
-- `plotmetagenes`: Generates the figures by attenuation, outgroup, universe, and all.
-- `plothistoknee`: Generate the figures by percent and kb.
-
-Figures are written to `outfold` and subfolders are automatically created with the names of the comparisons.
+Figures are written to the directory specified by `outfold`, and subfolders are automatically created for each comparison.
 
 ```{r plotmulti, eval = FALSE}
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
 
-### Calculating knee for each condition
+### Calculating Knee for Each Condition
 
-The function `kneeallconds` aims at retrieving knee values without having to perform the entire `teprmulti` analysis. It computes the knee values `knee_AUC_` and `max_diff_Fx_` for each condition separately.
+The `kneeallconds` function allows retrieval of knee values without requiring a full `teprmulti` analysis. It calculates the knee values (`knee_AUC_` and `max_diff_Fx_`) for each condition independently.
 
 ```{r kneeallconds, eval = FALSE}
 kneedf <- kneeallconds(alldf, expdf, expthres)
 ```
 
+## Single Condition Analysis
 
-## Single condition
-
-If your dataset contains only one condition, either with one or more than one replicate, it is possible to analyse the data by comparing the signal to a linear "theoretical" distribution representing a uniform signal. The difference of means and AUC are skipped when running `meandifference` and `allauc`. The criterion to define the columns "Universe" and "Group" are also different (see details in previous section). 
+If your dataset contains only one condition (with one or more replicates), you can analyze the data by comparing the observed signal to a linear "theoretical" distribution representing a uniform signal. The calculation of differences in means and AUC is skipped when running `meandifference` and `allauc`. The criteria for defining the "Universe" and "Group" columns also differ (see details in the previous section).
 
 ```{r singlecond}
 ## The experiment table is limited to one condition and one replicate
@@ -604,14 +607,14 @@ transdfonecond <- transdf[, c(seq_len(9), 18, 19, 20, 21)]
 resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
 ```
 
-The AUC and metagene plots require two conditions and thus cannot be generated. The ecdf on a given gene can be obtained with:
+Because AUC and metagene plots require two conditions, they cannot be generated in a single-condition analysis.  However, the ECDF for a given gene can be obtained as follows:
 
 ```{r ecdfcond}
 plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
     colvec = c("#90AFBB"), plot = TRUE)
 ```
 
-The histogram of knee positions can be obtained with:
+The histogram of knee positions can be obtained as follows:
 
 ```{r histocond}
 ## Randomly marking 10 transcripts as attenuated as a mock example
@@ -620,13 +623,14 @@ resonecond[[2]][idxatt, "Group"] <- "Attenuated"
 plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
 ```
 
+
 # Annex
 
-## Note on processing the complete dataset
+## Note on Processing the Complete Dataset
 
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. Note that you can check the conformity of the table `transdf` with the utility function `checkexptab`. 
+For processing the complete dataset, parallelization is highly recommended. We used 20 CPUs for our analysis. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is located in the current working directory.  You can verify the format of the `transdf` table using the `checkexptab` utility function.
 
-The time of computation for each function is indicated:
+The approximate computation time for each function is indicated below.
 
 ```{r completedataset, eval = FALSE}
 library(tepr)
@@ -638,67 +642,45 @@ exppath <- system.file("extdata", "exptab.csv", package="tepr")
 transdf <- read.delim(transpath, header = FALSE) 
 expdf <- read.csv(exppath)
 
-## Calculate Average Expression and Filter Transcript Data
-expthres <- 0.1
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres, showtime = TRUE)
+reslist <- tepr(expdf, transdf, expthres = 0.1, nbcpu=5, showtime = TRUE, verbose = TRUE)
 
-         Calculating average expression per transcript
+         ## Calculating average expression per transcript
          Removing lines with values < expthres
-                 ## Analysis performed in: 7.67012810707092 (seconds)
+                 -- Analysis performed in: 8.1 secs
 
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
+         ## Counting NA values
          Splitting the table by each transcript
-                 ## Analysis performed in: 25.9511797428131 (seconds)
+                 -- Analysis performed in: 38 secs
 
-## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf, nbcpu = 20, showtime = TRUE)
-
+         ## Computing ecdf
          Filtering to keep only the expressed transcripts
          Splitting the table by each transcript
          Computing ecdf on each transcript
-                 ## Analysis performed in: 1.23920369148254 (minutes)
-resecdf <- resecdflist[[1]]
-nbwindows <- resecdflist[[2]]
+                 -- Analysis performed in: 3.2 mins
 
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows, showtime = TRUE)
-
+         ## Computing meandifference
          Merging columns for condition ctrl
          Calculating average and difference between replicates for columns 'value' of ctrl
          Calculating average and difference between replicates for columns 'Fx' of ctrl
          Merging columns for condition HS
          Calculating average and difference between replicates for columns 'value' of HS
          Calculating average and difference between replicates for columns 'Fx' of HS
-         Commputing all differences on mean columns
-                 ## Analysis performed in: 0.953349590301514 (seconds)
+         Computing all differences on mean columns
+                 -- Analysis performed in: 4.3 secs
 
-## Split the results by transcripts
-start_time <- Sys.time()
-bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
-end_time <- Sys.time()
-message("\t\t ## Analysis performed in: ", end_time - start_time)
+         ## Split the results by transcripts
+                 -- Analysis performed in: 6.3 secs
 
-                ## Analysis performed in: 6.54691791534424 (seconds)
-
-## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
-resauc <- allauc(bytranslistmean, expdf, nbwindows, nbcpu = 20, showtime = TRUE)
-
+         ## Computing AUC and difference
          Computing the differences (d or delta) of AUC
          Computing the Area Under Curve (AUC)
          Merging results
-                 ## Analysis performed in: 27.2096176147461 (seconds)
+                 -- Analysis performed in: 1.6 mins
 
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf, nbcpu = 20, showtime = TRUE)
+         ## Calculating knee
+                 -- Analysis performed in: 26 secs
 
-                 ## Analysis performed in: 11.8020555973053 (seconds)
-
-## Calculate Attenuation from AUC and Other Transcript Features
-resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff, nbcpu = 20, showtime = TRUE)
-
+         ## Calculating attenuation
          Merging tables
          Building summary
          Merging summary
@@ -706,14 +688,16 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
          Splitting the previous table by transcript
          Computing up and down mean
          Merging attenuation to the complete table
-                 ## Analysis performed in: 1.17459278106689 (minutes)
+                 -- Analysis performed in: 1.26459248860677
 
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt, showtime = TRUE)
+         ## Computing universe and group columns
+                 -- Analysis performed in: 0.021 secs
 
-         Computing the Universe column
-         Computing the Group column
-                          ## Analysis performed in: 0.0214207172393799 (seconds)
+                 -- tepr analysis performed in: 7.4 mins
+
+## Retrieving results
+resmeandiff <- reslist[[1]]
+res <- reslist[[2]]
 
 ## Plotting and saving to current folder
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
@@ -734,15 +718,15 @@ plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
 ```
 
 
-## Preprocessing with bash
+## Preprocessing with Bash
 
-To perform the pre-processing steps, we provide a conda environment that can be activated with:
+For preprocessing, we provide a Conda environment that can be activated as follows:
 
 ```{bash conda, eval = FALSE}
 TO DO
 ```
 
-Retrieve the protein-coding and long non-coding RNA (lncRNA) annotations from the gencode file:
+Retrieve protein-coding and long non-coding RNA (lncRNA) annotations from the Gencode file:
 
 ```{bash protcod-lncrna, eval = FALSE}
 #!/usr/bin/sh
@@ -760,7 +744,7 @@ awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sor
 rm MANE_Select.protein_coding.gtf Ensembl_canonical_TSL123.lncRNA.gtf
 ```
 
-Remove the black list and make windows for protein-coding and lncRNA files:
+Remove blacklisted regions and generate windows for protein-coding and lncRNA files:
 
 ```{bash remove, eval = FALSE}
 #!/usr/bin/sh
@@ -782,7 +766,7 @@ awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools i
 echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
 ```
 
-For each bedgraph file, remove the black list and mappability track, and retrieve scores on the protein coding annotations:
+For each bedgraph file, remove blacklisted regions and low-mappability intervals, and retrieve scores for the protein-coding annotations:
 
 ```{bash bedgraph-protcod, eval = FALSE}
 #!/usr/bin/zsh
@@ -841,7 +825,7 @@ do
 done
 ```
 
-The package provides a `joinfiles` function to generate the final table that is used as input below. Running the function from the data folder, the default parameters can be used:
+The package provides a `joinfiles` function to generate the final table used as input for downstream analysis.  Running this function from the data directory with default parameters will produce the desired output.
 
 ```{r mergefiles, eval = FALSE}
 library(tepr)

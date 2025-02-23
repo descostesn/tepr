@@ -122,9 +122,10 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #'  Defaults to \code{TRUE}.
 #'
 #' @return
-#' A data.frame whose first column is the transcript followed by the columns
-#' \code{knee_AUC_cond} and \code{max_diff_Fx_cond} for each 'cond' of the
-#' expdf condition column.
+#' A data.frame with the columns \code{transcript}, \code{gene}, and
+#' \code{strand window_size}. For each condition 'cond': \code{AUC_cond},
+#' \code{p_AUC_cond}, \code{D_AUC_cond}, \code{MeanValueFull_cond},
+#' \code{adjFDR_p_AUC_cond}, \code{knee_AUC_cond}, and \code{max_diff_Fx_cond}.
 #'
 #' @details
 #' The kneeallconds function calls successively for each condition:
@@ -133,6 +134,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #'   \item{genesECDF}{It takes the result of 'averageandfilterexprs' as input and a) filters the main expression table to retain only the expressed transcripts; b) Splits the data by each transcript; c) For each transcript, computes ECDF values for the score columns while respecting the strand orientation ("plus" or "minus"); d) Combines the ECDF results into a final data frame. It returns a list containing two elements: A data frame with ECDF results for each transcript (concatdf) and an integer indicating the number of rows in each transcript table.}
 #'   \item{meandifference}{It takes the result of 'genesECDF' as input and calculates the mean values, mean Fx (ECDF) and ECDF differences (Fx) for expression data, across different experimental conditions. It returns a data frame that contains, for each condition: mean values for the "value" and "Fx" columns (e.g., \code{mean_value_ctrl}, \code{mean_Fx_ctrl}) and the differences between the \code{Fx} column and coordinate ratios (e.g., \code{diff_Fx_ctrl}).}
 #'   \item{Splitting}{Split the results of 'meandifference' by transcripts and stores the list into bytranslistmean.}
+#'   \item{allauc}{It uses the previously computed variable 'bytranslistmean' and it computes the Area Under Curve (AUC) and the differences of AUC between two conditions for a list of transcript data. It returns a data frame containing the AUC and dAUC results for each transcript, along with associated statistical information.}
 #'   \item{kneeid}{It uses the previously computed variable 'bytranslistmean' and identifies the knee point (i.e., point of maximum change) and the maximum difference in the empirical cumulative distribution function (ECDF) for each transcript, across different experimental conditions. It returns a data frame where each row corresponds to a transcript and contains the coordinates of the knee point and the maximum ECDF difference for each condition.}
 #' }
 #'
@@ -185,15 +187,25 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
             resmeandiff <- meandifference(resecdflist[[1]], currentexpdf,
                 resecdflist[[2]], showtime, verbose)
             if (verbose) message("\n\t ## Splitting by transcript")
-            bytranslistmean <- split(resmeandiff,
-                factor(resmeandiff$transcript))
-            resknee <- kneeid(bytranslistmean, currentexpdf, nbcpu, showtime,
+            bytranslist <- split(resmeandiff, factor(resmeandiff$transcript))
+            resauc <- allauc(bytranslist, currentexpdf,
+                nbwindows = resecdflist[[2]], nbcpu = nbcpu,
+                showtime = showtime, verbose = verbose)
+            resknee <- kneeid(bytranslist, currentexpdf, nbcpu, showtime,
                 verbose)
-            return(resknee)
+            resmerge <- merge(resauc, resknee, by = "transcript")
+
+            rm(alldfcond, resallexprs, resecdflist, resmeandiff, bytranslist,
+                resauc, resknee)
+            invisible(gc())
+            return(resmerge)
+
     }, alldf, expthres, nbcpu, rounding, showtime, verbose)
 
     ## Combine results
-    kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = "transcript")
+    if (verbose) message("\n Merging results into a single table.\n")
+    joincols <- c("transcript", "gene", "strand", "window_size")
+    kneedf <- purrr::reduce(kneelist, dplyr::left_join, by = joincols)
 
     if (showtime) {
       end_knee <- Sys.time()
