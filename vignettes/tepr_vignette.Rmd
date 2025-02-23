@@ -592,10 +592,9 @@ The `kneeallconds` function allows retrieval of knee values without requiring a 
 kneedf <- kneeallconds(alldf, expdf, expthres)
 ```
 
+## Single Condition Analysis
 
-## Single condition
-
-If your dataset contains only one condition, either with one or more than one replicate, it is possible to analyse the data by comparing the signal to a linear "theoretical" distribution representing a uniform signal. The difference of means and AUC are skipped when running `meandifference` and `allauc`. The criterion to define the columns "Universe" and "Group" are also different (see details in previous section). 
+If your dataset contains only one condition (with one or more replicates), you can analyze the data by comparing the observed signal to a linear "theoretical" distribution representing a uniform signal. The calculation of differences in means and AUC is skipped when running `meandifference` and `allauc`. The criteria for defining the "Universe" and "Group" columns also differ (see details in the previous section).
 
 ```{r singlecond}
 ## The experiment table is limited to one condition and one replicate
@@ -608,14 +607,14 @@ transdfonecond <- transdf[, c(seq_len(9), 18, 19, 20, 21)]
 resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
 ```
 
-The AUC and metagene plots require two conditions and thus cannot be generated. The ecdf on a given gene can be obtained with:
+Because AUC and metagene plots require two conditions, they cannot be generated in a single-condition analysis.  However, the ECDF for a given gene can be obtained as follows:
 
 ```{r ecdfcond}
 plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
     colvec = c("#90AFBB"), plot = TRUE)
 ```
 
-The histogram of knee positions can be obtained with:
+The histogram of knee positions can be obtained as follows:
 
 ```{r histocond}
 ## Randomly marking 10 transcripts as attenuated as a mock example
@@ -623,6 +622,8 @@ idxatt <- sample(seq_len(100), 10)
 resonecond[[2]][idxatt, "Group"] <- "Attenuated"
 plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
 ```
+
+
 
 # Annex
 
