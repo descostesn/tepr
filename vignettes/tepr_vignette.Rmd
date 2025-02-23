@@ -392,18 +392,18 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 print(head(resatt, 3))
 ```
 
-### Universe and Group
+### Defining the Universe and Groups
 
 **Universe**
 
-Before further downstream analysis, the list of transcript to study must be defined. These transcripts are labeled as belonging to the Universe. tepr selects a transcript if:
+Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe." TepR selects a transcript for inclusion in the Universe if it meets the following criteria:
 
-1. Its windows are long enough.
-2. It does not contain too many missing values (NA).
-3. Its mean expression value is high enough.
-4. It has a significant Kolmogorov-Smirnov test adjusted p-value. The test was performed between the ecdf distribution and the theoretical cumulative distribution.
+1.  Its windows are sufficiently long.
+2.  It does not contain too many missing values (NA).
+3.  Its mean expression value is sufficiently high.
+4.  It has a significant Kolmogorov-Smirnov test adjusted p-value. This test compares the ECDF distribution to the theoretical cumulative distribution.
 
-Analytically it gives:
+Analytically, this can be represented as:
 
 ```{r uniselect, eval = FALSE}
 window_size > windsizethreshold &
@@ -413,7 +413,7 @@ meanstress > meanstressthreshold &
 pvaltheory > pvaltheorythres
 ```
 
-If only one condition is given, only the control threshold is used:
+If only one condition is provided, only the control threshold is used:
 
 ```{r uniselectonecond, eval = FALSE}
 window_size > windsizethreshold &
@@ -422,17 +422,17 @@ meanctrl > meanctrlthreshold &
 pvaltheory > pvaltheorythres
 ```
 
-What a satisfying threshold for each criterion is depends on the experiments. The user can adjust the different threshold along the analysis. A transcript satisfying the above criterion is defined as belonging to the `Universe` of the transcripts to analyze (Universe column contains TRUE or FALSE).
+Appropriate threshold values for each criterion depend on the specific experiments. The user can adjust these thresholds throughout the analysis. A transcript that satisfies the above criteria is defined as belonging to the "Universe" of transcripts to be analyzed. The `Universe` column in the data will contain `TRUE` or `FALSE` to indicate membership.
 
-**Group**
+**Groups**
 
-The transcripts of the Universe are further divided into `Group`. A transcript belongs to the "Attenuated" group if:
+The transcripts in the Universe are further categorized into Groups. A transcript belongs to the "Attenuated" group if it meets the following criteria:
 
-1. It belongs to the Universe (TRUE).
-2. The "stress" AUC value is high enough.
-3. The `-log10` of the adjusted p-value of the Kolmogorov-Smirnov test is above a given threshold.
+1.  It belongs to the Universe (`Universe == TRUE`).
+2.  Its "stress" AUC value is sufficiently high.
+3.  The negative base-10 logarithm of the adjusted p-value from the Kolmogorov-Smirnov test exceeds a given threshold.
 
-Analytically it gives:
+Analytically, this is represented as:
 
 ```{r attselect, eval = FALSE}
 Universe == TRUE &
@@ -440,30 +440,31 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
-If one condition is provided, no comparison by ks test with another condition was performed. A transcript will be considered as attenuated if it differs significantly from the theoretical cumulative distribution and if its AUC value is high enough. The differing status has been evaluated when computing the Universe column above (pvaltheory > pvaltheorythres). Therefore, for one condition, a transcript is considered as attenuated if:
+If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
 
 ```{r attselectonecond, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthreslower
 ```
 
-A transcript is considered as non-attenuated ("Outgroup") if:
+A transcript is considered non-attenuated ("Outgroup") if it meets the following criteria:
 
-1. The Kolmogorov-Smirnov adjusted p-value is above a threshold.
-2. The control AUC is between two user-defined thresholds.
+1.  The Kolmogorov-Smirnov adjusted p-value is above a specified threshold.
+2.  The control AUC falls between two user-defined thresholds.
 
-Analytically it gives:
+Analytically, this is represented as:
 
 ```{r outgroup, eval = FALSE}
 Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
-For one condition, no ks test was performed against another. Therefore we define a transcript as belonging to 'Outgroup' if it belongs to the Universe and the control AUC is between two user-defined thresholds:
+For a single-condition analysis, where no Kolmogorov-Smirnov test against another condition is performed, a transcript belongs to the "Outgroup" if it belongs to the Universe *and* its control AUC falls between two user-defined thresholds:
 
 ```{r outgroup2, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
-Note that transcripts belonging neither to "Attenuated" nor "Outgroup" are NA. The columns `Universe` and `Group` are computed with:
+
+Note that transcripts belonging to neither "Attenuated" nor "Outgroup" are assigned NA to the `Group` column. The `Universe` and `Group` columns are computed as follows:
 
 ```{r universegroup}
 ## Define Universe and Group of Genes Based on Expression Data
