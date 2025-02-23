@@ -546,20 +546,20 @@ The plot generated using the complete dataset is shown below:
 
 
 
-## More than two conditions
+## Analysis of More Than Two Conditions
 
-### teprmulti analysis
+### `teprmulti` Analysis
 
-It is possible to analyze more than two experiments with the function `teprmulti`. This function performs a "all vs all" analysis and returns a list whose elements, for each comparison, is a list of two data frames: 
+Analyzing more than two experimental conditions is possible using the `teprmulti` function. This function performs an "all vs. all" comparison and returns a list. Each element of this list corresponds to a specific pairwise comparison and contains another list with two data frames:
 
-- `resmeandiff_<comparison>`: Results of the `meandifference` function for the specific two condition comparison.
-- `resunigroupatt_<comparison>`: Results from the `universegroup` function for the specific two condition comparison. 
+*   `resmeandiff_<comparison>`: The results of the `meandifference` function for the specified two-condition comparison.
+*   `resunigroupatt_<comparison>`: The results of the `universegroup` function for the specified two-condition comparison.
 
 ```{r teprmulti, eval = FALSE}
 resteprmulti <- teprmulti(expdf, transdf, expthres)
 ```
 
-The function `showallcomp` enables to return a vector of all comparison names that will be performed by `teprmulti`. This gives the possibility to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` takes a vector of all the comparisons to exclude. The code below limits teprmulti to three comparisons:
+The `showallcomp` function returns a vector of all comparison names that `teprmulti` will perform. This allows users to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` accepts a vector of comparison names to exclude. The following code limits `teprmulti` to only three comparisons:
 
 ```{r teprmultithree, eval = FALSE}
 ## Returns a vector with all the comparison names to exclude
@@ -568,7 +568,6 @@ dontcompvec <- dontcompvec[- c(1,2,3)]
 
 resteprmulti <- teprmulti(expdf, transdf, expthres, dontcompare = dontcompvec)
 ```
-
 
 ### plotmulti
 
