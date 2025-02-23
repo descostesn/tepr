@@ -1,3 +1,6 @@
+v1.1.1:
+- Optimize the vignette text with Gemini.
+
 v1.1.0:
 - create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
 - create a kneeallconds function that enables to calculate knees for each condition separately
