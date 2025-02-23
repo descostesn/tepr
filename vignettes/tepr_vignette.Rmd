@@ -624,14 +624,13 @@ plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", p
 ```
 
 
-
 # Annex
 
-## Note on processing the complete dataset
+## Note on Processing the Complete Dataset
 
-Note that parallelization is encouraged on the complete dataset. We used 20 cpus. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is in the current folder. Note that you can check the conformity of the table `transdf` with the utility function `checkexptab`. 
+For processing the complete dataset, parallelization is highly recommended. We used 20 CPUs for our analysis. The code below assumes that the file "dTAG_Cugusi_stranded_20230810.tsv" is located in the current working directory.  You can verify the format of the `transdf` table using the `checkexptab` utility function.
 
-The time of computation for each function is indicated:
+The approximate computation time for each function is indicated below.
 
 ```{r completedataset, eval = FALSE}
 library(tepr)
