@@ -353,17 +353,15 @@ The resulting table is then split into a list of tables, one per transcript. Thi
 bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
 ```
 
+### Area Under the Curve (AUC) and Differences in AUC for Transcript Data
 
-### Area Under Curve (AUC) and Differences of AUC for Transcript Data
+The Area Under the Curve (AUC) values enable comparison of the nascent RNA signal to a uniform distribution (representing no signal attenuation, where x = y) or comparison of the difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated using a Kolmogorov-Smirnov test with adjusted p-value. Finally, results are returned by transcript, along with a mean value termed *MeanValueFull*.
 
-The AUC values enable the comparison of the nascent-rna signal with a uniform distribution (no attenuation of signal, x = y), or to compare the difference in signal distribution between two conditions (dAUC). The difference between cumulative densities is estimated by a Kolmogorov-Smirnov test with adjusted p-value. Finally, results are returned by transcript along with a mean value that is called *MeanValueFull*.
-
-For each condition (if more than one), the Area Under the Curve (AUC) of *diff_Fx* (see previous section) is computed with a trapezoidal approximation (see pracma::trapz):
+For each condition (if more than one), the AUC of *diff_Fx* (described in the previous section) is computed using a trapezoidal approximation (see `pracma::trapz`):
 
 *AUC = pracma::trapz(transcoord, diff_Fx)*
 
-with transcoord being the positions along the transcript and *diff_Fx* the difference with the cumulative distribution.
-
+where `transcoord` represents the positions along the transcript and *diff_Fx* is the difference from the cumulative distribution.
 
 ```{r allauc}
 ## Calculate Area Under Curve (AUC) and Differences of AUC for Transcript Data
