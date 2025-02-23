@@ -195,6 +195,9 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
                 verbose)
             resmerge <- merge(resauc, resknee, by = "transcript")
 
+            rm(alldfcond, resallexprs, resecdflist, resmeandiff, bytranslist,
+                resauc, resknee)
+            invisible(gc())
             return(resmerge)
 
     }, alldf, expthres, nbcpu, rounding, showtime, verbose)
