@@ -15,11 +15,11 @@ vignette: >
 
 TepR (Transcription Elongation Profile in R) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, TepR can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of TepR is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
 
-# Getting help
+# Getting Help
 
 For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
 
-# Quick start
+# Quick Start
 
 The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
@@ -114,7 +114,7 @@ TO DO
 ```
 
 
-# Standard workflow
+# Standard Workflow
 
 ## Preprocessing
 
@@ -138,7 +138,7 @@ The preprocessing pipeline consists of the following steps:
 
 The code below is executed on chromosome 13 only to reduce computation time.
 
-### Input files
+### Input Files
 
 The following input files are required for the analysis:
 
@@ -738,15 +738,15 @@ plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
 ```
 
 
-## Preprocessing with bash
+## Preprocessing with Bash
 
-To perform the pre-processing steps, we provide a conda environment that can be activated with:
+For preprocessing, we provide a Conda environment that can be activated as follows:
 
 ```{bash conda, eval = FALSE}
 TO DO
 ```
 
-Retrieve the protein-coding and long non-coding RNA (lncRNA) annotations from the gencode file:
+Retrieve protein-coding and long non-coding RNA (lncRNA) annotations from the Gencode file:
 
 ```{bash protcod-lncrna, eval = FALSE}
 #!/usr/bin/sh
@@ -764,7 +764,7 @@ awk 'OFS="\t" {print $0}' Ensembl_canonical_TSL123.lncRNA.gtf | tr -d '";' | sor
 rm MANE_Select.protein_coding.gtf Ensembl_canonical_TSL123.lncRNA.gtf
 ```
 
-Remove the black list and make windows for protein-coding and lncRNA files:
+Remove blacklisted regions and generate windows for protein-coding and lncRNA files:
 
 ```{bash remove, eval = FALSE}
 #!/usr/bin/sh
@@ -786,7 +786,7 @@ awk -F "\t" -v OFS="\t" '{print $1,$2,$3,$4"_"$5"_"$6}' $ANNOTATION | bedtools i
 echo $WORKING/makewindow/v43.Ensembl_canonical_TSL123.lncRNA.bed
 ```
 
-For each bedgraph file, remove the black list and mappability track, and retrieve scores on the protein coding annotations:
+For each bedgraph file, remove blacklisted regions and low-mappability intervals, and retrieve scores for the protein-coding annotations:
 
 ```{bash bedgraph-protcod, eval = FALSE}
 #!/usr/bin/zsh
@@ -845,7 +845,7 @@ do
 done
 ```
 
-The package provides a `joinfiles` function to generate the final table that is used as input below. Running the function from the data folder, the default parameters can be used:
+The package provides a `joinfiles` function to generate the final table used as input for downstream analysis.  Running this function from the data directory with default parameters will produce the desired output.
 
 ```{r mergefiles, eval = FALSE}
 library(tepr)
