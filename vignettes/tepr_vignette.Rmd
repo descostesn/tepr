@@ -228,9 +228,9 @@ exptabpath <- "./exptab.csv"
 blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
 ```
 
-### Create the final table
+### Creating the Final Table
 
-This function merges files stored in `tmpfolder` and belonging to the same experiment and direction. These files are combined into a single table providing two columns per experiment. The first gives the name of the experiment and the second the scores. The resulting table also includes annotations for each transcript.
+The `createtablescores` function merges the files stored in `tmpfolder` that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE}
 finaltab <- createtablescores(tmpfolder, exptabpath, savefinaltable = FALSE)
