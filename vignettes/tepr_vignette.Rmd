@@ -148,18 +148,18 @@ The following input files are required for the analysis:
 *   **blacklist:** Blacklist files for various organisms are available at [https://github.com/Boyle-Lab/Blacklist/blob/master/lists/](https://github.com/Boyle-Lab/Blacklist/blob/master/lists/).
 
 
-### Retrieving transcript annotations from gencode
+### Retrieving Transcript Annotations from Gencode
 
-The function `retrieveanno` performs the following steps:
+The `retrieveanno` function performs the following steps:
 
-1. Reads experimental data from the provided `exptab` CSV file and validates it.
-2. Reads genomic annotations from the gencode file and filters for 'transcripts'.
-3. Separately processes protein-coding and long non-coding RNA transcripts:
-    - For protein-coding genes, selects the most representative (MANE_Select or Ensembl_canonical) transcripts.
-    - For long non-coding RNAs, filters out transcripts with undesirable evidence levels (keywords "not_best_in_genome_evidence", "transcript_support_level 5", "transcript_support_level 4").
-4. Combines these annotations into a single data frame, labeling each transcript with its biotype (protein-coding or lncRNA).
-5. Optionally saves the resulting data frame as an RDS file in the specified `saveobjectpath` directory.
-6. Optionally reports the total time taken for analysis (if showtime = TRUE).
+1.  Reads and validates experimental data from the provided `exptab` CSV file.
+2.  Reads genomic annotations from the Gencode file and filters for "transcript" entries.
+3.  Processes protein-coding and long non-coding RNA (lncRNA) transcripts separately:
+    *   For protein-coding genes, it selects the most representative transcript (MANE_Select or Ensembl_canonical).
+    *   For lncRNAs, it filters out transcripts with undesirable evidence levels (containing keywords "not_best_in_genome_evidence," "transcript_support_level 5," or "transcript_support_level 4").
+4.  Combines the processed annotations into a single data frame, labeling each transcript with its biotype (protein-coding or lncRNA).
+5.  Optionally saves the resulting data frame as an RDS file in the specified `saveobjectpath` directory.
+6.  Optionally reports the total analysis time (if `showtime = TRUE`).
 
 
 ```{r retrieveanno}
