@@ -1,5 +1,3 @@
-utils::suppressForeignCheck(c("gene"))
-
 .callggplotauc <- function(df, aesvar, geompointinfo, geompointinfo2,
     geompointinfo3, plottype, axismin_x, axismax_x, axismin_y, axismax_y,
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
@@ -148,7 +146,6 @@ utils::suppressForeignCheck(c("gene"))
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-#' @importFrom utils suppressForeignCheck
 #' @export
 
 plotauc <- function(tab, expdf, genevec = NA, # nolint
