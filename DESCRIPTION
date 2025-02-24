@@ -47,7 +47,8 @@ Imports:
     rtracklayer,
     GenomicRanges,
     GenomeInfoDb,
-    valr
+    valr,
+    tibble
 Collate:
     'allauc.R'
     'attenuation.R'
