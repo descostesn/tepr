@@ -263,7 +263,7 @@
 #' focusing on high mappability regions and excluding blacklisted intervals.
 #'
 #' @usage
-#' blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+#' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
 #'    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #'    chromtab = NA, verbose = TRUE)
@@ -324,14 +324,14 @@
 #' @examples
 #' # Define paths to required files
 #' maptrackpath <- "path/to/maptrack.bed"
-#' blacklistshpath <- "path/to/blacklist.bed"
+#' blacklistpath <- "path/to/blacklist.bed"
 #' exptabpath <- "path/to/experiments.csv"
 #' allwindowsbed <- data.frame(...)
 #'
 #' # Run the function
 #' results <- blacklisthighmap(
 #'     maptrackpath = maptrackpath,
-#'     blacklistshpath = blacklistshpath,
+#'     blacklistpath = blacklistpath,
 #'     exptabpath = exptabpath,
 #'     nbcputrans = 4,
 #'     allwindowsbed = allwindowsbed,
@@ -358,7 +358,7 @@
 #' @export
 
 
-blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
+blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
     tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
     chromtab = NA, verbose = TRUE) {
@@ -385,7 +385,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
         exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list")
-        blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+        blacklistbed <- read.delim(blacklistpath, header = FALSE)
         colnames(blacklistbed) <- c("chrom", "start", "end", "type")
         blacklisttib <- tibble::as_tibble(blacklistbed)
 
