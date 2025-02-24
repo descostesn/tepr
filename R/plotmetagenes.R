@@ -1,22 +1,26 @@
 .normalizeandsummarize <- function(transvec, dfmeandiff, unigroupdf, daucname, # nolint
     auc_ctrlname, auc_stressname) {
 
-    ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
-        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
+        ## Declaration to tackle CMD check
+        transcript <- gene <- strand <- window_size <- coord <- NULL
 
-    ## Selecting coord and mean values
-    result <- dfmeandiff %>%
-        dplyr::filter(transcript %in% transvec) %>% #nolint
-        dplyr::left_join(., AUC_allcondi,
-            by = c("transcript", "gene")) %>%
-        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
-        dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(., na.rm = TRUE)))
+        ## Selecting full mean and AUC columns
+        AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
+            dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
+            !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
 
-    return(result)
+        ## Selecting coord and mean values
+        result <- dfmeandiff %>%
+            dplyr::filter(transcript %in% transvec) %>% #nolint
+            dplyr::left_join(., AUC_allcondi,
+                by = c("transcript", "gene")) %>%
+            dplyr::select(transcript, gene, coord,
+            dplyr::contains("mean_value"),
+            -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
+            dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
+            ~ mean(., na.rm = TRUE)))
+
+        return(result)
 }
 
 .checkmetagenes <- function(plottype) {
