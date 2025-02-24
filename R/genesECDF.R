@@ -53,8 +53,7 @@
           "Fx")), -tidyselect::contains("value_round"))
 
         ## Removing strand from column names
-        res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
-                tidyselect::contains(paste0(".", str)))
+        colnames(res) <- gsub(paste0(".", str), "", colnames(res))
 
         return(res)
 }
