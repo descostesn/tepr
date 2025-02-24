@@ -46,63 +46,66 @@
 averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # nolint
     verbose = TRUE) {
 
-    if (showtime) start_time <- Sys.time()
-    ## Verify the conformity of the experiment table
-    checkexptab(expdf)
+        ## Declaration to tackle CMD check
+        gene <- transcript <- strand <- NULL
 
-    ## Adding column names to alldf
-    infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
-        "gene", "strand", "window", "id")
-    expcolnames <- as.vector(unlist(apply(expdf, 1, function(x) {
-        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
-        return(c(res, paste(res, "score", sep = "_")))
-    }, simplify = FALSE)))
-    colnames(alldf) <- c(infocolnames, expcolnames)
+        if (showtime) start_time <- Sys.time()
+        ## Verify the conformity of the experiment table
+        checkexptab(expdf)
 
-    scorecolvec <- expcolnames[grep("_score", expcolnames)]
+        ## Adding column names to alldf
+        infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
+            "gene", "strand", "window", "id")
+        expcolnames <- as.vector(unlist(apply(expdf, 1, function(x) {
+            res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+            return(c(res, paste(res, "score", sep = "_")))
+        }, simplify = FALSE)))
+        colnames(alldf) <- c(infocolnames, expcolnames)
 
-    ## Calculate the average expression per transcript (over each frame)
-    if (verbose) message("\t ## Calculating average expression per transcript") # nolint
-    dfbytranscript <- alldf %>% dplyr::group_by(.data$transcript) %>%
-        dplyr::summarize(gene = .data$gene[1],
-            strand = .data$strand[1],
-            dplyr::across(
-                tidyselect::all_of(scorecolvec),
-                ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
+        scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
-    ## Remove a line if it contains only values < expthres (separating strands)
-    if (verbose) message("\t Removing lines with values < expthres") # nolint
-    dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
-        expthres) {
-            if ((isTRUE(all.equal(strandname, "plus")) &&
-                isTRUE(all.equal(directname, "reverse"))) ||
-                (isTRUE(all.equal(strandname, "minus")) &&
-                isTRUE(all.equal(directname, "forward"))))
-                    stop("\n\t Strand and direction do not match, contact the ",
-                        "developer.\n")
-            dfstrand <- dfbytranscript %>%
-                dplyr::filter(.data$strand == strandname) %>%
-                dplyr::select(gene, transcript, strand,
-                tidyselect::contains(directname))  %>%
-                dplyr::filter(dplyr::if_all(tidyselect::all_of(
-                tidyselect::contains("mean")), ~ !is.na(.))) %>%
-                dplyr::filter(dplyr::if_all(tidyselect::all_of(
-                tidyselect::contains("mean")), ~ . > expthres))
-            return(dfstrand)
-        }, unique(dfbytranscript$strand), unique(expdf$strand),
-            MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
+        ## Calculate the average expression per transcript (over each frame)
+        if (verbose) message("\t ## Calculating average expression per transcript") # nolint
+        dfbytranscript <- alldf %>% dplyr::group_by(.data$transcript) %>%
+            dplyr::summarize(gene = .data$gene[1],
+                strand = .data$strand[1],
+                dplyr::across(
+                    tidyselect::all_of(scorecolvec),
+                    ~ mean(., na.rm = TRUE), .names = "{.col}_mean"))
 
-    exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
-        dplyr::arrange(.data$transcript) %>%
-        dplyr::pull(.data$transcript)
+        ## Remove a line if it contains only values < expthres (separating strands)
+        if (verbose) message("\t Removing lines with values < expthres") # nolint
+        dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
+            expthres) {
+                if ((isTRUE(all.equal(strandname, "plus")) &&
+                    isTRUE(all.equal(directname, "reverse"))) ||
+                    (isTRUE(all.equal(strandname, "minus")) &&
+                    isTRUE(all.equal(directname, "forward"))))
+                        stop("\n\t Strand and direction do not match, contact the ",
+                            "developer.\n")
+                dfstrand <- dfbytranscript %>%
+                    dplyr::filter(.data$strand == strandname) %>%
+                    dplyr::select(gene, transcript, strand,
+                    tidyselect::contains(directname))  %>%
+                    dplyr::filter(dplyr::if_all(tidyselect::all_of(
+                    tidyselect::contains("mean")), ~ !is.na(.))) %>%
+                    dplyr::filter(dplyr::if_all(tidyselect::all_of(
+                    tidyselect::contains("mean")), ~ . > expthres))
+                return(dfstrand)
+            }, unique(dfbytranscript$strand), unique(expdf$strand),
+                MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
 
-    if (showtime) {
-      end_time <- Sys.time()
-      timing <- end_time - start_time
-      message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
-    }
+        exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
+            dplyr::arrange(.data$transcript) %>%
+            dplyr::pull(.data$transcript)
 
-    res <- list(maintable = alldf, exptranslist = exptranstab)
+        if (showtime) {
+        end_time <- Sys.time()
+        timing <- end_time - start_time
+        message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
+        }
 
-    return(res)
+        res <- list(maintable = alldf, exptranslist = exptranstab)
+
+        return(res)
 }
