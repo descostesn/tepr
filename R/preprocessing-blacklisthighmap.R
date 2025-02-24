@@ -327,7 +327,7 @@
 #' # blacklistpath <- "path/to/blacklist.bed"
 #' # exptabpath <- "path/to/experiments.csv"
 #' # allwindowsbed <- data.frame(...)
-#'
+#' #
 #' # Run the function
 #' # results <- blacklisthighmap(
 #' #     maptrackpath = maptrackpath,
