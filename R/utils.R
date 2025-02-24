@@ -281,7 +281,7 @@ checkexptab <- function(exptab) {
 #' using the condition column of a provided experiment table.
 #'
 #' @usage
-#' showallcomp(expdf, verbose = TRUE)
+#' showallcomp(expdf, verbose = FALSE)
 #'
 #' @param expdf A data frame containing experiment data that should have
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
