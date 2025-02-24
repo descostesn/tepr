@@ -40,6 +40,14 @@
     return(alldf)
 }
 
+.returnexpcolnames <- function(expdf) {
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }, simplify = FALSE))
+    return(expcolnames)
+}
+
 .dontcompare <- function(dontcompare, expdf, verbose) {
 
     ## Retrieve the condition names without duplicates
