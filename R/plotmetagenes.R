@@ -9,16 +9,16 @@
             dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
             !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
 
-        ## Selecting coord and mean values
-        result <- dfmeandiff %>%
-            dplyr::filter(transcript %in% transvec) %>% #nolint
-            dplyr::left_join(., AUC_allcondi,
-                by = c("transcript", "gene")) %>%
-            dplyr::select(transcript, gene, coord,
-            dplyr::contains("mean_value"),
-            -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
-            dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-            ~ mean(., na.rm = TRUE)))
+        ## Selecting expressed transcripts
+        res <- dfmeandiff[dfmeandiff$transcript %in% transvec, ]
+        ## Join dfmeandiff and AUC_allcondi
+        res <- dplyr::left_join(res, AUC_allcondi, by = c("transcript", "gene",
+            "strand"))
+        ## Selecting columns of interest
+        res <- dplyr::select(res, coord, dplyr::contains("mean_value"))
+        ## Computing mean for each coordinate
+        res <- dplyr::summarise(dplyr::group_by(res, coord), dplyr::across(
+            dplyr::contains("mean_value"), \(x) mean(x, na.rm = TRUE)))
 
         return(result)
 }
