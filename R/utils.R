@@ -99,8 +99,8 @@
 #'
 #' @usage
 #' joinfiles(workingdir = ".", window = 200, bgpattern = "*.bg",
-#'   protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
-#'   outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE)
+#' protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
+#' outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE)
 #'
 #' @param workingdir The directory containing bedgraph files. Defaults to the
 #'  current working directory (`"."`).
