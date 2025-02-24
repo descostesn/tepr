@@ -2,7 +2,8 @@ v1.1.2:
 - modifications and corrections to pass R CMD check
 - creation of .returnexpcolnames in utils.R
 - Simplification of averageandfilterexprs and create subfunction .expressedtrans
-- in .computeecdf under the comment "Shrink the results back to the transtable keeping ecdf columns", change code to remove the 'dot' usage.
+- in .computeecdf under the comment "Shrink the results back to the transtable keeping ecdf columns", change code to remove the 'dot' usage which throws an error by R CMD check.
+- Also change the way column names are modified under the comment "Removing strand from column names" for the same reason.
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
