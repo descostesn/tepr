@@ -323,26 +323,26 @@
 #'
 #' @examples
 #' # Define paths to required files
-#' maptrackpath <- "path/to/maptrack.bed"
-#' blacklistpath <- "path/to/blacklist.bed"
-#' exptabpath <- "path/to/experiments.csv"
-#' allwindowsbed <- data.frame(...)
+#' # maptrackpath <- "path/to/maptrack.bed"
+#' # blacklistpath <- "path/to/blacklist.bed"
+#' # exptabpath <- "path/to/experiments.csv"
+#' # allwindowsbed <- data.frame(...)
 #'
 #' # Run the function
-#' results <- blacklisthighmap(
-#'     maptrackpath = maptrackpath,
-#'     blacklistpath = blacklistpath,
-#'     exptabpath = exptabpath,
-#'     nbcputrans = 4,
-#'     allwindowsbed = allwindowsbed,
-#'     windsize = 200,
-#'     genomename = "hg38",
-#'     saveobjectpath = "output/",
-#'     tmpfold = "./tmp",
-#'     reload = FALSE,
-#'     showtime = TRUE,
-#'     showmemory = FALSE,
-#'     verbose = TRUE)
+#' # results <- blacklisthighmap(
+#' #     maptrackpath = maptrackpath,
+#' #     blacklistpath = blacklistpath,
+#' #     exptabpath = exptabpath,
+#' #     nbcputrans = 4,
+#' #     allwindowsbed = allwindowsbed,
+#' #     windsize = 200,
+#' #     genomename = "hg38",
+#' #     saveobjectpath = "output/",
+#' #     tmpfold = "./tmp",
+#' #     reload = FALSE,
+#' #     showtime = TRUE,
+#' #     showmemory = FALSE,
+#' #     verbose = TRUE)
 #'
 #' @importFrom rtracklayer SeqinfoForUCSCGenome import.bedGraph
 #' @importFrom GenomeInfoDb seqnames seqlengths
