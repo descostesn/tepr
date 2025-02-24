@@ -46,7 +46,7 @@
     condvec <- unique(expdf$condition)
 
     ## Create matrix with all comparisons
-    matcond <- combn(condvec, 2, simplify = TRUE)
+    matcond <- utils::combn(condvec, 2, simplify = TRUE)
 
     if (!is.null(dontcompare)) {
 
@@ -294,6 +294,7 @@ checkexptab <- function(exptab) {
 #'   showallcomp(exptab)
 #' }
 #'
+#' @importFrom utils combn
 #' @export
 
 showallcomp <- function(expdf, verbose = FALSE) {
@@ -307,7 +308,7 @@ showallcomp <- function(expdf, verbose = FALSE) {
         message("\n Your table has only one conditions: ", condvec)
     } else {
 
-        matcond <- combn(condvec, 2, simplify = TRUE)
+        matcond <- utils::combn(condvec, 2, simplify = TRUE)
         compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
         if (verbose) message("All comparisons: ", paste(compvec,
             collapse = " - "))
