@@ -22,7 +22,7 @@
 
         ## Computing weighted mean
         allscores <- as.data.frame(allframedf[, "score"])[[1]]
-        wmean <- weighted.mean(allscores, overntvec)
+        wmean <- stats::weighted.mean(allscores, overntvec)
         return(wmean)
     }, currenttrans)
 
