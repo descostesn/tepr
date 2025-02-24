@@ -71,7 +71,7 @@ under different conditions.
 \examples{
 # Assuming `unigroupdf` and `dfmeandiff` contain the necessary data:
 # plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "universe",
-plot = TRUE)
+# plot = TRUE)
 
 }
 \seealso{

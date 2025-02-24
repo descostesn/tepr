@@ -5,12 +5,12 @@
 \title{Generate all tepr plots for all experiment comparisons}
 \usage{
 plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = ".", digits = 2,
-middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB", "#FF9A04",
-"#FC4E07"), aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10,
-aucaxismaxy = 100, aucmaintitle = "", aucsubtitle = "",
-auclegendpos = "bottom", formatname = "pdf", uniname = "Universe",
-groupname = "Group", histkneexlim = NA, binwidthvalhistknee = NA,
-verbose = TRUE)
+middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB",
+"#FF9A04", "#FC4E07"), genaucvec = NA, aucaxisminx = -10,
+aucaxismaxx = 100, aucaxisminy = -10, aucaxismaxy = 100, aucmaintitle = "",
+aucsubtitle = "", auclegendpos = "bottom", formatname = "pdf",
+uniname = "Universe", groupname = "Group", histkneexlim = NA,
+binwidthvalhistknee = NA, verbose = TRUE)
 }
 \arguments{
 \item{resteprmulti}{Result returned by the function \code{teprmulti}.}

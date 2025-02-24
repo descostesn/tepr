@@ -4,13 +4,15 @@
 \alias{blacklisthighmap}
 \title{Blacklist High Mappability Regions in Genomic Data}
 \usage{
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
    chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{maptrackpath}{Character string. Path to the mappability track file.}
+
+\item{blacklistpath}{Character string. Path to the blacklist regions file.}
 
 \item{exptabpath}{Path to the experiment table file containing a table with
 columns named 'condition', 'replicate', 'strand', and 'path'.}
@@ -48,8 +50,6 @@ NA.}
 
 \item{verbose}{A logical value indicating whether to display detailed
 processing messages.}
-
-\item{blacklistpath}{Character string. Path to the blacklist regions file.}
 }
 \value{
 This function does not return a value directly. It saves
@@ -84,14 +84,14 @@ object can be retrieved with:
 \examples{
 # Define paths to required files
 maptrackpath <- "path/to/maptrack.bed"
-blacklistshpath <- "path/to/blacklist.bed"
+blacklistpath <- "path/to/blacklist.bed"
 exptabpath <- "path/to/experiments.csv"
 allwindowsbed <- data.frame(...)
 
 # Run the function
 results <- blacklisthighmap(
     maptrackpath = maptrackpath,
-    blacklistshpath = blacklistshpath,
+    blacklistpath = blacklistpath,
     exptabpath = exptabpath,
     nbcputrans = 4,
     allwindowsbed = allwindowsbed,

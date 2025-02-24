@@ -4,9 +4,10 @@
 \alias{plotecdf}
 \title{Plot Empirical Cumulative Distribution Function (ECDF)}
 \usage{
-plotecdf(dfmeandiff, unigroupdf, expdf, genename, colvec = c("#90AFBB",
-"#10AFBB", "#FF9A04", "#FC4E07"), outfold = ".", digits = 2,
-middlewind = 100, pval = 0.01, plot = FALSE, verbose = TRUE)
+plotecdf(dfmeandiff, unigroupdf, expdf, genename,
+   colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
+   outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+   formatname = "pdf", verbose = TRUE)
 }
 \arguments{
 \item{dfmeandiff}{A data frame containing the mean differences of
