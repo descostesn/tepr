@@ -48,10 +48,9 @@
         resecdf <- dplyr::bind_rows(ecdflist)
 
         ## Shrink the results back to the transtable keeping ecdf columns
-        res <- resecdf %>% tidyr::pivot_wider(.,
-            names_from = "variable",
-            values_from = c("value", "value_round", "Fx")) %>%
-            dplyr::select(., -tidyselect::contains("value_round"))
+        res <- dplyr::select(tidyr::pivot_wider(resecdf,
+          names_from = "variable", values_from = c("value", "value_round",
+          "Fx")), -tidyselect::contains("value_round"))
 
         ## Removing strand from column names
         res <- res %>% dplyr::rename_with(~gsub(paste0(".", str), "", .),
