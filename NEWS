@@ -4,6 +4,7 @@ v1.1.2:
 - Simplification of averageandfilterexprs and create subfunction .expressedtrans.
 - In .computeecdf, under the comment "Shrink the results back to the transtable keeping ecdf columns", change code to remove the 'dot' usage which throws an error by R CMD check.
 - In .computeecdf, also change the way column names are modified under the comment "Removing strand from column names" for the same reason.
+- In .normalizeandsummarize, replace code for "Selecting coord and mean values" to remove the use of dot.
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
