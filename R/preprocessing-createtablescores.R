@@ -86,6 +86,7 @@
 #'   verbose = TRUE)
 #'
 #' @importFrom dplyr full_join
+#' @importFrom utils read.csv
 #'
 #' @seealso
 #' [blacklisthighmap]
@@ -102,7 +103,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
-        exptab <- read.csv(exptabpath, header = TRUE)
+        exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         ## Retrieving the file paths
         filevec <- list.files(tmpfold, full.names = TRUE)
