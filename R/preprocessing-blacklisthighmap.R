@@ -349,7 +349,7 @@
 #' @importFrom tibble tibble as_tibble add_column
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
-#'
+#' @importFrom methods is
 #' @seealso
 #' [createtablescores][makewindows]
 #'
@@ -365,7 +365,8 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
             stop("\n\t Either the genome name or chromtab should be ",
                 "provided.\n")
 
-        if (!is.na(chromtab) && !isTRUE(all.equal(is(chromtab), "Seqinfo")))
+        if (!is.na(chromtab) &&
+            !isTRUE(all.equal(methods::is(chromtab), "Seqinfo")))
             stop("\n\t chromtab should be a Seqinfo object. ",
                 "See rtracklayer::SeqinfoForUCSCGenome.\n")
 
