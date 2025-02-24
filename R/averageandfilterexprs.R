@@ -53,15 +53,9 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
         ## Verify the conformity of the experiment table
         checkexptab(expdf)
 
-        ## Adding column names to alldf
-        infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
-            "gene", "strand", "window", "id")
-        expcolnames <- as.vector(unlist(apply(expdf, 1, function(x) {
-            res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
-            return(c(res, paste(res, "score", sep = "_")))
-        }, simplify = FALSE)))
-        colnames(alldf) <- c(infocolnames, expcolnames)
-
+        ## Adding column names to alldf and retrieving score columns
+        alldf <- .buildcolnames(expdf, alldf)
+        expcolnames <- .returnexpcolnames(expdf)
         scorecolvec <- expcolnames[grep("_score", expcolnames)]
 
         ## Calculate the average expression per transcript (over each frame)
