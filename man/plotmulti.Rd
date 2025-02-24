@@ -110,7 +110,7 @@ functions:
 \examples{
 # Assuming resteprmulti is the object returned by the function teprmulti
 # and expdf contains the necessary data:
-plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))
+# plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))
 
 }
 \seealso{

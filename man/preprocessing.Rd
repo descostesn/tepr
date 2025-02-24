@@ -85,27 +85,19 @@ Temporary files created during processing are optionally deleted at the end.
 }
 \examples{
 # Example usage of preprocessing:
-preprocessing(
-  exptabpath = "./example_exptab.tsv",
-  gencodepath = "./gencode.v38.annotation.gtf",
-  windsize = 200,
-  maptrackpath = "./mappability_track.bed",
-  blacklistshpath = "./blacklist.bed",
-  genomename = "hg38",
-  nbcputrans = 2,
-  finaltabpath = "./results/",
-  finaltabname = "final_annotated_table.tsv",
-  tmpfold = "./tmp",
-  saveobjectpath = "./saved_objects",
-  savefinaltable = TRUE,
-  reload = FALSE,
-  showtime = TRUE,
-  showmemory = TRUE,
-  deletetmp = TRUE,
-  verbose = TRUE
-)
+# preprocessing(
+#   exptabpath = "./example_exptab.tsv",
+#   gencodepath = "./gencode.v38.annotation.gtf",
+#   windsize = 200,
+#   maptrackpath = "./mappability_track.bed",
+#   blacklistshpath = "./blacklist.bed",
+#   genomename = "hg38", nbcputrans = 2, finaltabpath = "./results/",
+#   finaltabname = "final_annotated_table.tsv", tmpfold = "./tmp",
+#   saveobjectpath = "./saved_objects", savefinaltable = TRUE,
+#   reload = FALSE, showtime = TRUE, showmemory = TRUE, deletetmp = TRUE,
+#   verbose = TRUE)
 
 }
 \seealso{
-[retrieveanno][makewindows][blacklisthighmap][createtablescores]
+[retrieveanno], [makewindows], [blacklisthighmap], [createtablescores]
 }
