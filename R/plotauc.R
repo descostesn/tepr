@@ -3,6 +3,9 @@
     labelx, labely, maintitle, subtitle, legendpos, plot, outfile, formatname,
     outfold, genevec, verbose) {
 
+        ## Declaration to tackle CMD check
+        gene <- NULL
+
         ## Structure of the basic scatterplot
         g <- ggplot2::ggplot(df, aesvar) + geompointinfo + geompointinfo2
 
