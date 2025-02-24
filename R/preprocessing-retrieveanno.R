@@ -81,6 +81,8 @@
 #'     verbose = TRUE
 #' )
 #'
+#' @importFrom utils read.csv
+#'
 #' @export
 
 retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
@@ -93,7 +95,7 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
     ## Reading the information about experiments
     if (verbose) message("Reading the information about experiments")
-    exptab <- read.csv(exptabpath, header = TRUE)
+    exptab <- utils::read.csv(exptabpath, header = TRUE)
     checkexptab(exptab) # nolint
 
     ## Reading gencode file
