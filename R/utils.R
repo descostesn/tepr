@@ -155,6 +155,9 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
 
                 if (verbose) message("\t processing ", scoredir)
 
+                ## Declaration to tackle CMD check
+                strand <- NULL
+
                 files <- bedgraphfiles %>% purrr::map(~{
                     filename <- tools::file_path_sans_ext(basename(.))
                     file.path(scoredir, paste0(filename, ".window", window,
