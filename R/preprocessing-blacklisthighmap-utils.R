@@ -168,31 +168,36 @@
 .rowidandcols <- function(bytranslist, currentcond, currentrep, # nolint
     currentdirection, showmemory, verbose) {
 
-    ## Combining transcripts in one table
-    if (verbose) message("\t\t Combining transcripts in one table")
-    res <- do.call("rbind", bytranslist)
-    rm(bytranslist)
-    if (showmemory) print(gc()) else invisible(gc())
+        ## Declaration to tackle CMD check
+        biotype <- chrom <- NULL
 
-    if (verbose) message("\t\t Formatting and adding rowid column")
-    ## Create rowid string
-    rowidvec <- paste(res$transcript, res$gene, res$strand,
-        res$window, sep = "_")
-    ## Inserting rowid col after window
-    res <- res %>% tibble::add_column(rowid = rowidvec,
-        .after = "window")
-    ## Move biotype col before chrom col
-    res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
-    ## Retrieving score column position
-    idxcolscore <- grep("_score", colnames(res))
-    ## Creating experiment columns
-    expcol <- paste0(currentcond, "_rep", currentrep, ".",
-        currentdirection)
-    expcolvec <- rep(expcol, nrow(res))
-    tmpres <- cbind(res[, -idxcolscore], expcolvec)
-    res <- cbind(tmpres, res[, idxcolscore])
-    res <- tibble::as_tibble(res)
-    rm(tmpres)
-    if (showmemory) print(gc()) else invisible(gc())
-    return(res)
+        ## Combining transcripts in one table
+        if (verbose) message("\t\t Combining transcripts in one table")
+        res <- do.call("rbind", bytranslist)
+        rm(bytranslist)
+        if (showmemory) print(gc()) else invisible(gc())
+
+        if (verbose) message("\t\t Formatting and adding rowid column")
+        ## Create rowid string
+        rowidvec <- paste(res$transcript, res$gene, res$strand,
+            res$window, sep = "_")
+        ## Inserting rowid col after window
+        res <- res %>% tibble::add_column(rowid = rowidvec,
+            .after = "window")
+        ## Move biotype col before chrom col
+        res <- res %>% dplyr::relocate(biotype, .before = chrom) # nolint
+        ## Retrieving score column position
+        idxcolscore <- grep("_score", colnames(res))
+        ## Creating experiment columns
+        expcol <- paste0(currentcond, "_rep", currentrep, ".",
+            currentdirection)
+        expcolvec <- rep(expcol, nrow(res))
+        tmpres <- cbind(res[, -idxcolscore], expcolvec)
+        res <- cbind(tmpres, res[, idxcolscore])
+        res <- tibble::as_tibble(res)
+
+        rm(tmpres)
+        if (showmemory) print(gc()) else invisible(gc())
+
+        return(res)
 }
