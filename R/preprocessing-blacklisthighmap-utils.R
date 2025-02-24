@@ -142,24 +142,27 @@
 .retrieveannoscores <- function(currentstrand, allwindchromtib, valtib, # nolint
     showmemory, verbose) {
 
-    ## Keeping information on the correct strand
-    if (verbose) message("\t\t Retrieving information on strand ", # nolint
-        currentstrand)
-    if (isTRUE(all.equal(currentstrand, "plus")))
-        retrievedstrand <- "+"
-    else
-        retrievedstrand <- "-"
-    allwindstrand <- allwindchromtib %>%
-        dplyr::filter(strand == as.character(retrievedstrand)) # nolint
+        ## Declaration to tackle CMD check
+        strand <- NULL
 
-    ## Retrieving scores on annotations of strand
-    if (verbose) message("\t\t Retrieving scores on annotations of strand") # nolint
-    suppressWarnings(annoscores <- valr::bed_intersect(valtib,
-        allwindstrand, suffix = c("", ".window")))
+        ## Keeping information on the correct strand
+        if (verbose) message("\t\t Retrieving information on strand ", # nolint
+            currentstrand)
+        if (isTRUE(all.equal(currentstrand, "plus")))
+            retrievedstrand <- "+"
+        else
+            retrievedstrand <- "-"
+        allwindstrand <- allwindchromtib %>%
+            dplyr::filter(strand == as.character(retrievedstrand)) # nolint
 
-    rm(valtib, allwindchromtib, allwindstrand)
-    if (showmemory) print(gc()) else invisible(gc())
-    return(annoscores)
+        ## Retrieving scores on annotations of strand
+        if (verbose) message("\t\t Retrieving scores on annotations of strand") # nolint
+        suppressWarnings(annoscores <- valr::bed_intersect(valtib,
+            allwindstrand, suffix = c("", ".window")))
+
+        rm(valtib, allwindchromtib, allwindstrand)
+        if (showmemory) print(gc()) else invisible(gc())
+        return(annoscores)
 }
 
 .rowidandcols <- function(bytranslist, currentcond, currentrep, # nolint
