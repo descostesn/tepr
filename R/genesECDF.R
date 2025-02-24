@@ -121,6 +121,7 @@
 #'
 #' @seealso
 #' [averageandfilterexprs]
+#'
 #' @export
 
 genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
