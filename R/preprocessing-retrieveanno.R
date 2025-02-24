@@ -12,7 +12,9 @@
 }
 
 .sortedbedformat <- function(gencode) {
-    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint ## Ordering by chrom and start
+    ## Ordering by chrom and start
+    gencode <- gencode[order(gencode$V1, gencode$V4), ] # nolint
+
     infolist <- strsplit(gencode$V9, ";")
     namevec <- gsub(" gene_name ", "", sapply(infolist, "[", 4)) # nolint
     ensnamevec <- gsub(" transcript_id ", "", sapply(infolist, "[", 2)) # nolint
@@ -68,18 +70,18 @@
 #'
 #' @examples
 #' # Example usage:
-#' exptab_file <- "path/to/experiment_table.csv"
-#' gencode_file <- "path/to/gencode_annotations.gtf"
-#' output_dir <- "path/to/output_directory"
+#' # exptab_file <- "path/to/experiment_table.csv"
+#' # gencode_file <- "path/to/gencode_annotations.gtf"
+#' # output_dir <- "path/to/output_directory"
 #'
 #' # Run the function with verbose output and timing enabled
-#' annotations <- retrieveanno(
-#'     exptabpath = exptab_file,
-#'     gencodepath = gencode_file,
-#'     saveobjectpath = output_dir,
-#'     showtime = TRUE,
-#'     verbose = TRUE
-#' )
+#' # annotations <- retrieveanno(
+#' #     exptabpath = exptab_file,
+#' #     gencodepath = gencode_file,
+#' #     saveobjectpath = output_dir,
+#' #     showtime = TRUE,
+#' #     verbose = TRUE
+#' # )
 #'
 #' @importFrom utils read.csv
 #'
