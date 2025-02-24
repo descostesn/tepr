@@ -350,6 +350,8 @@
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
 #' @importFrom methods is
+#' @importFrom utils read.csv
+#'
 #' @seealso
 #' [createtablescores][makewindows]
 #'
@@ -380,7 +382,7 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
-        exptab <- read.csv(exptabpath, header = TRUE)
+        exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list")
         blacklistbed <- read.delim(blacklistshpath, header = FALSE)
