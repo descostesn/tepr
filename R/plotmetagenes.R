@@ -20,7 +20,7 @@
         res <- dplyr::summarise(dplyr::group_by(res, coord), dplyr::across(
             dplyr::contains("mean_value"), \(x) mean(x, na.rm = TRUE)))
 
-        return(result)
+        return(res)
 }
 
 .checkmetagenes <- function(plottype) {
