@@ -48,7 +48,8 @@ Imports:
     GenomicRanges,
     GenomeInfoDb,
     valr,
-    tibble
+    tibble,
+    utils
 Collate:
     'allauc.R'
     'attenuation.R'
