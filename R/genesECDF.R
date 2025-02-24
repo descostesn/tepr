@@ -15,6 +15,9 @@
 
 .computeecdf <- function(transtable, expdf, rounding, nbrows) { # nolint
 
+        ## Declaration to tackle CMD check
+        variable <- NULL
+
         ## Retrieving keyword plus or minus
         str <- .extractstr(transtable)
 
