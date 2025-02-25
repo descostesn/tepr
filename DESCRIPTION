@@ -50,8 +50,7 @@ Imports:
     valr,
     tibble,
     utils,
-    methods,
-    markdown
+    methods
 Collate:
     'allauc.R'
     'attenuation.R'
