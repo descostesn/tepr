@@ -6,7 +6,7 @@ output:
     BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{tepr}
-    %\VignetteEngine{knitr::knitr}
+    %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
 
