@@ -49,7 +49,7 @@ exppath <- "./exptab.csv"
 
 
 #########
-# Pre-processing - takes ~ 7 minutes
+# Pre-processing - takes ~ 47 seconds
 #########
 
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
