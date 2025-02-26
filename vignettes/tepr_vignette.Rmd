@@ -55,12 +55,12 @@ exppath <- "./exptab.csv"
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
     package = "tepr")
-blacklistshpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
+blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
 
 finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
+    blacklistpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
     showtime = TRUE, verbose = TRUE)
 
 #########
@@ -209,7 +209,7 @@ Note that this function does not return a value; instead, it saves the processed
 ```{r blacklisthighmap, eval = FALSE}
 ## Parameters
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed", package = "tepr")
-blacklistshpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
+blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
 nbcputrans <- 1
 genomename <- "hg38"
 tmpfolder <- "./tmp"
@@ -225,7 +225,7 @@ write.csv(expdf, file = "./exptab.csv", row.names = FALSE, quote = FALSE)
 exptabpath <- "./exptab.csv"
 
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
+blacklisthighmap(maptrackpath, blacklistpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
 ```
 
 ### Creating the Final Table
