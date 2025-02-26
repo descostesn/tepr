@@ -8,6 +8,7 @@ v1.1.2:
 - Remove manual pdf that is not needed
 - Add a .github/workflows that test the package on windows, macos, and ubuntu
 - Add a .Rbuildignore to exclude the CI/CD
+- With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 47 seconds instead of 7 minutes.
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
