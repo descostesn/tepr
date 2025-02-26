@@ -4,7 +4,7 @@
     invisible(sapply(valvec, function(val) {
         idx <- grep(val, gentab$V9, invert = invert)
         if (verbose)
-            message(val, " - ", length(idx), " gentab - ", nrow(gentab))
+            message("\t\t", val, " - ", length(idx), " gentab - ", nrow(gentab))
         if (!isTRUE(all.equal(length(idx), 0)))
             gentab <<- gentab[idx, ] ## This line enables sequential grep
     }))
