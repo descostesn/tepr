@@ -16,6 +16,3 @@ expbed = allannobed; nbwindows = windsize
 currentpath = exptab$path[1]; currentname = expnamevec[1]
 currentstrand = exptab$strand[1]; currentcond = exptab$condition[1]
 currentrep = exptab$replicate[1]; currentdirection = exptab$direction[1]
-            allwindchromtib, blacklisttib, maptracktib, windsize, currentchrom,
-            chromlength, nbcputrans, saveobjectpath, verbose, showtime,
-            showmemory, reload, tmpfold
