@@ -241,7 +241,7 @@ The final table should look like:
 ```{r showfinaltab, echo = FALSE}
 finaltabpath <- system.file("extdata", "finaltab-chr13.tsv", package = "tepr")
 finaltab <- read.delim(finaltabpath, header = FALSE)
-print(finaltab)
+print(head(finaltab, 3))
 ```
 
 
