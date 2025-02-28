@@ -368,14 +368,13 @@ print(head(resauc, 3))
 
 ### Knee and Max ECDF Differences for Each Transcript
 
-To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `genesECDF` and `meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
+To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
 
-The function returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
+`kneeid` returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
 ```{r knee}
-## Identify the Knee and Max ECDF Differences for Each Transcript
-resknee <- kneeid(bytranslistmean, expdf)
-print(head(resknee))
+resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
+print(resknee)
 ```
 
 ### Attenuation
