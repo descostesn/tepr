@@ -9,7 +9,8 @@ v1.1.2:
 - Add a .github/workflows that test the package on windows, macos, and ubuntu
 - Add a .Rbuildignore to exclude the .github folder during package creation
 - Correct bug about direction in loop if dfstrandlist of the function .expressedtrans in averageandfilterexprs.
-- folder inst/extdata reduced from 111 Mb to 504K
+- Folder inst/extdata reduced from 111 Mb to 504K
+- Add error if no transcript is identified as expressed in averageandfilterexprs. This case prevents the rest of the  code to be executed.
 
 -- vignette
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
