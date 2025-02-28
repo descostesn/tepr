@@ -205,7 +205,7 @@ print(head(allwindowsbed, 3))
 
 ### Retrieving Bedgraph Scores and Filtering Blacklisted and Low-Mappability Regions
 
-The `blacklisthighmap` function iterates through each chromosome, processing genomic scores by removing those that overlap with blacklisted and low-mappability regions. It also calculates weighted means for scores within each window.  This function leverages parallel processing for efficiency and supports saving (`saveobjectpath`) and reloading (`reload`) intermediate results to optimize the workflow.
+The `?blacklisthighmap` function iterates through each chromosome, processing genomic scores by removing those that overlap with blacklisted and low-mappability regions. It also calculates weighted means for scores within each window.  This function leverages parallel processing for efficiency and supports saving (`saveobjectpath`) and reloading (`reload`) intermediate results to optimize the workflow.
 
 The main steps include:
 
@@ -214,28 +214,23 @@ The main steps include:
 *   Calculating weighted means for overlapping scores within each genomic window.
 *   Saving the processed results to a specified temporary folder (`tmpfold`).
 
-Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `createtablescores` function.
+If you did not execute the "quick start" section code, you need to first copy the bedgraph files to your current folder:
 
-```{r blacklisthighmap, eval = FALSE}
-## Parameters
-maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed", package = "tepr")
-blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed", package = "tepr")
-nbcputrans <- 1
-genomename <- "hg38"
-tmpfolder <- "./tmp"
-
-## The path to the bedgraph files provided with the package depends on your installation. Modify exptab with the\
-## correct path and create a new file in the current folder.
-## IMPORTANT: You can skip these steps if your exptab contains the correct paths
-expdf <- read.csv(exptabpath)
+```{r copybg, eval = FALSE}
+expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+expdf <- read.csv(expprepath)
 bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
     package = "tepr"))
 expdf$path <- bgpathvec
-write.csv(expdf, file = "./exptab.csv", row.names = FALSE, quote = FALSE)
-exptabpath <- "./exptab.csv"
+write.csv(expdf, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
+exptabpath <- "./exptab-preprocessing.csv"
+```
 
+Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `?createtablescores` function.
+
+```{r blacklisthighmap, eval = FALSE}
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
-blacklisthighmap(maptrackpath, blacklistpath, exptabpath, nbcputrans, allwindowsbed, windsize, genomename, tmpfold = tmpfolder)
+blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = "./tmp")
 ```
 
 ### Creating the Final Table
