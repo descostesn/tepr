@@ -565,12 +565,12 @@ resteprmulti <- teprmulti(expdf, transdf, expthres, dontcompare = dontcompvec)
 
 ### `plotmulti`
 
-Using the list of results from `resteprmulti`, all plots for all comparisons can be generated using the `plotmulti` function. This function iterates through each element of `resteprmulti` (each element representing a two-condition comparison) and calls the following functions for each:
+Using the list of results from `?teprmulti`, all plots for all comparisons can be generated at once using `?plotmulti`. This function iterates through each element of `resteprmulti` (each element representing a two-condition comparison) and calls the following functions:
 
-*   `plotecdf`: Generates a figure for each gene specified in `ecdfgenevec`.
-*   `plotauc`: Generates figures by group and p-value. The p-value figure is not generated if `genaucvec = NA`.
-*   `plotmetagenes`: Generates figures for attenuation, outgroup, universe, and all transcripts.
-*   `plothistoknee`: Generates figures for percent and kb.
+*   `?plotecdf`: Generates a figure for each gene specified in `ecdfgenevec`.
+*   `?plotauc`: Generates figures with options "group" and "p-value". The "p-value" option figure is not generated if `genaucvec = NA`.
+*   `?plotmetagenes`: Generates figures with options "attenuation", "outgroup", "universe", and "all".
+*   `?plothistoknee`: Generates figures with options "percent" and "kb".
 
 Figures are written to the directory specified by `outfold`, and subfolders are automatically created for each comparison.
 
