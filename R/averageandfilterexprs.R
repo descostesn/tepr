@@ -79,6 +79,9 @@
 #'         \item{exptranstab}{A character vector of transcripts that meet the
 #'                            filtering criteria.}
 #'
+#' @details
+#' If no transcript is selected as expressed, the function throws an error.
+#'
 #' @examples
 #' # Example usage of averageandfilterexprs
 #' # result <- averageandfilterexprs(expdf, alldf, expthres = 10)
@@ -107,6 +110,11 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
         ## Remove a line if it contains only values < expthres (by strands)
         expressedtransvec <- .expressedtrans(alldf, expdf, expthres,
             scorecolvec, verbose)
+
+        if (isTRUE(all.equal(length(expressedtransvec), 0)))
+            stop("\n No transcript was identified as expressed. You might ",
+                "want to increase the expthres parameter which is ",
+                "currently set to ", expthres, "\n")
 
         if (showtime) {
         end_time <- Sys.time()
