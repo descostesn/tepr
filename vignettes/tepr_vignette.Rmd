@@ -75,6 +75,22 @@ transdf <- read.delim(transpath, header = FALSE)
 reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
 ```
 
+The table produced by the preprocessing function is saved without column headers. The resulting data, using the testing dataset, is:
+
+```{r prequick}
+print(head(finaltab, 3))
+```
+
+The `tepr` function returns two tables that are used for plotting different information (see below for explanations and `?tepr`). On the testing dataset it gives:
+
+```{r teprquick}
+message("The table meandifference:")
+print(head(reslist[[1]], 2))
+
+message("\n\n The table universegroup:")
+print(head(reslist[[2]], 2))
+```
+
 # Data
 
 ## Description
