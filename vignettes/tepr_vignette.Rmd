@@ -189,7 +189,7 @@ print(head(allannobed, 3))
 
 ### Defining Windows for Each Transcript
 
-The `makewindows` function performs the following operations:
+The `?makewindows` function performs the following operations:
 
 1.  Removes any Ensembl transcript names containing "PAR_Y."
 2.  Filters out intervals smaller than `windsize`.
@@ -198,10 +198,7 @@ The `makewindows` function performs the following operations:
 The output includes metadata for each window, such as its chromosome, start and end coordinates, associated gene, and window number.
 
 ```{r makewindows}
-## Parameters
-windsize = 200
-
-allwindowsbed <- makewindows(allannobed, windsize)
+allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
 message("\n The result is:\n")
 print(head(allwindowsbed, 3))
 ```
