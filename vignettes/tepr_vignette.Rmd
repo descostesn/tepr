@@ -27,15 +27,15 @@ The following example demonstrates a complete run of the package. Preprocessing 
 
 library(tepr)
 
-## Parameters (transpath limited to 100 transcripts)
-exppath <-  system.file("extdata", "exptab.csv", package="tepr")
-transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
-expthres <- 0.1
-windsize <- 200
+#########
+# Pre-processing - takes ~ 47 seconds
+#########
+
+## Parameters
+exppath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 
 ## Read input tables
 expdf <- read.csv(exppath)
-transdf <- read.delim(transpath, header = FALSE)
 
 ## Retrieving the bedgraph paths
 bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
@@ -44,13 +44,8 @@ bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
 ## Replace the path column of expdf with the previously retrieved paths
 ## and writing the new experiment file to the current folder
 expdf$path <- bgpathvec
-write.csv(expdf, file = "./exptab.csv", row.names = FALSE, quote = FALSE)
-exppath <- "./exptab.csv"
-
-
-#########
-# Pre-processing - takes ~ 47 seconds
-#########
+write.csv(expdf, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
+exppath <- "./exptab-preprocessing.csv"
 
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
@@ -66,6 +61,27 @@ finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
 #########
 # tepr analysis - takes ~ 11 seconds
 #########
+
+## Parameters (transpath limited to 6 transcripts)
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_100.tsv", package="tepr")
+expthres <- 0.1
+windsize <- 200
+
+## Read input tables
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv"
+genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7",
+"ENST00000274140.10", "ENST00000549802.5", "ENST00000615891.2")
+reslist <- lapply(genesvec, function(currentgene, transdf){
+    return(transdf[which(transdf$V5)])
+}, transdf)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 reslist <- tepr(expdf, transdf, expthres, showtime = TRUE, verbose = TRUE)
 resmeandiff <- reslist[[1]]
