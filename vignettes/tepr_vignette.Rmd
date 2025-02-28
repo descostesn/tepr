@@ -28,7 +28,7 @@ The following example demonstrates a complete run of the package. Preprocessing 
 library(tepr)
 
 #########
-# Pre-processing - takes ~ 47 seconds
+# Pre-processing - takes ~ 38 seconds
 #########
 
 ## Parameters
@@ -60,7 +60,7 @@ finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     showtime = FALSE, verbose = FALSE)
 
 #########
-# tepr analysis - takes ~ 11 seconds
+# tepr analysis - takes ~ 1 seconds
 #########
 
 ## Parameters (transpath limited to 6 transcripts)
