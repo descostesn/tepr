@@ -520,21 +520,21 @@ Note that the `plottype` parameter, set to "attenuation" in this example, specif
 
 The distribution of knee distances from the TSS can be visualized as a percentage:
 
-```{r kneepercent}
+```{r kneepercent, warning = FALSE}
 plothistoknee(res, plot = TRUE)
 ```
 
-The plot generated using the complete dataset is shown below:
+The plot generated using the complete dataset is:
 
 <img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
 
 The distances can also be visualized in kilobases (kb) by setting the `plottype` parameter to "kb":
 
-```{r kneekb}
+```{r kneekb, warning = FALSE}
 plothistoknee(res, plottype = "kb", plot = TRUE)
 ```
 
-The plot generated using the complete dataset is shown below:
+The plot generated using the complete dataset is:
 
 <img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
 
