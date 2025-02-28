@@ -7,8 +7,10 @@ v1.1.2:
 - In .normalizeandsummarize, replace code for "Selecting coord and mean values" to remove the use of dot.
 - Remove manual pdf that is not needed
 - Add a .github/workflows that test the package on windows, macos, and ubuntu
-- Add a .Rbuildignore to exclude the CI/CD
+- Add a .Rbuildignore to exclude the .github folder during package creation
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 47 seconds instead of 7 minutes.
+- Now use two different exptab in the package. One for preprocessing and one for the downstream analysis. The code of quick start is modified accordingly.
+- The downstream part is now done on 6 transcripts instead of a 100. This aims at reducing the size of the package.
 - Correct bug about direction in loop if dfstrandlist of the function .expressedtrans in averageandfilterexprs.
 
 v1.1.1:
