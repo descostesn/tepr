@@ -370,7 +370,7 @@ print(head(resauc, 3))
 
 To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
 
-`kneeid` returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
+`?kneeid` returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
 ```{r knee}
 resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
@@ -379,12 +379,11 @@ print(resknee)
 
 ### Attenuation
 
-The `attenuation` function calculates the mean score of all window means *before* the knee location and the mean score of all window means *after* the knee location. It then calculates an "attenuation score" using the following formula: *att <- 100 - (downmean / upmean) x 100* (x for multiplication). The function returns three values, stored in the columns "UP_mean_," "DOWN_mean_," and "Attenuation_," representing *att*, *downmean*, and *upmean*, respectively.
+The `?attenuation` function calculates the mean score of all window means *before* the knee location and the mean score of all window means *after* the knee location. It then calculates an "attenuation score" using the following formula: *att <- 100 - (downmean / upmean) x 100* (x for multiplication). The function returns three values, stored in the columns "UP_mean_," "DOWN_mean_," and "Attenuation_," representing *att*, *downmean*, and *upmean*, respectively.
 
 ```{r attenuation}
-## Calculate Attenuation from AUC and Other Transcript Features
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
-    resmeandiff)
+    resmeandiff, verbose = FALSE)
 print(head(resatt, 3))
 ```
 
