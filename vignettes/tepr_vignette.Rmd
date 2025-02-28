@@ -23,7 +23,7 @@ For any questions or bug reports, please open an [issue](https://github.com/retr
 
 The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
-```{r quickstart, eval = FALSE}
+```{r quickstart, results = 'hide', message = FALSE, warning = FALSE}
 
 library(tepr)
 
