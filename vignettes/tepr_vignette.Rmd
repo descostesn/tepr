@@ -580,7 +580,7 @@ plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfo
 
 ### Calculating Knee for Each Condition
 
-The `kneeallconds` function allows retrieval of knee values without requiring a full `teprmulti` analysis. It calculates the knee values (`knee_AUC_` and `max_diff_Fx_`) for each condition independently.
+The `?kneeallconds` function allows retrieving knee values processing each condition independently (see next section).
 
 ```{r kneeallconds, eval = FALSE}
 kneedf <- kneeallconds(alldf, expdf, expthres)
