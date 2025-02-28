@@ -75,11 +75,27 @@ transdf <- read.delim(transpath, header = FALSE)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 exppath <-  system.file("extdata", "exptab.csv", package="tepr")
 transpath <- "/g/romebioinfo/tmp/preprocessing/objects-tsv-7cpus/cugusi.tsv"
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+
 genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7",
 "ENST00000274140.10", "ENST00000549802.5", "ENST00000615891.2")
-reslist <- lapply(genesvec, function(currentgene, transdf){
-    return(transdf[which(transdf$V5)])
+
+genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7",
+"ENST00000274140.10", "ENST00000549802.5")
+
+genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7",
+"ENST00000274140.10")
+
+genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7")
+
+genevec <- c("ENST00000275493.7", "ENST00000230895.11")
+
+reslist <- lapply(genevec, function(currentgene, transdf){
+    return(transdf[which(transdf$V5 == currentgene), ])
 }, transdf)
+transdflim <- do.call("rbind", reslist)
+reslist <- tepr(expdf, transdflim, expthres, showtime = TRUE, verbose = TRUE)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
