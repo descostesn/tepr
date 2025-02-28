@@ -468,15 +468,15 @@ print(head(res, 2))
 
 ## Plotting
 
-TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`plotecdf`); the comparison of AUC between two conditions (`plotauc`); the average transcription density of a user-selected set of transcripts (`plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS).
+TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`?plotecdf`); the comparison of AUC between two conditions (`?plotauc`); the average transcription density of a user-selected set of transcripts (`?plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS, `?plothistoknee`).
 
 ### `plotecdf`
 
 The empirical cumulative distribution function (ECDF) for a specific transcript (EGFR in this example) can be visualized using:
 
-```{r plotecdf}
+```{r plotecdf, warning = FALSE}
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
-plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE)
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE, verbose = FALSE)
 ```
 
 ### `plotauc`
