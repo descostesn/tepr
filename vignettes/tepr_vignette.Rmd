@@ -36,16 +36,16 @@ expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr"
 windsize <- 200
 
 ## Read input tables
-expdf <- read.csv(expprepath)
+expdfpre <- read.csv(expprepath)
 
 ## Retrieving the bedgraph paths
-bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
+bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
     package = "tepr"))
 
-## Replace the path column of expdf with the previously retrieved paths
+## Replace the path column of expdfpre with the previously retrieved paths
 ## and writing the new experiment file to the current folder
-expdf$path <- bgpathvec
-write.csv(expdf, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
+expdfpre$path <- bgpathvec
+write.csv(expdfpre, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
 expprepath <- "./exptab-preprocessing.csv"
 
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
@@ -218,11 +218,11 @@ If you did not execute the "quick start" section code, you need to first copy th
 
 ```{r copybg, eval = FALSE}
 expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
-expdf <- read.csv(expprepath)
-bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
+expdfpre <- read.csv(expprepath)
+bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
     package = "tepr"))
-expdf$path <- bgpathvec
-write.csv(expdf, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
+expdfpre$path <- bgpathvec
+write.csv(expdfpre, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
 exptabpath <- "./exptab-preprocessing.csv"
 ```
 
@@ -290,19 +290,16 @@ checkexptab(expdf)
 
 ### Expressed Transcripts and Average Expression
 
-To study changes in nascent RNA patterns, the initial step is to select expressed transcripts. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1.
+To study changes in nascent RNA patterns, the initial step is to select expressed transcripts. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1. If no expressed transcript is returned, an error is thrown.
 
 ```{r averageandfilterexprs}
-## Calculate Average Expression and Filter Transcript Data
-expthres <- 0.1
 resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ```
 
 `resallexprs` is a list.  Its first element is the input `transdf` with additional columns, such as the calculated mean expression values. The second element is a vector containing the IDs of the transcripts considered expressed. This vector will be used in subsequent downstream analyses.
 
 ```{r exprsvec}
-## Print the first 6 expressed transcripts
-head(resallexprs[[2]])
+print(resallexprs[[2]])
 ```
 
 ### NA Values per Transcript and Condition
