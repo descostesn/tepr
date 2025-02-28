@@ -72,7 +72,7 @@ expthres <- 0.1
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 
-reslist <- tepr(expdf, transdf, expthres, showtime = TRUE, verbose = TRUE)
+reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
 ```
 
 # Data
