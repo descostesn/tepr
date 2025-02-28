@@ -334,17 +334,16 @@ print(nbwindows)
 
 ### Mean and Differences of Scores for Each Condition
 
-The `meandifference` function computes three types of statistics: mean score values, the ECDF for each replicate (if provided), and the difference between the mean ECDF and the uniform cumulative distribution.  Mean values across replicates are calculated, resulting in one `mean_value` column per condition. These `mean_value` score columns are required for subsequent attenuation score calculations (see `attenuation`). The mean ECDF values are used to calculate the difference from the cumulative distribution, which we term *diff_Fx*. The *diff_Fx* statistic is used to calculate the area under the curve (AUC, see `allauc`) and the inflection point or *knee* (see `kneeid`).
+The `?meandifference` function computes three types of statistics: mean score values, mean ECDF for each replicate, and the difference between the mean ECDF and the uniform cumulative distribution. Mean values across replicates are calculated, resulting in one `mean_value` column per condition. These `mean_value` score columns are required for subsequent attenuation score calculations (see `?attenuation`). The mean ECDF values are used to calculate the difference from the cumulative distribution, which we term *diff_Fx*. The *diff_Fx* statistic is used to calculate the area under the curve (AUC, see `?allauc`) and the inflection point or *knee* (see `?kneeid`).
 
 The difference is calculated as: *diff_Fx = meanECDF - cumvec / nbwindows*
 
 ```{r meandifference}
-## Compute Mean and Differences of Scores for Each Condition
-resmeandiff <- meandifference(resecdf, expdf, nbwindows)
+resmeandiff <- meandifference(resecdflist[[1]], expdf, nbwindows, verbose = FALSE)
 print(head(resmeandiff, 3))
 ```
 
-The resulting table is then split into a list of tables, one per transcript. This enables parallel processing by transcript for subsequent operations if multiple CPUs are available.
+The resulting table is then split into a list of tables, one per transcript. This enables parallel processing by transcript for subsequent operations (see nbcpu parameter in each function).
 
 ```{r splitmeans}
 ## Split the results by transcripts
