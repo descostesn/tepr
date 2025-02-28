@@ -145,7 +145,7 @@ The preprocessing pipeline consists of the following steps:
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
 5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-**Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time constraints.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
+**Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time limits typically set in HPC parameters.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
 | nb CPU | RAM | Time |
 |--------|-----|------|
@@ -155,7 +155,7 @@ The preprocessing pipeline consists of the following steps:
 | 5 | 43G | 6h58 |
 | 3 | 28.7G | 9h02|
 
-The code below is executed on the chromosome 13 only to reduce computation time.
+The testing dataset below is limited to a portion of the chromosome 13 and one control replicate.
 
 ### Input Files
 
