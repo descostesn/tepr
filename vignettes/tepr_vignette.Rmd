@@ -506,7 +506,7 @@ The plot generated using the complete dataset is:
 
 The average transcription density along a meta-transcript or meta-gene can be visualized as follows:
 
-```{r metageneplot}
+```{r metageneplot, warning = FALSE}
 plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 ```
 
@@ -514,7 +514,7 @@ The plot on the complete dataset gives:
 
 <img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
 
-Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
+Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `?universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
 ### `plothistoknee`
 
