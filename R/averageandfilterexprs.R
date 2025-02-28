@@ -14,25 +14,29 @@
 
     ## Remove a line if it contains only values < expthres (separating strands)
     if (verbose) message("\t Removing lines with values < expthres") # nolint
-    dfstrandlist <- mapply(function(strandname, directname, dfbytrans,
-        expthres) {
-            if ((isTRUE(all.equal(strandname, "plus")) &&
-                isTRUE(all.equal(directname, "reverse"))) ||
-                (isTRUE(all.equal(strandname, "minus")) &&
-                isTRUE(all.equal(directname, "forward"))))
-                    stop("\n\t Strand and direction do not match, contact the ",
+
+    dfstrandlist <- mapply(function(strandname, dfbytrans, expthres) {
+
+        if (isTRUE(all.equal(strandname, "-"))) {
+            directname <- "minus"
+        } else if (isTRUE(all.equal(strandname, "+"))) {
+            directname <- "plus"
+        } else {
+            stop("\n\t The strand name is neither + or -, contact the ",
                         "developer.\n")
-            dfstrand <- dfbytranscript %>%
-                dplyr::filter(.data$strand == strandname) %>%
-                dplyr::select(gene, transcript, strand,
-                tidyselect::contains(directname))  %>%
-                dplyr::filter(dplyr::if_all(tidyselect::all_of(
-                tidyselect::contains("mean")), ~ !is.na(.))) %>%
-                dplyr::filter(dplyr::if_all(tidyselect::all_of(
-                tidyselect::contains("mean")), ~ . > expthres))
-            return(dfstrand)
-        }, unique(dfbytranscript$strand), unique(expdf$strand),
-            MoreArgs = list(dfbytranscript, expthres), SIMPLIFY = FALSE)
+        }
+
+        dfstrand <- dfbytranscript %>%
+            dplyr::filter(.data$strand == strandname) %>%
+            dplyr::select(gene, transcript, strand,
+            tidyselect::contains(directname))  %>%
+            dplyr::filter(dplyr::if_all(tidyselect::all_of(
+            tidyselect::contains("mean")), ~ !is.na(.))) %>%
+            dplyr::filter(dplyr::if_all(tidyselect::all_of(
+            tidyselect::contains("mean")), ~ . > expthres))
+        return(dfstrand)
+    }, unique(dfbytranscript$strand), MoreArgs = list(dfbytranscript,
+        expthres), SIMPLIFY = FALSE)
 
     exptranstab <- dplyr::bind_rows(dfstrandlist[[1]], dfstrandlist[[2]]) %>%
             dplyr::arrange(.data$transcript) %>%
