@@ -126,7 +126,9 @@ pvaltheorythres = 0.1; aucctrlthreshigher = -10; aucctrlthreslower = 15
 aucstressthres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; showtime = FALSE; verbose = TRUE
 
 ## To enter dfstrandlist <- mapply
-
+strandname = unique(dfbytranscript$strand)[1]
+directname = unique(expdf$strand)[1]
+dfbytrans = dfbytranscript
 
 
 
