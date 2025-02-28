@@ -17,7 +17,7 @@ v1.1.2:
 - The downstream part is now done on 6 transcripts instead of a 100. This aims at reducing the size of the package.
 - Display the results of the quick start code
 - Improve preprocessing description
-
+- Reduce code in different sections since quickstart is now executed in background
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
