@@ -13,6 +13,7 @@ v1.1.2:
 - The downstream part is now done on 6 transcripts instead of a 100. This aims at reducing the size of the package.
 - Correct bug about direction in loop if dfstrandlist of the function .expressedtrans in averageandfilterexprs.
 - folder inst/extdata reduced from 111 Mb to 504K
+- now show the results of the quick start code in the vignette
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
