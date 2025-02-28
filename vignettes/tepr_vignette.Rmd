@@ -235,10 +235,10 @@ blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwin
 
 ### Creating the Final Table
 
-The `createtablescores` function merges the files stored in `tmpfolder` that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
+The `?createtablescores` function merges the files stored in the previously produced `./tmp` folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE}
-finaltab <- createtablescores(tmpfolder, exptabpath, savefinaltable = FALSE)
+finaltab <- createtablescores(tmpfold = "./tmp", expprepath, savefinaltable = FALSE)
 ```
 
 The final table should look like:
