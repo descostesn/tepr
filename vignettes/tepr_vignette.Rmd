@@ -391,7 +391,7 @@ print(head(resatt, 3))
 
 **Universe**
 
-Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe." TepR selects a transcript for inclusion in the Universe if it meets the following criteria:
+Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe". TepR selects a transcript for inclusion in the "Universe" if it meets the following criteria:
 
 1.  Its windows are sufficiently long.
 2.  It does not contain too many missing values (NA).
@@ -424,7 +424,7 @@ Appropriate threshold values for each criterion depend on the specific experimen
 The transcripts in the Universe are further categorized into Groups. A transcript belongs to the "Attenuated" group if it meets the following criteria:
 
 1.  It belongs to the Universe (`Universe == TRUE`).
-2.  Its "stress" AUC value is sufficiently high.
+2.  Its "stress" AUC value is sufficiently high ("stress" is opposed to "control" and can be renamed).
 3.  The negative base-10 logarithm of the adjusted p-value from the Kolmogorov-Smirnov test exceeds a given threshold.
 
 Analytically, this is represented as:
@@ -435,7 +435,7 @@ aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
 ```
 
-If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
+If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution (y = x) *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
 
 ```{r attselectonecond, eval = FALSE}
 Universe == TRUE & aucctrl > aucctrlthreslower
@@ -459,11 +459,10 @@ For a single-condition analysis, where no Kolmogorov-Smirnov test against anothe
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
-Note that transcripts belonging to neither "Attenuated" nor "Outgroup" are assigned NA to the `Group` column. The `Universe` and `Group` columns are computed as follows:
+Note that transcripts belonging to neither "Attenuated" nor "Outgroup" are assigned NA to the `Group` column. The `Universe` and `Group` columns are computed with the `?universegroup` function:
 
 ```{r universegroup}
-## Define Universe and Group of Genes Based on Expression Data
-res <- universegroup(resatt, expdf)
+res <- universegroup(resatt, expdf, verbose = FALSE)
 print(head(res, 2))
 ```
 
