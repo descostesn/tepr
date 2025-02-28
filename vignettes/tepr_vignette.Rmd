@@ -161,7 +161,7 @@ The testing dataset below is limited to a portion of the chromosome 13 and one c
 
 The following input files are required for the analysis:
 
-*   **exptab:** A table describing the experiments, containing the columns "condition," "replicate," "direction," "strand," and "path." The "direction" column should contain the values "forward" and "reverse," and the "strand" column should contain "plus" and "minus."  The `checkexptab` utility function can be used to verify the table's format.
+*   **exptab:** A table describing the experiments, containing the columns "condition," "replicate," "direction," "strand," and "path." The "direction" column should contain the values "forward" and "reverse," and the "strand" column should contain "plus" and "minus."  The `?checkexptab` utility function can be used to verify the table's format.
 *   **gencode:** The Gencode annotation file, available at [https://www.gencodegenes.org/](https://www.gencodegenes.org/).
 *   **maptrack:** Files containing low-mappability intervals for the genome of interest. For hg38, the track [k50.Unique.Mappability.bb](https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb) was downloaded from the UCSC server, and scores below 0.8 were set to `NA`.
 *   **blacklist:** Blacklist files for various organisms are available at [https://github.com/Boyle-Lab/Blacklist/blob/master/lists/](https://github.com/Boyle-Lab/Blacklist/blob/master/lists/).
@@ -169,7 +169,7 @@ The following input files are required for the analysis:
 
 ### Retrieving Transcript Annotations from Gencode
 
-The `retrieveanno` function performs the following steps:
+The `?retrieveanno` function performs the following steps:
 
 1.  Reads and validates experimental data from the provided `exptab` CSV file.
 2.  Reads genomic annotations from the Gencode file and filters for "transcript" entries.
@@ -182,13 +182,7 @@ The `retrieveanno` function performs the following steps:
 
 
 ```{r retrieveanno}
-library(tepr)
-
-## Parameters
-exptabpath <-  system.file("extdata", "exptab.csv", package="tepr")
-gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
-
-allannobed <- retrieveanno(exptabpath, gencodepath)
+allannobed <- retrieveanno(expprepath, gencodepath, verbose = FALSE)
 message("\n The result is:\n")
 print(head(allannobed, 3))
 ```
