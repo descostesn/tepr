@@ -32,11 +32,11 @@ library(tepr)
 #########
 
 ## Parameters
-exppath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 windsize <- 200
 
 ## Read input tables
-expdf <- read.csv(exppath)
+expdf <- read.csv(expprepath)
 
 ## Retrieving the bedgraph paths
 bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
@@ -46,7 +46,7 @@ bgpathvec <- sapply(expdf$path, function(x) system.file("extdata", x,
 ## and writing the new experiment file to the current folder
 expdf$path <- bgpathvec
 write.csv(expdf, file = "./exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
-exppath <- "./exptab-preprocessing.csv"
+expprepath <- "./exptab-preprocessing.csv"
 
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
@@ -55,7 +55,7 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
 
-finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
+finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
     showtime = FALSE, verbose = FALSE)
 
@@ -155,7 +155,7 @@ The preprocessing pipeline consists of the following steps:
 | 5 | 43G | 6h58 |
 | 3 | 28.7G | 9h02|
 
-The code below is executed on chromosome 13 only to reduce computation time.
+The code below is executed on the chromosome 13 only to reduce computation time.
 
 ### Input Files
 
