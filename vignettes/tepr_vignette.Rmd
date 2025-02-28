@@ -290,10 +290,10 @@ checkexptab(expdf)
 
 ### Expressed Transcripts and Average Expression
 
-To study changes in nascent RNA patterns, the initial step is to select expressed transcripts. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1. If no expressed transcript is returned, an error is thrown.
+To study changes in nascent RNA patterns, the initial step is to select expressed transcripts with `?averageandfilterexprs`. The expression value of a gene is defined as the mean score across both strands. These scores are derived from the bedgraph files. A gene is considered expressed if its mean expression in all conditions exceeds a specified threshold.  The default expression threshold is set to 0.1. If no expressed transcript is returned, an error is thrown.
 
 ```{r averageandfilterexprs}
-resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
+resallexprs <- averageandfilterexprs(expdf, transdf, expthres, verbose = FALSE)
 ```
 
 `resallexprs` is a list.  Its first element is the input `transdf` with additional columns, such as the calculated mean expression values. The second element is a vector containing the IDs of the transcripts considered expressed. This vector will be used in subsequent downstream analyses.
@@ -304,12 +304,11 @@ print(resallexprs[[2]])
 
 ### NA Values per Transcript and Condition
 
-During preprocessing, scores within user-defined blacklisted regions, low-mappability regions, or any other excluded regions are replaced with NA values. The `countna` function retrieves the number of missing scores for each transcript. This table can be used for further data filtering, such as removing transcripts with an excessive number of windows lacking scores.
+During preprocessing, scores within user-defined blacklisted regions, low-mappability regions, or any other excluded regions are replaced with NA values. The `?countna` function retrieves the number of missing scores for each transcript. This table can be used for further data filtering, such as removing transcripts with an excessive number of windows lacking scores.
 
 ```{r countna}
-## Count NA values per transcript and condition
-rescountna <- countna(resallexprs, expdf)
-head(rescountna)
+rescountna <- countna(resallexprs, expdf, verbose = FALSE)
+print(rescountna)
 ```
 
 ### Empirical Cumulative Distribution Function (ECDF) for Genes
