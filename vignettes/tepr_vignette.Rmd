@@ -57,7 +57,7 @@ genomename <- "hg38"
 
 finaltab <- preprocessing(exppath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = "./", finaltabname = "anno.tsv",
-    showtime = TRUE, verbose = TRUE)
+    showtime = FALSE, verbose = FALSE)
 
 #########
 # tepr analysis - takes ~ 11 seconds
