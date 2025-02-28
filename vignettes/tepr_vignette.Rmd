@@ -487,18 +487,18 @@ AUC values between conditions can be compared by highlighting the two conditions
 plotauc(res, expdf, plottype = "groups", plot = TRUE)
 ```
 
-The plot generated using the complete dataset is shown below:
+The plot generated using the complete dataset is:
 
 [AUC group plot](pictures/AUCcompare_group.png)
 
 It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
-```{r plotaucpval}
+```{r plotaucpval, warning = FALSE}
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, expdf, genevec, plot = TRUE)
 ```
 
-The plot generated using the complete dataset is shown below:
+The plot generated using the complete dataset is:
 
 <img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
 
