@@ -77,13 +77,13 @@ reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
 
 The table produced by the preprocessing function is saved without column headers. The resulting data, using the testing dataset, is:
 
-```{r prequick}
+```{r prequick, echo = FALSE}
 print(head(finaltab, 3))
 ```
 
 The `tepr` function returns two tables that are used for plotting different information (see below for explanations and `?tepr`). On the testing dataset it gives:
 
-```{r teprquick}
+```{r teprquick, echo = FALSE}
 message("The table meandifference:\n")
 print(head(reslist[[1]], 2))
 
