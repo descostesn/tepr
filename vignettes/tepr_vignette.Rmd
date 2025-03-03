@@ -698,20 +698,18 @@ res <- reslist[[2]]
 
 ## Plotting and saving to current folder
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
-plotecdf(resmeandiff, res, expdf, "EGFR", colvec, outfold = ".",
-    formatname = "png")
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, formatname = "png")
 
-plotauc(res, expdf, plottype = "groups", outfile = "AUCcompare_group", outfold = ".",
+plotauc(res, expdf, plottype = "groups", outfile = "AUCcompare_group",
     formatname = "png")
 genevec <- c("EGFR", "DAP", "FLI1", "MARCHF6", "LINC01619")
 plotauc(res, expdf, genevec, plottype = "pval", outfile = "AUCcompare_pval",
-    outfold = ".", formatname = "png")
+    formatname = "png")
 
-plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", formatname = "png",
-    outfold = ".")
+plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", formatname = "png")
 
-plothistoknee(res, outfold = ".", formatname = "png")
-plothistoknee(res, plottype = "kb", outfold = ".", formatname = "png")
+plothistoknee(res, formatname = "png")
+plothistoknee(res, plottype = "kb", formatname = "png")
 ```
 
 
