@@ -53,9 +53,9 @@
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 #' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
-#' finaltabname = "anno.tsv", tmpfold = "tmp", saveobjectpath = NA,
-#' savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-#' deletetmp = TRUE, chromtab = NA, verbose = TRUE)
+#' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
+#' saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 #'
 #' @param exptabpath Character. Path to the experiment table file.
 #' @param gencodepath Character. Path to the Gencode annotation file.
@@ -70,7 +70,7 @@
 #' @param finaltabname Character. Name of the final annotated table file.
 #'  Default is "anno.tsv".
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
-#'  Default is "tmp".
+#'  Default is \code{file.path(getwd(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
 #'  is NA.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
@@ -115,7 +115,8 @@
 #' #   maptrackpath = "mappability_track.bed",
 #' #   blacklistshpath = "blacklist.bed",
 #' #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
-#' #   finaltabname = "final_annotated_table.tsv", tmpfold = "tmp",
+#' #   finaltabname = "final_annotated_table.tsv",
+#' #   tmpfold = file.path(getwd(), "tmptepr"),
 #' #   saveobjectpath = "saved_objects", savefinaltable = TRUE,
 #' #   reload = FALSE, showtime = TRUE, showmemory = TRUE, deletetmp = TRUE,
 #' #   verbose = TRUE)
@@ -127,9 +128,10 @@
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
-    finaltabname = "anno.tsv", tmpfold = "tmp", saveobjectpath = NA,
-    savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-    deletetmp = TRUE, chromtab = NA, verbose = TRUE) {
+    finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
+    saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
+    showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
+    verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("\n\t The final table already exists, set reload = FALSE to ",
