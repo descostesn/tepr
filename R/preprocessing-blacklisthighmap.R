@@ -257,7 +257,7 @@
 #' Blacklist High Mappability Regions in Genomic Data
 #'
 #' @description
-#' This function processes genomic data to remove scores that fall within 
+#' This function processes genomic data to remove scores that fall within
 #' blacklisted regions or have low mappability, and computes weighted means for
 #' overlapping windows. The process ensures the integrity of genomic scores by
 #' focusing on high mappability regions and excluding blacklisted intervals.
@@ -265,7 +265,7 @@
 #' @usage
 #' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-#'    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
+#'    tmpfold = "tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #'    chromtab = NA, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
@@ -338,7 +338,7 @@
 #' #     windsize = 200,
 #' #     genomename = "hg38",
 #' #     saveobjectpath = "output/",
-#' #     tmpfold = "./tmp",
+#' #     tmpfold = "tmp",
 #' #     reload = FALSE,
 #' #     showtime = TRUE,
 #' #     showmemory = FALSE,
@@ -360,7 +360,7 @@
 
 blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
-    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
+    tmpfold = "tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
     chromtab = NA, verbose = TRUE) {
 
         if (is.na(genomename) && is.na(chromtab))
