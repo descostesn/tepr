@@ -481,7 +481,7 @@ plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE, verbose = FALSE)
 
 ### `plotauc`
 
-AUC values between conditions can be compared by highlighting the two conditions on the plot:
+AUC values between conditions can be compared by highlighting the two conditions on the plot (only 6 points appearing):
 
 ```{r plotaucgroups, warning = FALSE}
 plotauc(res, expdf, plottype = "groups", plot = TRUE)
