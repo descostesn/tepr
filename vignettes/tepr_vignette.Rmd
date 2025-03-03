@@ -145,6 +145,8 @@ The preprocessing pipeline consists of the following steps:
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
 5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
+<img src="pictures/structure.png" alt="structure" width="400"/>
+
 **Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time limits typically set in HPC parameters.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
 | nb CPU | RAM | Time |
