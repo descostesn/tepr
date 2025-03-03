@@ -48,7 +48,7 @@
 #'
 #' @usage
 #' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
-#'   savefinaltable = TRUE, finaltabpath = "./", finaltabname = "anno.tsv",
+#'   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
 #'  verbose)
 #'
 #' @param tmpfold A string specifying the temporary folder containing the
@@ -62,7 +62,7 @@
 #' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
 #'  disk. Default is `TRUE`.
 #' @param finaltabpath A string specifying the directory where the final table
-#'  should be saved. Default is `"./"`.
+#'  should be saved. Default is \code{getwd()}.
 #' @param finaltabname A string specifying the name of the final table file.
 #'  Default is `"anno.tsv"`.
 #' @param verbose Logical; if `TRUE`, detailed messages are printed during
@@ -94,7 +94,7 @@
 #' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
-    showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
+    showtime = TRUE, savefinaltable = TRUE, finaltabpath = getwd(),
     finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
