@@ -14,7 +14,11 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("retrogenomics/tepr")
 ```
 
-TepR will also be available on CRAN soon.
+To install TepR from CRAN:
+
+```
+install.packages("tepr")
+```
 
 
 ## General principles
@@ -51,3 +55,13 @@ TepR provides visualization capabilities for: the cumulative transcription densi
 
 See the accompanying [vignette](https://htmlpreview.github.io/?https://github.com/retrogenomics/tepr/blob/main/vignettes/tepr_vignette.html)
 
+## Getting help
+
+For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
+
+## Credits
+
+- Gael Cristofari, gael.cristofari@cnrs.fr
+- Victor Billon, victor.billon@etu.univ-cotedazur.fr
+- Nicolas Descostes, nicolas.descostes@gmail.com
+    
