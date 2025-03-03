@@ -5,9 +5,8 @@ v1.1.2:
 - In .computeecdf, under the comment "Shrink the results back to the transtable keeping ecdf columns", change code to remove the 'dot' usage which throws an error by R CMD check.
 - In .computeecdf, also change the way column names are modified under the comment "Removing strand from column names" for the same reason.
 - In .normalizeandsummarize, replace code for "Selecting coord and mean values" to remove the use of dot.
-- Remove manual pdf that is not needed
 - Add a .github/workflows that test the package on windows, macos, and ubuntu
-- Add a .Rbuildignore to exclude the .github folder during package creation
+- Add a .Rbuildignore to exclude the .github folder and manual.pdf during package creation
 - Correct bug about direction in loop if dfstrandlist of the function .expressedtrans in averageandfilterexprs.
 - Folder inst/extdata reduced from 111 Mb to 504K
 - Add error if no transcript is identified as expressed in averageandfilterexprs. This case prevents the rest of the  code to be executed.
