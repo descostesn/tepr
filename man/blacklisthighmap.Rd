@@ -6,8 +6,8 @@
 \usage{
 blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-   tmpfold = "tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-   chromtab = NA, verbose = TRUE)
+   tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+   showmemory = FALSE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{maptrackpath}{Character string. Path to the mappability track file.}
@@ -32,7 +32,7 @@ and R objects are not saved.}
 
 \item{tmpfold}{A character string specifying the temporary folder for saving
 output files. The temporary files contain the scores for each bedgraph on
-each chromosome.}
+each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.}
 
 \item{reload}{Logical. If `TRUE`, reloads existing saved objects to avoid
 recomputation. Default is `FALSE`. If the function failed during object
@@ -98,7 +98,7 @@ object can be retrieved with:
 #     windsize = 200,
 #     genomename = "hg38",
 #     saveobjectpath = "output/",
-#     tmpfold = "tmp",
+#     tmpfold = "tmptepr",
 #     reload = FALSE,
 #     showtime = TRUE,
 #     showmemory = FALSE,

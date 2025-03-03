@@ -6,9 +6,9 @@
 \usage{
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
-finaltabname = "anno.tsv", tmpfold = "tmp", saveobjectpath = NA,
-savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-deletetmp = TRUE, chromtab = NA, verbose = TRUE)
+finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
+saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{exptabpath}{Character. Path to the experiment table file.}
@@ -33,7 +33,7 @@ saved. Default is "getwd()".}
 Default is "anno.tsv".}
 
 \item{tmpfold}{Character. Path to a temporary folder for intermediate files.
-Default is "tmp".}
+Default is \code{file.path(getwd(), "tmptepr")}.}
 
 \item{saveobjectpath}{Character. Path to save intermediate objects. Default
 is NA.}
@@ -92,7 +92,8 @@ Temporary files created during processing are optionally deleted at the end.
 #   maptrackpath = "mappability_track.bed",
 #   blacklistshpath = "blacklist.bed",
 #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
-#   finaltabname = "final_annotated_table.tsv", tmpfold = "tmp",
+#   finaltabname = "final_annotated_table.tsv",
+#   tmpfold = file.path(getwd(), "tmptepr"),
 #   saveobjectpath = "saved_objects", savefinaltable = TRUE,
 #   reload = FALSE, showtime = TRUE, showmemory = TRUE, deletetmp = TRUE,
 #   verbose = TRUE)
