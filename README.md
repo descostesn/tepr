@@ -1,11 +1,11 @@
 # TepR: Transcription elongation profile in R
 
-I. [Description](#description)
-II. [Installation and requirements](#installation-and-requirements)
-III. [General principles](#general-principles)
-IV. [Tutorial and quick start](#tutorial-and-quick-start)
-V. [Getting help](#getting-help)
-VI. [Credits](#credits)
+I. [Description](#description)  
+II. [Installation and requirements](#installation-and-requirements)  
+III. [General principles](#general-principles)  
+IV. [Tutorial and quick start](#tutorial-and-quick-start)  
+V. [Getting help](#getting-help)  
+VI. [Credits](#credits)  
 
 ## Description
 
