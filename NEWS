@@ -22,6 +22,7 @@ v1.1.2:
 - Add '?' before function names
 - add figure of the global structure of the package
 - remove explicit path to current directory and use getwd where appropriate
+- remove outfold from plot functions in annex
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
