@@ -34,11 +34,11 @@ install.packages("tepr")
 
 The preprocessing pipeline consists of the following steps:
 
-1.  Filtering Gencode annotations to extract "transcript" annotations.
-2.  Distinguishing between protein-coding (MANE_Select) and long non-coding (lncRNA, Ensembl_canonical) transcripts.
-3.  Dividing transcripts into windows of a user-defined size (`windsize`).
+1.  Selecting "transcript" annotations from Gencode.
+2.  Distinguishing protein-coding and long non-coding transcript annotations.
+3.  Dividing transcripts into windows of a user-defined size.
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
-5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
+5.  Generating a final annotated table incorporating the scores derived from the previous steps.
 
 The downstream analysis uses the previously generated final table to:
 
@@ -51,10 +51,7 @@ The downstream analysis uses the previously generated final table to:
 7. Compute the attenuation values for each window of each transcript. This represents the result of the differential analysis.
 8. Categorize genes into a "Universe" and assigns them into groups such as "Attenuated" or "Outgroup" based on transcription data and thresholds.
 
-<figure>
-  <img src="vignettes/pictures/structure.png" alt="structure"/>
-  <figcaption>Overview of the downstream analysis</figcaption>
-</figure>
+<img src="vignettes/pictures/structure.png" alt="structure"/>
 
 TepR allows for the analysis of nascent RNA-seq data from a single condition, even with only one replicate. It achieves this by comparing the observed signal to a theoretical baseline of uniform nascent RNA distribution across the transcript, effectively enabling the identification of localized changes in transcription.
 
