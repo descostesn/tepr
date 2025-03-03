@@ -6,7 +6,7 @@
 \usage{
 blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-   tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
+   tmpfold = "tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
    chromtab = NA, verbose = TRUE)
 }
 \arguments{
@@ -57,7 +57,7 @@ intermediate results to `tmpfold`. These intermediates files are then
 combined by the function 'createtablescores'.
 }
 \description{
-This function processes genomic data to remove scores that fall within 
+This function processes genomic data to remove scores that fall within
 blacklisted regions or have low mappability, and computes weighted means for
 overlapping windows. The process ensures the integrity of genomic scores by
 focusing on high mappability regions and excluding blacklisted intervals.
@@ -98,7 +98,7 @@ object can be retrieved with:
 #     windsize = 200,
 #     genomename = "hg38",
 #     saveobjectpath = "output/",
-#     tmpfold = "./tmp",
+#     tmpfold = "tmp",
 #     reload = FALSE,
 #     showtime = TRUE,
 #     showmemory = FALSE,
