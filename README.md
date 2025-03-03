@@ -59,7 +59,7 @@ TepR provides visualization capabilities for: the cumulative transcription densi
 
 ## Tutorial and quick start
 
-See the accompanying [vignette](https://htmlpreview.github.io/?https://github.com/retrogenomics/tepr/blob/main/vignettes/tepr_vignette.html)
+See the accompanying [vignette](https://htmlpreview.github.io/?https://github.com/retrogenomics/tepr/blob/main/vignettes/tepr_vignette.html).
 
 ## Getting help
 
