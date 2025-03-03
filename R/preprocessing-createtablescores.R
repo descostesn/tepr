@@ -78,7 +78,7 @@
 #'
 #' @examples
 #' # Example usage:
-#' # tmpfold <- "path/to/temp/folder"
+#' # tmpfold <- "path/to/tmp/folder"
 #' # exptabpath <- "path/to/experiment_table.csv"
 #' # finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
 #' #   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
