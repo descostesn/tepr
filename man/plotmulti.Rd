@@ -4,7 +4,7 @@
 \alias{plotmulti}
 \title{Generate all tepr plots for all experiment comparisons}
 \usage{
-plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = ".", digits = 2,
+plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = getwd(), digits = 2,
 middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB",
 "#FF9A04", "#FC4E07"), genaucvec = NA, aucaxisminx = -10,
 aucaxismaxx = 100, aucaxisminy = -10, aucaxismaxy = 100, aucmaintitle = "",
@@ -22,7 +22,8 @@ columns named 'condition', 'replicate', 'strand', and 'path'.}
 plot the ecdf of.}
 
 \item{outfold}{Path to the output folder where the plots will be written.
-Subfolders with the names of the comparisons are automatically created.}
+Subfolders with the names of the comparisons are automatically created.
+Default is \code{getwd()}.}
 
 \item{digits}{For the ecdf plot, the number of decimal places to round the
 AUC and KS values. Default is \code{2}.}

@@ -6,7 +6,7 @@
 \usage{
 plotecdf(dfmeandiff, unigroupdf, expdf, genename,
    colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-   outfold = ".", digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+   outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
    formatname = "pdf", verbose = TRUE)
 }
 \arguments{
@@ -26,7 +26,7 @@ columns named 'condition', 'replicate', 'strand', and 'path'.}
 the plot. Default is \code{c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")}.}
 
 \item{outfold}{A string specifying the output folder where the plot will be
-saved if \code{plot = FALSE}. Default is \code{"."}.}
+saved if \code{plot = FALSE}. Default is \code{getwd()}.}
 
 \item{digits}{The number of decimal places to round the AUC and KS values.
 Default is \code{2}.}
