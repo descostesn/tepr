@@ -214,7 +214,7 @@ The main steps include:
 *   Calculating weighted means for overlapping scores within each genomic window.
 *   Saving the processed results to a specified temporary folder (`tmpfold`).
 
-If you did not execute the "quick start" section code, you need to first copy the bedgraph files to your current folder:
+If you **did not** execute the "quick start" section code, you need to first copy the bedgraph files to your current folder:
 
 ```{r copybg, eval = FALSE}
 expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
@@ -275,10 +275,10 @@ colnames(transdf) <- c("biotype", "chr", "coor1", "coor2", "transcript", "gene",
     "HS_rep1.minus_score", "HS_rep2.plus", "HS_rep2.plus_score",
     "HS_rep2.minus", "HS_rep2.minus_score")
 
-message("The table given by the preprocessing function is:")
+message("The table given by the preprocessing function is:\n")
 print(head(transdf, 3))
 
-message("\n The expdf table contains information about each replicate (here limited to one):")
+message("\n The expdf table contains information about each replicate (here limited to one):\n")
 head(expdf)
 ```
 
