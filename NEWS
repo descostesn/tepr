@@ -15,6 +15,7 @@ v1.1.2:
 - Change tmpfold = "./tmp" to tmpfold = "tmp" in blacklisthighmap and preprocessing to avoid potential errors with windows.
 - Change finaltabpath = "./" to finaltabpath = getwd() in createtablescores and preprocessing to avoid potential errors with windows.
 - Change workingdir = "." to workingdir = getwd() in joinfiles.
+- Rename the default 'tmp' folder by 'tmptepr' to avoid issues of pre-allocated space. Define the default path with file.path(getwd(), "tmptepr").
 
 -- vignette
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
