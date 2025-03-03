@@ -53,7 +53,7 @@
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 #' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
-#' finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
+#' finaltabname = "anno.tsv", tmpfold = "tmp", saveobjectpath = NA,
 #' savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #' deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 #'
@@ -70,7 +70,7 @@
 #' @param finaltabname Character. Name of the final annotated table file.
 #'  Default is "anno.tsv".
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
-#'  Default is "./tmp".
+#'  Default is "tmp".
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
 #'  is NA.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
@@ -127,7 +127,7 @@
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
-    finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
+    finaltabname = "anno.tsv", tmpfold = "tmp", saveobjectpath = NA,
     savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
     deletetmp = TRUE, chromtab = NA, verbose = TRUE) {
 
