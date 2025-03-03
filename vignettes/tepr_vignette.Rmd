@@ -232,15 +232,15 @@ Note that this function does not return a value; instead, it saves the processed
 
 ```{r blacklisthighmap, eval = FALSE}
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
-blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = "tmp")
+blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = file.path(getwd(), "tmptepr"))
 ```
 
 ### Creating the Final Table
 
-The `?createtablescores` function merges the files stored in the previously produced `./tmp` folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
+The `?createtablescores` function merges the files stored in the previously produced temporary folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE}
-finaltab <- createtablescores(tmpfold = "tmp", expprepath, savefinaltable = FALSE)
+finaltab <- createtablescores(tmpfold = file.path(getwd(), "tmptepr"), expprepath, savefinaltable = FALSE)
 ```
 
 The final table should look like:
