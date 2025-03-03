@@ -32,7 +32,7 @@ library(tepr)
 #########
 
 ## Parameters
-expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+expprepath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 windsize <- 200
 
 ## Read input tables
@@ -84,10 +84,10 @@ print(head(finaltab, 3))
 The `tepr` function returns two tables that are used for plotting different information (see below for explanations and `?tepr`). On the testing dataset it gives:
 
 ```{r teprquick}
-message("The table meandifference:")
+message("The table meandifference:\n")
 print(head(reslist[[1]], 2))
 
-message("\n\n The table universegroup:")
+message("\n\n The table universegroup:\n")
 print(head(reslist[[2]], 2))
 ```
 
