@@ -601,20 +601,21 @@ transdfonecond <- transdf[, c(seq_len(9), 18, 19, 20, 21)]
 resonecond <- tepr(expdfonecond, transdfonecond, expthres, controlcondname = "HS", verbose = FALSE)
 ```
 
-Because AUC and metagene plots require two conditions, they cannot be generated in a single-condition analysis.  However, the ECDF for a given gene can be obtained as follows:
+Because AUC and metagene plots require two conditions, they cannot be generated in a single-condition analysis.  However, the ECDF for a given gene can be obtained by considering the y = x distribution as follows:
 
-```{r ecdfcond}
+```{r ecdfcond, warning = FALSE}
 plotecdf(resonecond[[1]], resonecond[[2]], expdfonecond, genename = "EGFR",
-    colvec = c("#90AFBB"), plot = TRUE)
+    colvec = c("#90AFBB"), plot = TRUE, verbose = FALSE)
 ```
 
-The histogram of knee positions can be obtained as follows:
+The histogram of knee positions can be obtained with:
 
-```{r histocond}
-## Randomly marking 10 transcripts as attenuated as a mock example
-idxatt <- sample(seq_len(100), 10)
+```{r histocond, warning = FALSE}
+## Randomly marking 3 transcripts as attenuated as a mock example
+idxatt <- sample(seq_len(6), 3)
 resonecond[[2]][idxatt, "Group"] <- "Attenuated"
-plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE)
+resonecond[[2]][idxatt, "Universe"] <- TRUE
+plothistoknee(resonecond[[2]], kneename = "knee_AUC_HS", plottype = "percent", plot = TRUE, verbose = FALSE)
 ```
 
 
