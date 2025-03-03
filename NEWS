@@ -11,6 +11,10 @@ v1.1.2:
 - Folder inst/extdata reduced from 111 Mb to 504K
 - Add error if no transcript is identified as expressed in averageandfilterexprs. This case prevents the rest of the  code to be executed.
 - Add a README.md
+- Change outfold = "." parameter to outfold = getwd() in plotauc, plotecdf, plothistoknee, plotmetagenes, and plotmulti to avoid potential errors with windows.
+- Change tmpfold = "./tmp" to tmpfold = "tmp" in blacklisthighmap and preprocessing to avoid potential errors with windows.
+- Change finaltabpath = "./" to finaltabpath = getwd() in createtablescores and preprocessing to avoid potential errors with windows.
+- Change workingdir = "." to workingdir = getwd() in joinfiles.
 
 -- vignette
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
