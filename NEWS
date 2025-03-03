@@ -19,6 +19,8 @@ v1.1.2:
 - Improve preprocessing description
 - Reduce code in different sections since quickstart is now executed in background
 - Add '?' before function names
+- add figure of the global structure of the package
+
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
