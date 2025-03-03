@@ -21,7 +21,7 @@ v1.1.2:
 - Reduce code in different sections since quickstart is now executed in background
 - Add '?' before function names
 - add figure of the global structure of the package
-
+- remove explicit path to current directory and use getwd where appropriate
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
