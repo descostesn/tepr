@@ -7,13 +7,16 @@
             if (verbose) message("\t Combining all ", currentname,
                 " files into ", destfile)
             if (isTRUE(all.equal(.Platform$OS.type, "windows"))) {
-                cmd <- paste0("type ", paste(currentfiles, collapse = " "),
-                " > ", destfile)
+                cmdps <- paste0("Get-Content ",
+                    paste(currentfiles, collapse = ", "), "| Out-File ",
+                    destfile)
+                system2("powershell.exe", args = c("-command", cmdps))
             } else {
                 cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
                 " > ", destfile)
+                system(cmd)
             }
-            system(cmd)
+
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
 
