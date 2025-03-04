@@ -23,7 +23,7 @@ For any questions or bug reports, please open an [issue](https://github.com/retr
 
 The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
-```{r quickstart, results = 'hide', message = FALSE, warning = FALSE}
+```{r quickstart}
 
 library(tepr)
 
@@ -32,22 +32,27 @@ library(tepr)
 #########
 
 ## Parameters
+message("AAAAAAAAA - Parameters preprocessing\n")
 expprepath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 windsize <- 200
 
 ## Read input tables
+message("AAAAAAAAA - Read input tables preprocessing \n")
 expdfpre <- read.csv(expprepath)
 
 ## Retrieving the bedgraph paths
+message("AAAAAAAAA - Retrieving the bedgraph paths\n")
 bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
     package = "tepr"))
 
 ## Replace the path column of expdfpre with the previously retrieved paths
 ## and writing the new experiment file to the current folder
+message("AAAAAAAAA - Retrieving the bedgraph paths\n")
 expdfpre$path <- bgpathvec
 write.csv(expdfpre, file = "exptab-preprocessing.csv", row.names = FALSE, quote = FALSE)
 expprepath <- "exptab-preprocessing.csv"
 
+message("AAAAAAAAA - Reading gencode etc\n")
 gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
     package = "tepr")
@@ -55,6 +60,7 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
 
+message("AAAAAAAAA - Calling preprocessing")
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
     showtime = FALSE, verbose = FALSE)
@@ -64,14 +70,17 @@ finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
 #########
 
 ## Parameters (transpath limited to 6 transcripts)
+message("AAAAAAAAA - Parameters tepr\n")
 exppath <-  system.file("extdata", "exptab.csv", package="tepr")
 transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
 expthres <- 0.1
 
 ## Read input tables
+message("AAAAAAAAA - Read input tables for tepr\n")
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 
+message("AAAAAAAAA - Calling tepr\n")
 reslist <- tepr(expdf, transdf, expthres, showtime = FALSE, verbose = FALSE)
 ```
 
