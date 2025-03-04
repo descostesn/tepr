@@ -16,7 +16,7 @@ v1.1.2:
 - Change finaltabpath = "./" to finaltabpath = getwd() in createtablescores and preprocessing to avoid potential errors with windows.
 - Change workingdir = "." to workingdir = getwd() in joinfiles.
 - Rename the default 'tmp' folder by 'tmptepr' to avoid issues of pre-allocated space. Define the default path with file.path(getwd(), "tmptepr").
-- add actions/upload-artifact@v4 in .github/workflows/check-standard.yaml
+
 
 -- vignette
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
