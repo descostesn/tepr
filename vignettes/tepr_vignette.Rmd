@@ -23,7 +23,7 @@ For any questions or bug reports, please open an [issue](https://github.com/retr
 
 The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
 
-```{r quickstartonepartone, results = 'hide', message = FALSE, warning = FALSE}
+```{r quickstart, results = 'hide', message = FALSE, warning = FALSE}
 
 library(tepr)
 
@@ -54,15 +54,11 @@ maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
 blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
-```
 
-```{r quickstartoneparttwo, results = 'hide', message = FALSE, warning = FALSE}
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
     showtime = FALSE, verbose = FALSE)
-```
 
-```{r quickstarttwo, results = 'hide', message = FALSE, warning = FALSE}
 #########
 # tepr analysis - takes ~ 1 seconds
 #########
