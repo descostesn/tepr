@@ -6,8 +6,13 @@
             destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
             if (verbose) message("\t Combining all ", currentname,
                 " files into ", destfile)
-            cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
+            if (isTRUE(all.equal(.Platform$OS.type, "windows"))) {
+                cmd <- paste0("type ", paste(currentfiles, collapse = " "),
                 " > ", destfile)
+            } else {
+                cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
+                " > ", destfile)
+            }
             system(cmd)
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
