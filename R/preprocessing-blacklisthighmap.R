@@ -214,7 +214,7 @@
 
                     if (showtime) start_bglistwmean <- Sys.time()
 
-                    if (verbose) message("\n\t # Processing ", currentchrom)
+                    if (verbose) message("\n\t # --- Processing ", currentchrom)
                     ## Reading the maptrack on a specific chromosomes
                     chromlength <- .retrievechromlength(chromtab, currentchrom)
                     maptracktib <- .retrievemaptrack(maptrackpath, showtime,
