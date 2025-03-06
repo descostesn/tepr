@@ -8,8 +8,8 @@
                 " files into ", destfile)
             if (isTRUE(all.equal(.Platform$OS.type, "windows"))) {
                 cmdps <- paste0("Get-Content ",
-                    paste(currentfiles, collapse = ", "), "| Out-File ",
-                    destfile)
+                    paste(currentfiles, collapse = ", "),
+                    "| Out-File -Encoding UTF8 ", destfile)
                 system2("powershell.exe", args = c("-command", cmdps))
             } else {
                 cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
@@ -155,7 +155,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
             outfile <- file.path(finaltabpath, finaltabname)
             if (verbose) message("\n ## Saving the final table to ", outfile)
             write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
-                row.names = FALSE, col.names = FALSE)
+                row.names = FALSE, col.names = FALSE, fileEncoding = "UTF8")
         }
 
         if (showtime) {
