@@ -17,7 +17,7 @@ v1.1.2:
 - Change workingdir = "." to workingdir = getwd() in joinfiles.
 - Rename the default 'tmp' folder by 'tmptepr' to avoid issues of pre-allocated space. Define the default path with file.path(getwd(), "tmptepr").
 - In .mergefiles of createtablescores, add specific code when OS is windows. It uses a power-shell syntax and system2.
-- add file encoding utf8 for windows check in createtablescores.R
+- add file encoding utf8 for windows check in createtablescores.
 
 -- vignette
 - With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
@@ -30,6 +30,7 @@ v1.1.2:
 - add figure of the global structure of the package
 - remove explicit path to current directory and use getwd where appropriate
 - remove outfold from plot functions in annex
+- add optional line in quickstart to get chromtab
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
