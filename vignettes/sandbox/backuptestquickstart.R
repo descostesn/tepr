@@ -61,3 +61,9 @@ genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7",
 genevec <- c("ENST00000275493.7", "ENST00000230895.11", "ENST00000527786.7")
 
 
+## To enter preprocessing
+blacklistshpath = blacklistpath; nbcputrans = 1; finaltabpath = getwd()
+finaltabname = "anno.tsv"; tmpfold = file.path(getwd(), "tmptepr")
+saveobjectpath = NA; savefinaltable = TRUE; reload = FALSE
+showtime = FALSE; showmemory = FALSE; deletetmp = TRUE; chromtab = NA
+verbose = TRUE
