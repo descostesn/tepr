@@ -68,6 +68,5 @@ For any questions or bug reports, please open an [issue](https://github.com/retr
 ## Credits
 
 - Gael Cristofari, gael.cristofari@cnrs.fr
-- Victor Billon, victor.billon@etu.univ-cotedazur.fr
+- Victor Billon, victor.billon@yahoo.fr
 - Nicolas Descostes, nicolas.descostes@gmail.com
-    
