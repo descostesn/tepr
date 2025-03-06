@@ -31,6 +31,8 @@ v1.1.2:
 - remove explicit path to current directory and use getwd where appropriate
 - remove outfold from plot functions in annex
 - add optional line in quickstart to get chromtab
+- remove preprocessing in bash section
+
 
 v1.1.1:
 - Optimize the vignette text with Gemini.
