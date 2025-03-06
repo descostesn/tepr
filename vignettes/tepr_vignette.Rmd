@@ -55,9 +55,13 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
 
+## The line below is optional
+chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
-    showtime = FALSE, verbose = FALSE)
+    chromtab = chromtabtest, showtime = FALSE, verbose = FALSE)
+
 
 #########
 # tepr analysis - takes ~ 1 seconds
