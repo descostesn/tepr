@@ -40,13 +40,21 @@
     return(alldf)
 }
 
+.returnexpcolnames <- function(expdf) {
+    expcolnames <- unlist(apply(expdf, 1, function(x) {
+        res <- paste0(x["condition"], "_rep", x["replicate"], ".", x["strand"])
+        return(c(res, paste(res, "score", sep = "_")))
+    }, simplify = FALSE))
+    return(expcolnames)
+}
+
 .dontcompare <- function(dontcompare, expdf, verbose) {
 
     ## Retrieve the condition names without duplicates
     condvec <- unique(expdf$condition)
 
     ## Create matrix with all comparisons
-    matcond <- combn(condvec, 2, simplify = TRUE)
+    matcond <- utils::combn(condvec, 2, simplify = TRUE)
 
     if (!is.null(dontcompare)) {
 
@@ -90,12 +98,12 @@
 #' lncRNA biotypes. The resulting data is written to an output file.
 #'
 #' @usage
-#' joinfiles(workingdir = ".", window = 200, bgpattern = "*.bg",
-#'   protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
-#'   outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE)
+#' joinfiles(workingdir = getwd(), window = 200, bgpattern = "*.bg",
+#' protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
+#' outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE)
 #'
 #' @param workingdir The directory containing bedgraph files. Defaults to the
-#'  current working directory (`"."`).
+#'  current working directory (`getwd()`).
 #' @param window The window size used for joining the score files. Defaults to
 #'  200.
 #' @param bgpattern A file pattern to identify bedgraph files. Defaults to
@@ -128,7 +136,7 @@
 #'
 #' @export
 
-joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # nolint
+joinfiles <- function(workingdir = getwd(), window = 200, bgpattern = "*.bg", # nolint
     protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
     outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE) {
 
@@ -146,6 +154,9 @@ joinfiles <- function(workingdir = ".", window = 200, bgpattern = "*.bg", # noli
             window, nbcpu) {
 
                 if (verbose) message("\t processing ", scoredir)
+
+                ## Declaration to tackle CMD check
+                strand <- NULL
 
                 files <- bedgraphfiles %>% purrr::map(~{
                     filename <- tools::file_path_sans_ext(basename(.))
@@ -270,7 +281,7 @@ checkexptab <- function(exptab) {
 #' using the condition column of a provided experiment table.
 #'
 #' @usage
-#' showallcomp(expdf, verbose = TRUE)
+#' showallcomp(expdf, verbose = FALSE)
 #'
 #' @param expdf A data frame containing experiment data that should have
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
@@ -294,6 +305,7 @@ checkexptab <- function(exptab) {
 #'   showallcomp(exptab)
 #' }
 #'
+#' @importFrom utils combn
 #' @export
 
 showallcomp <- function(expdf, verbose = FALSE) {
@@ -307,7 +319,7 @@ showallcomp <- function(expdf, verbose = FALSE) {
         message("\n Your table has only one conditions: ", condvec)
     } else {
 
-        matcond <- combn(condvec, 2, simplify = TRUE)
+        matcond <- utils::combn(condvec, 2, simplify = TRUE)
         compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
         if (verbose) message("All comparisons: ", paste(compvec,
             collapse = " - "))

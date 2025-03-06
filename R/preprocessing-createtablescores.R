@@ -6,9 +6,17 @@
             destfile <- file.path(tmpfold, paste0(currentname, ".tsv"))
             if (verbose) message("\t Combining all ", currentname,
                 " files into ", destfile)
-            cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
+            if (isTRUE(all.equal(.Platform$OS.type, "windows"))) {
+                cmdps <- paste0("Get-Content ",
+                    paste(currentfiles, collapse = ", "),
+                    "| Out-File -Encoding UTF8 ", destfile)
+                system2("powershell.exe", args = c("-command", cmdps))
+            } else {
+                cmd <- paste0("cat ", paste(currentfiles, collapse = " "),
                 " > ", destfile)
-            system(cmd)
+                system(cmd)
+            }
+
             return(destfile)
         }, explist, names(explist), MoreArgs = list(tmpfold, verbose))
 
@@ -48,7 +56,7 @@
 #'
 #' @usage
 #' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
-#'   savefinaltable = TRUE, finaltabpath = "./", finaltabname = "anno.tsv",
+#'   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
 #'  verbose)
 #'
 #' @param tmpfold A string specifying the temporary folder containing the
@@ -62,7 +70,7 @@
 #' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
 #'  disk. Default is `TRUE`.
 #' @param finaltabpath A string specifying the directory where the final table
-#'  should be saved. Default is `"./"`.
+#'  should be saved. Default is \code{getwd()}.
 #' @param finaltabname A string specifying the name of the final table file.
 #'  Default is `"anno.tsv"`.
 #' @param verbose Logical; if `TRUE`, detailed messages are printed during
@@ -78,14 +86,15 @@
 #'
 #' @examples
 #' # Example usage:
-#' tmpfold <- "path/to/temp/folder"
-#' exptabpath <- "path/to/experiment_table.csv"
-#' finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
-#'   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
-#'   finaltabpath = "./results", finaltabname = "final_scores.tsv",
-#'   verbose = TRUE)
+#' # tmpfold <- "path/to/tmp/folder"
+#' # exptabpath <- "path/to/experiment_table.csv"
+#' # finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
+#' #   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
+#' #   finaltabpath = "./results", finaltabname = "final_scores.tsv",
+#' #   verbose = TRUE)
 #'
 #' @importFrom dplyr full_join
+#' @importFrom utils read.csv
 #'
 #' @seealso
 #' [blacklisthighmap]
@@ -93,7 +102,7 @@
 #' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
-    showtime = TRUE, savefinaltable = TRUE, finaltabpath = "./",
+    showtime = TRUE, savefinaltable = TRUE, finaltabpath = getwd(),
     finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
@@ -102,7 +111,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
-        exptab <- read.csv(exptabpath, header = TRUE)
+        exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         ## Retrieving the file paths
         filevec <- list.files(tmpfold, full.names = TRUE)
@@ -146,7 +155,7 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
             outfile <- file.path(finaltabpath, finaltabname)
             if (verbose) message("\n ## Saving the final table to ", outfile)
             write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
-                row.names = FALSE, col.names = FALSE)
+                row.names = FALSE, col.names = FALSE, fileEncoding = "UTF8")
         }
 
         if (showtime) {

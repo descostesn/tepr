@@ -41,6 +41,9 @@ a provided expression data frame and filters out transcripts based on a
 specified expression threshold. The function also renames the columns in the
 output data frame to include mean expression values.
 }
+\details{
+If no transcript is selected as expressed, the function throws an error.
+}
 \examples{
 # Example usage of averageandfilterexprs
 # result <- averageandfilterexprs(expdf, alldf, expthres = 10)

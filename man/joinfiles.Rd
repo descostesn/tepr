@@ -4,13 +4,13 @@
 \alias{joinfiles}
 \title{Join Bedgraph Files for Protein-Coding and lncRNA Data}
 \usage{
-joinfiles(workingdir = ".", window = 200, bgpattern = "*.bg",
-  protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
-  outtsv = "dTAG_Cugusi_stranded_20230810.tsv", verbose = TRUE)
+joinfiles(workingdir = getwd(), window = 200, bgpattern = "*.bg",
+protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
+outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE)
 }
 \arguments{
 \item{workingdir}{The directory containing bedgraph files. Defaults to the
-current working directory (`"."`).}
+current working directory (`getwd()`).}
 
 \item{window}{The window size used for joining the score files. Defaults to
 200.}

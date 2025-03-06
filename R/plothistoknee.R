@@ -8,7 +8,7 @@
 #'
 #' @usage
 #' plothistoknee(unigroupdf, plottype = "percent", xlimvec = NA,
-#' binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+#' binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = getwd(),
 #' formatname = "pdf", universename = "Universe", groupname = "Group",
 #' verbose = TRUE)
 #'
@@ -62,7 +62,7 @@
 #' @export
 
 plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # nolint
-    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+    binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = getwd(),
     formatname = "pdf", universename = "Universe", groupname = "Group",
     verbose = TRUE) {
 

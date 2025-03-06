@@ -1,22 +1,26 @@
 .normalizeandsummarize <- function(transvec, dfmeandiff, unigroupdf, daucname, # nolint
     auc_ctrlname, auc_stressname) {
 
-    ## Selecting full mean and AUC columns
-    AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
-        dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
-        !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
+        ## Declaration to tackle CMD check
+        transcript <- gene <- strand <- window_size <- coord <- NULL
 
-    ## Selecting coord and mean values
-    result <- dfmeandiff %>%
-        dplyr::filter(transcript %in% transvec) %>% #nolint
-        dplyr::left_join(., AUC_allcondi,
-            by = c("transcript", "gene")) %>%
-        dplyr::select(transcript, gene, coord, dplyr::contains("mean_value"),
-        -dplyr::contains("Full"))  %>% dplyr::group_by(coord) %>%
-        dplyr::summarise(dplyr::across(dplyr::contains("mean_value"),
-        ~ mean(., na.rm = TRUE)))
+        ## Selecting full mean and AUC columns
+        AUC_allcondi <- unigroupdf %>% dplyr::select(transcript, gene, strand,
+            dplyr::contains("Full"), !!sym(daucname), !!sym(auc_ctrlname),
+            !!sym(auc_stressname), -contains(c("UP", "DOWN")), window_size)
 
-    return(result)
+        ## Selecting expressed transcripts
+        res <- dfmeandiff[dfmeandiff$transcript %in% transvec, ]
+        ## Join dfmeandiff and AUC_allcondi
+        res <- dplyr::left_join(res, AUC_allcondi, by = c("transcript", "gene",
+            "strand"))
+        ## Selecting columns of interest
+        res <- dplyr::select(res, coord, dplyr::contains("mean_value"))
+        ## Computing mean for each coordinate
+        res <- dplyr::summarise(dplyr::group_by(res, coord), dplyr::across(
+            dplyr::contains("mean_value"), \(x) mean(x, na.rm = TRUE)))
+
+        return(res)
 }
 
 .checkmetagenes <- function(plottype) {
@@ -40,8 +44,8 @@
 #' @usage
 #' plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
 #' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
-#' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf", outfold = ".",
-#' verbose = TRUE)
+#' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
+#' outfold = getwd(), verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level information, including
 #'  group classifications and dAUC data for different conditions (see
@@ -87,7 +91,7 @@
 #' @examples
 #' # Assuming `unigroupdf` and `dfmeandiff` contain the necessary data:
 #' # plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "universe",
-#' plot = TRUE)
+#' # plot = TRUE)
 #'
 #' @seealso
 #' [universegroup], [meandifference]
@@ -103,7 +107,7 @@
 plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = ".", verbose = TRUE) {
+    outfold = getwd(), verbose = TRUE) {
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))

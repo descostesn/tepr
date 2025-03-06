@@ -1,0 +1,3 @@
+"condition","replicate","direction","strand","path"
+"ctrl",1,"forward","plus","ctrl_rep1_chr13.forward.bg"
+"ctrl",1,"reverse","minus","ctrl_rep1_chr13.reverse.bg"

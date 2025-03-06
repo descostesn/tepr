@@ -4,7 +4,7 @@
 \alias{showallcomp}
 \title{Retrieve all the comparison names from the experiment table}
 \usage{
-showallcomp(expdf, verbose = TRUE)
+showallcomp(expdf, verbose = FALSE)
 }
 \arguments{
 \item{expdf}{A data frame containing experiment data that should have

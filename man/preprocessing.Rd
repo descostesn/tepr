@@ -5,10 +5,10 @@
 \title{Preprocess Experimental Data for Genomic Analysis}
 \usage{
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-blacklistshpath, genomename, nbcputrans = 1, finaltabpath = "./",
-finaltabname = "anno.tsv", tmpfold = "./tmp", saveobjectpath = NA,
-savefinaltable = TRUE, reload = FALSE, showtime = FALSE, showmemory = FALSE,
-deletetmp = TRUE, chromtab = NA, verbose = TRUE)
+blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
+finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
+saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{exptabpath}{Character. Path to the experiment table file.}
@@ -27,13 +27,13 @@ deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 Default is 1.}
 
 \item{finaltabpath}{Character. Path where the final annotated table will be
-saved. Default is "./".}
+saved. Default is "getwd()".}
 
 \item{finaltabname}{Character. Name of the final annotated table file.
 Default is "anno.tsv".}
 
 \item{tmpfold}{Character. Path to a temporary folder for intermediate files.
-Default is "./tmp".}
+Default is \code{file.path(getwd(), "tmptepr")}.}
 
 \item{saveobjectpath}{Character. Path to save intermediate objects. Default
 is NA.}
@@ -85,27 +85,20 @@ Temporary files created during processing are optionally deleted at the end.
 }
 \examples{
 # Example usage of preprocessing:
-preprocessing(
-  exptabpath = "./example_exptab.tsv",
-  gencodepath = "./gencode.v38.annotation.gtf",
-  windsize = 200,
-  maptrackpath = "./mappability_track.bed",
-  blacklistshpath = "./blacklist.bed",
-  genomename = "hg38",
-  nbcputrans = 2,
-  finaltabpath = "./results/",
-  finaltabname = "final_annotated_table.tsv",
-  tmpfold = "./tmp",
-  saveobjectpath = "./saved_objects",
-  savefinaltable = TRUE,
-  reload = FALSE,
-  showtime = TRUE,
-  showmemory = TRUE,
-  deletetmp = TRUE,
-  verbose = TRUE
-)
+# preprocessing(
+#   exptabpath = "example_exptab.tsv",
+#   gencodepath = "gencode.v38.annotation.gtf",
+#   windsize = 200,
+#   maptrackpath = "mappability_track.bed",
+#   blacklistshpath = "blacklist.bed",
+#   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
+#   finaltabname = "final_annotated_table.tsv",
+#   tmpfold = file.path(getwd(), "tmptepr"),
+#   saveobjectpath = "saved_objects", savefinaltable = TRUE,
+#   reload = FALSE, showtime = TRUE, showmemory = TRUE, deletetmp = TRUE,
+#   verbose = TRUE)
 
 }
 \seealso{
-[retrieveanno][makewindows][blacklisthighmap][createtablescores]
+[retrieveanno], [makewindows], [blacklisthighmap], [createtablescores]
 }

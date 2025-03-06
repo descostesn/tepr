@@ -51,17 +51,17 @@ The function performs the following steps:
 }
 \examples{
 # Example usage:
-exptab_file <- "path/to/experiment_table.csv"
-gencode_file <- "path/to/gencode_annotations.gtf"
-output_dir <- "path/to/output_directory"
+# exptab_file <- "path/to/experiment_table.csv"
+# gencode_file <- "path/to/gencode_annotations.gtf"
+# output_dir <- "path/to/output_directory"
 
 # Run the function with verbose output and timing enabled
-annotations <- retrieveanno(
-    exptabpath = exptab_file,
-    gencodepath = gencode_file,
-    saveobjectpath = output_dir,
-    showtime = TRUE,
-    verbose = TRUE
-)
+# annotations <- retrieveanno(
+#     exptabpath = exptab_file,
+#     gencodepath = gencode_file,
+#     saveobjectpath = output_dir,
+#     showtime = TRUE,
+#     verbose = TRUE
+# )
 
 }

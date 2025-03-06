@@ -1,6 +1,6 @@
 Package: tepr
 Title: Transcription elongation profile in R
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),
     person("Victor", "Billon", email = "victor.billon@etu.univ-cotedazur.fr", role = "aut"),
@@ -47,7 +47,10 @@ Imports:
     rtracklayer,
     GenomicRanges,
     GenomeInfoDb,
-    valr
+    valr,
+    tibble,
+    utils,
+    methods
 Collate:
     'allauc.R'
     'attenuation.R'

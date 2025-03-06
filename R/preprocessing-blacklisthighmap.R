@@ -22,7 +22,7 @@
 
         ## Computing weighted mean
         allscores <- as.data.frame(allframedf[, "score"])[[1]]
-        wmean <- weighted.mean(allscores, overntvec)
+        wmean <- stats::weighted.mean(allscores, overntvec)
         return(wmean)
     }, currenttrans)
 
@@ -214,7 +214,7 @@
 
                     if (showtime) start_bglistwmean <- Sys.time()
 
-                    if (verbose) message("\n\t #--- Processing ", currentchrom)
+                    if (verbose) message("\n\t # --- Processing ", currentchrom)
                     ## Reading the maptrack on a specific chromosomes
                     chromlength <- .retrievechromlength(chromtab, currentchrom)
                     maptracktib <- .retrievemaptrack(maptrackpath, showtime,
@@ -257,16 +257,16 @@
 #' Blacklist High Mappability Regions in Genomic Data
 #'
 #' @description
-#' This function processes genomic data to remove scores that fall within 
+#' This function processes genomic data to remove scores that fall within
 #' blacklisted regions or have low mappability, and computes weighted means for
 #' overlapping windows. The process ensures the integrity of genomic scores by
 #' focusing on high mappability regions and excluding blacklisted intervals.
 #'
 #' @usage
-#' blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+#' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-#'    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-#'    chromtab = NA, verbose = TRUE)
+#'    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+#'    showmemory = FALSE, chromtab = NA, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
 #' @param blacklistpath Character string. Path to the blacklist regions file.
@@ -282,7 +282,7 @@
 #'  and R objects are not saved.
 #' @param tmpfold A character string specifying the temporary folder for saving
 #'   output files. The temporary files contain the scores for each bedgraph on
-#'   each chromosome.
+#'   each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.
 #' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
 #'  recomputation. Default is `FALSE`. If the function failed during object
 #'  saving, make sure to delete the corresponding object.
@@ -323,32 +323,34 @@
 #'
 #' @examples
 #' # Define paths to required files
-#' maptrackpath <- "path/to/maptrack.bed"
-#' blacklistshpath <- "path/to/blacklist.bed"
-#' exptabpath <- "path/to/experiments.csv"
-#' allwindowsbed <- data.frame(...)
-#'
+#' # maptrackpath <- "path/to/maptrack.bed"
+#' # blacklistpath <- "path/to/blacklist.bed"
+#' # exptabpath <- "path/to/experiments.csv"
+#' # allwindowsbed <- data.frame(...)
+#' #
 #' # Run the function
-#' results <- blacklisthighmap(
-#'     maptrackpath = maptrackpath,
-#'     blacklistshpath = blacklistshpath,
-#'     exptabpath = exptabpath,
-#'     nbcputrans = 4,
-#'     allwindowsbed = allwindowsbed,
-#'     windsize = 200,
-#'     genomename = "hg38",
-#'     saveobjectpath = "output/",
-#'     tmpfold = "./tmp",
-#'     reload = FALSE,
-#'     showtime = TRUE,
-#'     showmemory = FALSE,
-#'     verbose = TRUE)
+#' # results <- blacklisthighmap(
+#' #     maptrackpath = maptrackpath,
+#' #     blacklistpath = blacklistpath,
+#' #     exptabpath = exptabpath,
+#' #     nbcputrans = 4,
+#' #     allwindowsbed = allwindowsbed,
+#' #     windsize = 200,
+#' #     genomename = "hg38",
+#' #     saveobjectpath = "output/",
+#' #     tmpfold = "tmptepr",
+#' #     reload = FALSE,
+#' #     showtime = TRUE,
+#' #     showmemory = FALSE,
+#' #     verbose = TRUE)
 #'
 #' @importFrom rtracklayer SeqinfoForUCSCGenome import.bedGraph
 #' @importFrom GenomeInfoDb seqnames seqlengths
 #' @importFrom tibble tibble as_tibble add_column
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
+#' @importFrom methods is
+#' @importFrom utils read.csv
 #'
 #' @seealso
 #' [createtablescores][makewindows]
@@ -356,16 +358,17 @@
 #' @export
 
 
-blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
+blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
-    tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-    chromtab = NA, verbose = TRUE) {
+    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+    showmemory = FALSE, chromtab = NA, verbose = TRUE) {
 
         if (is.na(genomename) && is.na(chromtab))
             stop("\n\t Either the genome name or chromtab should be ",
                 "provided.\n")
 
-        if (!is.na(chromtab) && !isTRUE(all.equal(is(chromtab), "Seqinfo")))
+        if (!is.na(chromtab) &&
+            !isTRUE(all.equal(methods::is(chromtab), "Seqinfo")))
             stop("\n\t chromtab should be a Seqinfo object. ",
                 "See rtracklayer::SeqinfoForUCSCGenome.\n")
 
@@ -379,10 +382,10 @@ blacklisthighmap <- function(maptrackpath, blacklistshpath, exptabpath,
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
-        exptab <- read.csv(exptabpath, header = TRUE)
+        exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list")
-        blacklistbed <- read.delim(blacklistshpath, header = FALSE)
+        blacklistbed <- read.delim(blacklistpath, header = FALSE)
         colnames(blacklistbed) <- c("chrom", "start", "end", "type")
         blacklisttib <- tibble::as_tibble(blacklistbed)
 

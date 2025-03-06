@@ -1,32 +1,75 @@
+v1.1.2:
+- Modifications and corrections to pass R CMD check.
+- Creation of .returnexpcolnames in utils.R.
+- Simplification of averageandfilterexprs and create subfunction .expressedtrans.
+- In .computeecdf, under the comment "Shrink the results back to the transtable keeping ecdf columns", change code to remove the 'dot' usage which throws an error by R CMD check.
+- In .computeecdf, also change the way column names are modified under the comment "Removing strand from column names" for the same reason.
+- In .normalizeandsummarize, replace code for "Selecting coord and mean values" to remove the use of dot.
+- Add a .github/workflows that test the package on windows, macos, and ubuntu
+- Add a .Rbuildignore to exclude the .github folder and manual.pdf during package creation
+- Correct bug about direction in loop if dfstrandlist of the function .expressedtrans in averageandfilterexprs.
+- Folder inst/extdata reduced from 111 Mb to 504K
+- Add error if no transcript is identified as expressed in averageandfilterexprs. This case prevents the rest of the  code to be executed.
+- Add a README.md
+- Change outfold = "." parameter to outfold = getwd() in plotauc, plotecdf, plothistoknee, plotmetagenes, and plotmulti to avoid potential errors with windows.
+- Change tmpfold = "./tmp" to tmpfold = "tmp" in blacklisthighmap and preprocessing to avoid potential errors with windows.
+- Change finaltabpath = "./" to finaltabpath = getwd() in createtablescores and preprocessing to avoid potential errors with windows.
+- Change workingdir = "." to workingdir = getwd() in joinfiles.
+- Rename the default 'tmp' folder by 'tmptepr' to avoid issues of pre-allocated space. Define the default path with file.path(getwd(), "tmptepr").
+- In .mergefiles of createtablescores, add specific code when OS is windows. It uses a power-shell syntax and system2.
+- add file encoding utf8 for windows check in createtablescores.
+
+-- vignette
+- With the reduced data of the package, the preprocesssing in the "quick start" section of the vignette now takes 38 seconds instead of 7 minutes.
+- Use two different exptab in the package. One for preprocessing and one for the downstream analysis. The code of the quick start section is modified accordingly.
+- The downstream part is now done on 6 transcripts instead of a 100. This aims at reducing the size of the package.
+- Display the results of the quick start code
+- Improve preprocessing description
+- Reduce code in different sections since quickstart is now executed in background
+- Add '?' before function names
+- add figure of the global structure of the package
+- remove explicit path to current directory and use getwd where appropriate
+- remove outfold from plot functions in annex
+- add optional line in quickstart to get chromtab
+- remove preprocessing in bash section
+
+
 v1.1.1:
 - Optimize the vignette text with Gemini.
 - Update output of the full tepr analysis in annex of the vignette.
-- add allauc and update doc of kneeallconds
-- updated pictures in vignette
+- Add allauc and update doc of kneeallconds.
+- Updated pictures in vignette.
+
 
 v1.1.0:
-- create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter
-- create a kneeallconds function that enables to calculate knees for each condition separately
-- create section 5.4 "More than two conditions" in the vignette with the "teprmulti analysis", "plotmulti", and "Calculating knee for each condition" subsections.
+- Create a showallcomp function to choose what to exclude in teprmulti dontcompare parameter.
+- Create a kneeallconds function that enables to calculate knees for each condition separately.
+- Create section 5.4 "More than two conditions" in the vignette with the "teprmulti analysis", "plotmulti", and "Calculating knee for each condition" subsections.
+
 
 v1.0.4:
-- remove dontcompare parameter from allauc and tepr
-- add code to remove conditions with a dontcompare vector in teprmulti
+- Remove dontcompare parameter from allauc and tepr.
+- Add code to remove conditions with a dontcompare vector in teprmulti.
+
 
 v1.0.3:
-- tepr can now handle a single condition. See section 5.6 of the vignette.
+- Tepr can now handle a single condition. See section 5.6 of the vignette.
+
 
 v1.0.2:
 - Add functions teprmulti and plotmulti to use when more than two conditions are present. New sections 5.4 and 5.5 of the vignette.
 
+
 v1.0.1:
-- Solve bug due to chromtab parameter
-- chromtab is now a parameter in case of connection hickups
-- Manual has been updated
-- Add code to vignette to use the data provided with the package
+- Solve bug due to chromtab parameter.
+- Chromtab is now a parameter in case of connection hickups.
+- Manual has been updated.
+- Add code to vignette to use the data provided with the package.
+
 
 v1.0.0:
-- preprocessing is now done in R
+- Preprocessing is now done in R.
+
 
 v0.0.99:
-- pre-processing with bash
+- Pre-processing with bash.

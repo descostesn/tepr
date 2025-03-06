@@ -5,7 +5,7 @@
 \title{Plot Histogram of Distance from TSS to Knee Point}
 \usage{
 plothistoknee(unigroupdf, plottype = "percent", xlimvec = NA,
-binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = ".",
+binwidthval = NA, kneename = "knee_AUC_HS", plot = FALSE, outfold = getwd(),
 formatname = "pdf", universename = "Universe", groupname = "Group",
 verbose = TRUE)
 }

@@ -4,13 +4,15 @@
 \alias{blacklisthighmap}
 \title{Blacklist High Mappability Regions in Genomic Data}
 \usage{
-blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-   tmpfold = "./tmp", reload = FALSE, showtime = FALSE, showmemory = FALSE,
-   chromtab = NA, verbose = TRUE)
+   tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+   showmemory = FALSE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{maptrackpath}{Character string. Path to the mappability track file.}
+
+\item{blacklistpath}{Character string. Path to the blacklist regions file.}
 
 \item{exptabpath}{Path to the experiment table file containing a table with
 columns named 'condition', 'replicate', 'strand', and 'path'.}
@@ -30,7 +32,7 @@ and R objects are not saved.}
 
 \item{tmpfold}{A character string specifying the temporary folder for saving
 output files. The temporary files contain the scores for each bedgraph on
-each chromosome.}
+each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.}
 
 \item{reload}{Logical. If `TRUE`, reloads existing saved objects to avoid
 recomputation. Default is `FALSE`. If the function failed during object
@@ -48,8 +50,6 @@ NA.}
 
 \item{verbose}{A logical value indicating whether to display detailed
 processing messages.}
-
-\item{blacklistpath}{Character string. Path to the blacklist regions file.}
 }
 \value{
 This function does not return a value directly. It saves
@@ -57,7 +57,7 @@ intermediate results to `tmpfold`. These intermediates files are then
 combined by the function 'createtablescores'.
 }
 \description{
-This function processes genomic data to remove scores that fall within 
+This function processes genomic data to remove scores that fall within
 blacklisted regions or have low mappability, and computes weighted means for
 overlapping windows. The process ensures the integrity of genomic scores by
 focusing on high mappability regions and excluding blacklisted intervals.
@@ -83,26 +83,26 @@ object can be retrieved with:
 }
 \examples{
 # Define paths to required files
-maptrackpath <- "path/to/maptrack.bed"
-blacklistshpath <- "path/to/blacklist.bed"
-exptabpath <- "path/to/experiments.csv"
-allwindowsbed <- data.frame(...)
-
+# maptrackpath <- "path/to/maptrack.bed"
+# blacklistpath <- "path/to/blacklist.bed"
+# exptabpath <- "path/to/experiments.csv"
+# allwindowsbed <- data.frame(...)
+#
 # Run the function
-results <- blacklisthighmap(
-    maptrackpath = maptrackpath,
-    blacklistshpath = blacklistshpath,
-    exptabpath = exptabpath,
-    nbcputrans = 4,
-    allwindowsbed = allwindowsbed,
-    windsize = 200,
-    genomename = "hg38",
-    saveobjectpath = "output/",
-    tmpfold = "./tmp",
-    reload = FALSE,
-    showtime = TRUE,
-    showmemory = FALSE,
-    verbose = TRUE)
+# results <- blacklisthighmap(
+#     maptrackpath = maptrackpath,
+#     blacklistpath = blacklistpath,
+#     exptabpath = exptabpath,
+#     nbcputrans = 4,
+#     allwindowsbed = allwindowsbed,
+#     windsize = 200,
+#     genomename = "hg38",
+#     saveobjectpath = "output/",
+#     tmpfold = "tmptepr",
+#     reload = FALSE,
+#     showtime = TRUE,
+#     showmemory = FALSE,
+#     verbose = TRUE)
 
 }
 \seealso{

@@ -5,7 +5,7 @@
 \title{Create a Unified Table of Scores}
 \usage{
 createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
-  savefinaltable = TRUE, finaltabpath = "./", finaltabname = "anno.tsv",
+  savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
  verbose)
 }
 \arguments{
@@ -25,7 +25,7 @@ printed. Default is `TRUE`.}
 disk. Default is `TRUE`.}
 
 \item{finaltabpath}{A string specifying the directory where the final table
-should be saved. Default is `"./"`.}
+should be saved. Default is \code{getwd()}.}
 
 \item{finaltabname}{A string specifying the name of the final table file.
 Default is `"anno.tsv"`.}
@@ -48,12 +48,12 @@ scores. The resulting table also includes annotations for each transcript.
 }
 \examples{
 # Example usage:
-tmpfold <- "path/to/temp/folder"
-exptabpath <- "path/to/experiment_table.csv"
-finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
-  showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
-  finaltabpath = "./results", finaltabname = "final_scores.tsv",
-  verbose = TRUE)
+# tmpfold <- "path/to/tmp/folder"
+# exptabpath <- "path/to/experiment_table.csv"
+# finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
+#   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
+#   finaltabpath = "./results", finaltabname = "final_scores.tsv",
+#   verbose = TRUE)
 
 }
 \seealso{
