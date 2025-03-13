@@ -6,8 +6,14 @@ windsize <- 200
 ## Necessary result to call makewindows
 allannobed <- retrieveanno(exptabpath, gencodepath)
 
-!!!!!!!!!!
+## Calling the function to test
+allwindowsbed <- makewindows(allannobed, windsize)
 
-allwindowsbed <- makewindows(allannobed, windsize, nbcputrans,
-                verbose, saveobjectpath, showtime)
+## ---- Comparing to expected object ---- ##
+expectedobj <- readRDS(system.file("extdata", "allwindowsbed.rds",
+    package="tepr"))
+test_that("makewindows works properly", {
+             expect_identical(allwindowsbed, expectedobj)
+         })
 
+## Generating error
