@@ -19,6 +19,10 @@ tmpfold <- "tmp-10cpu"
 savefinaltable <- TRUE
 deletetmp <- FALSE
 chromtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+idxkeep <- GenomeInfoDb::seqnames(chromtest)[grep("_|chrM",
+        GenomeInfoDb::seqnames(chromtest), perl = TRUE, invert = TRUE)]
+chromtest <- chromtest[idxkeep,]
+
 
 finaltable <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename, nbcputrans, finaltabpath,
