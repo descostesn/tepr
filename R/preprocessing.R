@@ -145,9 +145,9 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
         allchromvec <- GenomeInfoDb::seqnames(chromtab)
         idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
         if (!isTRUE(all.equal(length(idx), 0)))
-            stop("\n Non-canonical chromosomes found in chromtab: \n",
-                allchromvec[idx], "\n\n. If you are sure you want to proceed",
-                " set forcechrom = TRUE")
+            stop("\n Non-canonical chromosomes found in chromtab. If you are ",
+                "sure you want to proceed set forcechrom = TRUE.\n\n",
+                paste(allchromvec[idx], collapse = " "))
     }
 
     if (showtime) start_time_preprocessing <- Sys.time()
