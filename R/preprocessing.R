@@ -55,7 +55,8 @@
 #' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
 #' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
 #' saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
-#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
+#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
+#' verbose = TRUE)
 #'
 #' @param exptabpath Character. Path to the experiment table file.
 #' @param gencodepath Character. Path to the Gencode annotation file.
@@ -86,6 +87,9 @@
 #' @param chromtab A Seqinfo object retrieved with the rtracklayer method
 #' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
 #' NA.
+#' @param forcechrom Logical indicating if the presence of non-canonical
+#' chromosomes in chromtab (if not NA) should trigger an error. Default is
+#' \code{FALSE}.
 #' @param verbose Logical. Whether to display detailed progress messages.
 #'  Default is TRUE.
 #'
