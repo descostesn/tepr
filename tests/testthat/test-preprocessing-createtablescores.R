@@ -47,8 +47,10 @@ test_that("Errors are thrown when calling createtablescores", {
     write.table(data.frame(1:10), file = file.path(tmpfoldpath,
     paste0(expdfpre[1, 1], expdfpre[1, 2], expdfpre[1, 3], "-chrtest.tsv")))
     expm <- paste0("\n\t Experiments have a different number of files. This ",
-                "should not happen. Contact the developer.\n")
-
+                "should not happen if you used blacklisthighmap with the same",
+                "experiment table. Contact the developer.\n")
+    expect_error(createtablescores(tmpfold = tmpfoldpath, exptabpath,
+        savefinaltable = FALSE, verbose = FALSE), regexp = expm)
 })
 
 
