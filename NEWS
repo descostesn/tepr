@@ -6,6 +6,7 @@ v1.1.3:
 - add forcechrom param to the preprocessing and blacklisthighmap functions and modify documentation
 - in preprocessing.R, add forcechrom = TRUE in .createbedgraphlistwmean because the verification is done at the start of the preprocessing function
 - modify error message in .divideannoinwindows by making it a "this should not happen"
+- set showtime default to FALSE in createtablescores
 
 v1.1.2:
 - Modifications and corrections to pass R CMD check.
