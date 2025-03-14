@@ -379,8 +379,7 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
             idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
             if (!isTRUE(all.equal(length(idx), 0)))
                 stop("\n Non-canonical chromosomes found in chromtab. If you",
-                    " are sure you want to proceed set forcechrom = TRUE.\n\n",
-                    paste(allchromvec[idx], collapse = " "))
+                    " are sure you want to proceed set forcechrom = TRUE.\n\n")
         }
 
         if (showtime) start_time_fun <- Sys.time()
