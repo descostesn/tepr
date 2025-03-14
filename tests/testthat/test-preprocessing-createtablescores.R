@@ -44,12 +44,23 @@ test_that("createtablescores works properly", {
 
 test_that("Errors are thrown when calling createtablescores", {
 
-    write.table(data.frame(1:10), file = file.path(tmpfoldpath,
-    paste0(expdfpre[1, 1], expdfpre[1, 2], expdfpre[1, 3], "-chrtest.tsv")))
+    addfile <- file.path(tmpfoldpath, paste0(expdfpre[1, 1], expdfpre[1, 2],
+        expdfpre[1, 3], "-chrtest.tsv"))
+    write.table(data.frame(1:10), file = addfile)
     expm <- paste0("\n\t Experiments have a different number of files. This ",
                 "should not happen if you used blacklisthighmap with the same",
                 "experiment table. Contact the developer.\n")
     expect_error(createtablescores(tmpfold = tmpfoldpath, exptabpath,
+        savefinaltable = FALSE, verbose = FALSE), regexp = expm)
+    file.remove(addfile)
+    
+    exptabtest <- rbind(expdfpre, data.frame(condition = "toto", replicate = 1,
+        direction = "forward", strand = "plus", path = "toto"))
+    outfile <- file.path(getwd(), "exptabtest.csv")
+    write.csv(exptabtest, file = outfile)
+    expm <- paste0("\n\t The merged file names do not correspond to the ",
+                "exptab. This should not happen. Contact the developer.\n")
+    expect_error(createtablescores(tmpfold = tmpfoldpath, exptabpath = outfile,
         savefinaltable = FALSE, verbose = FALSE), regexp = expm)
 })
 
