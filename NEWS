@@ -2,8 +2,8 @@ v1.1.3:
 - In the subfunction .divideannoinwindows of makewindows, replace hardcoded 200 by nbwindows
 - Add filter chromtab in quickstart of the vignette
 - In vignette, limit chromtabtest to chr13
-- add verifications on chromosome names in preprocessing function
-- add forcechrom param to the preprocessing function and modify documentation
+- add verifications on chromosome names in preprocessing and blacklisthighmap functions
+- add forcechrom param to the preprocessing and blacklisthighmap functions and modify documentation
 - in preprocessing.R, add forcechrom = TRUE in .createbedgraphlistwmean because the verification is done at the start of the preprocessing function
 
 v1.1.2:
