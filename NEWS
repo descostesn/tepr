@@ -1,5 +1,7 @@
 v1.1.3:
 - In the subfunction .divideannoinwindows of makewindows, replace hardcoded 200 by nbwindows
+- Add filter chromtab in quickstart of the vignette
+- In vignette, limit chromtabtest to chr13
 
 v1.1.2:
 - Modifications and corrections to pass R CMD check.
