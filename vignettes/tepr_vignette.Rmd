@@ -28,7 +28,7 @@ The following example demonstrates a complete run of the package. Preprocessing 
 library(tepr)
 
 #########
-# Pre-processing - takes ~ 38 seconds
+# Pre-processing - takes ~ 21 seconds
 #########
 
 ## Parameters
@@ -58,9 +58,8 @@ genomename <- "hg38"
 ## The lines below are optional. The chromosome info can be retrieved automatically
 ## Make chromosome info retrieval explicit for building the vignette
 chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
-idxkeep <- GenomeInfoDb::seqnames(chromtabtest)[grep("_|chrM",
-        GenomeInfoDb::seqnames(chromtabtest), perl = TRUE, invert = TRUE)]
-chromtabtest <- chromtabtest[idxkeep, ]
+allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
+chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
