@@ -63,9 +63,3 @@ test_that("Errors are thrown when calling createtablescores", {
     expect_error(createtablescores(tmpfold = tmpfoldpath, exptabpath = outfile,
         savefinaltable = FALSE, verbose = FALSE), regexp = expm)
 })
-
-
-
-tmpfold = file.path(getwd(), "tmptepr")
-showmemory = FALSE; showtime = FALSE; savefinaltable = FALSE; finaltabpath = getwd()
-finaltabname = "anno.tsv"; verbose = TRUE
