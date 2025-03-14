@@ -266,7 +266,7 @@
 #' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
 #'    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
-#'    showmemory = FALSE, chromtab = NA, verbose = TRUE)
+#'    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
 #' @param blacklistpath Character string. Path to the blacklist regions file.
@@ -295,6 +295,9 @@
 #' @param chromtab A Seqinfo object retrieved with the rtracklayer method
 #' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
 #' NA.
+#' @param forcechrom Logical indicating if the presence of non-canonical
+#' chromosomes in chromtab (if not NA) should trigger an error. Default is
+#' \code{FALSE}.
 #' @param verbose A logical value indicating whether to display detailed
 #'   processing messages.
 #'
@@ -361,7 +364,7 @@
 blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
     tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
-    showmemory = FALSE, chromtab = NA, verbose = TRUE) {
+    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
 
         if (is.na(genomename) && is.na(chromtab))
             stop("\n\t Either the genome name or chromtab should be ",
