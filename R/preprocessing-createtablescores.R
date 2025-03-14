@@ -121,7 +121,8 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
 
         if (!isTRUE(all.equal(length(unique(table(expnamevec))), 1)))
             stop("\n\t Experiments have a different number of files. This ",
-                "should not happen. Contact the developer.\n")
+                "should not happen if you used blacklisthighmap with the same",
+                "experiment table. Contact the developer.\n")
 
         explist <- split(filevec, factor(expnamevec))
 
