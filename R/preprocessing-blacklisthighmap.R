@@ -375,12 +375,12 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
                 stop("\n Chromtab should be a Seqinfo object. Use ",
                     "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
         
-        allchromvec <- GenomeInfoDb::seqnames(chromtab)
-        idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
-        if (!isTRUE(all.equal(length(idx), 0)))
-            stop("\n Non-canonical chromosomes found in chromtab. If you are ",
-                "sure you want to proceed set forcechrom = TRUE.\n\n",
-                paste(allchromvec[idx], collapse = " "))
+            allchromvec <- GenomeInfoDb::seqnames(chromtab)
+            idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
+            if (!isTRUE(all.equal(length(idx), 0)))
+                stop("\n Non-canonical chromosomes found in chromtab. If you",
+                    " are sure you want to proceed set forcechrom = TRUE.\n\n",
+                    paste(allchromvec[idx], collapse = " "))
         }
 
         if (showtime) start_time_fun <- Sys.time()
