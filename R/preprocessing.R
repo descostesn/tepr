@@ -131,11 +131,24 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
     saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
-    verbose = TRUE) {
+    forcechrom = FALSE, verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("\n\t The final table already exists, set reload = FALSE to ",
             "create it again.\n")
+
+    if (!is.na(chromtab) && !forcechrom) {
+        if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
+            stop("\n Chromtab should be a Seqinfo object. Use ",
+                "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
+        
+        allchromvec <- GenomeInfoDb::seqnames(chromtab)
+        idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
+        if (!isTRUE(all.equal(length(idx), 0)))
+            stop("\n Non-canonical chromosomes found in chromtab: \n",
+                allchromvec[idx], "\n\n. If you are sure you want to proceed",
+                " set forcechrom = TRUE")
+    }
 
     if (showtime) start_time_preprocessing <- Sys.time()
 
