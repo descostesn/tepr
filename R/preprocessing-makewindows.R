@@ -59,7 +59,8 @@
     nbwindcheck <- unique(sapply(windflist, nrow))
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
         !isTRUE(all.equal(nbwindcheck, nbwindows)))
-        stop("\n\t Problem in the nb of windows per transcript retrieved.\n")
+        stop("\n\t Problem in the nb of windows per transcript retrieved.",
+            " This should not happen. Contact the developer.")
     windf <- do.call("rbind", windflist)
 
     return(windf)
