@@ -39,7 +39,8 @@
             "mappability intervals ##\n")
         blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
             nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
-            tmpfold, reload, showtime, showmemory, chromtab, verbose)
+            tmpfold, reload, showtime, showmemory, chromtab, forcechrom = TRUE,
+            verbose)
 }
 
 
