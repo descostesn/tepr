@@ -15,12 +15,19 @@ test_that("Errors are thrown when calling preprocessing", {
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename = NA), regexp = expm)
 
-    saveRDS(1, file = file.path(getwd(), "finaltable.rds"))
+    rdsfile <- file.path(getwd(), "finaltable.rds")
+    saveRDS(1, file = rdsfile)
     expm <- paste0("\n\t The final table already exists, set reload = FALSE to",
             " create it again.\n")
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename = "hg38", reload = TRUE), regexp = expm)
+    file.remove(rdsfile)
 
+    expm <- paste0("\n Chromtab should be a Seqinfo object. Use ",
+        "rtracklayer::SeqinfoForUCSCGenome\\(genomename\\).\n")
+    expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
+    blacklistshpath, genomename = "hg38", chromtab = 2), regexp = expm)
+    
 })
 
 
