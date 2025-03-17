@@ -8,11 +8,20 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
 windsize <- 200
 genomename <- "hg38"
 
+## Copying bedgraphs to the current directory
+expdfpre <- read.csv(exptabpath)
+bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
+    package = "tepr"))
+expdfpre$path <- bgpathvec
+write.csv(expdfpre, file = "exptab-preprocessing.csv", row.names = FALSE,
+    quote = FALSE)
+exptabpath <- "exptab-preprocessing.csv"
+
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "finaltab.rds",
     package="tepr"))
 finaltabtest <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename = genomename)
+    blacklistpath, genomename = genomename)
 test_that("preprocessing works properly", {
              expect_identical(finaltabtest, expectedobj)
          })
@@ -22,25 +31,25 @@ test_that("Errors are thrown when calling preprocessing", {
 
     expm <- "\n\t Either the genome name or chromtab should be provided.\n"
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename = NA), regexp = expm)
+    blacklistpath, genomename = NA), regexp = expm)
 
     rdsfile <- file.path(getwd(), "finaltable.rds")
     saveRDS(1, file = rdsfile)
     expm <- paste0("\n\t The final table already exists, set reload = FALSE to",
             " create it again.\n")
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename = "hg38", reload = TRUE), regexp = expm)
+    blacklistpath, genomename = "hg38", reload = TRUE), regexp = expm)
     file.remove(rdsfile)
 
     expm <- paste0("\n Chromtab should be a Seqinfo object. Use ",
         "rtracklayer::SeqinfoForUCSCGenome\\(genomename\\).\n")
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename = "hg38", chromtab = 2), regexp = expm)
+    blacklistpath, genomename = "hg38", chromtab = 2), regexp = expm)
     
     chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
     expm <- paste0("\n Non-canonical chromosomes found in chromtab. If you",
                     " are sure you want to proceed set forcechrom = TRUE.\n\n")
     expect_error(suppressWarnings(preprocessing(exptabpath, gencodepath,
-        windsize, maptrackpath, blacklistshpath, genomename = "hg38",
+        windsize, maptrackpath, blacklistpath, genomename = "hg38",
         chromtab = chromtabtest)), regexp = expm)    
 })
