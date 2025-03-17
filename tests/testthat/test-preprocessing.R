@@ -21,7 +21,7 @@ exptabpath <- "exptab-preprocessing.csv"
 expectedobj <- readRDS(system.file("extdata", "finaltab.rds",
     package="tepr"))
 finaltabtest <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistpath, genomename = genomename)
+    blacklistpath, genomename = genomename, verbose = FALSE)
 test_that("preprocessing works properly", {
              expect_identical(finaltabtest, expectedobj)
          })
