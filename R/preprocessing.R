@@ -137,6 +137,10 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
     forcechrom = FALSE, verbose = TRUE) {
+    
+    if (is.na(genomename) && is.na(chromtab))
+            stop("\n\t Either the genome name or chromtab should be ",
+                "provided.\n")
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("\n\t The final table already exists, set reload = FALSE to ",
