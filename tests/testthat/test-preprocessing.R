@@ -33,8 +33,5 @@ test_that("Errors are thrown when calling preprocessing", {
                     " are sure you want to proceed set forcechrom = TRUE.\n\n")
     expect_error(suppressWarnings(preprocessing(exptabpath, gencodepath,
         windsize, maptrackpath, blacklistshpath, genomename = "hg38",
-        chromtab = chromtabtest)), regexp = expm)
-    
+        chromtab = chromtabtest)), regexp = expm)    
 })
-
-
