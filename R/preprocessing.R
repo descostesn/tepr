@@ -55,7 +55,7 @@
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 #' blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
 #' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-#' saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+#' saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
 #' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
 #' verbose = TRUE)
 #'
@@ -75,7 +75,7 @@
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
 #'  Default is \code{file.path(getwd(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
-#'  is \code{NA}.
+#'  is \code{getwd()}.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
 #'  Default is \code{TRUE}.
 #' @param reload Logical. Whether to reload intermediate objects if available.
@@ -135,7 +135,7 @@
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
     finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-    saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
+    saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
     forcechrom = FALSE, verbose = TRUE) {
     
