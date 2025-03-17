@@ -53,7 +53,7 @@
 #'
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-#' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
+#' blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
 #' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
 #' saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
 #' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
@@ -65,34 +65,35 @@
 #' @param maptrackpath Character. Path to the mappability track file.
 #' @param blacklistshpath Character. Path to the blacklist file.
 #' @param genomename Character. Name of the genome assembly (e.g., "hg38").
+#'  Default is \code{NA}. If left to NA, chromtab should be provided.
 #' @param nbcputrans Integer. Number of CPUs to use for transcript processing.
-#'  Default is 1.
+#'  Default is \code{1}.
 #' @param finaltabpath Character. Path where the final annotated table will be
-#'  saved. Default is "getwd()".
+#'  saved. Default is \code{getwd()}.
 #' @param finaltabname Character. Name of the final annotated table file.
-#'  Default is "anno.tsv".
+#'  Default is \code{anno.tsv}.
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
 #'  Default is \code{file.path(getwd(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
-#'  is NA.
+#'  is \code{NA}.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
-#'  Default is TRUE.
+#'  Default is \code{TRUE}.
 #' @param reload Logical. Whether to reload intermediate objects if available.
-#'  Default is FALSE.
+#'  Default is \code{FALSE}.
 #' @param showtime Logical. Whether to display timing information. Default is
-#'  FALSE.
+#'  \code{FALSE}.
 #' @param showmemory Logical. Whether to display memory usage information.
-#'  Default is FALSE.
+#'  Default is \code{FALSE}.
 #' @param deletetmp Logical. Whether to delete temporary files after processing.
-#'  Default is TRUE.
+#'  Default is \code{TRUE}.
 #' @param chromtab A Seqinfo object retrieved with the rtracklayer method
-#' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
-#' NA.
+#' \code{SeqinfoForUCSCGenome}. If NA, the method is called automatically and
+#' the \code{genomename} should be provided. Default is \code{NA}.
 #' @param forcechrom Logical indicating if the presence of non-canonical
 #' chromosomes in chromtab (if not NA) should trigger an error. Default is
 #' \code{FALSE}.
 #' @param verbose Logical. Whether to display detailed progress messages.
-#'  Default is TRUE.
+#'  Default is \code{TRUE}.
 #'
 #' @return A data frame representing the final table containing transcript
 #' information and scores on 'windsize' windows for all experiments defined in
@@ -132,7 +133,7 @@
 #' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
+    blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
     finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
     saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
