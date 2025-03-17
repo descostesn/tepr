@@ -16,3 +16,9 @@ countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 test_that("countna works properly", {
              expect_identical(countnatest, expectedobj)
          })
+
+## ----- Checking errors ----- ##
+test_that("Errors are thrown when calling countna", {})
+
+allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
+  verbose = TRUE
