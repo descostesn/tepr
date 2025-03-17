@@ -41,7 +41,6 @@ test_that("createtablescores works properly", {
          })
 
 ## ----- Checking errors ----- ##
-
 test_that("Errors are thrown when calling createtablescores", {
 
     addfile <- file.path(tmpfoldpath, paste0(expdfpre[1, 1], expdfpre[1, 2],
