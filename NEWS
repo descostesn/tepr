@@ -11,6 +11,7 @@ v1.1.3:
 - Add test on genome name and chromtab at beginning of preprocessing.
 - Set genomename to NA and saveobjectpath to getwd() by default in preprocessing function.
 - Clarify error message in averageandfilterexprs and .expressedtrans subfunction.
+- Add countna to the error message of .extractstr in utils.R.
 
 
 v1.1.2:
