@@ -7,6 +7,15 @@ expthres <- 0.1
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 
+## ---- Comparing to expected object ---- ##
+expectedobj <- readRDS(system.file("extdata", "averageandfilterexprs.rds",
+    package="tepr"))
+avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
+        showtime = FALSE, verbose = FALSE)
+test_that("preprocessing works properly", {
+             expect_identical(avfilttest, expectedobj)
+         })
+
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling averageandfilterexprs", {
 
