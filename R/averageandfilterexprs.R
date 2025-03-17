@@ -22,8 +22,9 @@
         } else if (isTRUE(all.equal(strandname, "+"))) {
             directname <- "plus"
         } else {
-            stop("\n\t The strand name is neither + or -, contact the ",
-                        "developer.\n")
+            stop("\n\t The strand name is neither + or - in the transcript ",
+                "table alldf. If you are sure to have built alldf with the ",
+                "preprocessing function, contact the developer.\n")
         }
 
         dfstrand <- dfbytranscript %>%
