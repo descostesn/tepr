@@ -28,6 +28,13 @@ test_that("Errors are thrown when calling preprocessing", {
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistshpath, genomename = "hg38", chromtab = 2), regexp = expm)
     
+    chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+    expm <- paste0("\n Non-canonical chromosomes found in chromtab. If you",
+                    " are sure you want to proceed set forcechrom = TRUE.\n\n")
+    expect_error(suppressWarnings(preprocessing(exptabpath, gencodepath,
+        windsize, maptrackpath, blacklistshpath, genomename = "hg38",
+        chromtab = chromtabtest)), regexp = expm)
+    
 })
 
 
