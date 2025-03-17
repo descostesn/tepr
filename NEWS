@@ -9,6 +9,8 @@ v1.1.3:
 - Set showtime default to FALSE in createtablescores.
 - Clarify error message in createtablescores.
 - Add test on genome name and chromtab at beginning of preprocessing.
+- Set genomename to NA by default in preprocessing function.
+
 
 v1.1.2:
 - Modifications and corrections to pass R CMD check.
