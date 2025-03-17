@@ -26,7 +26,7 @@ test_that("preprocessing works properly", {
              expect_identical(finaltabtest, expectedobj)
          })
 
-## Calling the function to test
+## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling preprocessing", {
 
     expm <- "\n\t Either the genome name or chromtab should be provided.\n"

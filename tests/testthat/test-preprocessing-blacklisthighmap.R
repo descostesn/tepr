@@ -13,7 +13,7 @@ chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
 allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
 
-## Calling the function to test
+## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling blacklisthighmap", {
 
     expm <- "\n\t Either the genome name or chromtab should be provided.\n"
