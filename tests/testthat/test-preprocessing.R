@@ -8,6 +8,15 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
 windsize <- 200
 genomename <- "hg38"
 
+## ---- Comparing to expected object ---- ##
+expectedobj <- readRDS(system.file("extdata", "finaltab.rds",
+    package="tepr"))
+finaltabtest <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
+    blacklistshpath, genomename = genomename)
+test_that("preprocessing works properly", {
+             expect_identical(finaltabtest, expectedobj)
+         })
+
 ## Calling the function to test
 test_that("Errors are thrown when calling preprocessing", {
 
