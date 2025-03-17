@@ -13,8 +13,8 @@
     } else if (isTRUE(all.equal(str, "-"))) {
         str <- "minus"
     } else {
-        stop("\n\t In .computeecdf, strand is neither plus or minus. This ",
-            "should not happen. Contact the developer.\n")
+        stop("\n\t In .computeecdf or countna, strand is neither plus or",
+            " minus. This should not happen. Contact the developer.\n")
     }
     return(str)
 }
