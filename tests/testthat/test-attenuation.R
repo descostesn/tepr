@@ -36,4 +36,11 @@ test_that("Errors are thrown when calling attenuation", {
             "Contact the developer.\n")
     expect_error(attenuation(resauc, kneetest, rescountna, bytranslistmean, expdf,
         resmeandiff, verbose = FALSE), regexp = expm)
+    
+    kneetest <- resknee
+    kneetest[, "knee_AUC_ctrl"] <- 400
+    expm <- paste0("\n\t Problem in retrieving idxdown, this should not ",
+            "happen. Contact the developer.\n")
+    expect_error(attenuation(resauc, kneetest, rescountna, bytranslistmean, expdf,
+        resmeandiff, verbose = FALSE), regexp = expm)
 })
