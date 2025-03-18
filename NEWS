@@ -9,7 +9,8 @@ v1.1.3:
 - Add test on genome name and chromtab at beginning of preprocessing.
 - Set genomename to NA and saveobjectpath to getwd() by default in preprocessing function.
 - Add countna to the error message of .extractstr in utils.R.
-- Clarify error message in .extractstr (utils.R), .condcolidx (meandifference.R), averageandfilterexprs and .expressedtrans subfunction, createtablescores.
+- Clarify error message in .extractstr (utils.R), .condcolidx (meandifference.R), averageandfilterexprs and .expressedtrans subfunction, createtablescores, .checkempty (allauc.R).
+
 
 v1.1.2:
 - Modifications and corrections to pass R CMD check.
