@@ -24,6 +24,7 @@ test_that("allauc works properly", {
              expect_identical(allauctest, expectedobj)
          })
 
+## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling allauc", {
 
     expm <- paste0("\n\t Your condition ctrltest was not found in the ",
@@ -31,6 +32,4 @@ test_that("Errors are thrown when calling allauc", {
             " stresscondname.\n")
     expect_error(allauc(bytranslistmean, expdf, nbwindows,
         controlcondname = "ctrltest", verbose = FALSE), regexp = expm)
-
-    nbcpu = 1; controlcondname = "ctrl"; stresscondname = "HS"; showtime = FALSE; verbose = TRUE
 })
