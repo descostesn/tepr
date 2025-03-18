@@ -14,7 +14,9 @@
         str <- "minus"
     } else {
         stop("\n\t In .computeecdf or countna, strand is neither plus or",
-            " minus. This should not happen. Contact the developer.\n")
+            " minus in the table returned by the function ",
+            "averageandfilterexprs. This should not happen. Contact the ",
+            "developer.\n")
     }
     return(str)
 }
