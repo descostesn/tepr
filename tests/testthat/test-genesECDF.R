@@ -28,5 +28,4 @@ test_that("Errors are thrown when calling genesECDF", {
             "averageandfilterexprs. This should not happen. Contact the ",
             "developer.\n")
     expect_error(genesECDF(avfilt, expdf, verbose = FALSE), regexp = expm)
-
 })
