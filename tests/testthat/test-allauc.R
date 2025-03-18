@@ -8,7 +8,6 @@ expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 avfilt <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
-countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
 ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
 resecdf <- ecdf[[1]]
 nbwindows <- ecdf[[2]]
