@@ -14,6 +14,6 @@ countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 expectedobj <- readRDS(system.file("extdata", "genesecdf.rds",
     package="tepr"))
 ecdftest <- genesECDF(avfilttest, expdf, verbose = FALSE)
-test_that("countna works properly", {
+test_that("genesECDF works properly", {
              expect_identical(ecdftest, expectedobj)
          })
