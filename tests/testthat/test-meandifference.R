@@ -6,10 +6,10 @@ expthres <- 0.1
 ## Calculating necessary results
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
-avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
+avfilt <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
-countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
-ecdftest <- genesECDF(avfilttest, expdf, verbose = FALSE)
+countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
 resecdf <- ecdftest[[1]]
 nbwindows <- ecdftest[[2]]
 
@@ -21,3 +21,21 @@ meandifftest <- meandifference(resecdf, expdf, nbwindows,
 test_that("meandifference works properly", {
              expect_identical(meandifftest, expectedobj)
          })
+
+## ----- Checking errors ----- ##
+test_that("Errors are thrown when calling meandifference", {
+
+    expdftest <- expdf
+    expdftest$condition[which(expdf$condition == "ctrl")] <- "toto"
+    expm <- paste0("\n\t Problem in function meandifference, condition not",
+        " found in column names. If you are sure to have used the same ",
+        "experiment table in averageandfilterexprs and genesECDF, contact the ",
+        "developer.\n")
+    expect_error(meandifference(resecdf, expdftest, nbwindows, verbose = FALSE),
+        regexp = expm)
+})
+
+
+resultsecdf = resecdf; showtime = FALSE; verbose = TRUE
+
+currentcond = condvec[1]; df = resecdf
