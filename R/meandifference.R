@@ -174,7 +174,8 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
       res <- cbind(resmean, matdiff)
       if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
           stop("\n\t The results of mean and diff should have the same number ",
-              "of rows than resultsecdf, contact the developer.\n")
+              "of rows than resultsecdf. This should not happen. Contact the ",
+              "developer.\n")
     } else {
       if (verbose) message("\t There is only one condition. Skip Computing all",
         " differences on mean columns.")
