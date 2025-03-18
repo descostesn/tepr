@@ -26,3 +26,14 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
 test_that("attenuation works properly", {
              expect_identical(resatt, expectedobj)
          })
+
+## ----- Checking errors ----- ##
+test_that("Errors are thrown when calling attenuation", {
+
+    kneetest <- resknee
+    kneetest[, "knee_AUC_ctrl"] <- 0
+    expm <- paste0("\n\t Problem in retrieving idxup, this should not happen. ",
+            "Contact the developer.\n")
+    expect_error(attenuation(resauc, kneetest, rescountna, bytranslistmean, expdf,
+        resmeandiff, verbose = FALSE), regexp = expm)
+})
