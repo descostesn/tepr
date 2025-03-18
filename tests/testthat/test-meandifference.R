@@ -44,8 +44,3 @@ test_that("Errors are thrown when calling meandifference", {
     expect_error(meandifference(resecdftest, expdf, nbwindows, verbose = FALSE),
         regexp = expm)
 })
-
-
-resultsecdf = resecdf; showtime = FALSE; verbose = TRUE
-
-currentcond = condvec[1]; df = resecdf
