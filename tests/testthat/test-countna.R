@@ -27,8 +27,14 @@ test_that("Errors are thrown when calling countna", {
             "averageandfilterexprs. This should not happen. Contact the ",
             "developer.\n")
     expect_error(countna(avfilt, expdf, verbose = FALSE), regexp = expm)
+
+    avfilt <- avfilttest
+    avfilt[[1]][which(avfilt[[1]]$gene == "AP5S1")[c(1,2)],
+        "ctrl_rep1.plus_score"] <- NA
+    avfilt[[1]][which(avfilt[[1]]$gene == "AP5S1")[c(1,2)],
+        "ctrl_rep2.plus_score"] <- NA
+    expm <- paste0("\n\t Number of NA is different between conditions for ",
+              "AP5S1: 10 - 8",
+              ". This should not happen. Contact the developer.\n")
+    expect_error(countna(avfilt, expdf, verbose = FALSE), regexp = expm)
 })
-
-allexprsdfs = avfilttest; nbcpu = 1; showtime = FALSE; verbose = TRUE
-
-transtable = transdflist[[1]]
