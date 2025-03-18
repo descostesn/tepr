@@ -33,6 +33,16 @@ test_that("Errors are thrown when calling meandifference", {
         "developer.\n")
     expect_error(meandifference(resecdf, expdftest, nbwindows, verbose = FALSE),
         regexp = expm)
+    
+    resecdftest <- resecdf
+    idxfx <- grep("Fx", colnames(resecdftest))
+    colvecfx <- colnames(resecdftest)[idxfx]
+    newcolvec <- gsub("Fx", "fx", colvecfx)
+    colnames(resecdftest)[idxfx] <- newcolvec
+    expm <- paste0("\n\t Problem in function meandifference, column Fx or val",
+        " not found in column names. Contact the developer.\n")
+    expect_error(meandifference(resecdftest, expdf, nbwindows, verbose = FALSE),
+        regexp = expm)
 })
 
 
