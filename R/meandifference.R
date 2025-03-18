@@ -2,7 +2,9 @@
     idxcond <- grep(currentcond, colnames(df))
     if (isTRUE(all.equal(length(idxcond), 0)))
         stop("\n\t Problem in function meandifference, condition not found in ",
-                "column names. Contact the developer.\n")
+                "column names. If you are sure to have used the same ",
+                "experiment table in averageandfilterexprs and ",
+                "genesECDF, contact the developer.\n")
     return(idxcond)
 }
 
