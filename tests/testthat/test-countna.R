@@ -18,7 +18,17 @@ test_that("countna works properly", {
          })
 
 ## ----- Checking errors ----- ##
-test_that("Errors are thrown when calling countna", {})
+test_that("Errors are thrown when calling countna", {
 
-allexprsdfs, expdf, nbcpu = 1, showtime = FALSE,
-  verbose = TRUE
+    avfilt <- avfilttest
+    avfilt[[1]]$strand[which(avfilt[[1]]$strand == '+')] <- "toto"
+    expm <- paste0("\n\t In .computeecdf or countna, strand is neither plus or",
+            " minus in the table returned by the function ",
+            "averageandfilterexprs. This should not happen. Contact the ",
+            "developer.\n")
+    expect_error(countna(avfilt, expdf, verbose = FALSE), regexp = expm)
+})
+
+allexprsdfs = avfilttest; nbcpu = 1; showtime = FALSE; verbose = TRUE
+
+transtable = transdflist[[1]]
