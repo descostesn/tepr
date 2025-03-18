@@ -13,6 +13,7 @@ v1.1.3:
 - Clarify error message in averageandfilterexprs and .expressedtrans subfunction.
 - Add countna to the error message of .extractstr in utils.R.
 - Clarify error message in .extractstr of utils.R.
+- Clarify message in .condcolidx of meandifference.R.
 
 
 v1.1.2:
