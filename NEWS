@@ -10,6 +10,7 @@ v1.1.3:
 - Set genomename to NA and saveobjectpath to getwd() by default in preprocessing function.
 - Add countna to the error message of .extractstr in utils.R.
 - Clarify error message in .extractstr (utils.R), .condcolidx (meandifference.R), averageandfilterexprs and .expressedtrans subfunction, createtablescores, .checkempty (allauc.R), .computeupdown (attenuation.R).
+- Add tests in the tests/testthat folder for each function.
 
 
 v1.1.2:
