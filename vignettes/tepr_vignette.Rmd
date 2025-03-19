@@ -637,7 +637,9 @@ The approximate computation time for each function is indicated below.
 ```{r completedataset, eval = FALSE}
 library(tepr)
 
-transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
+## After downloading with: wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
+
+transpath <- "preprocessed/cugusi.tsv"
 exppath <- system.file("extdata", "exptab.csv", package="tepr")
 
 ## Reading input files
