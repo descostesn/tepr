@@ -188,7 +188,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
       if (showtime) {
         end_time <- Sys.time()
-        message("\t\t -- Analysis performed in: ", end_time - start_time) # nolint
+        timing <- end_time - start_time
+        message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
       }
 
       return(auckneenasumatt)
