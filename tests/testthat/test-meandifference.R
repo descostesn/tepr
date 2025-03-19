@@ -10,8 +10,8 @@ avfilt <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
 countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
 ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
-resecdf <- ecdftest[[1]]
-nbwindows <- ecdftest[[2]]
+resecdf <- ecdf[[1]]
+nbwindows <- ecdf[[2]]
 
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "meandiff.rds",
