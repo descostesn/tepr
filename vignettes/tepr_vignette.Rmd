@@ -130,8 +130,11 @@ wget https://zenodo.org/records/15050723/files/HS_rep2.reverse.bg -P data/
 If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
 ```{bash cugusi-table, eval = FALSE}
+#!/usr/bin/bash
 
-TO DO
+mkdir preprocessed
+
+wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
 ```
 
 
