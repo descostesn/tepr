@@ -366,20 +366,23 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
     showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
 
-        if (is.na(genomename) && is.na(chromtab))
-            stop("\n\t Either the genome name or chromtab should be ",
-                "provided.\n")
+        if (!isTRUE(all.equal(typeof(chromtab), "S4"))) {
+            if (is.na(genomename) && is.na(chromtab))
+                stop("\n\t Either the genome name or chromtab should be ",
+                    "provided.\n")
 
-        if (!is.na(chromtab) && !forcechrom) {
-            if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
-                stop("\n Chromtab should be a Seqinfo object. Use ",
-                    "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
+            if (!is.na(chromtab) && !forcechrom) {
+                if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
+                    stop("\n Chromtab should be a Seqinfo object. Use ",
+                        "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
         
-            allchromvec <- GenomeInfoDb::seqnames(chromtab)
-            idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
-            if (!isTRUE(all.equal(length(idx), 0)))
-                stop("\n Non-canonical chromosomes found in chromtab. If you",
-                    " are sure you want to proceed set forcechrom = TRUE.\n\n")
+                allchromvec <- GenomeInfoDb::seqnames(chromtab)
+                idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
+                if (!isTRUE(all.equal(length(idx), 0)))
+                    stop("\n Non-canonical chromosomes found in chromtab. If ",
+                        "you are sure you want to proceed set forcechrom = ",
+                        "TRUE.\n\n")
+            }
         }
 
         if (showtime) start_time_fun <- Sys.time()
