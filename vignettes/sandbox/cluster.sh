@@ -1,8 +1,8 @@
 #!/bin/sh
 #SBATCH --array=1
 #SBATCH --nodes=1
-#SBATCH --mem=130gb
-#SBATCH --time=07:00:00
+#SBATCH --mem=150gb
+#SBATCH --time=15:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=10
 #SBATCH --job-name=pre10cpu
