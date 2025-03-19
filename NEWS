@@ -12,6 +12,8 @@ v1.1.3:
 - Clarify error message in .extractstr (utils.R), .condcolidx (meandifference.R), averageandfilterexprs and .expressedtrans subfunction, createtablescores, .checkempty (allauc.R), .computeupdown (attenuation.R).
 - Add tests in the tests/testthat folder for each function.
 - Add zenodo download commands in the vignette.
+- Add doi after merging with main branch.
+- Submit the package to CRAN after merging.
 
 
 v1.1.2:
