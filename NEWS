@@ -12,6 +12,7 @@ v1.1.3:
 - Add information to the error messages in .extractstr (utils.R), .condcolidx (meandifference.R), averageandfilterexprs and .expressedtrans subfunction, createtablescores, .checkempty (allauc.R), .computeupdown (attenuation.R).
 - Add tests in the tests/testthat folder for each function.
 - Add zenodo download commands in the vignette. Data are under doi 10.5281/zenodo.15050723.
+- Add test to avoid triggering warnings in blacklisthighmap.
 - Add doi after merging with main branch.
 - Submit the package to CRAN after merging.
 
