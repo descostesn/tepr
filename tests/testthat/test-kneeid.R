@@ -16,7 +16,7 @@ meandiff <- meandifference(resecdf, expdf, nbwindows,
 bytranslistmean <- split(meandiff, factor(meandiff$transcript))
 
 ## ---- Comparing to expected object ---- ##
-expectedobj <- readRDS(system.file("extdata", "keeid.rds",
+expectedobj <- readRDS(system.file("extdata", "kneeid.rds",
     package="tepr"))
 kneeidtest <- kneeid(bytranslistmean, expdf, verbose = FALSE)
 test_that("kneeid works properly", {
