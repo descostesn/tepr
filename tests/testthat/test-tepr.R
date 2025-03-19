@@ -10,7 +10,7 @@ transdf <- read.delim(transpath, header = FALSE)
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "tepr.rds",
     package="tepr"))
-restepr <- tepr(expdf, transdf, verbose = FALSE)
+restepr <- tepr(expdf, transdf, expthres, verbose = FALSE)
 test_that("tepr works properly", {
              expect_identical(restepr, expectedobj)
          })
@@ -23,6 +23,6 @@ test_that("Errors are thrown when calling tepr", {
         path = "HS_rep1_chr13.reverse.bg"))
     expm <- paste0("\n\t There are more than two conditions in your experiment",
             " table. Use teprmulti function instead.\n")
-    expect_error(tepr(expdftest, transdf, verbose = FALSE),
+    expect_error(tepr(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
 })
