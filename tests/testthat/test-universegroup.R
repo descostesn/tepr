@@ -21,8 +21,9 @@ resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
         resmeandiff, verbose = FALSE)
 
 ## ---- Comparing to expected object ---- ##
-!!
-res <- universegroup(resatt, expdf, controlcondname, stresscondname,
-        windsizethres, countnathres, meanctrlthres, meanstressthres,
-        pvaltheorythres, aucctrlthreshigher, aucctrlthreslower, aucstressthres,
-        attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
+expectedobj <- readRDS(system.file("extdata", "universegroup.rds",
+    package="tepr"))
+resug <- universegroup(resatt, expdf, verbose = FALSE)
+test_that("universegroup works properly", {
+             expect_identical(resug, expectedobj)
+         })
