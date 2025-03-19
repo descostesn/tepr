@@ -2,7 +2,7 @@ library("tepr")
 
 gencodepath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/gencode.v43.basic.annotation.gtf" # nolint
 exptabpath <- "/g/romebioinfo/Projects/tepr-data/downloads/annotations/exptab-bedgraph-vicnames.csv" # nolint
-finaltabpath <- "objects-tsv-10cpus"
+finaltabpath <- "objects-tsv-15cpus"
 finaltabname <- "cugusi.tsv"
 saveobjectpath <- finaltabpath
 
@@ -15,7 +15,7 @@ verbose <- TRUE
 showtime <- TRUE
 showmemory <- TRUE
 genomename <- "hg38"
-tmpfold <- "tmp-10cpu"
+tmpfold <- "tmp-15cpu"
 savefinaltable <- TRUE
 deletetmp <- FALSE
 chromtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
