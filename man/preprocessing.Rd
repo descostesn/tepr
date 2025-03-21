@@ -5,7 +5,7 @@
 \title{Preprocess Experimental Data for Genomic Analysis}
 \usage{
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
+blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
 finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
 saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
 showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
@@ -20,7 +20,7 @@ verbose = TRUE)
 
 \item{maptrackpath}{Character. Path to the mappability track file.}
 
-\item{blacklistshpath}{Character. Path to the blacklist file.}
+\item{blacklistpath}{Character. Path to the blacklist file.}
 
 \item{genomename}{Character. Name of the genome assembly (e.g., "hg38").
 Default is \code{NA}. If left to NA, chromtab should be provided.}
@@ -96,7 +96,7 @@ Temporary files created during processing are optionally deleted at the end.
 #   gencodepath = "gencode.v38.annotation.gtf",
 #   windsize = 200,
 #   maptrackpath = "mappability_track.bed",
-#   blacklistshpath = "blacklist.bed",
+#   blacklistpath = "blacklist.bed",
 #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
 #   finaltabname = "final_annotated_table.tsv",
 #   tmpfold = file.path(getwd(), "tmptepr"),
