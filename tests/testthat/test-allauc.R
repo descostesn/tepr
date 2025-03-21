@@ -20,7 +20,13 @@ expectedobj <- readRDS(system.file("extdata", "allauc.rds",
     package="tepr"))
 allauctest <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
 test_that("allauc works properly", {
-             expect_identical(allauctest, expectedobj)
+            ## Darwin indicates a macos. Because of floating system, object is
+            ## equal but not identical on this OS.
+            if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
+                expect_identical(allauctest, expectedobj)
+            } else {
+                expect_equal(allauctest, expectedobj)
+            }
          })
 
 ## ----- Checking errors ----- ##
