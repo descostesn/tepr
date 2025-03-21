@@ -366,6 +366,11 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
     showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
 
+        if (showtime) start_time_fun <- Sys.time()
+
+        if (!file.exists(tmpfold))
+            dir.create(tmpfold, recursive = TRUE)
+
         if (!isTRUE(all.equal(typeof(chromtab), "S4"))) {
             if (is.na(genomename) && is.na(chromtab))
                 stop("\n\t Either the genome name or chromtab should be ",
@@ -383,15 +388,10 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
                         "you are sure you want to proceed set forcechrom = ",
                         "TRUE.\n\n")
             }
+
+            ## Retrieving chromosome lengths
+            if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
         }
-
-        if (showtime) start_time_fun <- Sys.time()
-
-        if (!file.exists(tmpfold))
-            dir.create(tmpfold, recursive = TRUE)
-
-        ## Retrieving chromosome lengths
-        if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")
