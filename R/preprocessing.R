@@ -30,14 +30,14 @@
         return(allwindowsbed)
 }
 
-.createbedgraphlistwmean <- function(maptrackpath, blacklistshpath, exptabpath,
+.createbedgraphlistwmean <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, showtime, showmemory,
     saveobjectpath, reload, tmpfold, chromtab, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
-        blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
+        blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
             nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
             tmpfold, reload, showtime, showmemory, chromtab, forcechrom = TRUE,
             verbose)
@@ -53,7 +53,7 @@
 #'
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-#' blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
+#' blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
 #' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
 #' saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
 #' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
@@ -63,7 +63,7 @@
 #' @param gencodepath Character. Path to the Gencode annotation file.
 #' @param windsize Integer. Window size for splitting transcripts.
 #' @param maptrackpath Character. Path to the mappability track file.
-#' @param blacklistshpath Character. Path to the blacklist file.
+#' @param blacklistpath Character. Path to the blacklist file.
 #' @param genomename Character. Name of the genome assembly (e.g., "hg38").
 #'  Default is \code{NA}. If left to NA, chromtab should be provided.
 #' @param nbcputrans Integer. Number of CPUs to use for transcript processing.
@@ -119,7 +119,7 @@
 #' #   gencodepath = "gencode.v38.annotation.gtf",
 #' #   windsize = 200,
 #' #   maptrackpath = "mappability_track.bed",
-#' #   blacklistshpath = "blacklist.bed",
+#' #   blacklistpath = "blacklist.bed",
 #' #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
 #' #   finaltabname = "final_annotated_table.tsv",
 #' #   tmpfold = file.path(getwd(), "tmptepr"),
@@ -133,7 +133,7 @@
 #' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistshpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
+    blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
     finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
     saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
@@ -182,7 +182,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
-    .createbedgraphlistwmean(maptrackpath, blacklistshpath,
+    .createbedgraphlistwmean(maptrackpath, blacklistpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime,
         showmemory, saveobjectpath, reload, tmpfold, chromtab, verbose)
 
