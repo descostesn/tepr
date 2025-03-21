@@ -382,17 +382,18 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
                 if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
                     stop("\n Chromtab should be a Seqinfo object. Use ",
                         "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
-        
-                allchromvec <- GenomeInfoDb::seqnames(chromtab)
-                idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
-                if (!isTRUE(all.equal(length(idx), 0)))
-                    stop("\n Non-canonical chromosomes found in chromtab. If ",
-                        "you are sure you want to proceed set forcechrom = ",
-                        "TRUE.\n\n")
             }
 
             ## Retrieving chromosome lengths
             if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
+
+        } else {
+            allchromvec <- GenomeInfoDb::seqnames(chromtab)
+            idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
+            if (!isTRUE(all.equal(length(idx), 0)))
+                stop("\n Non-canonical chromosomes found in chromtab. If ",
+                    "you are sure you want to proceed set forcechrom = ",
+                    "TRUE.\n\n")
         }
 
         ## Reading the information about experiments
