@@ -37,8 +37,15 @@ finaltabtest <- createtablescores(tmpfold = tmpfoldpath, exptabpath,
 expectedobj <- readRDS(system.file("extdata", "finaltab.rds",
     package="tepr"))
 test_that("createtablescores works properly", {
-             expect_identical(finaltabtest, expectedobj)
-         })
+
+    ## Darwin indicates a macos. Because of floating system, object is
+    ## equal but not identical on this OS.
+    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
+        expect_identical(finaltabtest, expectedobj)
+    } else {
+        expect_equal(finaltabtest, expectedobj)
+    }
+})
 
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling createtablescores", {

@@ -14,8 +14,15 @@ expectedobj <- readRDS(system.file("extdata", "countna.rds",
     package="tepr"))
 countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 test_that("countna works properly", {
-             expect_identical(countnatest, expectedobj)
-         })
+
+    ## Darwin indicates a macos. Because of floating system, object is
+    ## equal but not identical on this OS.
+    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
+        expect_identical(countnatest, expectedobj)
+    } else {
+        expect_equal(countnatest, expectedobj)
+    }
+})
 
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling countna", {

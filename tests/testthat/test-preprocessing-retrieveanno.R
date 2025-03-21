@@ -9,6 +9,13 @@ allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
 expectedobj <- readRDS(system.file("extdata", "allannobed.rds",
     package="tepr"))
 test_that("retrieveanno works properly", {
-             expect_identical(allannobed, expectedobj)
-         })
+
+    ## Darwin indicates a macos. Because of floating system, object is
+    ## equal but not identical on this OS.
+    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
+        expect_identical(allannobed, expectedobj)
+    } else {
+        expect_equal(allannobed, expectedobj)
+    }
+})
 

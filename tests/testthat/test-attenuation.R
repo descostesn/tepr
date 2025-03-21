@@ -24,8 +24,15 @@ expectedobj <- readRDS(system.file("extdata", "attenuation.rds",
 resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
         resmeandiff, verbose = FALSE)
 test_that("attenuation works properly", {
-             expect_identical(resatt, expectedobj)
-         })
+
+    ## Darwin indicates a macos. Because of floating system, object is
+    ## equal but not identical on this OS.
+    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
+        expect_identical(resatt, expectedobj)
+    } else {
+        expect_equal(resatt, expectedobj)
+    }
+})
 
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling attenuation", {
