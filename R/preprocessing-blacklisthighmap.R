@@ -48,6 +48,8 @@
 
         ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
         ## low mappability intervals)
+        currenttrans$chrom <- as.character(currenttrans$chrom)
+        maptracktib$chrom <- as.character(maptracktib$chrom)
         resmap <- valr::bed_intersect(currenttrans, maptracktib)
         if (!isTRUE(all.equal(nrow(resmap), 0))) {
             ## Compute strtransvec only if no overlap with black list was found
