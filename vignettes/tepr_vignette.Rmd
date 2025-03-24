@@ -171,7 +171,7 @@ The following input files are required for the analysis:
 *   **exptab:** A table describing the experiments, containing the columns "condition," "replicate," "direction," "strand," and "path." The "direction" column should contain the values "forward" and "reverse," and the "strand" column should contain "plus" and "minus."  The `?checkexptab` utility function can be used to verify the table's format.
 *   **gencode:** The Gencode annotation file, available at [https://www.gencodegenes.org/](https://www.gencodegenes.org/).
 *   **maptrack:** Files containing low-mappability intervals for the genome of interest. For hg38, the track [k50.Unique.Mappability.bb](https://hgdownload.soe.ucsc.edu/gbdb/hg38/hoffmanMappability/k50.Unique.Mappability.bb) was downloaded from the UCSC server, and scores below 0.8 were set to `NA`.
-*   **blacklist:** Blacklist files for various organisms are available at [https://github.com/Boyle-Lab/Blacklist/blob/master/lists/](https://github.com/Boyle-Lab/Blacklist/blob/master/lists/).
+*   **blacklist:** Blacklist files for various organisms are available at [https://github.com/Boyle-Lab/Blacklist/blob/master/lists](https://github.com/Boyle-Lab/Blacklist/blob/master/lists).
 
 
 ### Retrieving Transcript Annotations from Gencode
