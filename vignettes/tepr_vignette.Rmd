@@ -4,10 +4,6 @@ author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
 output:
     BiocStyle::html_document
-    rmarkdown::html_vignette:
-        md_extensions: [ 
-            "-autolink_bare_uris" 
-        ]
 vignette: >
     %\VignetteIndexEntry{tepr}
     %\VignetteEngine{knitr::rmarkdown}
