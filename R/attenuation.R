@@ -25,13 +25,15 @@
 
       idxup <- which(trans$coord <= trans[, kneecolname])
       if (isTRUE(all.equal(length(idxup), 0)))
-        stop("\n\t Problem in retrieving idxup, contact the developer.\n")
+        stop("\n\t Problem in retrieving idxup, this should not happen. ",
+            "Contact the developer.\n")
       upmean <- mean(trans[idxup, meancolname])
 
       idxdown <- which(trans$coord >= trans[, kneecolname] &
                           trans$coord <= max(trans$coord))
       if (isTRUE(all.equal(length(idxdown), 0)))
-        stop("\n\t Problem in retrieving idxdown, contact the developer.\n")
+        stop("\n\t Problem in retrieving idxdown, this should not happen. ",
+            "Contact the developer.\n")
       downmean <- mean(trans[idxdown, meancolname])
 
       ## Calculating attenuation
@@ -186,7 +188,8 @@ attenuation <- function(allaucdf, kneedf, matnatrans, bytranslistmean, expdf,
 
       if (showtime) {
         end_time <- Sys.time()
-        message("\t\t -- Analysis performed in: ", end_time - start_time) # nolint
+        timing <- end_time - start_time
+        message("\t\t -- Analysis performed in: ", format(timing, digits = 2))
       }
 
       return(auckneenasumatt)

@@ -28,7 +28,7 @@ The following example demonstrates a complete run of the package. Preprocessing 
 library(tepr)
 
 #########
-# Pre-processing - takes ~ 38 seconds
+# Pre-processing - takes ~ 21 seconds
 #########
 
 ## Parameters
@@ -55,8 +55,11 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
 genomename <- "hg38"
 
-## The line below is optional
+## The lines below are optional. The chromosome info can be retrieved automatically
+## Make chromosome info retrieval explicit for building the vignette
 chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
+chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
@@ -106,10 +109,6 @@ For a comprehensive analysis, we will use the data from [Cugusi et al.](https://
 The bedgraph files, mappability track and black list necessary for performing the entire analysis can be downloaded from zenodo:
 
 ```{bash raw-files, eval = FALSE}
-
-TO DO
------
-
 #!/usr/bin/sh
 
 mkdir data
@@ -117,23 +116,25 @@ mkdir data
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.basic.annotation.gtf.gz -P data/ && gunzip data/gencode.v43.basic.annotation.gtf.gz
 wget https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz -P data/ && gunzip data/hg38-blacklist.v2.bed.gz
 
-* k50.umap.hg38.0.8.bed (k50.umap.hg38.0.8.bed) - sent by victor
-* ctrl_rep1.forward.bg (ctrl_rep1.forward.bg) - sent by victor
-* ctrl_rep1.reverse.bg (ctrl_rep1.reverse.bg) - sent by victor
-* ctrl_rep2.forward.bg (ctrl_rep2.forward.bg) - sent by victor
-* ctrl_rep2.reverse.bg (ctrl_rep2.reverse.bg) - sent by victor
-* HS_rep1.forward.bg (HS_rep1.forward.bg) - sent by victor
-* HS_rep1.reverse.bg (HS_rep1.reverse.bg) - sent by victor
-* HS_rep2.forward.bg (HS_rep2.forward.bg) - sent by victor
-* HS_rep2.reverse.bg (HS_rep2.reverse.bg) - sent by victor
-
+wget https://zenodo.org/records/15050723/files/k50.umap.hg38.0.8.bed -P data/
+wget https://zenodo.org/records/15050723/files/ctrl_rep1.forward.bg -P data/
+wget https://zenodo.org/records/15050723/files/ctrl_rep1.reverse.bg -P data/
+wget https://zenodo.org/records/15050723/files/ctrl_rep2.forward.bg -P data/
+wget https://zenodo.org/records/15050723/files/ctrl_rep2.reverse.bg -P data/
+wget https://zenodo.org/records/15050723/files/HS_rep1.forward.bg -P data/
+wget https://zenodo.org/records/15050723/files/HS_rep1.reverse.bg -P data/
+wget https://zenodo.org/records/15050723/files/HS_rep2.forward.bg -P data/
+wget https://zenodo.org/records/15050723/files/HS_rep2.reverse.bg -P data/
 ```
 
 If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
 ```{bash cugusi-table, eval = FALSE}
+#!/usr/bin/bash
 
-TO DO
+mkdir preprocessed
+
+wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
 ```
 
 
@@ -636,7 +637,9 @@ The approximate computation time for each function is indicated below.
 ```{r completedataset, eval = FALSE}
 library(tepr)
 
-transpath <- "dTAG_Cugusi_stranded_20230810.tsv"
+## After downloading with: wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
+
+transpath <- "preprocessed/cugusi.tsv"
 exppath <- system.file("extdata", "exptab.csv", package="tepr")
 
 ## Reading input files

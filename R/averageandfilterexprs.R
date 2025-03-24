@@ -22,8 +22,9 @@
         } else if (isTRUE(all.equal(strandname, "+"))) {
             directname <- "plus"
         } else {
-            stop("\n\t The strand name is neither + or -, contact the ",
-                        "developer.\n")
+            stop("\n\t The strand name is neither + or - in the transcript ",
+                "table alldf. If you are sure to have built alldf with the ",
+                "preprocessing function, contact the developer.\n")
         }
 
         dfstrand <- dfbytranscript %>%
@@ -113,8 +114,8 @@ averageandfilterexprs <- function(expdf, alldf, expthres, showtime = FALSE, # no
 
         if (isTRUE(all.equal(length(expressedtransvec), 0)))
             stop("\n No transcript was identified as expressed. You might ",
-                "want to increase the expthres parameter which is ",
-                "currently set to ", expthres, "\n")
+                "want to decrease the expthres parameter. Currently all genes",
+                " whose expression < ", expthres, " are removed.\n")
 
         if (showtime) {
         end_time <- Sys.time()

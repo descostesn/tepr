@@ -116,7 +116,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
             !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(meanstress) > meanstressthres &
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(.data$Universe, .before = 1)  # nolint
+            dplyr::relocate("Universe", .before = 1)  # nolint
     } else {
         completedf <- completedf %>%
         dplyr::mutate(Universe = ifelse(
@@ -124,7 +124,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
             .data$Count_NA < countnathres &
             !!sym(meanctrl) > meanctrlthres & # nolint
             !!sym(pvaltheory) > pvaltheorythres, TRUE, FALSE)) %>%
-            dplyr::relocate(.data$Universe, .before = 1)  # nolint
+            dplyr::relocate("Universe", .before = 1)  # nolint
     }
 
     ## Computing the Group column
@@ -140,7 +140,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
                 !!sym(aucctrl) > aucctrlthreshigher &
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
                     .data$Group)) %>%
-                dplyr::relocate(.data$Group, .before = 2)
+                dplyr::relocate("Group", .before = 2)
     } else {
         completedf <- completedf %>%
         dplyr::mutate(
@@ -150,7 +150,7 @@ universegroup <- function(completedf, expdf, controlname = "ctrl", # nolint
             Group = ifelse(.data$Universe == TRUE &
                 !!sym(aucctrl) > aucctrlthreshigher &
                 !!sym(aucctrl) < aucctrlthreslower, "Outgroup",
-                    .data$Group)) %>% dplyr::relocate(.data$Group, .before = 2)
+                    .data$Group)) %>% dplyr::relocate("Group", .before = 2)
     }
 
     if (showtime) {

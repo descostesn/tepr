@@ -76,8 +76,8 @@
             maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
             whichchrom <- GenomicRanges::GRanges(
                 paste0(currentchrom, ":1-", chromlength))
-            maptrackbedchrom <- rtracklayer::import(maptrackbedfile,
-                which = whichchrom)
+            suppressWarnings(maptrackbedchrom <- rtracklayer::import(
+                maptrackbedfile, which = whichchrom))
             maptrackbedchrom <- as.data.frame(maptrackbedchrom)
 
             idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))

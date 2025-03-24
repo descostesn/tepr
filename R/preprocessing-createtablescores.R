@@ -55,7 +55,7 @@
 #' chromosome stored in the temporary folder into a unified table.
 #'
 #' @usage
-#' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
+#' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = FALSE,
 #'   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
 #'  verbose)
 #'
@@ -66,7 +66,7 @@
 #' @param showmemory Logical; if `TRUE`, memory usage is printed during
 #'  processing. Default is `FALSE`.
 #' @param showtime Logical; if `TRUE`, the execution time of the function is
-#'  printed. Default is `TRUE`.
+#'  printed. Default is `FALSE`.
 #' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
 #'  disk. Default is `TRUE`.
 #' @param finaltabpath A string specifying the directory where the final table
@@ -102,7 +102,7 @@
 #' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
-    showtime = TRUE, savefinaltable = TRUE, finaltabpath = getwd(),
+    showtime = FALSE, savefinaltable = TRUE, finaltabpath = getwd(),
     finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
@@ -121,7 +121,8 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
 
         if (!isTRUE(all.equal(length(unique(table(expnamevec))), 1)))
             stop("\n\t Experiments have a different number of files. This ",
-                "should not happen. Contact the developer.\n")
+                "should not happen if you used blacklisthighmap with the same",
+                "experiment table. Contact the developer.\n")
 
         explist <- split(filevec, factor(expnamevec))
 

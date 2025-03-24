@@ -5,10 +5,11 @@
 \title{Preprocess Experimental Data for Genomic Analysis}
 \usage{
 preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
+blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
 finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
-showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
+saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
+verbose = TRUE)
 }
 \arguments{
 \item{exptabpath}{Character. Path to the experiment table file.}
@@ -19,46 +20,51 @@ showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 
 \item{maptrackpath}{Character. Path to the mappability track file.}
 
-\item{blacklistshpath}{Character. Path to the blacklist file.}
+\item{blacklistpath}{Character. Path to the blacklist file.}
 
-\item{genomename}{Character. Name of the genome assembly (e.g., "hg38").}
+\item{genomename}{Character. Name of the genome assembly (e.g., "hg38").
+Default is \code{NA}. If left to NA, chromtab should be provided.}
 
 \item{nbcputrans}{Integer. Number of CPUs to use for transcript processing.
-Default is 1.}
+Default is \code{1}.}
 
 \item{finaltabpath}{Character. Path where the final annotated table will be
-saved. Default is "getwd()".}
+saved. Default is \code{getwd()}.}
 
 \item{finaltabname}{Character. Name of the final annotated table file.
-Default is "anno.tsv".}
+Default is \code{anno.tsv}.}
 
 \item{tmpfold}{Character. Path to a temporary folder for intermediate files.
 Default is \code{file.path(getwd(), "tmptepr")}.}
 
 \item{saveobjectpath}{Character. Path to save intermediate objects. Default
-is NA.}
+is \code{getwd()}.}
 
 \item{savefinaltable}{Logical. Whether to save the final table to disk.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{reload}{Logical. Whether to reload intermediate objects if available.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{showtime}{Logical. Whether to display timing information. Default is
-FALSE.}
+\code{FALSE}.}
 
 \item{showmemory}{Logical. Whether to display memory usage information.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{deletetmp}{Logical. Whether to delete temporary files after processing.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{chromtab}{A Seqinfo object retrieved with the rtracklayer method
-SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
-NA.}
+\code{SeqinfoForUCSCGenome}. If NA, the method is called automatically and
+the \code{genomename} should be provided. Default is \code{NA}.}
+
+\item{forcechrom}{Logical indicating if the presence of non-canonical
+chromosomes in chromtab (if not NA) should trigger an error. Default is
+\code{FALSE}.}
 
 \item{verbose}{Logical. Whether to display detailed progress messages.
-Default is TRUE.}
+Default is \code{TRUE}.}
 }
 \value{
 A data frame representing the final table containing transcript
@@ -90,7 +96,7 @@ Temporary files created during processing are optionally deleted at the end.
 #   gencodepath = "gencode.v38.annotation.gtf",
 #   windsize = 200,
 #   maptrackpath = "mappability_track.bed",
-#   blacklistshpath = "blacklist.bed",
+#   blacklistpath = "blacklist.bed",
 #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
 #   finaltabname = "final_annotated_table.tsv",
 #   tmpfold = file.path(getwd(), "tmptepr"),
