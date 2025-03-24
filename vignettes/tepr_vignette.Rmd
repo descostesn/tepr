@@ -114,7 +114,7 @@ The bedgraph files, mappability track and black list necessary for performing th
 mkdir data
 
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.basic.annotation.gtf.gz -P data/ && gunzip data/gencode.v43.basic.annotation.gtf.gz
-wget https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz -P data/ && gunzip data/hg38-blacklist.v2.bed.gz
+wget https://github.com/Boyle-Lab/Blacklist/raw/refs/heads/master/lists/hg38-blacklist.v2.bed.gz -P data/ && gunzip data/hg38-blacklist.v2.bed.gz
 
 wget https://zenodo.org/records/15050723/files/k50.umap.hg38.0.8.bed -P data/
 wget https://zenodo.org/records/15050723/files/ctrl_rep1.forward.bg -P data/
