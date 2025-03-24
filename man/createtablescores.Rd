@@ -4,7 +4,7 @@
 \alias{createtablescores}
 \title{Create a Unified Table of Scores}
 \usage{
-createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = FALSE,
+createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = TRUE,
   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
  verbose)
 }
@@ -19,7 +19,7 @@ columns named 'condition', 'replicate', 'strand', and 'path'.}
 processing. Default is `FALSE`.}
 
 \item{showtime}{Logical; if `TRUE`, the execution time of the function is
-printed. Default is `FALSE`.}
+printed. Default is `TRUE`.}
 
 \item{savefinaltable}{Logical; if `TRUE`, the resulting table is saved to
 disk. Default is `TRUE`.}

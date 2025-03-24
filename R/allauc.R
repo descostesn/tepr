@@ -14,8 +14,7 @@
 
     if (isTRUE(all.equal(length(idx), 0)))
         stop("\n\t Your condition ", namestr, " was not found in the ",
-            "experiment table expdf. Change the parameter controlcondname or",
-            " stresscondname.\n")
+            "experiment table expdf. Please verify.\n")
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,

@@ -48,8 +48,6 @@
 
         ## Set scores NOT overlapping high map to NA (i.e. scores overlapping
         ## low mappability intervals)
-        currenttrans$chrom <- as.character(currenttrans$chrom)
-        maptracktib$chrom <- as.character(maptracktib$chrom)
         resmap <- valr::bed_intersect(currenttrans, maptracktib)
         if (!isTRUE(all.equal(nrow(resmap), 0))) {
             ## Compute strtransvec only if no overlap with black list was found
@@ -268,7 +266,7 @@
 #' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
 #'    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
-#'    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
+#'    showmemory = FALSE, chromtab = NA, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
 #' @param blacklistpath Character string. Path to the blacklist regions file.
@@ -297,9 +295,6 @@
 #' @param chromtab A Seqinfo object retrieved with the rtracklayer method
 #' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
 #' NA.
-#' @param forcechrom Logical indicating if the presence of non-canonical
-#' chromosomes in chromtab (if not NA) should trigger an error. Default is
-#' \code{FALSE}.
 #' @param verbose A logical value indicating whether to display detailed
 #'   processing messages.
 #'
@@ -366,35 +361,24 @@
 blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
     tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
-    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
+    showmemory = FALSE, chromtab = NA, verbose = TRUE) {
+
+        if (is.na(genomename) && is.na(chromtab))
+            stop("\n\t Either the genome name or chromtab should be ",
+                "provided.\n")
+
+        if (!is.na(chromtab) &&
+            !isTRUE(all.equal(methods::is(chromtab), "Seqinfo")))
+            stop("\n\t chromtab should be a Seqinfo object. ",
+                "See rtracklayer::SeqinfoForUCSCGenome.\n")
 
         if (showtime) start_time_fun <- Sys.time()
 
         if (!file.exists(tmpfold))
             dir.create(tmpfold, recursive = TRUE)
 
-        if (!isTRUE(all.equal(typeof(chromtab), "S4"))) {
-            if (is.na(genomename) && is.na(chromtab))
-                stop("\n\t Either the genome name or chromtab should be ",
-                    "provided.\n")
-
-            if (!is.na(chromtab) && !forcechrom) {
-                if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
-                    stop("\n Chromtab should be a Seqinfo object. Use ",
-                        "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
-            }
-
-            ## Retrieving chromosome lengths
-            if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
-
-        } else {
-            allchromvec <- GenomeInfoDb::seqnames(chromtab)
-            idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
-            if (!isTRUE(all.equal(length(idx), 0)))
-                stop("\n Non-canonical chromosomes found in chromtab. If ",
-                    "you are sure you want to proceed set forcechrom = ",
-                    "TRUE.\n\n")
-        }
+        ## Retrieving chromosome lengths
+        if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
 
         ## Reading the information about experiments
         if (verbose) message("Reading the information about experiments")

@@ -30,17 +30,16 @@
         return(allwindowsbed)
 }
 
-.createbedgraphlistwmean <- function(maptrackpath, blacklistpath, exptabpath,
+.createbedgraphlistwmean <- function(maptrackpath, blacklistshpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename, showtime, showmemory,
     saveobjectpath, reload, tmpfold, chromtab, verbose) {
 
         if (verbose) message("\n ## Retrieving the values of the bedgraph ",
             "files, removing black lists and keeping scores landing on high ",
             "mappability intervals ##\n")
-        blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
+        blacklisthighmap(maptrackpath, blacklistshpath, exptabpath,
             nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath,
-            tmpfold, reload, showtime, showmemory, chromtab, forcechrom = TRUE,
-            verbose)
+            tmpfold, reload, showtime, showmemory, chromtab, verbose)
 }
 
 
@@ -53,47 +52,42 @@
 #'
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-#' blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
+#' blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
 #' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-#' saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
-#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
-#' verbose = TRUE)
+#' saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
+#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, verbose = TRUE)
 #'
 #' @param exptabpath Character. Path to the experiment table file.
 #' @param gencodepath Character. Path to the Gencode annotation file.
 #' @param windsize Integer. Window size for splitting transcripts.
 #' @param maptrackpath Character. Path to the mappability track file.
-#' @param blacklistpath Character. Path to the blacklist file.
+#' @param blacklistshpath Character. Path to the blacklist file.
 #' @param genomename Character. Name of the genome assembly (e.g., "hg38").
-#'  Default is \code{NA}. If left to NA, chromtab should be provided.
 #' @param nbcputrans Integer. Number of CPUs to use for transcript processing.
-#'  Default is \code{1}.
+#'  Default is 1.
 #' @param finaltabpath Character. Path where the final annotated table will be
-#'  saved. Default is \code{getwd()}.
+#'  saved. Default is "getwd()".
 #' @param finaltabname Character. Name of the final annotated table file.
-#'  Default is \code{anno.tsv}.
+#'  Default is "anno.tsv".
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
 #'  Default is \code{file.path(getwd(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
-#'  is \code{getwd()}.
+#'  is NA.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
-#'  Default is \code{TRUE}.
+#'  Default is TRUE.
 #' @param reload Logical. Whether to reload intermediate objects if available.
-#'  Default is \code{FALSE}.
+#'  Default is FALSE.
 #' @param showtime Logical. Whether to display timing information. Default is
-#'  \code{FALSE}.
+#'  FALSE.
 #' @param showmemory Logical. Whether to display memory usage information.
-#'  Default is \code{FALSE}.
+#'  Default is FALSE.
 #' @param deletetmp Logical. Whether to delete temporary files after processing.
-#'  Default is \code{TRUE}.
+#'  Default is TRUE.
 #' @param chromtab A Seqinfo object retrieved with the rtracklayer method
-#' \code{SeqinfoForUCSCGenome}. If NA, the method is called automatically and
-#' the \code{genomename} should be provided. Default is \code{NA}.
-#' @param forcechrom Logical indicating if the presence of non-canonical
-#' chromosomes in chromtab (if not NA) should trigger an error. Default is
-#' \code{FALSE}.
+#' SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
+#' NA.
 #' @param verbose Logical. Whether to display detailed progress messages.
-#'  Default is \code{TRUE}.
+#'  Default is TRUE.
 #'
 #' @return A data frame representing the final table containing transcript
 #' information and scores on 'windsize' windows for all experiments defined in
@@ -119,7 +113,7 @@
 #' #   gencodepath = "gencode.v38.annotation.gtf",
 #' #   windsize = 200,
 #' #   maptrackpath = "mappability_track.bed",
-#' #   blacklistpath = "blacklist.bed",
+#' #   blacklistshpath = "blacklist.bed",
 #' #   genomename = "hg38", nbcputrans = 2, finaltabpath = "results",
 #' #   finaltabname = "final_annotated_table.tsv",
 #' #   tmpfold = file.path(getwd(), "tmptepr"),
@@ -133,32 +127,15 @@
 #' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
+    blacklistshpath, genomename, nbcputrans = 1, finaltabpath = getwd(),
     finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-    saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE,
+    saveobjectpath = NA, savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
-    forcechrom = FALSE, verbose = TRUE) {
-    
-    if (is.na(genomename) && is.na(chromtab))
-            stop("\n\t Either the genome name or chromtab should be ",
-                "provided.\n")
+    verbose = TRUE) {
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
         stop("\n\t The final table already exists, set reload = FALSE to ",
             "create it again.\n")
-
-    if (!is.na(chromtab) && !forcechrom) {
-        if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
-            stop("\n Chromtab should be a Seqinfo object. Use ",
-                "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
-        
-        allchromvec <- GenomeInfoDb::seqnames(chromtab)
-        idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
-        if (!isTRUE(all.equal(length(idx), 0)))
-            stop("\n Non-canonical chromosomes found in chromtab. If you are ",
-                "sure you want to proceed set forcechrom = TRUE.\n\n",
-                paste(allchromvec[idx], collapse = " "))
-    }
 
     if (showtime) start_time_preprocessing <- Sys.time()
 
@@ -182,7 +159,7 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
 
     ## Retrieving the values of the bedgraph files, removing black lists and
     ## keeping scores landing on high mappability intervals
-    .createbedgraphlistwmean(maptrackpath, blacklistpath,
+    .createbedgraphlistwmean(maptrackpath, blacklistshpath,
         exptabpath, nbcputrans, allwindowsbed, windsize, genomename, showtime,
         showmemory, saveobjectpath, reload, tmpfold, chromtab, verbose)
 

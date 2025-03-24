@@ -7,7 +7,7 @@
 blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
-   showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
+   showmemory = FALSE, chromtab = NA, verbose = TRUE)
 }
 \arguments{
 \item{maptrackpath}{Character string. Path to the mappability track file.}
@@ -47,10 +47,6 @@ during processing.}
 \item{chromtab}{A Seqinfo object retrieved with the rtracklayer method
 SeqinfoForUCSCGenome. If NA, the method is called automatically. Default is
 NA.}
-
-\item{forcechrom}{Logical indicating if the presence of non-canonical
-chromosomes in chromtab (if not NA) should trigger an error. Default is
-\code{FALSE}.}
 
 \item{verbose}{A logical value indicating whether to display detailed
 processing messages.}
