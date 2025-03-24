@@ -1,3 +1,6 @@
+
+[![DOI](https://zenodo.org/badge/816777942.svg)](https://doi.org/10.5281/zenodo.15078720)
+
 # TepR: Transcription elongation profile in R
 
 I. [Description](#description)  
