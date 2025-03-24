@@ -260,7 +260,7 @@ print(head(finaltab, 3))
 
 ## TepR Analysis
 
-The quick start section demonstrates how to perform a TepR analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here (TO DO)](TO DO). See section 6.1 for notes on processing the complete dataset.
+The quick start section demonstrates how to perform a TepR analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](https://zenodo.org/records/15050723/files/cugusi.tsv). See section 6.1 for notes on processing the complete dataset.
 
 ### Input Files
 
