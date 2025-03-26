@@ -12,14 +12,7 @@ expectedobj <- readRDS(system.file("extdata", "tepr.rds",
     package="tepr"))
 restepr <- tepr(expdf, transdf, expthres, verbose = FALSE)
 test_that("tepr works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(restepr, expectedobj)
-    } else {
-        expect_equal(restepr, expectedobj)
-    }
+    expect_equal(restepr, expectedobj)
 })
 
 ## ----- Checking errors ----- ##

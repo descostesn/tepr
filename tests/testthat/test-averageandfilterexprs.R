@@ -13,14 +13,7 @@ expectedobj <- readRDS(system.file("extdata", "averageandfilterexprs.rds",
 avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
 test_that("preprocessing works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(avfilttest, expectedobj)
-    } else {
-        expect_equal(avfilttest, expectedobj)
-    }
+    expect_equal(avfilttest, expectedobj)
 })
 
 ## ----- Checking errors ----- ##

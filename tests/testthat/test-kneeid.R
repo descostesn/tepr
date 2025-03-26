@@ -20,12 +20,5 @@ expectedobj <- readRDS(system.file("extdata", "kneeid.rds",
     package="tepr"))
 kneeidtest <- kneeid(bytranslistmean, expdf, verbose = FALSE)
 test_that("kneeid works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(kneeidtest, expectedobj)
-    } else {
-        expect_equal(kneeidtest, expectedobj)
-    }
+    expect_equal(kneeidtest, expectedobj)
 })

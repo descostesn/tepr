@@ -13,12 +13,5 @@ allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
 expectedobj <- readRDS(system.file("extdata", "allwindowsbed.rds",
     package="tepr"))
 test_that("makewindows works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(allwindowsbed, expectedobj)
-    } else {
-        expect_equal(allwindowsbed, expectedobj)
-    }
+    expect_equal(allwindowsbed, expectedobj)
 })

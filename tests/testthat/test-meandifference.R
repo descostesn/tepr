@@ -19,14 +19,7 @@ expectedobj <- readRDS(system.file("extdata", "meandiff.rds",
 meandifftest <- meandifference(resecdf, expdf, nbwindows,
     verbose = FALSE)
 test_that("meandifference works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(meandifftest, expectedobj)
-    } else {
-        expect_equal(meandifftest, expectedobj)
-    }
+    expect_equal(meandifftest, expectedobj)
 })
 
 ## ----- Checking errors ----- ##

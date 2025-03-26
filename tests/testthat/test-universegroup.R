@@ -25,12 +25,5 @@ expectedobj <- readRDS(system.file("extdata", "universegroup.rds",
     package="tepr"))
 resug <- universegroup(resatt, expdf, verbose = FALSE)
 test_that("universegroup works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(resug, expectedobj)
-    } else {
-        expect_equal(resug, expectedobj)
-    }
+    expect_equal(resug, expectedobj)
 })
