@@ -1,9 +1,5 @@
 v1.1.7:
-- Move all png in the vignettes parent folder and modify paths in vignette Rmd.
 - Replace all identical tests by equal in testthat.
-- Create a .spelling files with words to ignore.
-- Move pictures to inst/extdata.
-- Replace markdown image integration with knitr.
 
 
 v1.1.6:
