@@ -3,6 +3,7 @@ v1.1.7:
 - Replace all identical tests by equal in testthat.
 - Create a .spelling files with words to ignore.
 - Remove the use of BiocStyle for the vignette.
+- Move pictures to inst/extdata.
 
 
 v1.1.6:
