@@ -149,9 +149,7 @@ The preprocessing pipeline consists of the following steps:
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
 5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-```{r, echo=FALSE, fig.cap="structure"}
-knitr::include_graphics(system.file("extdata", "structure.png", package = "tepr"))
-```
+<img src="structure.png" alt="structure">
 
 **Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time limits typically set in HPC parameters.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
@@ -497,9 +495,7 @@ plotauc(res, expdf, plottype = "groups", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, fig.cap="AUC group plot"}
-knitr::include_graphics(system.file("extdata", "AUCcompare_group.png", package = "tepr"))
-```
+<img src="AUCcompare_group.png" alt="AUC group plot" width="400">
 
 It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
@@ -510,9 +506,7 @@ plotauc(res, expdf, genevec, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, fig.cap="AUC pval plot"}
-knitr::include_graphics(system.file("extdata", "AUCcompare_pval.png", package = "tepr"))
-```
+<img src="AUCcompare_pval.png" alt="AUC pval plot" width="400">
 
 ### `plotmetagenes`
 
@@ -524,9 +518,7 @@ plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 
 The plot on the complete dataset gives:
 
-```{r, echo=FALSE, fig.cap="Attenuation meta"}
-knitr::include_graphics(system.file("extdata", "metagene_attenuation.png", package = "tepr"))
-```
+<img src="metagene_attenuation.png" alt="Attenuation meta" width="400">
 
 Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `?universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
@@ -540,9 +532,7 @@ plothistoknee(res, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, fig.cap="histo percent"}
-knitr::include_graphics(system.file("extdata", "histo_percent.png", package = "tepr"))
-```
+<img src="histo_percent.png" alt="histo percent" width="400">
 
 The distances can also be visualized in kilobases (kb) by setting the `plottype` parameter to "kb":
 
@@ -552,10 +542,7 @@ plothistoknee(res, plottype = "kb", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, fig.cap="histo kb"}
-knitr::include_graphics(system.file("extdata", "histo_kb.png", package = "tepr"))
-```
-
+<img src="histo_kb.png" alt="histo kb" width="400">
 
 
 ## Analysis of More Than Two Conditions
