@@ -27,7 +27,6 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Suggests:
-    BiocStyle,
     knitr,
     rmarkdown,
     testthat
