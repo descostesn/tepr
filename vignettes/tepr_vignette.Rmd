@@ -149,7 +149,7 @@ The preprocessing pipeline consists of the following steps:
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
 5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-```{r, echo=FALSE,  out.width="300px", out.height = "300px", fig.cap="structure"}
+```{r, echo=FALSE, fig.cap="structure"}
 knitr::include_graphics(system.file("extdata", "structure.png", package = "tepr"))
 ```
 
@@ -497,7 +497,7 @@ plotauc(res, expdf, plottype = "groups", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, out.width="300px", out.height = "300px", fig.cap="AUC group plot"}
+```{r, echo=FALSE, fig.cap="AUC group plot"}
 knitr::include_graphics(system.file("extdata", "AUCcompare_group.png", package = "tepr"))
 ```
 
@@ -510,7 +510,7 @@ plotauc(res, expdf, genevec, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, out.width="300px", out.height = "300px", fig.cap="AUC pval plot"}
+```{r, echo=FALSE, fig.cap="AUC pval plot"}
 knitr::include_graphics(system.file("extdata", "AUCcompare_pval.png", package = "tepr"))
 ```
 
@@ -524,7 +524,7 @@ plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 
 The plot on the complete dataset gives:
 
-```{r, echo=FALSE, out.width="300px", out.height = "300px", fig.cap="Attenuation meta"}
+```{r, echo=FALSE, fig.cap="Attenuation meta"}
 knitr::include_graphics(system.file("extdata", "metagene_attenuation.png", package = "tepr"))
 ```
 
@@ -540,7 +540,7 @@ plothistoknee(res, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, out.width="300px", out.height = "300px", fig.cap="histo percent"}
+```{r, echo=FALSE, fig.cap="histo percent"}
 knitr::include_graphics(system.file("extdata", "histo_percent.png", package = "tepr"))
 ```
 
@@ -552,7 +552,7 @@ plothistoknee(res, plottype = "kb", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-```{r, echo=FALSE, out.width="300px", out.height = "300px", fig.cap="histo kb"}
+```{r, echo=FALSE, fig.cap="histo kb"}
 knitr::include_graphics(system.file("extdata", "histo_kb.png", package = "tepr"))
 ```
 
