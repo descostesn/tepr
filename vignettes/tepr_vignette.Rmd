@@ -2,8 +2,7 @@
 title: "TepR: Transcription elongation profile in R"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
-output:
-    BiocStyle::html_document
+output: rmarkdown::html_vignette
 vignette: >
     %\VignetteIndexEntry{tepr}
     %\VignetteEngine{knitr::rmarkdown}
