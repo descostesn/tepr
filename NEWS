@@ -4,6 +4,7 @@ v1.1.7:
 - Create a .spelling files with words to ignore.
 - Remove the use of BiocStyle for the vignette.
 - Move pictures to inst/extdata.
+- Replace markdown image integration with html.
 
 
 v1.1.6:
