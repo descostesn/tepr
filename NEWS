@@ -3,6 +3,7 @@ v1.1.7:
 - Remove the use of BiocStyle for the vignette.
 - Move pictures to inst/extdata.
 - Replace markdown image integration with knitr.
+- Add list of words to exclude from spell check in inst/WORDLIST.
 
 
 v1.1.6:
