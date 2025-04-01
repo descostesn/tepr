@@ -107,7 +107,7 @@ For a comprehensive analysis, we will use the data from [Cugusi et al.](https://
 
 The bedgraph files, mappability track and black list necessary for performing the entire analysis can be downloaded from zenodo:
 
-```{bash raw-files, eval = FALSE, purl=FALSE}
+```{r raw-files, eval = FALSE, purl=FALSE}
 #!/usr/bin/sh
 
 mkdir data
@@ -128,8 +128,8 @@ wget https://zenodo.org/records/15050723/files/HS_rep2.reverse.bg -P data/
 
 If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
-```{bash cugusi-table, eval = FALSE, purl=FALSE}
-#!/usr/bin/bash
+```{r cugusi-table, eval = FALSE, purl=FALSE}
+#!/usr/bin/sh
 
 mkdir preprocessed
 
