@@ -458,7 +458,7 @@ A transcript is considered non-attenuated ("Outgroup") if it meets the following
 
 Analytically, this is represented as:
 
- ```{r outgroup, eval = FALSE, purl = FALSE, comment = NA}
+```{r outgroup, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
