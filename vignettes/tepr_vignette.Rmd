@@ -107,7 +107,7 @@ For a comprehensive analysis, we will use the data from [Cugusi et al.](https://
 
 The bedgraph files, mappability track and black list necessary for performing the entire analysis can be downloaded from zenodo:
 
-```{r raw-files, eval = FALSE, purl=FALSE}
+```{r raw-files, eval = FALSE, purl = FALSE, comment = NA}
 #!/usr/bin/sh
 
 mkdir data
@@ -128,7 +128,7 @@ wget https://zenodo.org/records/15050723/files/HS_rep2.reverse.bg -P data/
 
 If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
-```{r cugusi-table, eval = FALSE, purl=FALSE}
+```{r cugusi-table, eval = FALSE, purl = FALSE, comment = NA}
 #!/usr/bin/sh
 
 mkdir preprocessed
@@ -226,7 +226,7 @@ The main steps include:
 
 If you **did not** execute the "quick start" section code, you need to first copy the bedgraph files to your current folder:
 
-```{r copybg, eval = FALSE, purl=FALSE}
+```{r copybg, eval = FALSE, purl = FALSE, comment=NA}
 expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 expdfpre <- read.csv(expprepath)
 bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
@@ -238,7 +238,7 @@ exptabpath <- "exptab-preprocessing.csv"
 
 Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `?createtablescores` function.
 
-```{r blacklisthighmap, eval = FALSE, purl=FALSE}
+```{r blacklisthighmap, eval = FALSE, purl = FALSE, comment=NA}
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
 blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = file.path(getwd(), "tmptepr"))
 ```
@@ -247,7 +247,7 @@ blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwin
 
 The `?createtablescores` function merges the files stored in the previously produced temporary folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
-```{r createtablescores, eval = FALSE, purl=FALSE}
+```{r createtablescores, eval = FALSE, purl = FALSE, comment = NA}
 finaltab <- createtablescores(tmpfold = file.path(getwd(), "tmptepr"), expprepath, savefinaltable = FALSE)
 ```
 
@@ -410,7 +410,7 @@ Prior to further downstream analysis, the set of transcripts to be studied must 
 
 Analytically, this can be represented as:
 
-```{r uniselect, eval = FALSE, purl=FALSE}
+```{r uniselect, eval = FALSE, purl = FALSE, comment = NA}
 window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
@@ -420,7 +420,7 @@ pvaltheory > pvaltheorythres
 
 If only one condition is provided, only the control threshold is used:
 
-```{r uniselectonecond, eval = FALSE, purl=FALSE}
+```{r uniselectonecond, eval = FALSE, purl = FALSE, comment = NA}
 window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
@@ -439,7 +439,7 @@ The transcripts in the Universe are further categorized into Groups. A transcrip
 
 Analytically, this is represented as:
 
-```{r attselect, eval = FALSE, purl=FALSE}
+```{r attselect, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE &
 aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
@@ -447,7 +447,7 @@ aucstress > aucstressthreshold &
 
 If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution (y = x) *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
 
-```{r attselectonecond, eval = FALSE, purl=FALSE}
+```{r attselectonecond, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & aucctrl > aucctrlthreslower
 ```
 
@@ -458,14 +458,14 @@ A transcript is considered non-attenuated ("Outgroup") if it meets the following
 
 Analytically, this is represented as:
 
-```{r outgroup, eval = FALSE, purl=FALSE}
+ ```{r outgroup, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
 For a single-condition analysis, where no Kolmogorov-Smirnov test against another condition is performed, a transcript belongs to the "Outgroup" if it belongs to the Universe *and* its control AUC falls between two user-defined thresholds:
 
-```{r outgroup2, eval = FALSE, purl=FALSE}
+```{r outgroup2, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
@@ -570,13 +570,13 @@ Analyzing more than two experimental conditions is possible using the `?teprmult
 *   `resmeandiff_<comparison>`: The results of the `?meandifference` function for the specified two-condition comparison.
 *   `resunigroupatt_<comparison>`: The results of the `?universegroup` function for the specified two-condition comparison.
 
-```{r teprmulti, eval = FALSE, purl=FALSE}
+```{r teprmulti, eval = FALSE, purl = FALSE, comment = NA}
 resteprmulti <- teprmulti(expdf, transdf, expthres)
 ```
 
 The `?showallcomp` function returns a vector of all comparison names that `?teprmulti` will perform. This allows users to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` accepts a vector of comparison names to exclude. The following code limits `?teprmulti` to only three comparisons:
 
-```{r teprmultithree, eval = FALSE, purl=FALSE}
+```{r teprmultithree, eval = FALSE, purl = FALSE, comment = NA}
 ## Returns a vector with all the comparison names to exclude
 dontcompvec <- showallcomp(expdf)
 dontcompvec <- dontcompvec[- c(1,2,3)]
@@ -595,7 +595,7 @@ Using the list of results from `?teprmulti`, all plots for all comparisons can b
 
 Figures are written to the directory specified by `outfold`, and subfolders are automatically created for each comparison.
 
-```{r plotmulti, eval = FALSE, purl=FALSE}
+```{r plotmulti, eval = FALSE, purl = FALSE, comment = NA}
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
 
@@ -603,7 +603,7 @@ plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfo
 
 The `?kneeallconds` function allows retrieving knee values processing each condition independently (see next section).
 
-```{r kneeallconds, eval = FALSE, purl=FALSE}
+```{r kneeallconds, eval = FALSE, purl = FALSE, comment = NA}
 kneedf <- kneeallconds(alldf, expdf, expthres)
 ```
 
@@ -648,7 +648,7 @@ For processing the complete dataset, parallelization is highly recommended. We u
 
 The approximate computation time for each function is indicated below.
 
-```{r completedataset, eval = FALSE, purl=FALSE}
+```{r completedataset, eval = FALSE, purl = FALSE, comment = NA}
 library(tepr)
 
 ## After downloading with: wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
