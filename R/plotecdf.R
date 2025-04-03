@@ -66,9 +66,11 @@
             ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
     
-    if (!is.na(fontparam[1]))
+    if (!is.na(fontparam[1])) {
+        message("Font is ", fontparam[1], " ", fontparam[2])
         g2 <- g2 + ggplot2::theme(text=ggplot2::element_text(
             family=fontparam[1], size=as.numeric(fontparam[2])))
+    }
 
     if (plot) {
         warning("You chose to plot the ecdf, the figure is not saved.")
