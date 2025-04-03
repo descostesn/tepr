@@ -1,10 +1,10 @@
 ---
-title: "TepR: Transcription elongation profile in R"
+title: "Transcription elongation profile in R"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
 output: rmarkdown::html_vignette
 vignette: >
-    %\VignetteIndexEntry{TepR: Transcription elongation profile in R}
+    %\VignetteIndexEntry{Transcription elongation profile in R}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
