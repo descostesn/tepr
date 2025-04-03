@@ -486,7 +486,7 @@ The empirical cumulative distribution function (ECDF) for a specific transcript 
 
 ```{r plotecdf, warning = FALSE}
 colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
-plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE, verbose = FALSE)
+plotecdf(resmeandiff, res, expdf, "EGFR", colvec, plot = TRUE, fontparam = c("sans", 11), verbose = FALSE)
 ```
 
 ### `plotauc`
