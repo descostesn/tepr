@@ -65,6 +65,10 @@
         g2 <- g2 + ggplot2::geom_vline(data = vlinedf,
             ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
+    
+    if (!is.na(fontfam) && !is.na(fontsize))
+        g2 <- g2 + ggplot2::theme(text=ggplot2::element_text(family="sans",
+            size=11))
 
     if (plot) {
         warning("You chose to plot the ecdf, the figure is not saved.")
