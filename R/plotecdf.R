@@ -68,7 +68,7 @@
     
     if (!is.na(fontparam[1]))
         g2 <- g2 + ggplot2::theme(text=ggplot2::element_text(
-            family=fontparam[1], size=fontparam[2]))
+            family=fontparam[1], size=as.numeric(fontparam[2])))
 
     if (plot) {
         warning("You chose to plot the ecdf, the figure is not saved.")
