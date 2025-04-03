@@ -35,7 +35,7 @@
 }
 
 .callggplotecdf <- function(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-    outfold, genename, kneeval, plot, formatname, fontparam, verbose) {
+    outfold, genename, kneeval, plot, formatname, verbose) {
 
     colvec <- as.vector(factor(dflongecdf$conditions, labels = colvec))
     ylimval <- 2 * max(dflongecdf$value)
@@ -65,12 +65,6 @@
         g2 <- g2 + ggplot2::geom_vline(data = vlinedf,
             ggplot2::aes(xintercept = kneeval),
             linetype = "dashed", color = "darkgrey")
-    
-    if (!is.na(fontparam[1])) {
-        message("Font is ", fontparam[1], " ", fontparam[2])
-        g2 <- g2 + ggplot2::theme(text=ggplot2::element_text(
-            family=fontparam[1], size=as.numeric(fontparam[2])))
-    }
 
     if (plot) {
         warning("You chose to plot the ecdf, the figure is not saved.")
@@ -134,9 +128,6 @@
 #' @param formatname String of the format of the saved plot. Possible values are
 #'  "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", and "svg".
 #'  Default is \code{"pdf"}.
-#' @param fontparam A two element vector defining the font family and size. To
-#' see the available fonts on your system run \code{names(pdfFonts())}. A
-#' default size is generally 11. Default is \code{NA}.
 #' @param verbose A logical flag indicating whether to display detailed
 #'  messages about the function's progress. Default is \code{TRUE}.
 #'
@@ -175,8 +166,7 @@
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
     outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
-    formatname = "pdf", fontparam = NA, verbose = TRUE) {
-
+    formatname = "pdf", verbose = TRUE) {
 
         nbrep <- length(expdf$replicate) / 2
         if (!isTRUE(all.equal(length(colvec), nbrep)))
@@ -235,5 +225,5 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
         ## Plotting
         if (verbose && !plot) message("\t Generating ecdf plot to ", outfold)
         .callggplotecdf(dflongecdf, colvec, windsizefact, vlinedf, subtext,
-            outfold, genename, kneeval, plot, formatname, fontparam, verbose)
+            outfold, genename, kneeval, plot, formatname, verbose)
 }
