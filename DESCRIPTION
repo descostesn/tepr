@@ -7,10 +7,10 @@ Authors@R: c(
     person("Gael", "Cristofari", email = "gael.cristofari@cnrs.fr", role = "aut"))
 Description:
     The general principle relies on calculating the cumulative signal of nascent
-    RNA sequencing (TT-seq, mNET-seq, PRO-seq, etc.) over the gene body of any
+    RNA sequencing ('TT-seq', 'mNET-seq', 'PRO-seq', etc.) over the gene body of any
     given gene or transcription unit. 'tepr' can identify transcription
     attenuation sites by comparing profile to a null model which assumes uniform
-    read density over the entirety of the transcriptional unit. It can also
+    read density over the entirety of the transcription unit. It can also
     identify increased or diminished transcription attenuation by comparing two
     conditions. Besides rigorous statistical testing and high sensitivity, a
     major feature of 'tepr' is its ability to provide the elongation pattern of
