@@ -12,7 +12,7 @@ vignette: >
 
 # Introduction
 
-TepR (Transcription Elongation Profile in R) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, TepR can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of TepR is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
+tepr (Transcription Elongation Profile in R) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, tepr can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of tepr is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
 
 # Getting Help
 
@@ -101,7 +101,7 @@ print(head(reslist[[2]], 2))
 
 ## Description
 
-For a comprehensive analysis, we will use the data from [Cugusi et al.](https://doi.org/10.1016/j.molcel.2022.01.007). To validate our approach and explore the utility of TepR metrics in revealing gene-specific elongation characteristics, we re-analyzed previous experiments demonstrating that heat shock (HS) induces attenuation in human cultured cells.  We compared TT-seq data from HS-stressed and control MRC5-VA cells.  Stressed cells were cultured for 2 hours at 42°C, while control cells were maintained at 37°C.  Both samples were subjected to a 15-minute pulse of 4-thiouridine (4sU) labeling of nascent transcripts, followed by purification and sequencing.
+For a comprehensive analysis, we will use the data from [Cugusi et al.](https://doi.org/10.1016/j.molcel.2022.01.007). To validate our approach and explore the utility of tepr metrics in revealing gene-specific elongation characteristics, we re-analyzed previous experiments demonstrating that heat shock (HS) induces attenuation in human cultured cells.  We compared TT-seq data from HS-stressed and control MRC5-VA cells.  Stressed cells were cultured for 2 hours at 42°C, while control cells were maintained at 37°C.  Both samples were subjected to a 15-minute pulse of 4-thiouridine (4sU) labeling of nascent transcripts, followed by purification and sequencing.
 
 ## Download
 
@@ -261,9 +261,9 @@ print(head(finaltab, 3))
 
 
 
-## TepR Analysis
+## tepr Analysis
 
-The quick start section demonstrates how to perform a TepR analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](https://zenodo.org/records/15050723/files/cugusi.tsv). See section 6.1 for notes on processing the complete dataset.
+The quick start section demonstrates how to perform a tepr analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](https://zenodo.org/records/15050723/files/cugusi.tsv). See section 6.1 for notes on processing the complete dataset.
 
 ### Input Files
 
@@ -378,7 +378,7 @@ print(head(resauc, 3))
 
 ### Knee and Max ECDF Differences for Each Transcript
 
-To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
+To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. tepr accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
 
 `?kneeid` returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
@@ -401,7 +401,7 @@ print(head(resatt, 3))
 
 **Universe**
 
-Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe". TepR selects a transcript for inclusion in the "Universe" if it meets the following criteria:
+Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe". tepr selects a transcript for inclusion in the "Universe" if it meets the following criteria:
 
 1.  Its windows are sufficiently long.
 2.  It does not contain too many missing values (NA).
@@ -478,7 +478,7 @@ print(head(res, 2))
 
 ## Plotting
 
-TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`?plotecdf`); the comparison of AUC between two conditions (`?plotauc`); the average transcription density of a user-selected set of transcripts (`?plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS, `?plothistoknee`).
+tepr provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`?plotecdf`); the comparison of AUC between two conditions (`?plotauc`); the average transcription density of a user-selected set of transcripts (`?plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS, `?plothistoknee`).
 
 ### `plotecdf`
 
