@@ -1,21 +1,21 @@
 Package: tepr
-Title: Transcription Elongation Profile in R
-Version: 1.1.6
+Title: 'tepr' - Transcription Elongation Profile
+Version: 1.1.7
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),
     person("Victor", "Billon", email = "victor.billon@etu.univ-cotedazur.fr", role = "aut"),
     person("Gael", "Cristofari", email = "gael.cristofari@cnrs.fr", role = "aut"))
 Description:
     The general principle relies on calculating the cumulative signal of nascent
-    RNA sequencing (TT-seq, mNET-seq, PRO-seq, etc.) over the gene body of any
-    given gene or transcription unit. TePR can identify transcription
+    RNA sequencing ('TT-seq', 'mNET-seq', 'PRO-seq', etc.) over the gene body of any
+    given gene or transcription unit. 'tepr' can identify transcription
     attenuation sites by comparing profile to a null model which assumes uniform
-    read density over the entirety of the transcriptional unit. It can also
+    read density over the entirety of the transcription unit. It can also
     identify increased or diminished transcription attenuation by comparing two
     conditions. Besides rigorous statistical testing and high sensitivity, a
-    major feature of TepR is its ability to provide the elongation pattern of
+    major feature of 'tepr' is its ability to provide the elongation pattern of
     each individual gene, including the position of the main attenuation point
-    when such a phenomenon occurs. Using TepR, users can visualize and refine
+    when such a phenomenon occurs. Using 'tepr', users can visualize and refine
     genome-wide aggregated analyses of elongation patterns to robustly identify
     effects specific to subsets of genes. These metrics are suitable for
     internal comparisons (between genes in each condition) and for studying
@@ -27,7 +27,6 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Suggests:
-    BiocStyle,
     knitr,
     rmarkdown,
     testthat

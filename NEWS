@@ -1,5 +1,17 @@
+v1.1.7:
+- Replace all identical tests by equal in testthat.
+- Remove the use of BiocStyle for the vignette.
+- Move pictures to inst/extdata.
+- Replace markdown image integration with knitr.
+- Add check on the type of chromtab at beginning of preprocessing function.
+- Remove all uppercase in package name in all files.
+- Remove redundant 'in R' when mentionning package name.
+- Version submited to CRAN waiting for approval.
+
+
 v1.1.6:
 - Create release to obtain doi on Zenodo.
+
 
 v1.1.5:
 - Update URL to black list repository.
@@ -82,7 +94,7 @@ v1.0.4:
 
 
 v1.0.3:
-- Tepr can now handle a single condition. See section 5.6 of the vignette.
+- tepr can now handle a single condition. See section 5.6 of the vignette.
 
 
 v1.0.2:

@@ -15,14 +15,7 @@ expectedobj <- readRDS(system.file("extdata", "genesecdf.rds",
     package="tepr"))
 ecdftest <- genesECDF(avfilttest, expdf, verbose = FALSE)
 test_that("genesECDF works properly", {
-
-    ## Darwin indicates a macos. Because of floating system, object is
-    ## equal but not identical on this OS.
-    if (!isTRUE(all.equal(Sys.info()[['sysname']], "Darwin"))) {
-        expect_identical(ecdftest, expectedobj)
-    } else {
-        expect_equal(ecdftest, expectedobj)
-    }
+    expect_equal(ecdftest, expectedobj)
 })
 
 ## ----- Checking errors ----- ##

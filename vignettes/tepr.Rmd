@@ -1,19 +1,18 @@
 ---
-title: "TepR: Transcription elongation profile in R"
+title: "Transcription Elongation Profile"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
-output:
-    BiocStyle::html_document
+output: rmarkdown::html_vignette
 vignette: >
-    %\VignetteIndexEntry{tepr}
+    %\VignetteIndexEntry{Transcription elongation profile}
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
+    \usepackage[utf8]{inputenc}
 ---
 
 
 # Introduction
 
-TepR (Transcription Elongation Profile in R) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, TepR can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of TepR is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
+tepr (Transcription Elongation Profile) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, tepr can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of tepr is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
 
 # Getting Help
 
@@ -102,13 +101,13 @@ print(head(reslist[[2]], 2))
 
 ## Description
 
-For a comprehensive analysis, we will use the data from [Cugusi et al.](https://doi.org/10.1016/j.molcel.2022.01.007). To validate our approach and explore the utility of TepR metrics in revealing gene-specific elongation characteristics, we re-analyzed previous experiments demonstrating that heat shock (HS) induces attenuation in human cultured cells.  We compared TT-seq data from HS-stressed and control MRC5-VA cells.  Stressed cells were cultured for 2 hours at 42°C, while control cells were maintained at 37°C.  Both samples were subjected to a 15-minute pulse of 4-thiouridine (4sU) labeling of nascent transcripts, followed by purification and sequencing.
+For a comprehensive analysis, we will use the data from [Cugusi et al.](https://doi.org/10.1016/j.molcel.2022.01.007). To validate our approach and explore the utility of tepr metrics in revealing gene-specific elongation characteristics, we re-analyzed previous experiments demonstrating that heat shock (HS) induces attenuation in human cultured cells.  We compared TT-seq data from HS-stressed and control MRC5-VA cells.  Stressed cells were cultured for 2 hours at 42°C, while control cells were maintained at 37°C.  Both samples were subjected to a 15-minute pulse of 4-thiouridine (4sU) labeling of nascent transcripts, followed by purification and sequencing.
 
 ## Download
 
 The bedgraph files, mappability track and black list necessary for performing the entire analysis can be downloaded from zenodo:
 
-```{bash raw-files, eval = FALSE}
+```{r raw-files, eval = FALSE, purl = FALSE, comment = NA}
 #!/usr/bin/sh
 
 mkdir data
@@ -129,8 +128,8 @@ wget https://zenodo.org/records/15050723/files/HS_rep2.reverse.bg -P data/
 
 If one would like to skip the preprocessing, the preprocessing result file can be downloaded with:
 
-```{bash cugusi-table, eval = FALSE}
-#!/usr/bin/bash
+```{r cugusi-table, eval = FALSE, purl = FALSE, comment = NA}
+#!/usr/bin/sh
 
 mkdir preprocessed
 
@@ -150,7 +149,11 @@ The preprocessing pipeline consists of the following steps:
 4.  Processing bedgraph files to retrieve signal values, excluding blacklisted regions, and retaining scores within high-mappability intervals.
 5.  Generating a final annotated table incorporating the scores derived from the preceding steps.
 
-<img src="pictures/structure.png" alt="structure"/>
+
+```{r, echo=FALSE, fig.cap="structure"}
+knitr::include_graphics(system.file("extdata", "structure.png", package = "tepr"))
+```
+
 
 **Important:** The `preprocessing` function allows for saving intermediate objects, which prevents recomputation in cases of failure due to memory or time limits typically set in HPC parameters.  See the `saveobjectpath` and `deletetmp` parameters in the `?preprocessing` help documentation for details.  Resource requirements for processing the complete dataset are provided below.
 
@@ -223,7 +226,7 @@ The main steps include:
 
 If you **did not** execute the "quick start" section code, you need to first copy the bedgraph files to your current folder:
 
-```{r copybg, eval = FALSE}
+```{r copybg, eval = FALSE, purl = FALSE, comment=NA}
 expprepath <-  system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 expdfpre <- read.csv(expprepath)
 bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
@@ -235,7 +238,7 @@ exptabpath <- "exptab-preprocessing.csv"
 
 Note that this function does not return a value; instead, it saves the processed files to a temporary folder for use by the subsequent `?createtablescores` function.
 
-```{r blacklisthighmap, eval = FALSE}
+```{r blacklisthighmap, eval = FALSE, purl = FALSE, comment=NA}
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
 blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = file.path(getwd(), "tmptepr"))
 ```
@@ -244,7 +247,7 @@ blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwin
 
 The `?createtablescores` function merges the files stored in the previously produced temporary folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
-```{r createtablescores, eval = FALSE}
+```{r createtablescores, eval = FALSE, purl = FALSE, comment = NA}
 finaltab <- createtablescores(tmpfold = file.path(getwd(), "tmptepr"), expprepath, savefinaltable = FALSE)
 ```
 
@@ -258,9 +261,9 @@ print(head(finaltab, 3))
 
 
 
-## TepR Analysis
+## tepr Analysis
 
-The quick start section demonstrates how to perform a TepR analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](https://zenodo.org/records/15050723/files/cugusi.tsv). See section 6.1 for notes on processing the complete dataset.
+The quick start section demonstrates how to perform a tepr analysis in a single call using the `?tepr` function.  Below, we detail the individual steps performed by `?tepr` using a subset of 6 transcripts for demonstration purposes. Plots generated from the complete annotation dataset are also provided. The complete table resulting from preprocessing can be downloaded [here](https://zenodo.org/records/15050723/files/cugusi.tsv). See section 6.1 for notes on processing the complete dataset.
 
 ### Input Files
 
@@ -375,7 +378,7 @@ print(head(resauc, 3))
 
 ### Knee and Max ECDF Differences for Each Transcript
 
-To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. TepR accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
+To assess attenuation in the nascent RNA signal, it's necessary to identify significant changes in signal distribution. tepr accomplishes this by identifying the maximum *diff_Fx*. In other words, it pinpoints the greatest variation in the signal progression of the empirical cumulative distribution (see `?genesECDF` and `?meandifference`). The window where this maximum change occurs is termed the *knee* and is calculated as: *knee = max(diff_Fx)*. Thus, the knee position is defined as the maximum difference between the ECDF and the y=x curve.
 
 `?kneeid` returns both the position (*Knee_AUC*) and the value (*diff_Fx*) of the knee.
 
@@ -398,7 +401,7 @@ print(head(resatt, 3))
 
 **Universe**
 
-Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe". TepR selects a transcript for inclusion in the "Universe" if it meets the following criteria:
+Prior to further downstream analysis, the set of transcripts to be studied must be defined. These transcripts are designated as belonging to the "Universe". tepr selects a transcript for inclusion in the "Universe" if it meets the following criteria:
 
 1.  Its windows are sufficiently long.
 2.  It does not contain too many missing values (NA).
@@ -407,7 +410,7 @@ Prior to further downstream analysis, the set of transcripts to be studied must 
 
 Analytically, this can be represented as:
 
-```{r uniselect, eval = FALSE}
+```{r uniselect, eval = FALSE, purl = FALSE, comment = NA}
 window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
@@ -417,7 +420,7 @@ pvaltheory > pvaltheorythres
 
 If only one condition is provided, only the control threshold is used:
 
-```{r uniselectonecond, eval = FALSE}
+```{r uniselectonecond, eval = FALSE, purl = FALSE, comment = NA}
 window_size > windsizethreshold &
 Count_NA < countnathreshold &
 meanctrl > meanctrlthreshold &
@@ -436,7 +439,7 @@ The transcripts in the Universe are further categorized into Groups. A transcrip
 
 Analytically, this is represented as:
 
-```{r attselect, eval = FALSE}
+```{r attselect, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE &
 aucstress > aucstressthreshold &
 -log10(pvalks) > attenuatedpvalksthreshold
@@ -444,7 +447,7 @@ aucstress > aucstressthreshold &
 
 If only one condition is provided, no comparison via the Kolmogorov-Smirnov test with another condition is performed. A transcript will be considered attenuated if it deviates significantly from the theoretical cumulative distribution (y = x) *and* its AUC value is sufficiently high. The significant deviation has already been evaluated during the Universe calculation (`pvaltheory > pvaltheorythres`). Therefore, with only one condition, a transcript is considered attenuated if:
 
-```{r attselectonecond, eval = FALSE}
+```{r attselectonecond, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & aucctrl > aucctrlthreslower
 ```
 
@@ -455,14 +458,14 @@ A transcript is considered non-attenuated ("Outgroup") if it meets the following
 
 Analytically, this is represented as:
 
-```{r outgroup, eval = FALSE}
+```{r outgroup, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & pvalks > outgrouppvalksthreshold &
 aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
 For a single-condition analysis, where no Kolmogorov-Smirnov test against another condition is performed, a transcript belongs to the "Outgroup" if it belongs to the Universe *and* its control AUC falls between two user-defined thresholds:
 
-```{r outgroup2, eval = FALSE}
+```{r outgroup2, eval = FALSE, purl = FALSE, comment = NA}
 Universe == TRUE & aucctrl > aucctrlthresoldhigher & aucctrl < aucctrlthresholdlower
 ```
 
@@ -475,7 +478,7 @@ print(head(res, 2))
 
 ## Plotting
 
-TepR provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`?plotecdf`); the comparison of AUC between two conditions (`?plotauc`); the average transcription density of a user-selected set of transcripts (`?plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS, `?plothistoknee`).
+tepr provides visualization capabilities for: the cumulative transcription density along a selected transcription unit (`?plotecdf`); the comparison of AUC between two conditions (`?plotauc`); the average transcription density of a user-selected set of transcripts (`?plotmetagenes`); and a histogram of the distance between knees and transcription start sites (TSS, `?plothistoknee`).
 
 ### `plotecdf`
 
@@ -496,7 +499,10 @@ plotauc(res, expdf, plottype = "groups", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-[AUC group plot](pictures/AUCcompare_group.png)
+```{r, echo=FALSE, fig.cap="AUC group plot"}
+knitr::include_graphics(system.file("extdata", "AUCcompare_group.png", package = "tepr"))
+```
+
 
 It is also possible to compare the AUC by coloring points according to the Kolmogorov-Smirnov test adjusted p-values and by indicating graphically the points corresponding to a group of genes (here defined by `genevec`):
 
@@ -507,7 +513,9 @@ plotauc(res, expdf, genevec, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-<img src="pictures/AUCcompare_pval.png" alt="AUC pval plot" width="400"/>
+```{r, echo=FALSE, fig.cap="AUC pval plot"}
+knitr::include_graphics(system.file("extdata", "AUCcompare_pval.png", package = "tepr"))
+```
 
 ### `plotmetagenes`
 
@@ -519,7 +527,9 @@ plotmetagenes(res, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 
 The plot on the complete dataset gives:
 
-<img src="pictures/metagene_attenuation.png" alt="Attenuation meta" width="400"/>
+```{r, echo=FALSE, fig.cap="Attenuation meta"}
+knitr::include_graphics(system.file("extdata", "metagene_attenuation.png", package = "tepr"))
+```
 
 Note that the `plottype` parameter, set to "attenuation" in this example, specifies that the distribution should be plotted for transcripts identified as "attenuated" by the `?universegroup` function.  Other options for `plottype` include "outgroup" (for transcripts categorized as "outgroup"), "universe" (for all transcripts in the Universe), and "all" (for all transcripts in the initial table).
 
@@ -533,7 +543,10 @@ plothistoknee(res, plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-<img src="pictures/histo_percent.png" alt="histo percent" width="400"/>
+
+```{r, echo=FALSE, fig.cap="histo percent"}
+knitr::include_graphics(system.file("extdata", "histo_percent.png", package = "tepr"))
+```
 
 The distances can also be visualized in kilobases (kb) by setting the `plottype` parameter to "kb":
 
@@ -543,8 +556,9 @@ plothistoknee(res, plottype = "kb", plot = TRUE)
 
 The plot generated using the complete dataset is:
 
-<img src="pictures/histo_kb.png" alt="histo kb" width="400"/>
-
+```{r, echo=FALSE, fig.cap="histo kb"}
+knitr::include_graphics(system.file("extdata", "histo_kb.png", package = "tepr"))
+```
 
 
 ## Analysis of More Than Two Conditions
@@ -556,13 +570,13 @@ Analyzing more than two experimental conditions is possible using the `?teprmult
 *   `resmeandiff_<comparison>`: The results of the `?meandifference` function for the specified two-condition comparison.
 *   `resunigroupatt_<comparison>`: The results of the `?universegroup` function for the specified two-condition comparison.
 
-```{r teprmulti, eval = FALSE}
+```{r teprmulti, eval = FALSE, purl = FALSE, comment = NA}
 resteprmulti <- teprmulti(expdf, transdf, expthres)
 ```
 
 The `?showallcomp` function returns a vector of all comparison names that `?teprmulti` will perform. This allows users to reduce the number of comparisons by using the `dontcompare` parameter. `dontcompare` accepts a vector of comparison names to exclude. The following code limits `?teprmulti` to only three comparisons:
 
-```{r teprmultithree, eval = FALSE}
+```{r teprmultithree, eval = FALSE, purl = FALSE, comment = NA}
 ## Returns a vector with all the comparison names to exclude
 dontcompvec <- showallcomp(expdf)
 dontcompvec <- dontcompvec[- c(1,2,3)]
@@ -581,7 +595,7 @@ Using the list of results from `?teprmulti`, all plots for all comparisons can b
 
 Figures are written to the directory specified by `outfold`, and subfolders are automatically created for each comparison.
 
-```{r plotmulti, eval = FALSE}
+```{r plotmulti, eval = FALSE, purl = FALSE, comment = NA}
 plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfold = "./multicomp")
 ```
 
@@ -589,7 +603,7 @@ plotmulti(resteprmulti, expdf, ecdfgenevec = c("CDC27", "BCAR1", "TRAM2"), outfo
 
 The `?kneeallconds` function allows retrieving knee values processing each condition independently (see next section).
 
-```{r kneeallconds, eval = FALSE}
+```{r kneeallconds, eval = FALSE, purl = FALSE, comment = NA}
 kneedf <- kneeallconds(alldf, expdf, expthres)
 ```
 
@@ -634,7 +648,7 @@ For processing the complete dataset, parallelization is highly recommended. We u
 
 The approximate computation time for each function is indicated below.
 
-```{r completedataset, eval = FALSE}
+```{r completedataset, eval = FALSE, purl = FALSE, comment = NA}
 library(tepr)
 
 ## After downloading with: wget https://zenodo.org/records/15050723/files/cugusi.tsv -P preprocessed/
