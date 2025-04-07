@@ -5,6 +5,7 @@ v1.1.7:
 - Replace markdown image integration with knitr.
 - Add list of words to exclude from spell check in inst/WORDLIST.
 - Add check on the type of chromtab at beginning of preprocessing function.
+- Remove all uppercase in package name in all files.
 
 
 v1.1.6:
