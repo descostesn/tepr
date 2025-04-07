@@ -6,7 +6,7 @@ v1.1.7:
 - Add list of words to exclude from spell check in inst/WORDLIST.
 - Add check on the type of chromtab at beginning of preprocessing function.
 - Remove all uppercase in package name in all files.
-
+- Remove redundant 'in R' when mentionning package name.
 
 v1.1.6:
 - Create release to obtain doi on Zenodo.

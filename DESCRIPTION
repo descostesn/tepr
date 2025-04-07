@@ -1,5 +1,5 @@
 Package: tepr
-Title: 'tepr' - Transcription elongation profile in R
+Title: 'tepr' - Transcription Elongation Profile
 Version: 1.1.7
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),
