@@ -45,10 +45,6 @@ interactively (\code{TRUE}) or save it to a file (\code{FALSE}). Default is
 "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", and "svg".
 Default is \code{"pdf"}.}
 
-\item{fontparam}{A two element vector defining the font family and size. To
-see the available fonts on your system run \code{names(pdfFonts())}. A
-default size is generally 11. Default is \code{NA}.}
-
 \item{verbose}{A logical flag indicating whether to display detailed
 messages about the function's progress. Default is \code{TRUE}.}
 }
