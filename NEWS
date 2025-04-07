@@ -3,12 +3,11 @@ v1.1.7:
 - Remove the use of BiocStyle for the vignette.
 - Move pictures to inst/extdata.
 - Replace markdown image integration with knitr.
-- Add list of words to exclude from spell check in inst/WORDLIST.
 - Add check on the type of chromtab at beginning of preprocessing function.
 - Remove all uppercase in package name in all files.
 - Remove redundant 'in R' when mentionning package name.
 - Version submited to CRAN waiting for approval.
- 
+
 
 v1.1.6:
 - Create release to obtain doi on Zenodo.
