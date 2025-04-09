@@ -113,7 +113,7 @@
 #' Temporary files created during processing are optionally deleted at the end.
 #'
 #' @examples
-#' \donttest {
+#' \donttest{
 #' ## Data
 #' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package = "tepr")
 #' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
@@ -135,8 +135,7 @@
 #'
 #' ## Testing preprocessing
 #' finaltabtest <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-#'     blacklistpath, genomename = genomename, verbose = FALSE)
-#' }
+#'     blacklistpath, genomename = genomename, verbose = FALSE)}
 #'
 #' @seealso
 #' [retrieveanno], [makewindows], [blacklisthighmap], [createtablescores]

@@ -85,7 +85,7 @@
 #' scores. The resulting table also includes annotations for each transcript.
 #'
 #' @examples
-#' \donttest {
+#' \donttest{
 #' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 #' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 #' maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
@@ -117,8 +117,7 @@
 #'
 #' ## Calling the function to test
 #' finaltabtest <- createtablescores(tmpfold = tmpfoldpath, exptabpath,
-#'     savefinaltable = FALSE, verbose = FALSE)
-#' }
+#'     savefinaltable = FALSE, verbose = FALSE)}
 #'
 #' @importFrom dplyr full_join
 #' @importFrom utils read.csv

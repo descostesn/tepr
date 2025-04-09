@@ -126,7 +126,7 @@
 #' intervals with the "PAR_Y" tag are excluded from the analysis.
 #'
 #' @examples
-#' \donttest {
+#' \donttest{
 #' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 #' windsize <- 200
 #' 
@@ -134,8 +134,7 @@
 #' allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
 #'
 #' ## Calling makewindows
-#' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
-#' }
+#' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)}
 #'
 #' @importFrom parallel makeCluster parLapply stopCluster
 #'
