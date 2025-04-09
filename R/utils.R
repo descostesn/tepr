@@ -100,12 +100,12 @@
 #' lncRNA biotypes. The resulting data is written to an output file.
 #'
 #' @usage
-#' joinfiles(workingdir = getwd(), window = 200, bgpattern = "*.bg",
+#' joinfiles(workingdir = tempdir(), window = 200, bgpattern = "*.bg",
 #' protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
 #' outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE)
 #'
 #' @param workingdir The directory containing bedgraph files. Defaults to the
-#'  current working directory (`getwd()`).
+#'  temporary directory (`tempdir()`).
 #' @param window The window size used for joining the score files. Defaults to
 #'  200.
 #' @param bgpattern A file pattern to identify bedgraph files. Defaults to
@@ -138,7 +138,7 @@
 #'
 #' @export
 
-joinfiles <- function(workingdir = getwd(), window = 200, bgpattern = "*.bg", # nolint
+joinfiles <- function(workingdir = tempdir(), window = 200, bgpattern = "*.bg", # nolint
     protscoredir = "protein_coding_score", lncscoredir = "lncRNA_score",
     outtsv = "dTAG_Cugusi_stranded_20230810.tsv", nbcpu = 1, verbose = TRUE) {
 

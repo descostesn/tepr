@@ -267,7 +267,7 @@
 #' @usage
 #' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-#'    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+#'    tmpfold = file.path(tempdir(), "tmptepr"), reload = FALSE, showtime = FALSE,
 #'    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
@@ -284,7 +284,7 @@
 #'  and R objects are not saved.
 #' @param tmpfold A character string specifying the temporary folder for saving
 #'   output files. The temporary files contain the scores for each bedgraph on
-#'   each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.
+#'   each chromosome. Default is \code{file.path(tempdir(), "tmptepr")}.
 #' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
 #'  recomputation. Default is `FALSE`. If the function failed during object
 #'  saving, make sure to delete the corresponding object.
@@ -372,7 +372,7 @@
 
 blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
-    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+    tmpfold = file.path(tempdir(), "tmptepr"), reload = FALSE, showtime = FALSE,
     showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()

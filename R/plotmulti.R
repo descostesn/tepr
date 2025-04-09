@@ -131,7 +131,7 @@
 #' histtoknee.
 #'
 #' @usage
-#' plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = getwd(), digits = 2,
+#' plotmulti(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(), digits = 2,
 #' middlewind = 100, pval = 0.01, colvec = c("#90AFBB", "#10AFBB",
 #' "#FF9A04", "#FC4E07"), genaucvec = NA, aucaxisminx = -10,
 #' aucaxismaxx = 100, aucaxisminy = -10, aucaxismaxy = 100, aucmaintitle = "",
@@ -146,7 +146,7 @@
 #'  plot the ecdf of.
 #' @param outfold Path to the output folder where the plots will be written.
 #'  Subfolders with the names of the comparisons are automatically created.
-#'  Default is \code{getwd()}.
+#'  Default is \code{tempdir()}.
 #' @param digits For the ecdf plot, the number of decimal places to round the
 #'  AUC and KS values. Default is \code{2}.
 #' @param middlewind For the ecdf plot, the index of the middle window
@@ -218,7 +218,7 @@
 #'
 #' @export
 
-plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = getwd(),
+plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
     digits = 2, middlewind = 100, pval = 0.01,
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
     genaucvec = NA, aucaxisminx = -10, aucaxismaxx = 100, aucaxisminy = -10,

@@ -5,7 +5,7 @@ maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
     package = "tepr")
 blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
     package = "tepr")
-tmpfoldpath <- file.path(getwd(), "tmptepr")
+tmpfoldpath <- file.path(tempdir(), "tmptepr")
 windsize <- 200
 genomename <- "hg38"
 chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
@@ -55,7 +55,7 @@ test_that("Errors are thrown when calling createtablescores", {
     
     exptabtest <- rbind(expdfpre, data.frame(condition = "toto", replicate = 1,
         direction = "forward", strand = "plus", path = "toto"))
-    outfile <- file.path(getwd(), "exptabtest.csv")
+    outfile <- file.path(tempdir(), "exptabtest.csv")
     write.csv(exptabtest, file = outfile)
     expm <- paste0("\n\t The merged file names do not correspond to the ",
                 "exptab. This should not happen. Contact the developer.\n")

@@ -56,7 +56,7 @@
 #'
 #' @usage
 #' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = FALSE,
-#'   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
+#'   savefinaltable = TRUE, finaltabpath = tempdir(), finaltabname = "anno.tsv",
 #'  verbose)
 #'
 #' @param tmpfold A string specifying the temporary folder containing the
@@ -70,7 +70,7 @@
 #' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
 #'  disk. Default is `TRUE`.
 #' @param finaltabpath A string specifying the directory where the final table
-#'  should be saved. Default is \code{getwd()}.
+#'  should be saved. Default is \code{tempdir()}.
 #' @param finaltabname A string specifying the name of the final table file.
 #'  Default is `"anno.tsv"`.
 #' @param verbose Logical; if `TRUE`, detailed messages are printed during
@@ -92,7 +92,7 @@
 #' package = "tepr")
 #' blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
 #'     package = "tepr")
-#' tmpfoldpath <- file.path(getwd(), "tmptepr")
+#' tmpfoldpath <- file.path(tempdir(), "tmptepr")
 #' windsize <- 200
 #' genomename <- "hg38"
 #' chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
@@ -128,7 +128,7 @@
 #' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
-    showtime = FALSE, savefinaltable = TRUE, finaltabpath = getwd(),
+    showtime = FALSE, savefinaltable = TRUE, finaltabpath = tempdir(),
     finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()

@@ -45,7 +45,7 @@
 #' plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
 #' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
 #' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-#' outfold = getwd(), verbose = TRUE)
+#' outfold = tempdir(), verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level information, including
 #'  group classifications and dAUC data for different conditions (see
@@ -128,7 +128,7 @@
 plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = getwd(), verbose = TRUE) {
+    outfold = tempdir(), verbose = TRUE) {
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))

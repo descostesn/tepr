@@ -53,11 +53,11 @@
 #'
 #' @usage
 #' preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
-#' blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
-#' finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-#' saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE, showtime = FALSE,
-#' showmemory = FALSE, deletetmp = TRUE, chromtab = NA, forcechrom = FALSE,
-#' verbose = TRUE)
+#' blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = tempdir(),
+#' finaltabname = "anno.tsv", tmpfold = file.path(tempdir(), "tmptepr"),
+#' saveobjectpath = tempdir(), savefinaltable = TRUE, reload = FALSE,
+#' showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
+#' forcechrom = FALSE, verbose = TRUE)
 #'
 #' @param exptabpath Character. Path to the experiment table file.
 #' @param gencodepath Character. Path to the Gencode annotation file.
@@ -69,13 +69,13 @@
 #' @param nbcputrans Integer. Number of CPUs to use for transcript processing.
 #'  Default is \code{1}.
 #' @param finaltabpath Character. Path where the final annotated table will be
-#'  saved. Default is \code{getwd()}.
+#'  saved. Default is \code{tempdir()}.
 #' @param finaltabname Character. Name of the final annotated table file.
 #'  Default is \code{anno.tsv}.
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
-#'  Default is \code{file.path(getwd(), "tmptepr")}.
+#'  Default is \code{file.path(tempdir(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
-#'  is \code{getwd()}.
+#'  is \code{tempdir()}.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
 #'  Default is \code{TRUE}.
 #' @param reload Logical. Whether to reload intermediate objects if available.
@@ -143,9 +143,9 @@
 #' @export
 
 preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
-    blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = getwd(),
-    finaltabname = "anno.tsv", tmpfold = file.path(getwd(), "tmptepr"),
-    saveobjectpath = getwd(), savefinaltable = TRUE, reload = FALSE,
+    blacklistpath, genomename = NA, nbcputrans = 1, finaltabpath = tempdir(),
+    finaltabname = "anno.tsv", tmpfold = file.path(tempdir(), "tmptepr"),
+    saveobjectpath = tempdir(), savefinaltable = TRUE, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, deletetmp = TRUE, chromtab = NA,
     forcechrom = FALSE, verbose = TRUE) {
     

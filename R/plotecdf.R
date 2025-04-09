@@ -100,8 +100,8 @@
 #' @usage
 #' plotecdf(dfmeandiff, unigroupdf, expdf, genename,
 #'    colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-#'    outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
-#'    formatname = "pdf", verbose = TRUE)
+#'    outfold = tempdir(), digits = 2, middlewind = 100, pval = 0.01,
+#'    plot = FALSE, formatname = "pdf", verbose = TRUE)
 #'
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
@@ -115,7 +115,7 @@
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot. Default is \code{c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")}.
 #' @param outfold A string specifying the output folder where the plot will be
-#'  saved if \code{plot = FALSE}. Default is \code{getwd()}.
+#'  saved if \code{plot = FALSE}. Default is \code{tempdir()}.
 #' @param digits The number of decimal places to round the AUC and KS values.
 #'  Default is \code{2}.
 #' @param middlewind The index of the middle window representing the region
@@ -187,7 +187,7 @@
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-    outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+    outfold = tempdir(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
 
         nbrep <- length(expdf$replicate) / 2
