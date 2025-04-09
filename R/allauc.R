@@ -189,7 +189,7 @@
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,
 #'     verbose = FALSE)
 #' bytranslistmean <- split(meandiff, factor(meandiff$transcript))
-#' allauctest <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
+#' res <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
 #'
 #' @seealso
 #' [genesECDF]
