@@ -237,7 +237,7 @@ joinfiles <- function(workingdir = getwd(), window = 200, bgpattern = "*.bg", # 
 #' )
 #' checkexptab(exptab)  # Should pass without errors
 #'
-#' try {
+#' try{
 #'   # Invalid experiment table (wrong column names)
 #'   invalid_exptab <- data.frame(
 #'     cond = c("cond1", "cond2"),
@@ -245,8 +245,7 @@ joinfiles <- function(workingdir = getwd(), window = 200, bgpattern = "*.bg", # 
 #'     dir = c("forward", "reverse"),
 #'     str = c("+", "-")
 #'   )
-#'   checkexptab(invalid_exptab)  # Will throw an error
-#' }
+#'   checkexptab(invalid_exptab)}
 #'
 #' @export
 
