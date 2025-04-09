@@ -154,14 +154,13 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #' }
 #'
 #' @examples
-#' donttest {
+#' donttest{
 #'  exptabpath <- "exp.csv"
 #'  alldfpath <- "result-preprocessing.tsv"
 #'  expdf <- read.csv(exptabpath)
 #'  alldf <- read.delim(alldfpath, header = FALSE)
 #'  expthres <- 0.1
-#'  kneedf <- kneeallconds(alldf, expdf, expthres)
-#' }
+#'  kneedf <- kneeallconds(alldf, expdf, expthres)}
 #'
 #' @seealso
 #' [averageandfilterexprs()], [genesECDF()], [meandifference()],
