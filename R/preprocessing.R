@@ -136,6 +136,7 @@
 #' ## Testing preprocessing
 #' finaltabtest <- preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
 #'     blacklistpath, genomename = genomename, verbose = FALSE)
+#' }
 #'
 #' @seealso
 #' [retrieveanno], [makewindows], [blacklisthighmap], [createtablescores]
