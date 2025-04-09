@@ -2,6 +2,7 @@ v1.1.8:
 - Remove acronym in package title.
 - Remove listing of technology acronyms in Description of DESCRIPTION.
 - In documentation, replace dontrun by donttest if the example cannot be run or takes more than 5 seconds.
+- Use tempdir() instead of getwd() by default.
 
 
 v1.1.7:
