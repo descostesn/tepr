@@ -126,17 +126,16 @@
 #' intervals with the "PAR_Y" tag are excluded from the analysis.
 #'
 #' @examples
-#' # Example data
-#' # annotations <- data.frame(
-#' #     start = c(1, 1001, 2001),
-#' #     end = c(1000, 2000, 3000),
-#' #     strand = c("+", "-", "+"),
-#' #     chrom = c("chr1", "chr1", "chr2"),
-#' #     ensembl = c("ENSG000001", "ENSG000002", "ENSG000003"),
-#' #     symbol = c("Gene1", "Gene2", "Gene3"),
-#' #     biotype = c("protein_coding", "lncRNA", "protein_coding")
-#' # )
-#' # result <- makewindows(allannobed = annotations, windsize = 5, nbcputrans = 2)
+#' \donttest {
+#' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
+#' windsize <- 200
+#' 
+#' ## Necessary result to call makewindows
+#' allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
+#'
+#' ## Calling makewindows
+#' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
+#' }
 #'
 #' @importFrom parallel makeCluster parLapply stopCluster
 #'
