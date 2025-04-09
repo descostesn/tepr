@@ -327,7 +327,7 @@
 #'      chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 #'
 #' @examples
-#' \donttest {
+#' \donttest{
 #' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 #' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 #' maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
@@ -354,8 +354,7 @@
 #' ## Test blacklisthighmap
 #' blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
 #'     nbcputrans = 1, allwindowsbed, windsize, genomename,
-#'     chromtab = chromtabtest, verbose = FALSE)
-#' }
+#'     chromtab = chromtabtest, verbose = FALSE)}
 #'
 #' @importFrom rtracklayer SeqinfoForUCSCGenome import.bedGraph
 #' @importFrom GenomeInfoDb seqnames seqlengths
