@@ -130,7 +130,7 @@
 #' @importFrom parallel mclapply
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   joinfiles(workingdir = "data", window = 100, bgpattern = "*.bedgraph",
 #'     protscoredir = "prot_scores", lncscoredir = "lnc_scores",
 #'     outtsv = "results.tsv")
@@ -228,16 +228,16 @@ joinfiles <- function(workingdir = getwd(), window = 200, bgpattern = "*.bg", # 
 #' - The `strand` column must contain only `"plus"` and `"minus"`.
 #'
 #' @examples
-#' \dontrun{
-#'   # Create a valid experiment table
-#'   exptab <- data.frame(
-#'     condition = c("cond1", "cond2"),
-#'     replicate = c(1, 1),
-#'     direction = c("forward", "reverse"),
-#'     strand = c("plus", "minus")
-#'   )
-#'   checkexptab(exptab)  # Should pass without errors
+#' # Create a valid experiment table
+#' exptab <- data.frame(
+#'   condition = c("cond1", "cond2"),
+#'   replicate = c(1, 1),
+#'   direction = c("forward", "reverse"),
+#'   strand = c("plus", "minus")
+#' )
+#' checkexptab(exptab)  # Should pass without errors
 #'
+#' \donttest{
 #'   # Invalid experiment table (wrong column names)
 #'   invalid_exptab <- data.frame(
 #'     cond = c("cond1", "cond2"),
@@ -295,17 +295,15 @@ checkexptab <- function(exptab) {
 #' comparisons.
 #'
 #' @examples
-#' \dontrun{
-#'   # Create a valid experiment table
-#'   exptab <- data.frame(
-#'     condition = c("cond1", "cond2", "cond3"),
-#'     replicate = c(1, 1, 1),
-#'     direction = c("forward", "reverse", "forward"),
-#'     strand = c("plus", "minus", "plus")
-#'   )
-#'   checkexptab(exptab)  # Should pass without errors
-#'   showallcomp(exptab)
-#' }
+#' # Create a valid experiment table
+#' exptab <- data.frame(
+#'   condition = c("cond1", "cond2", "cond3"),
+#'   replicate = c(1, 1, 1),
+#'   direction = c("forward", "reverse", "forward"),
+#'   strand = c("plus", "minus", "plus")
+#' )
+#' checkexptab(exptab)
+#' showallcomp(exptab)
 #'
 #' @importFrom utils combn
 #' @export
