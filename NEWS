@@ -1,6 +1,7 @@
 v1.1.8:
 - Remove acronym in package title.
 - Remove listing of technology acronyms in Description of DESCRIPTION.
+- In utils.R, replace dontrun by donttest and run some of the examples.
 
 
 v1.1.7:
