@@ -179,8 +179,12 @@
 #' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
 #' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
 #' expthres <- 0.1
+#' 
+#' ## Reading tables
 #' expdf <- read.csv(exppath)
 #' transdf <- read.delim(transpath, header = FALSE)
+#' 
+#' ## Computing intermediate steps
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
 #' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
@@ -189,6 +193,8 @@
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,
 #'     verbose = FALSE)
 #' bytranslistmean <- split(meandiff, factor(meandiff$transcript))
+#' 
+#' ## Testing allauc
 #' res <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
 #'
 #' @seealso
