@@ -54,14 +54,13 @@ The kneeallconds function calls successively for each condition:
 }
 }
 \examples{
-donttest {
+donttest{
  exptabpath <- "exp.csv"
  alldfpath <- "result-preprocessing.tsv"
  expdf <- read.csv(exptabpath)
  alldf <- read.delim(alldfpath, header = FALSE)
  expthres <- 0.1
- kneedf <- kneeallconds(alldf, expdf, expthres)
-}
+ kneedf <- kneeallconds(alldf, expdf, expthres)}
 
 }
 \seealso{
