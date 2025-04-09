@@ -47,9 +47,30 @@
 #'  interactively or saved to a file.
 #'
 #' @examples
-#' # Assuming `unigroupdf` contains the necessary data:
-#' # plothistoknee(unigroupdf, plottype = "kb", xlimvec = c(0, 300),
-#' # binwidthval = 10)
+#' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+#' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expthres <- 0.1
+#'
+#' ## Calculating necessary results
+#' expdf <- read.csv(exppath)
+#' transdf <- read.delim(transpath, header = FALSE)
+#' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+#'         showtime = FALSE, verbose = FALSE)
+#' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' resecdf <- ecdf[[1]]
+#' nbwindows <- ecdf[[2]]
+#' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
+#'     verbose = FALSE)
+#' bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+#' resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
+#' resauc <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
+#' resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+#'         resmeandiff, verbose = FALSE)
+#' resug <- universegroup(resatt, expdf, verbose = FALSE)
+#'
+#' ## Testing plothistoknee
+#' plothistoknee(resug, plot = TRUE)
 #'
 #' @seealso
 #' [universegroup]
