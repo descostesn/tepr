@@ -155,8 +155,8 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #'
 #' @examples
 #' \donttest{
-#'  exptabpath <- system.file("extdata", "exptab.csv", package="tepr")
-#'  alldfpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#'  exptabpath <- "exp.csv"
+#'  alldfpath <- "result-preprocessing.tsv"
 #'  expdf <- read.csv(exptabpath)
 #'  alldf <- read.delim(alldfpath, header = FALSE)
 #'  expthres <- 0.1
