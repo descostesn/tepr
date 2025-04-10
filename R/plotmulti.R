@@ -210,7 +210,7 @@
 #' @examples
 #' # Assuming resteprmulti is the object returned by the function teprmulti
 #' # and expdf contains the necessary data:
-#' \donttest{
+#' \dontrun{
 #' plotmulti(resteprmulti, expdf, ecdfgenevec = c("EGFR", "DAP", "FLI1"))}
 #'
 #' @seealso

@@ -6,6 +6,7 @@ v1.1.8:
 - Change package title from "Transcription Elongation Profile" to "Transcription Elongation Profile of Nascent RNA-Seq". Acronym "tepr" is kept.
 - Remove the joinfiles function that was used during the bash processing.
 - kneeallconds can now be run independently of the number of conditions.
+- \dontrun is used in the examples of functions handling more than two conditions: plotmulti and teprmulti.
 
 
 v1.1.7:

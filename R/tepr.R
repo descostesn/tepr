@@ -385,7 +385,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'
 #' @examples
 #' ## Supposing the data have more than one condition
-#' \donttest{
+#' \dontrun{
 #'   exptabpath <- "exp.csv"
 #'   alldfpath <- "result-preprocessing.tsv"
 #'   expdf <- read.csv(exptabpath)
