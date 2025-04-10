@@ -31,14 +31,14 @@
     if (verbose) message("Reading files and joining to the final table")
     firstpath <- mergedfilelist[[idxvec[1]]]
     if (verbose) message("\t Reading and joining ", firstpath)
-    finaltab <- read.delim(firstpath, header = FALSE,
+    finaltab <- utils::read.delim(firstpath, header = FALSE,
         sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
         stringsAsFactors = FALSE)
 
     for (idx in idxvec[-1]) {
         currentpath <- mergedfilelist[[idx]]
         if (verbose) message("\t Reading and joining ", currentpath)
-        tab <- read.delim(currentpath, header = FALSE, sep = "\t",
+        tab <- utils::read.delim(currentpath, header = FALSE, sep = "\t",
             na.strings = "NA", dec = ".", col.names = colnamevec,
             stringsAsFactors = FALSE)
         finaltab <- dplyr::full_join(finaltab, tab, by = colnamejoin)
@@ -120,7 +120,7 @@
 #'     savefinaltable = FALSE, verbose = FALSE)}
 #'
 #' @importFrom dplyr full_join
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.delim
 #'
 #' @seealso
 #' [blacklisthighmap]

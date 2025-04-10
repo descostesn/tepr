@@ -362,7 +362,7 @@
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
 #' @importFrom methods is
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.delim
 #'
 #' @seealso
 #' [createtablescores][makewindows]
@@ -408,7 +408,7 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
         exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list")
-        blacklistbed <- read.delim(blacklistpath, header = FALSE)
+        blacklistbed <- utils::read.delim(blacklistpath, header = FALSE)
         colnames(blacklistbed) <- c("chrom", "start", "end", "type")
         blacklisttib <- tibble::as_tibble(blacklistbed)
 
