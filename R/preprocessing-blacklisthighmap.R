@@ -180,7 +180,7 @@
 
                 ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
-                write.table(res, file = filename, sep = "\t", quote = FALSE,
+                utils::write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
 
                 rm(bgscorebytrans, bytranslist, res)
@@ -362,7 +362,7 @@
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
 #' @importFrom methods is
-#' @importFrom utils read.csv read.delim
+#' @importFrom utils read.csv read.delim write.table
 #'
 #' @seealso
 #' [createtablescores][makewindows]

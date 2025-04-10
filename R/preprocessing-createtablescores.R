@@ -120,7 +120,7 @@
 #'     savefinaltable = FALSE, verbose = FALSE)}
 #'
 #' @importFrom dplyr full_join
-#' @importFrom utils read.csv read.delim
+#' @importFrom utils read.csv read.delim write.table
 #'
 #' @seealso
 #' [blacklisthighmap]
@@ -181,8 +181,9 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
                 dir.create(finaltabpath, recursive = TRUE)
             outfile <- file.path(finaltabpath, finaltabname)
             if (verbose) message("\n ## Saving the final table to ", outfile)
-            write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
-                row.names = FALSE, col.names = FALSE, fileEncoding = "UTF8")
+            utils::write.table(finaltab, file = outfile, sep = "\t",
+                quote = FALSE, row.names = FALSE, col.names = FALSE,
+                fileEncoding = "UTF8")
         }
 
         if (showtime) {
