@@ -154,13 +154,12 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #' }
 #'
 #' @examples
-#' \donttest{
-#'  exptabpath <- "exp.csv"
-#'  alldfpath <- "result-preprocessing.tsv"
-#'  expdf <- read.csv(exptabpath)
-#'  alldf <- read.delim(alldfpath, header = FALSE)
-#'  expthres <- 0.1
-#'  kneedf <- kneeallconds(alldf, expdf, expthres)}
+#' exptabpath <- system.file("extdata", "exptab.csv", package="tepr")
+#' alldfpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expdf <- read.csv(exptabpath)
+#' alldf <- read.delim(alldfpath, header = FALSE)
+#' expthres <- 0.1
+#' kneedf <- kneeallconds(alldf, expdf, expthres, verbose = FALSE)
 #'
 #' @seealso
 #' [averageandfilterexprs()], [genesECDF()], [meandifference()],
@@ -174,10 +173,6 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_knee <- Sys.time()
-
-    if (!length(unique(expdf$condition)) > 2)
-        stop("\n\t There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.\n")
 
     checkexptab(expdf)
 
