@@ -298,8 +298,8 @@ checkexptab <- function(exptab) {
 #'   condition = c("cond1", "cond2", "cond3"),
 #'   replicate = c(1, 1, 1),
 #'   direction = c("forward", "reverse", "forward"),
-#'   strand = c("plus", "minus", "plus")
-#' )
+#'   strand = c("plus", "minus", "plus"),
+#'   path = c("toto/", "toto/"))
 #' checkexptab(exptab)
 #' showallcomp(exptab)
 #'
