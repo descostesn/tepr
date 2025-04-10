@@ -1,5 +1,5 @@
 Package: tepr
-Title: Transcription Elongation Profile of nascent RNA-seq
+Title: Transcription Elongation Profile of Nascent RNA-seq
 Version: 1.1.8
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),

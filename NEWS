@@ -3,7 +3,7 @@ v1.1.8:
 - Remove listing of technology acronyms in Description of DESCRIPTION.
 - In documentation, replace dontrun by donttest if the example cannot be run or takes more than 5 seconds.
 - Use tempdir() instead of getwd() by default.
-- Change package title from "Transcription Elongation Profile" to "Transcription Elongation Profile of nascent RNA-seq". Acronym "tepr" is kept.
+- Change package title from "Transcription Elongation Profile" to "Transcription Elongation Profile of Nascent RNA-seq". Acronym "tepr" is kept.
 
 
 v1.1.7:
