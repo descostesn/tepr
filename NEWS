@@ -5,6 +5,8 @@ v1.1.8:
 - Use tempdir() instead of getwd() by default.
 - Change package title from "Transcription Elongation Profile" to "Transcription Elongation Profile of Nascent RNA-Seq". Acronym "tepr" is kept.
 - Remove the joinfiles function that was used during the bash processing.
+- kneeallconds can now be run independently of the number of conditions.
+
 
 v1.1.7:
 - Replace all identical tests by equal in testthat.
