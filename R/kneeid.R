@@ -154,7 +154,7 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #' }
 #'
 #' @examples
-#' donttest{
+#' \donttest{
 #'  exptabpath <- "exp.csv"
 #'  alldfpath <- "result-preprocessing.tsv"
 #'  expdf <- read.csv(exptabpath)
