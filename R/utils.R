@@ -233,8 +233,8 @@ joinfiles <- function(workingdir = tempdir(), window = 200, bgpattern = "*.bg", 
 #'   condition = c("cond1", "cond2"),
 #'   replicate = c(1, 1),
 #'   direction = c("forward", "reverse"),
-#'   strand = c("plus", "minus")
-#' )
+#'   strand = c("plus", "minus"),
+#'   path = c("toto/", "toto/"))
 #' checkexptab(exptab)  # Should pass without errors
 #'
 #' # Invalid experiment table (wrong column names)
@@ -242,7 +242,8 @@ joinfiles <- function(workingdir = tempdir(), window = 200, bgpattern = "*.bg", 
 #'     cond = c("cond1", "cond2"),
 #'     rep = c(1, 1),
 #'     dir = c("forward", "reverse"),
-#'     str = c("+", "-"))
+#'     str = c("+", "-"),
+#'     paths = c("toto/", "toto/"))
 #' try(checkexptab(invalid_exptab))
 #'
 #' @export
