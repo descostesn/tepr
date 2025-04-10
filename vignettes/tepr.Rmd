@@ -1,10 +1,10 @@
 ---
-title: "Transcription Elongation Profile of Nascent RNA-Seq"
+title: "Transcription Elongation Profiling"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
 output: rmarkdown::html_vignette
 vignette: >
-    %\VignetteIndexEntry{Transcription Elongation Profile of Nascent RNA-Seq}
+    %\VignetteIndexEntry{Transcription Elongation Profiling}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
