@@ -127,6 +127,7 @@
 #'
 #' @examples
 #' \donttest{
+#' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
 #' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 #' windsize <- 200
 #' 
