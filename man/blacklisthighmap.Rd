@@ -96,6 +96,7 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
 windsize <- 200
 genomename <- "hg38"
 chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
 ## Copying bedgraphs to the current directory
 expdfpre <- read.csv(exptabpath)
