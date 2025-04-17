@@ -337,6 +337,7 @@
 #' windsize <- 200
 #' genomename <- "hg38"
 #' chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+#' allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
 #' chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 #'
 #' ## Copying bedgraphs to the current directory
