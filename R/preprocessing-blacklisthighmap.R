@@ -352,7 +352,7 @@
 #' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
 #'
 #' ## Test blacklisthighmap
-#' blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
+#' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'     nbcputrans = 1, allwindowsbed, windsize, genomename,
 #'     chromtab = chromtabtest, verbose = FALSE)}
 #'
