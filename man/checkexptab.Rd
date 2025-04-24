@@ -28,24 +28,22 @@ The function performs the following checks:
 - The `strand` column must contain only `"plus"` and `"minus"`.
 }
 \examples{
-\dontrun{
-  # Create a valid experiment table
-  exptab <- data.frame(
-    condition = c("cond1", "cond2"),
-    replicate = c(1, 1),
-    direction = c("forward", "reverse"),
-    strand = c("plus", "minus")
-  )
-  checkexptab(exptab)  # Should pass without errors
+# Create a valid experiment table
+exptab <- data.frame(
+  condition = c("cond1", "cond2"),
+  replicate = c(1, 1),
+  direction = c("forward", "reverse"),
+  strand = c("plus", "minus"),
+  path = c("toto/", "toto/"))
+checkexptab(exptab)  # Should pass without errors
 
-  # Invalid experiment table (wrong column names)
-  invalid_exptab <- data.frame(
+# Invalid experiment table (wrong column names)
+invalid_exptab <- data.frame(
     cond = c("cond1", "cond2"),
     rep = c(1, 1),
     dir = c("forward", "reverse"),
-    str = c("+", "-")
-  )
-  checkexptab(invalid_exptab)  # Will throw an error
-}
+    str = c("+", "-"),
+    paths = c("toto/", "toto/"))
+try(checkexptab(invalid_exptab))
 
 }

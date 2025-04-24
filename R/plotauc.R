@@ -75,7 +75,7 @@
 #' pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
 #' labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
 #' axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
-#' subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = getwd(),
+#' subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = tempdir(),
 #' outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
 #' universename = "Universe", groupname = "Group", verbose = TRUE)
 #'
@@ -105,7 +105,7 @@
 #' @param formatname Format of the saved plot (e.g., "pdf", "png"). Default is
 #'  \code{"pdf"}.
 #' @param outfold Output folder where the plot will be saved. Default is
-#'  \code{getwd()}.
+#'  \code{tempdir()}.
 #' @param outfile Name of the output file. Default is
 #'  \code{"AUCcompare_pval"}.
 #' @param plottype Type of plot to generate. Can be \code{"pval"} for p-value
@@ -138,8 +138,30 @@
 #'  output folder.
 #'
 #' @examples
-#' # Assuming `tab` contains AUC values and p-values:
-#' # plotauc(tab, expdf, genevec = c("Gene1", "Gene2"), plottype = "pval")
+#' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+#' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expthres <- 0.1
+#'
+#' ## Calculating necessary results
+#' expdf <- read.csv(exppath)
+#' transdf <- read.delim(transpath, header = FALSE)
+#' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+#'        showtime = FALSE, verbose = FALSE)
+#' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' resecdf <- ecdf[[1]]
+#' nbwindows <- ecdf[[2]]
+#' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
+#'    verbose = FALSE)
+#' bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+#' resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
+#' resauc <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
+#' resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+#'        resmeandiff, verbose = FALSE)
+#' resug <- universegroup(resatt, expdf, verbose = FALSE)
+#'
+#' ## Testing plotauc
+#' plotauc(resug, expdf, plottype = "groups", plot = TRUE)
 #'
 #' @seealso
 #' [allauc]
@@ -157,7 +179,7 @@ plotauc <- function(tab, expdf, genevec = NA, # nolint
     pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
     labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
     axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
-    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = getwd(),
+    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = tempdir(),
     outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
     universename = "Universe", groupname = "Group", verbose = TRUE) {
 

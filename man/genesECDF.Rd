@@ -56,10 +56,19 @@ The function uses parallel processing to compute ECDF for each transcript
  simultaneously, making it faster on systems with multiple CPU cores.
 }
 \examples{
-# Assuming allexprsdfs is a list of data frames and expdf contains the
-# conditions:
-# result <- genesECDF(allexprsdfs, expdf, rounding = 10, nbcpu = 4,
-#   verbose = TRUE)
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expthres <- 0.1
+
+## Calculating averageandfilterexprs and countNA to call genesECDF
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
+        showtime = FALSE, verbose = FALSE)
+countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
+
+## Testing genesECDF 
+resecdf <- genesECDF(avfilttest, expdf, verbose = FALSE)
 
 }
 \seealso{

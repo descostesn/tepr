@@ -112,15 +112,16 @@ The tepr function calls successively:
 }
 }
 \examples{
-# Example usage:
-# exptabpath <- "exp.csv"
-# alldfpath <- "result-preprocessing.tsv"
-# expdf <- read.csv(exptabpath)
-# alldf <- read.delim(alldfpath, header = FALSE)
-# expthres <- 0.1
-# reslist <- tepr(expdf, alldf, expthres)
-# resmeandiff <- restlist[[1]]
-# res <- reslist[[2]]
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expthres <- 0.1
+
+## Reading files
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+
+## Testing tepr
+res <- tepr(expdf, transdf, expthres, verbose = FALSE)
 
 }
 \seealso{

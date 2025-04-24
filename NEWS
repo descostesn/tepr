@@ -1,3 +1,15 @@
+v1.1.8:
+- Remove acronym in package title.
+- Remove listing of technology acronyms in Description of DESCRIPTION.
+- In documentation, replace dontrun by donttest if the example cannot be run or takes more than 5 seconds.
+- Use tempdir() instead of getwd() by default.
+- Change package title from "Transcription Elongation Profile" to "Transcription Elongation Profiling". Acronym "tepr" is kept.
+- Remove the joinfiles function that was used during the bash processing.
+- kneeallconds can now be run independently of the number of conditions.
+- \dontrun is used in the examples of functions handling more than two conditions: plotmulti and teprmulti.
+- package is now available on CRAN.
+
+
 v1.1.7:
 - Replace all identical tests by equal in testthat.
 - Remove the use of BiocStyle for the vignette.

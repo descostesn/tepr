@@ -31,14 +31,14 @@
     if (verbose) message("Reading files and joining to the final table")
     firstpath <- mergedfilelist[[idxvec[1]]]
     if (verbose) message("\t Reading and joining ", firstpath)
-    finaltab <- read.delim(firstpath, header = FALSE,
+    finaltab <- utils::read.delim(firstpath, header = FALSE,
         sep = "\t", na.strings = "NA", dec = ".", col.names = colnamevec,
         stringsAsFactors = FALSE)
 
     for (idx in idxvec[-1]) {
         currentpath <- mergedfilelist[[idx]]
         if (verbose) message("\t Reading and joining ", currentpath)
-        tab <- read.delim(currentpath, header = FALSE, sep = "\t",
+        tab <- utils::read.delim(currentpath, header = FALSE, sep = "\t",
             na.strings = "NA", dec = ".", col.names = colnamevec,
             stringsAsFactors = FALSE)
         finaltab <- dplyr::full_join(finaltab, tab, by = colnamejoin)
@@ -56,7 +56,7 @@
 #'
 #' @usage
 #' createtablescores(tmpfold, exptabpath, showmemory = FALSE, showtime = FALSE,
-#'   savefinaltable = TRUE, finaltabpath = getwd(), finaltabname = "anno.tsv",
+#'   savefinaltable = TRUE, finaltabpath = tempdir(), finaltabname = "anno.tsv",
 #'  verbose)
 #'
 #' @param tmpfold A string specifying the temporary folder containing the
@@ -70,7 +70,7 @@
 #' @param savefinaltable Logical; if `TRUE`, the resulting table is saved to
 #'  disk. Default is `TRUE`.
 #' @param finaltabpath A string specifying the directory where the final table
-#'  should be saved. Default is \code{getwd()}.
+#'  should be saved. Default is \code{tempdir()}.
 #' @param finaltabname A string specifying the name of the final table file.
 #'  Default is `"anno.tsv"`.
 #' @param verbose Logical; if `TRUE`, detailed messages are printed during
@@ -85,16 +85,42 @@
 #' scores. The resulting table also includes annotations for each transcript.
 #'
 #' @examples
-#' # Example usage:
-#' # tmpfold <- "path/to/tmp/folder"
-#' # exptabpath <- "path/to/experiment_table.csv"
-#' # finaltab <- createtablescores(tmpfold = tmpfold, exptabpath = exptabpath,
-#' #   showmemory = TRUE, showtime = TRUE, savefinaltable = TRUE,
-#' #   finaltabpath = "./results", finaltabname = "final_scores.tsv",
-#' #   verbose = TRUE)
+#' \donttest{
+#' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+#' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
+#' maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
+#' package = "tepr")
+#' blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
+#'     package = "tepr")
+#' tmpfoldpath <- file.path(tempdir(), "tmptepr")
+#' windsize <- 200
+#' genomename <- "hg38"
+#' chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+#' allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
+#' chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
+#' 
+#' ## Copying bedgraphs to the current directory
+#' expdfpre <- read.csv(exptabpath)
+#' bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
+#'     package = "tepr"))
+#' expdfpre$path <- bgpathvec
+#' write.csv(expdfpre, file = "exptab-preprocessing.csv", row.names = FALSE,
+#'     quote = FALSE)
+#' exptabpath <- "exptab-preprocessing.csv"
+#'
+#' ## Necessary result to call createtablescores
+#' allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
+#' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
+#' blacklisthighmap(maptrackpath, blacklistpath, exptabpath, nbcputrans = 1,
+#'     allwindowsbed, windsize, genomename = genomename, chromtab = chromtabtest,
+#'     verbose = FALSE)
+#'
+#' ## Calling the function to test
+#' finaltabtest <- createtablescores(tmpfold = tmpfoldpath, exptabpath,
+#'     savefinaltable = FALSE, verbose = FALSE)}
 #'
 #' @importFrom dplyr full_join
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.delim write.table
 #'
 #' @seealso
 #' [blacklisthighmap]
@@ -102,7 +128,7 @@
 #' @export
 
 createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
-    showtime = FALSE, savefinaltable = TRUE, finaltabpath = getwd(),
+    showtime = FALSE, savefinaltable = TRUE, finaltabpath = tempdir(),
     finaltabname = "anno.tsv", verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
@@ -155,8 +181,9 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
                 dir.create(finaltabpath, recursive = TRUE)
             outfile <- file.path(finaltabpath, finaltabname)
             if (verbose) message("\n ## Saving the final table to ", outfile)
-            write.table(finaltab, file = outfile, sep = "\t", quote = FALSE,
-                row.names = FALSE, col.names = FALSE, fileEncoding = "UTF8")
+            utils::write.table(finaltab, file = outfile, sep = "\t",
+                quote = FALSE, row.names = FALSE, col.names = FALSE,
+                fileEncoding = "UTF8")
         }
 
         if (showtime) {

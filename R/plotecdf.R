@@ -100,8 +100,8 @@
 #' @usage
 #' plotecdf(dfmeandiff, unigroupdf, expdf, genename,
 #'    colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-#'    outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
-#'    formatname = "pdf", verbose = TRUE)
+#'    outfold = tempdir(), digits = 2, middlewind = 100, pval = 0.01,
+#'    plot = FALSE, formatname = "pdf", verbose = TRUE)
 #'
 #'
 #' @param dfmeandiff A data frame containing the mean differences of
@@ -115,7 +115,7 @@
 #' @param colvec A vector of colors used to distinguish different conditions in
 #'  the plot. Default is \code{c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")}.
 #' @param outfold A string specifying the output folder where the plot will be
-#'  saved if \code{plot = FALSE}. Default is \code{getwd()}.
+#'  saved if \code{plot = FALSE}. Default is \code{tempdir()}.
 #' @param digits The number of decimal places to round the AUC and KS values.
 #'  Default is \code{2}.
 #' @param middlewind The index of the middle window representing the region
@@ -148,9 +148,31 @@
 #' experiment).
 #'
 #' @examples
-#' # Assuming `dfmeandiff`, `unigroupdf`, and `expdf` contain the necessary
-#' # data:
-#' # plotecdf(dfmeandiff, unigroupdf, expdf, genename = "GeneX")
+#' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+#' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expthres <- 0.1
+#'
+#' ## Calculating necessary results
+#' expdf <- read.csv(exppath)
+#' transdf <- read.delim(transpath, header = FALSE)
+#' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+#'        showtime = FALSE, verbose = FALSE)
+#' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' resecdf <- ecdf[[1]]
+#' nbwindows <- ecdf[[2]]
+#' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
+#'     verbose = FALSE)
+#' bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+#' resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
+#' resauc <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
+#' resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+#'         resmeandiff, verbose = FALSE)
+#' resug <- universegroup(resatt, expdf, verbose = FALSE)
+#'
+#' ## Testing plotecdf
+#' colvec <- c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07")
+#' plotecdf(resmeandiff, resug, expdf, "EGFR", colvec, plot = TRUE, verbose = FALSE)
 #'
 #' @seealso
 #' [meandifference], [universegroup]
@@ -165,7 +187,7 @@
 
 plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
     colvec = c("#90AFBB", "#10AFBB", "#FF9A04", "#FC4E07"),
-    outfold = getwd(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
+    outfold = tempdir(), digits = 2, middlewind = 100, pval = 0.01, plot = FALSE,
     formatname = "pdf", verbose = TRUE) {
 
         nbrep <- length(expdf$replicate) / 2

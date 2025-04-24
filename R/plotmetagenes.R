@@ -45,7 +45,7 @@
 #' plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
 #' daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
 #' auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-#' outfold = getwd(), verbose = TRUE)
+#' outfold = tempdir(), verbose = TRUE)
 #'
 #' @param unigroupdf A data frame containing gene-level information, including
 #'  group classifications and dAUC data for different conditions (see
@@ -89,9 +89,30 @@
 #' under different conditions.
 #'
 #' @examples
-#' # Assuming `unigroupdf` and `dfmeandiff` contain the necessary data:
-#' # plotmetagenes(unigroupdf, dfmeandiff, expdf, plottype = "universe",
-#' # plot = TRUE)
+#' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+#' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expthres <- 0.1
+#'
+#' ## Calculating necessary results
+#' expdf <- read.csv(exppath)
+#' transdf <- read.delim(transpath, header = FALSE)
+#' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+#'         showtime = FALSE, verbose = FALSE)
+#' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' resecdf <- ecdf[[1]]
+#' nbwindows <- ecdf[[2]]
+#' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
+#'     verbose = FALSE)
+#' bytranslistmean <- split(resmeandiff, factor(resmeandiff$transcript))
+#' resknee <- kneeid(bytranslistmean, expdf, verbose = FALSE)
+#' resauc <- allauc(bytranslistmean, expdf, nbwindows, verbose = FALSE)
+#' resatt <- attenuation(resauc, resknee, rescountna, bytranslistmean, expdf,
+#'         resmeandiff, verbose = FALSE)
+#' resug <- universegroup(resatt, expdf, verbose = FALSE)
+#'
+#' ## Testing plotmetagenes
+#' plotmetagenes(resug, resmeandiff, expdf, plottype = "attenuation", plot = TRUE)
 #'
 #' @seealso
 #' [universegroup], [meandifference]
@@ -107,7 +128,7 @@
 plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation",
     daucname = "dAUC_Diff_meanFx_HS_ctrl", auc_ctrlname = "AUC_ctrl",
     auc_stressname = "AUC_HS", plot = FALSE, formatname = "pdf",
-    outfold = getwd(), verbose = TRUE) {
+    outfold = tempdir(), verbose = TRUE) {
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))

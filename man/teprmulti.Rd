@@ -110,13 +110,14 @@ conditions within the experiment table and calls the `tepr` function for
 each pair.
 }
 \examples{
-# Example usage:
-# exptabpath <- "exp.csv"
-# alldfpath <- "result-preprocessing.tsv"
-# expdf <- read.csv(exptabpath)
-# alldf <- read.delim(alldfpath, header = FALSE)
-# expthres <- 0.1
-# reslist <- teprmulti(expdf, alldf, expthres)
+## Supposing the data have more than one condition
+\dontrun{
+  exptabpath <- "exp.csv"
+  alldfpath <- "result-preprocessing.tsv"
+  expdf <- read.csv(exptabpath)
+  alldf <- read.delim(alldfpath, header = FALSE)
+  expthres <- 0.1
+  reslist <- teprmulti(expdf, alldf, expthres)}
 
 }
 \seealso{

@@ -1,10 +1,10 @@
 ---
-title: "Transcription Elongation Profile"
+title: "Transcription Elongation Profiling"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
 output: rmarkdown::html_vignette
 vignette: >
-    %\VignetteIndexEntry{Transcription elongation profile}
+    %\VignetteIndexEntry{Transcription Elongation Profiling}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
@@ -12,7 +12,7 @@ vignette: >
 
 # Introduction
 
-tepr (Transcription Elongation Profile) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene.  By comparing this profile to a uniform signal, tepr can identify transcription attenuation sites.  Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of tepr is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
+tepr (Transcription Elongation Profile) is an R package designed for analyzing data from nascent RNA sequencing technologies, such as TT-seq, mNET-seq, and PRO-seq.  It calculates the probability distribution of nascent RNA sequencing signal across the gene body or transcription unit of a given gene. By comparing this profile to a uniform signal, tepr can identify transcription attenuation sites. Furthermore, it can detect increased or decreased transcription attenuation by comparing profiles across different conditions.  Beyond its rigorous statistical testing and high sensitivity, a key strength of tepr is its ability to resolve the elongation pattern of individual genes, including the precise location of the primary attenuation point, when present.  This capability allows users to visualize and refine genome-wide aggregated analyses, enabling the robust identification of effects specific to gene subsets.  These metrics facilitate comparisons between genes within a condition, across conditions for the same gene, or against a theoretical model of perfect uniform elongation.
 
 # Getting Help
 
@@ -61,7 +61,7 @@ allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
 chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
 finaltab <- preprocessing(expprepath, gencodepath, windsize, maptrackpath,
-    blacklistpath, genomename, finaltabpath = getwd(), finaltabname = "anno.tsv",
+    blacklistpath, genomename, finaltabpath = tempdir(), finaltabname = "anno.tsv",
     chromtab = chromtabtest, showtime = FALSE, verbose = FALSE)
 
 
@@ -240,7 +240,7 @@ Note that this function does not return a value; instead, it saves the processed
 
 ```{r blacklisthighmap, eval = FALSE, purl = FALSE, comment=NA}
 ## Retrieving bedgraph scores, removing those in black list and low mappability intervals
-blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = file.path(getwd(), "tmptepr"))
+blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwindowsbed, windsize, genomename = "hg38", tmpfold = file.path(tempdir(), "tmptepr"))
 ```
 
 ### Creating the Final Table
@@ -248,7 +248,7 @@ blacklisthighmap(maptrackpath, blacklistpath, expprepath, nbcputrans = 1, allwin
 The `?createtablescores` function merges the files stored in the previously produced temporary folder that belong to the same experiment and direction. These files are combined into a single table, with two columns per experiment: one containing the experiment name and the other containing the corresponding scores. The resulting table also includes annotations for each transcript.
 
 ```{r createtablescores, eval = FALSE, purl = FALSE, comment = NA}
-finaltab <- createtablescores(tmpfold = file.path(getwd(), "tmptepr"), expprepath, savefinaltable = FALSE)
+finaltab <- createtablescores(tmpfold = file.path(tempdir(), "tmptepr"), expprepath, savefinaltable = FALSE)
 ```
 
 The final table should look like:

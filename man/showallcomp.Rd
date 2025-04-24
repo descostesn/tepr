@@ -22,16 +22,14 @@ The `showallcomp` function build the string of all comparisons possible
 using the condition column of a provided experiment table.
 }
 \examples{
-\dontrun{
-  # Create a valid experiment table
-  exptab <- data.frame(
-    condition = c("cond1", "cond2", "cond3"),
-    replicate = c(1, 1, 1),
-    direction = c("forward", "reverse", "forward"),
-    strand = c("plus", "minus", "plus")
-  )
-  checkexptab(exptab)  # Should pass without errors
-  showallcomp(exptab)
-}
+# Create a valid experiment table
+exptab <- data.frame(
+  condition = c("cond1", "cond2", "cond3"),
+  replicate = c(1, 1, 1),
+  direction = c("forward", "reverse", "forward"),
+  strand = c("plus", "minus", "plus"),
+  path = c("toto/", "toto/", "toto/"))
+checkexptab(exptab)
+showallcomp(exptab)
 
 }

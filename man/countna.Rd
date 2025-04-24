@@ -40,9 +40,19 @@ operates in parallel on transcripts to speed up the process using multiple
 CPU cores.
 }
 \examples{
-# Assuming allexprsdfs is a list of data frames and expdf contains the
-# conditions:
-# result <- countna(allexprsdfs, expdf, nbcpu = 4)
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expthres <- 0.1
+
+## Calculating averageandfilterexprs to call countNA
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
+        showtime = FALSE, verbose = FALSE)
+
+## Testing countna
+res <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
+
 
 }
 \seealso{

@@ -6,7 +6,7 @@
 \usage{
 blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-   tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+   tmpfold = file.path(tempdir(), "tmptepr"), reload = FALSE, showtime = FALSE,
    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
 }
 \arguments{
@@ -32,7 +32,7 @@ and R objects are not saved.}
 
 \item{tmpfold}{A character string specifying the temporary folder for saving
 output files. The temporary files contain the scores for each bedgraph on
-each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.}
+each chromosome. Default is \code{file.path(tempdir(), "tmptepr")}.}
 
 \item{reload}{Logical. If `TRUE`, reloads existing saved objects to avoid
 recomputation. Default is `FALSE`. If the function failed during object
@@ -86,27 +86,36 @@ object can be retrieved with:
      chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 }
 \examples{
-# Define paths to required files
-# maptrackpath <- "path/to/maptrack.bed"
-# blacklistpath <- "path/to/blacklist.bed"
-# exptabpath <- "path/to/experiments.csv"
-# allwindowsbed <- data.frame(...)
-#
-# Run the function
-# results <- blacklisthighmap(
-#     maptrackpath = maptrackpath,
-#     blacklistpath = blacklistpath,
-#     exptabpath = exptabpath,
-#     nbcputrans = 4,
-#     allwindowsbed = allwindowsbed,
-#     windsize = 200,
-#     genomename = "hg38",
-#     saveobjectpath = "output/",
-#     tmpfold = "tmptepr",
-#     reload = FALSE,
-#     showtime = TRUE,
-#     showmemory = FALSE,
-#     verbose = TRUE)
+\donttest{
+exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
+maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
+    package = "tepr")
+blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
+    package = "tepr")
+windsize <- 200
+genomename <- "hg38"
+chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
+chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
+
+## Copying bedgraphs to the current directory
+expdfpre <- read.csv(exptabpath)
+bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
+    package = "tepr"))
+expdfpre$path <- bgpathvec
+write.csv(expdfpre, file = "exptab-preprocessing.csv", row.names = FALSE,
+    quote = FALSE)
+exptabpath <- "exptab-preprocessing.csv"
+
+## Necessary result to call blacklisthighmap
+allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
+allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
+
+## Test blacklisthighmap
+blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
+    nbcputrans = 1, allwindowsbed, windsize, genomename,
+    chromtab = chromtabtest, verbose = FALSE)}
 
 }
 \seealso{

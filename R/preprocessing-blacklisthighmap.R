@@ -180,7 +180,7 @@
 
                 ## Saving table to temporary folder
                 if (verbose) message("\t\t Saving table to ", filename)
-                write.table(res, file = filename, sep = "\t", quote = FALSE,
+                utils::write.table(res, file = filename, sep = "\t", quote = FALSE,
                     col.names = FALSE, row.names = FALSE)
 
                 rm(bgscorebytrans, bytranslist, res)
@@ -267,7 +267,7 @@
 #' @usage
 #' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
 #'    nbcputrans, allwindowsbed, windsize, genomename, saveobjectpath = NA,
-#'    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+#'    tmpfold = file.path(tempdir(), "tmptepr"), reload = FALSE, showtime = FALSE,
 #'    showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE)
 #'
 #' @param maptrackpath Character string. Path to the mappability track file.
@@ -284,7 +284,7 @@
 #'  and R objects are not saved.
 #' @param tmpfold A character string specifying the temporary folder for saving
 #'   output files. The temporary files contain the scores for each bedgraph on
-#'   each chromosome. Default is \code{file.path(getwd(), "tmptepr")}.
+#'   each chromosome. Default is \code{file.path(tempdir(), "tmptepr")}.
 #' @param reload Logical. If `TRUE`, reloads existing saved objects to avoid
 #'  recomputation. Default is `FALSE`. If the function failed during object
 #'  saving, make sure to delete the corresponding object.
@@ -327,27 +327,36 @@
 #'      chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
 #'
 #' @examples
-#' # Define paths to required files
-#' # maptrackpath <- "path/to/maptrack.bed"
-#' # blacklistpath <- "path/to/blacklist.bed"
-#' # exptabpath <- "path/to/experiments.csv"
-#' # allwindowsbed <- data.frame(...)
-#' #
-#' # Run the function
-#' # results <- blacklisthighmap(
-#' #     maptrackpath = maptrackpath,
-#' #     blacklistpath = blacklistpath,
-#' #     exptabpath = exptabpath,
-#' #     nbcputrans = 4,
-#' #     allwindowsbed = allwindowsbed,
-#' #     windsize = 200,
-#' #     genomename = "hg38",
-#' #     saveobjectpath = "output/",
-#' #     tmpfold = "tmptepr",
-#' #     reload = FALSE,
-#' #     showtime = TRUE,
-#' #     showmemory = FALSE,
-#' #     verbose = TRUE)
+#' \donttest{
+#' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+#' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
+#' maptrackpath <- system.file("extdata", "k50.umap.chr13.hg38.0.8.bed",
+#'     package = "tepr")
+#' blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
+#'     package = "tepr")
+#' windsize <- 200
+#' genomename <- "hg38"
+#' chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+#' allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
+#' chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
+#'
+#' ## Copying bedgraphs to the current directory
+#' expdfpre <- read.csv(exptabpath)
+#' bgpathvec <- sapply(expdfpre$path, function(x) system.file("extdata", x,
+#'     package = "tepr"))
+#' expdfpre$path <- bgpathvec
+#' write.csv(expdfpre, file = "exptab-preprocessing.csv", row.names = FALSE,
+#'     quote = FALSE)
+#' exptabpath <- "exptab-preprocessing.csv"
+#' 
+#' ## Necessary result to call blacklisthighmap
+#' allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
+#' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
+#'
+#' ## Test blacklisthighmap
+#' blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
+#'     nbcputrans = 1, allwindowsbed, windsize, genomename,
+#'     chromtab = chromtabtest, verbose = FALSE)}
 #'
 #' @importFrom rtracklayer SeqinfoForUCSCGenome import.bedGraph
 #' @importFrom GenomeInfoDb seqnames seqlengths
@@ -355,7 +364,7 @@
 #' @importFrom dplyr relocate filter
 #' @importFrom valr bed_intersect
 #' @importFrom methods is
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.delim write.table
 #'
 #' @seealso
 #' [createtablescores][makewindows]
@@ -365,7 +374,7 @@
 
 blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
     nbcputrans, allwindowsbed, windsize, genomename = NA, saveobjectpath = NA,
-    tmpfold = file.path(getwd(), "tmptepr"), reload = FALSE, showtime = FALSE,
+    tmpfold = file.path(tempdir(), "tmptepr"), reload = FALSE, showtime = FALSE,
     showmemory = FALSE, chromtab = NA, forcechrom = FALSE, verbose = TRUE) {
 
         if (showtime) start_time_fun <- Sys.time()
@@ -401,7 +410,7 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
         exptab <- utils::read.csv(exptabpath, header = TRUE)
 
         if (verbose) message("Reading the black list")
-        blacklistbed <- read.delim(blacklistpath, header = FALSE)
+        blacklistbed <- utils::read.delim(blacklistpath, header = FALSE)
         colnames(blacklistbed) <- c("chrom", "start", "end", "type")
         blacklisttib <- tibble::as_tibble(blacklistbed)
 

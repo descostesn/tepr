@@ -50,18 +50,10 @@ The function performs the following steps:
 6. Optionally reports the total time taken for analysis.
 }
 \examples{
-# Example usage:
-# exptab_file <- "path/to/experiment_table.csv"
-# gencode_file <- "path/to/gencode_annotations.gtf"
-# output_dir <- "path/to/output_directory"
+exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 
-# Run the function with verbose output and timing enabled
-# annotations <- retrieveanno(
-#     exptabpath = exptab_file,
-#     gencodepath = gencode_file,
-#     saveobjectpath = output_dir,
-#     showtime = TRUE,
-#     verbose = TRUE
-# )
+## Testing retrieveanno
+allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
 
 }

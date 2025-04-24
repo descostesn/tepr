@@ -44,9 +44,24 @@ reslist <- lapply(condvec, function(cond, transtable) {
 #'  condition.
 #'
 #' @examples
-#' # Assuming transdflist is a list of transcript data frames and expdf contains
-#' # conditions for each experiment:
-#' # result <- kneeid(transdflist, expdf, nbcpu = 4, verbose = TRUE)
+#' exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+#' transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expthres <- 0.1
+#'
+#' ## Calculating necessary results
+#' expdf <- read.csv(exppath)
+#' transdf <- read.delim(transpath, header = FALSE)
+#' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+#'         showtime = FALSE, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' resecdf <- ecdf[[1]]
+#' nbwindows <- ecdf[[2]]
+#' meandiff <- meandifference(resecdf, expdf, nbwindows,
+#'     verbose = FALSE)
+#' bytranslistmean <- split(meandiff, factor(meandiff$transcript))
+#'
+#' ## Testing kneeid
+#' reskneeid <- kneeid(bytranslistmean, expdf, verbose = FALSE)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr slice_min
@@ -139,13 +154,12 @@ kneeid <- function(transdflist, expdf, nbcpu = 1, showtime = FALSE,
 #' }
 #'
 #' @examples
-#' # Example usage:
-#' # exptabpath <- "exp.csv"
-#' # alldfpath <- "result-preprocessing.tsv"
-#' # expdf <- read.csv(exptabpath)
-#' # alldf <- read.delim(alldfpath, header = FALSE)
-#' # expthres <- 0.1
-#' # kneedf <- kneeallconds(alldf, expdf, expthres)
+#' exptabpath <- system.file("extdata", "exptab.csv", package="tepr")
+#' alldfpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+#' expdf <- read.csv(exptabpath)
+#' alldf <- read.delim(alldfpath, header = FALSE)
+#' expthres <- 0.1
+#' kneedf <- kneeallconds(alldf, expdf, expthres, verbose = FALSE)
 #'
 #' @seealso
 #' [averageandfilterexprs()], [genesECDF()], [meandifference()],
@@ -159,10 +173,6 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
     showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_knee <- Sys.time()
-
-    if (!length(unique(expdf$condition)) > 2)
-        stop("\n\t There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.\n")
 
     checkexptab(expdf)
 

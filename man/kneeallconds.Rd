@@ -54,13 +54,12 @@ The kneeallconds function calls successively for each condition:
 }
 }
 \examples{
-# Example usage:
-# exptabpath <- "exp.csv"
-# alldfpath <- "result-preprocessing.tsv"
-# expdf <- read.csv(exptabpath)
-# alldf <- read.delim(alldfpath, header = FALSE)
-# expthres <- 0.1
-# kneedf <- kneeallconds(alldf, expdf, expthres)
+exptabpath <- system.file("extdata", "exptab.csv", package="tepr")
+alldfpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expdf <- read.csv(exptabpath)
+alldf <- read.delim(alldfpath, header = FALSE)
+expthres <- 0.1
+kneedf <- kneeallconds(alldf, expdf, expthres, verbose = FALSE)
 
 }
 \seealso{

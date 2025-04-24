@@ -45,7 +45,16 @@ output data frame to include mean expression values.
 If no transcript is selected as expressed, the function throws an error.
 }
 \examples{
-# Example usage of averageandfilterexprs
-# result <- averageandfilterexprs(expdf, alldf, expthres = 10)
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expthres <- 0.1
+
+## Reading tables
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+
+## Testing averageandfilterexprs
+resavfilt <- averageandfilterexprs(expdf, transdf, expthres,
+       showtime = FALSE, verbose = FALSE)
 
 }

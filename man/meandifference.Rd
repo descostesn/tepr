@@ -41,9 +41,22 @@ This function calculates the mean values, mean Fx (ECDF) and ECDF differences
 one condition is provided, skips computation of mean differences.
 }
 \examples{
-# Assuming resultsecdf is a data frame with ECDF results and expdf contains
-# conditions:
-# result <- meandifference(resultsecdf, expdf, nbwindows = 200,
-# verbose = TRUE)
+exppath <-  system.file("extdata", "exptab.csv", package="tepr")
+transpath <- system.file("extdata", "cugusi_6.tsv", package="tepr")
+expthres <- 0.1
+
+## Calculating necessary results
+expdf <- read.csv(exppath)
+transdf <- read.delim(transpath, header = FALSE)
+avfilt <- averageandfilterexprs(expdf, transdf, expthres,
+        showtime = FALSE, verbose = FALSE)
+countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
+ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+resecdf <- ecdf[[1]]
+nbwindows <- ecdf[[2]]
+
+## Testing meandifference
+meandifftest <- meandifference(resecdf, expdf, nbwindows,
+    verbose = FALSE)
 
 }

@@ -69,21 +69,13 @@
 #' 6. Optionally reports the total time taken for analysis.
 #'
 #' @examples
-#' # Example usage:
-#' # exptab_file <- "path/to/experiment_table.csv"
-#' # gencode_file <- "path/to/gencode_annotations.gtf"
-#' # output_dir <- "path/to/output_directory"
+#' exptabpath <- system.file("extdata", "exptab-preprocessing.csv", package="tepr")
+#' gencodepath <- system.file("extdata", "gencode-chr13.gtf", package = "tepr")
 #'
-#' # Run the function with verbose output and timing enabled
-#' # annotations <- retrieveanno(
-#' #     exptabpath = exptab_file,
-#' #     gencodepath = gencode_file,
-#' #     saveobjectpath = output_dir,
-#' #     showtime = TRUE,
-#' #     verbose = TRUE
-#' # )
+#' ## Testing retrieveanno
+#' allannobed <- retrieveanno(exptabpath, gencodepath, verbose = FALSE)
 #'
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.delim
 #'
 #' @export
 
@@ -102,7 +94,7 @@ retrieveanno <- function(exptabpath, gencodepath, saveobjectpath = NA,
 
     ## Reading gencode file
     if (verbose) message("Reading gencode file and filtering")
-    gencode <- read.delim(gencodepath, header = FALSE, skip = 5)
+    gencode <- utils::read.delim(gencodepath, header = FALSE, skip = 5)
 
     ## Keeping "transcript" annotations
     if (verbose) message("\t Keeping 'transcript' annotations")

@@ -33,7 +33,7 @@ test_that("Errors are thrown when calling preprocessing", {
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename = NA), regexp = expm)
 
-    rdsfile <- file.path(getwd(), "finaltable.rds")
+    rdsfile <- file.path(tempdir(), "finaltable.rds")
     saveRDS(1, file = rdsfile)
     expm <- paste0("\n\t The final table already exists, set reload = FALSE to",
             " create it again.\n")
