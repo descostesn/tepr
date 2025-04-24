@@ -7,6 +7,7 @@ v1.1.8:
 - Remove the joinfiles function that was used during the bash processing.
 - kneeallconds can now be run independently of the number of conditions.
 - \dontrun is used in the examples of functions handling more than two conditions: plotmulti and teprmulti.
+- package is now available on CRAN.
 
 
 v1.1.7:
