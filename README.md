@@ -1,5 +1,5 @@
 
-[![DOI](https://zenodo.org/badge/816777942.svg)](https://doi.org/10.5281/zenodo.15078720)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15277482.svg)](https://doi.org/10.5281/zenodo.15277482)
 
 # tepr: Transcription elongation profile in R
 
