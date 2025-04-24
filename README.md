@@ -54,7 +54,7 @@ The downstream analysis uses the previously generated final table to:
 7. Compute the attenuation values for each window of each transcript. This represents the result of the differential analysis.
 8. Categorize genes into a "Universe" and assigns them into groups such as "Attenuated" or "Outgroup" based on transcription data and thresholds.
 
-<img src="vignettes/pictures/structure.png" alt="structure"/>
+<img src="inst/extdata/structure.png" alt="structure"/>
 
 tepr allows for the analysis of nascent RNA-seq data from a single condition, even with only one replicate. It achieves this by comparing the observed signal to a theoretical baseline of uniform nascent RNA distribution across the transcript, effectively enabling the identification of localized changes in transcription.
 
@@ -62,7 +62,7 @@ tepr provides visualization capabilities for: the cumulative transcription densi
 
 ## Tutorial and quick start
 
-See the accompanying [vignette](https://htmlpreview.github.io/?https://github.com/retrogenomics/tepr/blob/main/vignettes/tepr_vignette.html).
+See the accompanying [vignette](https://cran.r-project.org/web/packages/tepr/vignettes/tepr.html).
 
 Accompanying data are available on zenodo under doi 10.5281/zenodo.15050723.
 
