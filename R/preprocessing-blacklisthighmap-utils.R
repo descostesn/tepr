@@ -130,13 +130,13 @@
 #' `_`).
 #'
 #' @usage
-#' retrievechrom(genomename, verbose)
+#' retrievechrom(genomename, verbose, filterchrom = TRUE)
 #' 
 #' @param genomename A character string specifying the UCSC genome name (e.g.,
 #' "hg19" or "mm10").
 #' @param verbose A logical value. If `TRUE`, the function will print messages
 #'   during execution, including a list of the chromosomes being kept.
-#' @param A logical value. If `TRUE`, mitochondrial and non-canonical
+#' @param filterchrom A logical value. If `TRUE`, mitochondrial and non-canonical
 #'  chromosomes are removed. Default is \code{TRUE}.
 #'
 #' @return A `Seqinfo` object containing the names and lengths of the main
