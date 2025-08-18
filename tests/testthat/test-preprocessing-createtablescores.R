@@ -8,7 +8,7 @@ blacklistpath <- system.file("extdata", "hg38-blacklist-chr13.v2.bed",
 tmpfoldpath <- file.path(tempdir(), "tmptepr")
 windsize <- 200
 genomename <- "hg38"
-chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+chromtabtest <- retrievechrom(genomename, verbose = FALSE)
 allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
 chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 

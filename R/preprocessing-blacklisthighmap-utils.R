@@ -120,7 +120,37 @@
     return(chromlength)
 }
 
-.retrievechrom <- function(genomename, verbose) {
+#' Retrieve chromosome lengths and information for a specified genome.
+#'
+#' @description
+#' This function connects to the UCSC Genome Browser database using the
+#' `rtracklayer` package to retrieve chromosome information. It returns a
+#' `Seqinfo` object, filtering out unwanted chromosomes such as mitochondrial
+#' DNA (`chrM`) and those with alternative contigs (indicated by an underscore
+#' `_`).
+#'
+#' @usage
+#' retrievechrom(genomename, verbose, filterchrom = TRUE)
+#' 
+#' @param genomename A character string specifying the UCSC genome name (e.g.,
+#' "hg19" or "mm10").
+#' @param verbose A logical value. If `TRUE`, the function will print messages
+#'   during execution, including a list of the chromosomes being kept.
+#' @param filterchrom A logical value. If `TRUE`, mitochondrial and non-canonical
+#'  chromosomes are removed. Default is \code{TRUE}.
+#'
+#' @return A `Seqinfo` object containing the names and lengths of the main
+#'   chromosomes for the specified genome.
+#'
+#' @examples
+#' # This example requires an internet connection to the UCSC database
+#' hg19_chroms <- retrievechrom(genomename = "hg19", verbose = TRUE)
+#' hg19_chroms
+#'
+#' @importFrom rtracklayer SeqinfoForUCSCGenome
+#' @importFrom GenomeInfoDb seqnames
+#' @export
+retrievechrom <- function(genomename, verbose, filterchrom = TRUE) {
 
     if (verbose) message("Retrieving chromosome lengths")
     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
@@ -131,9 +161,11 @@
         "also have some hickup. You can callagain the function using the ",
         "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome(",
         "genomename).\n")
-    idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
+    if (filterchrom) {
+        idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
         GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]
-    chromtab <- chromtab[idxkeep,]
+        chromtab <- chromtab[idxkeep,]
+    }
     if (verbose) message("\t Working on: ",
         paste(GenomeInfoDb::seqnames(chromtab), collapse="/"))
     return(chromtab)
