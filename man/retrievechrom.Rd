@@ -12,6 +12,9 @@ retrievechrom(genomename, verbose)
 
 \item{verbose}{A logical value. If `TRUE`, the function will print messages
 during execution, including a list of the chromosomes being kept.}
+
+\item{A}{logical value. If `TRUE`, mitochondrial and non-canonical
+chromosomes are removed. Default is \code{TRUE}.}
 }
 \value{
 A `Seqinfo` object containing the names and lengths of the main
