@@ -136,6 +136,8 @@
 #' "hg19" or "mm10").
 #' @param verbose A logical value. If `TRUE`, the function will print messages
 #'   during execution, including a list of the chromosomes being kept.
+#' @param A logical value. If `TRUE`, mitochondrial and non-canonical
+#'  chromosomes are removed. Default is \code{TRUE}.
 #'
 #' @return A `Seqinfo` object containing the names and lengths of the main
 #'   chromosomes for the specified genome.
@@ -148,7 +150,7 @@
 #' @importFrom rtracklayer SeqinfoForUCSCGenome
 #' @importFrom GenomeInfoDb seqnames
 #' @export
-retrievechrom <- function(genomename, verbose) {
+retrievechrom <- function(genomename, verbose, filterchrom = TRUE) {
 
     if (verbose) message("Retrieving chromosome lengths")
     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
@@ -159,9 +161,11 @@ retrievechrom <- function(genomename, verbose) {
         "also have some hickup. You can callagain the function using the ",
         "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome(",
         "genomename).\n")
-    idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
+    if (filterchrom) {
+        idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
         GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]
-    chromtab <- chromtab[idxkeep,]
+        chromtab <- chromtab[idxkeep,]
+    }
     if (verbose) message("\t Working on: ",
         paste(GenomeInfoDb::seqnames(chromtab), collapse="/"))
     return(chromtab)
