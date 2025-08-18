@@ -1,5 +1,5 @@
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15277482.svg)](https://doi.org/10.5281/zenodo.15277482)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16894874.svg)](https://doi.org/10.5281/zenodo.16894874)
 
 # tepr: Transcription Elongation Profiling
 
