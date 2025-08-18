@@ -120,7 +120,7 @@
     return(chromlength)
 }
 
-.retrievechrom <- function(genomename, verbose) {
+retrievechrom <- function(genomename, verbose) {
 
     if (verbose) message("Retrieving chromosome lengths")
     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)

@@ -394,7 +394,7 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
             }
 
             ## Retrieving chromosome lengths
-            if (is.na(chromtab)) chromtab <- .retrievechrom(genomename, verbose)
+            if (is.na(chromtab)) chromtab <- retrievechrom(genomename, verbose)
 
         } else {
             allchromvec <- GenomeInfoDb::seqnames(chromtab)
