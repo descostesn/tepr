@@ -4,7 +4,7 @@
 \alias{retrievechrom}
 \title{Retrieve chromosome lengths and information for a specified genome.}
 \usage{
-retrievechrom(genomename, verbose)
+retrievechrom(genomename, verbose, filterchrom = TRUE)
 }
 \arguments{
 \item{genomename}{A character string specifying the UCSC genome name (e.g.,
@@ -13,7 +13,7 @@ retrievechrom(genomename, verbose)
 \item{verbose}{A logical value. If `TRUE`, the function will print messages
 during execution, including a list of the chromosomes being kept.}
 
-\item{A}{logical value. If `TRUE`, mitochondrial and non-canonical
+\item{filterchrom}{A logical value. If `TRUE`, mitochondrial and non-canonical
 chromosomes are removed. Default is \code{TRUE}.}
 }
 \value{
