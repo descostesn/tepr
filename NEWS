@@ -1,5 +1,6 @@
 v1.1.9:
 - Unhide and export .retrievechrom function and use it to create chromtabtest in tests to avoid error due to online ressource problems.
+- Update documentation.
 
 v1.1.8:
 - Remove acronym in package title.
