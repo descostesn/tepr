@@ -47,6 +47,7 @@
 
 #' Preprocess Experimental Data for Genomic Analysis
 #'
+#' @description
 #' This function orchestrates a pipeline for preprocessing genomic data,
 #' including filtering annotations, splitting transcripts into windows,
 #' retrieving bedgraph values, and generating a final annotated table.
