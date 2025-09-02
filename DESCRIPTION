@@ -48,7 +48,8 @@ Imports:
     valr,
     tibble,
     utils,
-    methods
+    methods,
+    MASS
 Collate:
     'allauc.R'
     'attenuation.R'
