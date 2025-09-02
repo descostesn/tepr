@@ -1,3 +1,7 @@
+v1.1.10:
+- Export function from MASS to match ggplot2 update.
+- Replace SeqinfoForUCSCGenome by retrievechrom in vignette to avoid online resources problems.
+
 v1.1.9:
 - Unhide and export .retrievechrom function and use it to create chromtabtest in tests to avoid error due to online ressource problems.
 - Update documentation.
