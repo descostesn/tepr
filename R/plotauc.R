@@ -171,6 +171,7 @@
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
+#' @importFrom MASS kde2d
 #'
 #' @export
 
