@@ -56,7 +56,7 @@ genomename <- "hg38"
 
 ## The lines below are optional. The chromosome info can be retrieved automatically
 ## Make chromosome info retrieval explicit for building the vignette
-chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
+chromtabtest <- retrievechrom(genomename, verbose = FALSE, filterchrom = FALSE)
 allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
 chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
