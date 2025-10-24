@@ -1,3 +1,7 @@
+v1.1.11:
+- Add indications in the error message of meandifference function if the user has more than two conditions.
+- In the vignette, the chromosomes are now imported from the package instead of downloading them from the web.
+
 v1.1.10:
 - Export function from MASS to match ggplot2 update.
 - Replace SeqinfoForUCSCGenome by retrievechrom in vignette to avoid online resources problems.
