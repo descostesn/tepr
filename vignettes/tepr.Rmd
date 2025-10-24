@@ -56,7 +56,8 @@ genomename <- "hg38"
 
 ## The lines below are optional. The chromosome info can be retrieved automatically
 ## Make chromosome info retrieval explicit for building the vignette
-chromtabtest <- retrievechrom(genomename, verbose = FALSE, filterchrom = FALSE)
+chromtabtestppath <- system.file("extdata", "chromtabtest.rds", package="tepr")
+chromtabtest <- readRDS(chromtabtestppath)
 allchromvec <- GenomeInfoDb::seqnames(chromtabtest)
 chromtabtest <- chromtabtest[allchromvec[which(allchromvec == "chr13")], ]
 
