@@ -34,3 +34,6 @@ test_that("Errors are thrown when calling averageandfilterexprs", {
     expect_error(averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE), regexp = expm)
 })
+
+
+!! Test error when using wrong expdf

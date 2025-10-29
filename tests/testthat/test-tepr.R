@@ -26,3 +26,5 @@ test_that("Errors are thrown when calling tepr", {
     expect_error(tepr(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
 })
+
+!! check error for wrong expdf
