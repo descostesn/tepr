@@ -2,6 +2,9 @@
 !! check error for wrong expdf with teprmulti + average and filter + kneeid
 !!!
 
+v1.1.12:
+- An error message is now appearing if the user provide a wrong experiment table.
+
 v1.1.11:
 - Add indications in the error message of meandifference function if the user has more than two conditions.
 - In the vignette, the chromosomes are now imported from the package instead of downloading them from the web.
