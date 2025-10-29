@@ -50,10 +50,10 @@
     ## Building strand col
     if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) ||
         isTRUE(all.equal(length(grep("reverse", dirvec)), 0)))
-        stop("The table built with the preprocessing functions does not ",
+        stop("\n\n The table built with the preprocessing functions does not ",
             "contain the keywords 'forward' or 'reverse' in the experiment ",
             "columns. Go back to your experiment table and make sure these ",
-            "keywords are present in the direction column.")
+            "keywords are present in the direction column.\n\n")
     strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
 
     ## Building the first four columns of the experiment data.frame
@@ -63,14 +63,14 @@
     ## Verify that the experiment table built from alldf corresponds to the one
     ## provided
     if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
-        stop("The table of values (alldf) and the table of experiment ",
+        stop("\n\nThe table of values (alldf) and the table of experiment ",
             "information (expdf) do not correspond. The first four columns ",
-            "of expdf should be:\n condition:",
+            "of expdf should be:\n\n -- condition:",
             paste(expdftheory[,1], collapse = " "),
-            "\n replicate: ", paste(expdftheory[, 2], collapse = " "),
-            "\n direction: ", paste(expdftheory[, 3], collapse = " "),
-            "\n strand: ", paste(expdftheory[, 4], collapse = " "),
-            "\n Also make sure that the bedgraph paths are correct.")
+            "\n\n -- replicate: ", paste(expdftheory[, 2], collapse = " "),
+            "\n\n -- direction: ", paste(expdftheory[, 3], collapse = " "),
+            "\n\n -- strand: ", paste(expdftheory[, 4], collapse = " "),
+            "\n\n Also make sure that the bedgraph paths are correct.\n\n")
 }
 
 .buildcolnames <- function(expdf, alldf) {
