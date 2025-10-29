@@ -22,5 +22,11 @@ test_that("Errors are thrown when calling checkexptab", {
     expm <- paste0("\n\t The strand column of the experiment table should only ",
             "contain 'plus' and 'minus'.\n")
     expect_error(checkexptab(exptest), regexp = expm)
+
+    exptest <- expdf
+    exptest[1, 1] <- "toto_wt"
+    expm <- paste0("\n\t The condition names should not contain any special ",
+            "characters such as '_' or '-'.\n")
+    expect_error(checkexptab(exptest), regexp = expm)
 })
 
