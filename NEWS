@@ -1,11 +1,7 @@
-!!!!
-!! Create the testthat on checkexptab
-!!!
-
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
 - Change the test formula for the direction and strand columns in the checkexptab function that was triggered unexpectedly when an incorrect exptab was provided.
-
+- Add a testthat for the checkexptab function.
 
 v1.1.11:
 - Add indications in the error message of meandifference function if the user has more than two conditions.
