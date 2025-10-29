@@ -62,6 +62,7 @@
 
     ## Verify that the experiment table built from alldf corresponds to the one
     ## provided
+    rownames(expdftheory) <- rownames(expdf) <- NULL
     if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
         stop("\n\nThe table of values (alldf) and the table of experiment ",
             "information (expdf) do not correspond. The first four columns ",
