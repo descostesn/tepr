@@ -26,8 +26,19 @@ test_that("Errors are thrown when calling averageandfilterexprs", {
     expect_error(averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE), regexp = expm)
 
-    transdf$V7[which(transdf$V7 == '+')] <- "toto"
     expthres <- 0.1
+    expdfshift <- expdf[c(6, 5, 3, 8, 4, 1, 7, 2),]
+    expm <- paste0("\n\nThe table of values \\(alldf\\) and the table of ",
+        "experiment information \\(expdf\\) do not correspond. The first four",
+        " columns of expdf should be:\n\n \\-\\- condition:ctrl ctrl ctrl ctrl",
+        " HS HS HS HS\n\n \\-\\- replicate: 1 1 2 2 1 1 2 2\n\n \\-\\- ",
+        "direction: forward reverse forward reverse forward reverse forward ",
+        "reverse\n\n \\-\\- strand: plus minus plus minus plus minus plus",
+        " minus\n\n Also make sure that the bedgraph paths are correct.\n\n")
+    expect_error(averageandfilterexprs(expdfshift, transdf, expthres,
+        showtime = FALSE, verbose = FALSE), regexp = expm)
+
+    transdf$V7[which(transdf$V7 == '+')] <- "toto"
     expm <- paste0("\n\t The strand name is neither \\+ or \\- in the ",
         "transcript table alldf. If you are sure to have built alldf with the ",
         "preprocessing function, contact the developer.\n")

@@ -7,6 +7,7 @@ expthres <- 0.1
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 
+
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "tepr.rds",
     package="tepr"))
@@ -16,7 +17,7 @@ test_that("tepr works properly", {
 })
 
 ## ----- Checking errors ----- ##
-test_that("Errors are thrown when calling tepr", {
+test_that("Errors are thrown when calling tepr and teprmulti", {
 
     expdftest <- rbind(expdf, data.frame(condition = "test", replicate = 1,
         direction = "forward", strand = "plus",
@@ -25,4 +26,15 @@ test_that("Errors are thrown when calling tepr", {
             " table. Use teprmulti function instead.\n")
     expect_error(tepr(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
+
+    expm <- paste0("\n\nThe table of values \\(alldf\\) and the table of ",
+        "experiment information \\(expdf\\) do not correspond. The first four",
+        " columns of expdf should be:\n\n \\-\\- condition:ctrl ctrl ctrl ctrl",
+        " HS HS HS HS\n\n \\-\\- replicate: 1 1 2 2 1 1 2 2\n\n \\-\\- ",
+        "direction: forward reverse forward reverse forward reverse forward ",
+        "reverse\n\n \\-\\- strand: plus minus plus minus plus minus plus",
+        " minus\n\n Also make sure that the bedgraph paths are correct.\n\n")
+    expect_error(teprmulti(expdftest, transdf, expthres, verbose = FALSE),
+        regexp = expm)
 })
+
