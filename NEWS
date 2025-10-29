@@ -1,5 +1,5 @@
 !!!!
-!! check error for wrong expdf with teprmulti + average and filter + kneeid
+!! check error for wrong expdf with teprmulti + kneeid
 !! Create the testthat on checkexptab
 !!!
 
