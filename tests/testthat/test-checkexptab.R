@@ -16,5 +16,11 @@ test_that("Errors are thrown when calling checkexptab", {
     expm <- paste0("\n\t Only two values are allowed for the column direction",
         " of the experiment table, 'forward' and 'reverse'.\n")
     expect_error(checkexptab(exptest), regexp = expm)
+
+    exptest <- expdf
+    exptest[1, 4] <- "toto"
+    expm <- paste0("\n\t The strand column of the experiment table should only ",
+            "contain 'plus' and 'minus'.\n")
+    expect_error(checkexptab(exptest), regexp = expm)
 })
 
