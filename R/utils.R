@@ -30,48 +30,54 @@
         }, tab))
 }
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+.theoreticalexpdf <- function(alldf, expdf) {
 
-.theoreticalexpdf <- function(alldf, expdf) {}
-## Retrieving the first line keeping only columns containing experiment information
-idxlabs <- grep("forward|reverse",alldf[1,])
-strlabs <- as.character(alldf[1,idxlabs])
+    ## Retrieving the first line keeping only columns containing experiment
+    ## information
+    idxlabs <- grep("forward|reverse",alldf[1,])
+    strlabs <- as.character(alldf[1,idxlabs])
 
-## Retrieving the condition column
-undersplitlist <- strsplit(strlabs, "_")
-condvec <- sapply(undersplitlist, "[", 1)
+    ## Retrieving the condition column
+    undersplitlist <- strsplit(strlabs, "_")
+    condvec <- sapply(undersplitlist, "[", 1)
 
-## Retrieving replicate and direction columns
-conddirvec <- sapply(undersplitlist, "[", 2)
-conddirlist <- strsplit(conddirvec, "\\.")
-repvec <- as.numeric(gsub("rep", "", sapply(conddirlist, "[", 1)))
-dirvec <- sapply(conddirlist, "[", 2)
+    ## Retrieving replicate and direction columns
+    conddirvec <- sapply(undersplitlist, "[", 2)
+    conddirlist <- strsplit(conddirvec, "\\.")
+    repvec <- as.numeric(gsub("rep", "", sapply(conddirlist, "[", 1)))
+    dirvec <- sapply(conddirlist, "[", 2)
 
-## Building strand col
-if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) || isTRUE(all.equal(length(grep("reverse", dirvec)), 0)))
-    stop("The table built with the preprocessing functions does not contain the keywords 'forward' or 'reverse' in the experiment columns. Go back to your experiment table and make sure these keywords are present in the direction column.")
-strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
+    ## Building strand col
+    if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) ||
+        isTRUE(all.equal(length(grep("reverse", dirvec)), 0)))
+        stop("The table built with the preprocessing functions does not ",
+            "contain the keywords 'forward' or 'reverse' in the experiment ",
+            "columns. Go back to your experiment table and make sure these ",
+            "keywords are present in the direction column.")
+    strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
 
-## Building the first four columns of the experiment data.frame
-expdftheory <- data.frame(condition = condvec, replicate = repvec, direction = dirvec, strand = strandvec)
+    ## Building the first four columns of the experiment data.frame
+    expdftheory <- data.frame(condition = condvec, replicate = repvec,
+        direction = dirvec, strand = strandvec)
 
-## Verify that the experiment table built from alldf corresponds to the one provided
-if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
-    stop("The table of values (alldf) and the table of experiment information (expdf) do not correspond. The first four columns of expdf should be:\n condition:",
-    paste(expdftheory[,1], collapse = " "),
-    "\n replicate: ", paste(expdftheory[, 2], collapse = " "),
-    "\n direction: ", paste(expdftheory[, 3], collapse = " "),
-    "\n strand: ", paste(expdftheory[, 4], collapse = " "),
-    "\n Also make sure that the bedgraph paths are correct.")
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ## Verify that the experiment table built from alldf corresponds to the one
+    ## provided
+    if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
+        stop("The table of values (alldf) and the table of experiment ",
+            "information (expdf) do not correspond. The first four columns ",
+            "of expdf should be:\n condition:",
+            paste(expdftheory[,1], collapse = " "),
+            "\n replicate: ", paste(expdftheory[, 2], collapse = " "),
+            "\n direction: ", paste(expdftheory[, 3], collapse = " "),
+            "\n strand: ", paste(expdftheory[, 4], collapse = " "),
+            "\n Also make sure that the bedgraph paths are correct.")
+}
 
 .buildcolnames <- function(expdf, alldf) {
 
+    ## Check that the expdf corresponds to alldf
+    .theoreticalexpdf(alldf, expdf)
 
-!!!!!! call theory
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
     expcolnames <- unlist(apply(expdf, 1, function(x) {
