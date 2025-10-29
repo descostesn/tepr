@@ -32,6 +32,28 @@
 
 .buildcolnames <- function(expdf, alldf) {
 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+## Retrieving the first line keeping only columns containing experiment information
+idxlabs <- grep("forward|reverse",alldf[1,])
+strlabs <- as.character(alldf[1,idxlabs])
+
+## Retrieving the condition column
+undersplitlist <- strsplit(strlabs, "_")
+condvec <- sapply(undersplitlist, "[", 1)
+
+## Retrieving replicate and direction columns
+conddirvec <- sapply(undersplitlist, "[", 2)
+conddirlist <- strsplit(conddirvec, "\\.")
+repvec <- gsub("rep", "", sapply(conddirlist, "[", 1))
+dirvec <- sapply(conddirlist, "[", 2)
+
+## Building strand col
+strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
     expcolnames <- unlist(apply(expdf, 1, function(x) {
