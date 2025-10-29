@@ -22,5 +22,3 @@ kneeidtest <- kneeid(bytranslistmean, expdf, verbose = FALSE)
 test_that("kneeid works properly", {
     expect_equal(kneeidtest, expectedobj)
 })
-
-!! Test error when using wrong expdf
