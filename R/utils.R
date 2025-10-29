@@ -50,7 +50,11 @@ repvec <- gsub("rep", "", sapply(conddirlist, "[", 1))
 dirvec <- sapply(conddirlist, "[", 2)
 
 ## Building strand col
+if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) || isTRUE(all.equal(length(grep("reverse", dirvec)), 0)))
+    stop("The table built with the preprocessing functions does not contain the keywords 'forward' or 'reverse' in the experiment columns. Go back to your experiment table and make sure these keywords are present in the direction column.")
 strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
