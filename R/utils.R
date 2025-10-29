@@ -54,6 +54,9 @@ if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) || isTRUE(all.equal(le
     stop("The table built with the preprocessing functions does not contain the keywords 'forward' or 'reverse' in the experiment columns. Go back to your experiment table and make sure these keywords are present in the direction column.")
 strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
 
+## Building the first four columns of the experiment data.frame
+expdftheory <- data.frame(condition = condvec, replicate = repvec, direction = dirvec, strand = strandvec)
+
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
