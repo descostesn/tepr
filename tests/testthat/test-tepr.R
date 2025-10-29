@@ -7,6 +7,16 @@ expthres <- 0.1
 expdf <- read.csv(exppath)
 transdf <- read.delim(transpath, header = FALSE)
 
+## Building data with more than two conditions
+expdfbis <- data.frame(condition=c("DRB", "DRB", "DRB", "DRB"),
+    replicate = c(1, 1, 2, 2),
+    direction = c("forward", "reverse", "forward", "reverse"),
+    strand = c("plus", "minus", "plus", "minus"),
+    path = c("DRB_rep1_chr13.forward.bg", "DRB_rep1_chr13.reverse.bg",
+        "DRB_rep2_chr13.forward.bg", "DRB_rep2_chr13.reverse.bg"))
+expdfmulti <- rbind(expdf, expdfbis)
+
+
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "tepr.rds",
     package="tepr"))
@@ -16,7 +26,7 @@ test_that("tepr works properly", {
 })
 
 ## ----- Checking errors ----- ##
-test_that("Errors are thrown when calling tepr", {
+test_that("Errors are thrown when calling tepr and teprmulti", {
 
     expdftest <- rbind(expdf, data.frame(condition = "test", replicate = 1,
         direction = "forward", strand = "plus",
@@ -25,6 +35,17 @@ test_that("Errors are thrown when calling tepr", {
             " table. Use teprmulti function instead.\n")
     expect_error(tepr(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
+    
+    !!!!!!!!!!!!!!!!
+    expdfshift <- expdf[c(6, 5, 3, 8, 4, 1, 7, 2),]
+    expm <- paste0("\n\nThe table of values \\(alldf\\) and the table of ",
+        "experiment information \\(expdf\\) do not correspond. The first four",
+        " columns of expdf should be:\n\n \\-\\- condition:ctrl ctrl ctrl ctrl",
+        " HS HS HS HS\n\n \\-\\- replicate: 1 1 2 2 1 1 2 2\n\n \\-\\- ",
+        "direction: forward reverse forward reverse forward reverse forward ",
+        "reverse\n\n \\-\\- strand: plus minus plus minus plus minus plus",
+        " minus\n\n Also make sure that the bedgraph paths are correct.\n\n")
+!!!!!!!!!!!!!!!!!!!!!!!
+
 })
 
-!! check error for wrong expdf
