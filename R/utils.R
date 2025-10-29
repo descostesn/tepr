@@ -191,7 +191,8 @@ checkexptab <- function(exptab) {
 
     directionvec <- unique(exptab$direction)
     if (!isTRUE(all.equal(length(directionvec), 2)) ||
-        !isTRUE(all.equal(directionvec, c("forward", "reverse"))))
+        !(isTRUE(all.equal(length(grep("forward", directionvec)), 1)) &&
+        isTRUE(all.equal(length(grep("reverse", directionvec)), 1))))
         stop("\n\t Only two values are allowed for the column direction of the",
             "experiment table, 'forward' and 'reverse'.\n")
 
