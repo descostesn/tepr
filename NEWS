@@ -1,10 +1,11 @@
 !!!!
 !! check error for wrong expdf with teprmulti + average and filter + kneeid
+!! Create the testthat on checkexptab
 !!!
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
-- Change the test formula for the direction column in the checkexptab function that was triggered unexpectedly when an incorrect exptab was provided.
+- Change the test formula for the direction and strand columns in the checkexptab function that was triggered unexpectedly when an incorrect exptab was provided.
 
 
 v1.1.11:
