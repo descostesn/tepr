@@ -197,7 +197,9 @@ checkexptab <- function(exptab) {
             "experiment table, 'forward' and 'reverse'.\n")
 
     strandvec <- unique(exptab$strand)
-    if (!isTRUE(all.equal(strandvec, c("plus", "minus"))))
+    if (!isTRUE(all.equal(length(strandvec), 2)) ||
+        !(isTRUE(all.equal(length(grep("plus", strandvec)), 1)) &&
+        isTRUE(all.equal(length(grep("minus", strandvec)), 1))))
         stop("\n\t The strand column of the experiment table should only ",
             "contain 'plus' and 'minus'.\n")
 
