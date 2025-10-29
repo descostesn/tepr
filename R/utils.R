@@ -30,11 +30,9 @@
         }, tab))
 }
 
-.buildcolnames <- function(expdf, alldf) {
-
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+.theoreticalexpdf <- function(alldf, expdf) {}
 ## Retrieving the first line keeping only columns containing experiment information
 idxlabs <- grep("forward|reverse",alldf[1,])
 strlabs <- as.character(alldf[1,idxlabs])
@@ -70,6 +68,10 @@ if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+.buildcolnames <- function(expdf, alldf) {
+
+
+!!!!!! call theory
     infocolnames <- c("biotype", "chr", "coor1", "coor2", "transcript",
         "gene", "strand", "window", "id")
     expcolnames <- unlist(apply(expdf, 1, function(x) {
