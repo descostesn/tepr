@@ -66,3 +66,8 @@ expdftwo <- expdf %>% filter(condition=="depletedctrl" | condition=="depletedHS"
 transdftwo <- transdf %>% select(-(V34:V57))
 
 restwo <- tepr(expdftwo, alldf=transdftwo, expthres, controlcondname = "depletedctrl", stresscondname = "depletedHS")
+
+## teprmulti
+resmulti <- teprmulti(expdf, alldf=transdf, expthres)
+
+## Debug
