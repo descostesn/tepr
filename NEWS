@@ -1,6 +1,6 @@
 v1.1.13:
 - Remove unused variable in genesECDF.
-- Rename "*2cond*" variables to "*twocond*".
+- Remove digit in variables.
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
