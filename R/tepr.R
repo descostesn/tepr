@@ -131,7 +131,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     ## This function calculates the empirical cumulative distribution function
     ## (ECDF) for expressed genes across multiple transcripts.
-    resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding, showtime,
+    resecdflist <- genesECDF(resallexprs, nbcpu, rounding, showtime,
         verbose)
     resecdf <- resecdflist[[1]]
     nbwindows <- resecdflist[[2]]
