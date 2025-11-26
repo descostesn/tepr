@@ -195,7 +195,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     expthres, nbcpu, rounding, condonename, condtwoname, replaceval,
     pval, significant, windsizethres, countnathres, meancondonethres,
     meancondtwothres, pvaltheorythres, auccondonethreshigher, auccondonethreslower,
-    auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
+    auccondtwothres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
     verbose) {
 
     filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
@@ -211,7 +211,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             pvaltheorythres = pvaltheorythres,
             aucctrlthreshigher = auccondonethreshigher,
             aucctrlthreslower = auccondonethreslower,
-            aucstressthres = auccond2thres,
+            aucstressthres = auccondtwothres,
             attenuatedpvalksthres = attenuatedpvalksthres,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
@@ -235,14 +235,14 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 .reslist <- function(filepathname, matcond, verbose, expdf, alldf, expthres,
     nbcpu, rounding, replaceval, pval, significant, windsizethres,
     countnathres, meancondonethres, meancondtwothres, pvaltheorythres,
-    auccondonethreshigher, auccondonethreslower, auccond2thres,
+    auccondonethreshigher, auccondonethreslower, auccondtwothres,
     attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath, reload,
     showtime, showmemory) {
 
         reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, replaceval, pval, significant,
         windsizethres, countnathres, meancondonethres, meancondtwothres,
-        pvaltheorythres, auccondonethreshigher, auccondonethreslower, auccond2thres,
+        pvaltheorythres, auccondonethreshigher, auccondonethreslower, auccondtwothres,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
         reload, showtime, showmemory) {
 
@@ -272,7 +272,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             alldftwocond, expthres, nbcpu, rounding, condonename, condtwoname,
             replaceval, pval, significant, windsizethres, countnathres,
             meancondonethres, meancondtwothres, pvaltheorythres,
-            auccondonethreshigher, auccondonethreslower, auccond2thres,
+            auccondonethreshigher, auccondonethreslower, auccondtwothres,
             attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
         rm(alldftwocond)
@@ -282,7 +282,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, replaceval, pval,
         significant, windsizethres, countnathres, meancondonethres,
         meancondtwothres, pvaltheorythres, auccondonethreshigher,
-        auccondonethreslower, auccond2thres, attenuatedpvalksthres,
+        auccondonethreslower, auccondtwothres, attenuatedpvalksthres,
         outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
         simplify = FALSE)
 
@@ -312,7 +312,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
 #'  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
 #'  meancondonethres = 0.5, meancondtwothres = 0.5,
-#'  auccondonethreshigher= -10, auccondonethreslower = 15, auccond2thres = 15,
+#'  auccondonethreshigher= -10, auccondonethreslower = 15, auccondtwothres = 15,
 #'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
 #'  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #'  verbose = TRUE)
@@ -354,7 +354,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #' @param auccondonethreslower A numeric threshold for the upper bound of the
 #'          first condition AUC value in the outgroup classification.
 #'          Default is 15.
-#' @param auccond2thres A numeric threshold for the minimum second condition
+#' @param auccondtwothres A numeric threshold for the minimum second condition
 #'          AUC value used to classify attenuated genes. Default is 15.
 #' @param attenuatedpvalksthres A numeric threshold for the negative log10 of
 #'          the p-value (from KS test) for defining attenuated genes.
@@ -402,7 +402,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
     meancondonethres = 0.5, meancondtwothres = 0.5, auccondonethreshigher= -10,
-    auccondonethreslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
+    auccondonethreslower = 15, auccondtwothres = 15, attenuatedpvalksthres = 2,
     outgrouppvalksthres = 0.2, saveobjectpath = NA, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
 
@@ -431,7 +431,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             expthres, nbcpu, rounding, replaceval, pval, significant,
             windsizethres, countnathres, meancondonethres, meancondtwothres,
             pvaltheorythres, auccondonethreshigher, auccondonethreslower,
-            auccond2thres, attenuatedpvalksthres, outgrouppvalksthres,
+            auccondtwothres, attenuatedpvalksthres, outgrouppvalksthres,
             saveobjectpath, reload, showtime, showmemory)
     } else {
         if (verbose) message("\t\t\t Loading ", filepathname)
