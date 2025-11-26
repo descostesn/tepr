@@ -82,7 +82,7 @@ resmulti <- teprmulti(expdf, alldf=transdf, expthres)
 
 ## Debug
 
-alldf=transdf; nbcpu = 1; rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1; meancondonethres = 0.5; meancond2thres = 0.5; auccond1threshigher = -10; auccond1threslower = 15; auccond2thres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE; showtime = FALSE; showmemory = FALSE; verbose = TRUE
+alldf=transdf; nbcpu = 1; rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1; meancondonethres = 0.5; meancondtwothres = 0.5; auccond1threshigher = -10; auccond1threslower = 15; auccond2thres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE; showtime = FALSE; showmemory = FALSE; verbose = TRUE
 
 dontcompare <- c("depletedctrl_vs_wtctrl", "depletedctrl_vs_wtHS", "depletedHS_vs_wtctrl", "depletedHS_vs_wtHS")
 
@@ -94,7 +94,7 @@ tepr(expdf = expdftwocond, alldf = alldftwocond, expthres = expthres, nbcpu = nb
             controlcondname = cond1name, stresscondname = cond2name,
             replaceval = replaceval, pval = pval, significant = significant,
             windsizethres = windsizethres, countnathres = countnathres,
-            meanctrlthres = meancondonethres, meanstressthres = meancond2thres,
+            meanctrlthres = meancondonethres, meanstressthres = meancondtwothres,
             pvaltheorythres = pvaltheorythres,
             aucctrlthreshigher = auccond1threshigher,
             aucctrlthreslower = auccond1threslower,
