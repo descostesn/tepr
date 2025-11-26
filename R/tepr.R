@@ -191,7 +191,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 
-.restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldf2cond,
+.restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldftwocond,
     expthres, nbcpu, rounding, cond1name, cond2name, replaceval,
     pval, significant, windsizethres, countnathres, meancond1thres,
     meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
@@ -202,7 +202,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     if (!reload || !file.exists(filepathname)) {
 
-        restepr <- tepr(expdf = expdftwocond, alldf = alldf2cond,
+        restepr <- tepr(expdf = expdftwocond, alldf = alldftwocond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
             controlcondname = cond1name, stresscondname = cond2name,
             replaceval = replaceval, pval = pval, significant = significant,
@@ -265,17 +265,17 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
         ## strand, window, id. This is reflected by seq_len(9)
         ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
+        alldftwocond <- alldf[, c(seq_len(9), idxcol2conds)]
 
         ## Calling tepr on the defined conditions
         restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
-            alldf2cond, expthres, nbcpu, rounding, cond1name, cond2name,
+            alldftwocond, expthres, nbcpu, rounding, cond1name, cond2name,
             replaceval, pval, significant, windsizethres, countnathres,
             meancond1thres, meancond2thres, pvaltheorythres,
             auccond1threshigher, auccond1threslower, auccond2thres,
             attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
-        rm(alldf2cond)
+        rm(alldftwocond)
         if (showmemory) print(gc()) else invisible(gc())
         return(restepr)
 
