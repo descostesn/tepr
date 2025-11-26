@@ -259,13 +259,13 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## Building vectors with the column names specific to the two conditions
         namecols <- paste0(expdftwocond$condition, "_rep", expdftwocond$replicate,
             ".", expdftwocond$strand)
-        idxcol2conds <- unlist(lapply(namecols,
+        idxcoltwoconds <- unlist(lapply(namecols,
             function(x, alldf) grep(x, colnames(alldf)), alldf))
 
         ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
         ## strand, window, id. This is reflected by seq_len(9)
         ## Limiting alldf to the two defined conditions
-        alldftwocond <- alldf[, c(seq_len(9), idxcol2conds)]
+        alldftwocond <- alldf[, c(seq_len(9), idxcoltwoconds)]
 
         ## Calling tepr on the defined conditions
         restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
