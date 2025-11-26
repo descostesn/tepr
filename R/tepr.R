@@ -194,7 +194,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 .restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldftwocond,
     expthres, nbcpu, rounding, condonename, condtwoname, replaceval,
     pval, significant, windsizethres, countnathres, meancondonethres,
-    meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
+    meancondtwothres, pvaltheorythres, auccond1threshigher, auccond1threslower,
     auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
     verbose) {
 
@@ -207,7 +207,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
             controlcondname = condonename, stresscondname = condtwoname,
             replaceval = replaceval, pval = pval, significant = significant,
             windsizethres = windsizethres, countnathres = countnathres,
-            meanctrlthres = meancondonethres, meanstressthres = meancond2thres,
+            meanctrlthres = meancondonethres, meanstressthres = meancondtwothres,
             pvaltheorythres = pvaltheorythres,
             aucctrlthreshigher = auccond1threshigher,
             aucctrlthreslower = auccond1threslower,
@@ -234,14 +234,14 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 .reslist <- function(filepathname, matcond, verbose, expdf, alldf, expthres,
     nbcpu, rounding, replaceval, pval, significant, windsizethres,
-    countnathres, meancondonethres, meancond2thres, pvaltheorythres,
+    countnathres, meancondonethres, meancondtwothres, pvaltheorythres,
     auccond1threshigher, auccond1threslower, auccond2thres,
     attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath, reload,
     showtime, showmemory) {
 
         reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, replaceval, pval, significant,
-        windsizethres, countnathres, meancondonethres, meancond2thres,
+        windsizethres, countnathres, meancondonethres, meancondtwothres,
         pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
         reload, showtime, showmemory) {
@@ -271,7 +271,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
             alldftwocond, expthres, nbcpu, rounding, condonename, condtwoname,
             replaceval, pval, significant, windsizethres, countnathres,
-            meancondonethres, meancond2thres, pvaltheorythres,
+            meancondonethres, meancondtwothres, pvaltheorythres,
             auccond1threshigher, auccond1threslower, auccond2thres,
             attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
@@ -281,7 +281,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, replaceval, pval,
         significant, windsizethres, countnathres, meancondonethres,
-        meancond2thres, pvaltheorythres, auccond1threshigher,
+        meancondtwothres, pvaltheorythres, auccond1threshigher,
         auccond1threslower, auccond2thres, attenuatedpvalksthres,
         outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
         simplify = FALSE)
@@ -311,7 +311,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #' teprmulti(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
 #'  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-#'  meancondonethres = 0.5, meancond2thres = 0.5,
+#'  meancondonethres = 0.5, meancondtwothres = 0.5,
 #'  auccond1threshigher = -10, auccond1threslower = 15, auccond2thres = 15,
 #'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
 #'  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
@@ -346,7 +346,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'          define the universe of genes. Default is 0.1.
 #' @param meancondonethres A numeric threshold for the minimum mean transcription
 #'          value in the first condition of each comparison. Default is 0.5.
-#' @param meancond2thres A numeric threshold for the minimum mean transcription
+#' @param meancondtwothres A numeric threshold for the minimum mean transcription
 #'          value in the second condition of each comparison. Default is 0.5.
 #' @param auccond1threshigher A numeric threshold for the lower bound of the
 #'          first condition AUC value in the outgroup classification.
@@ -401,7 +401,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-    meancondonethres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
+    meancondonethres = 0.5, meancondtwothres = 0.5, auccond1threshigher = -10,
     auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
     outgrouppvalksthres = 0.2, saveobjectpath = NA, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
@@ -429,7 +429,7 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (!reload || !file.exists(filepathname)) {
         reslist <- .reslist(filepathname, matcond, verbose, expdf, alldf,
             expthres, nbcpu, rounding, replaceval, pval, significant,
-            windsizethres, countnathres, meancondonethres, meancond2thres,
+            windsizethres, countnathres, meancondonethres, meancondtwothres,
             pvaltheorythres, auccond1threshigher, auccond1threslower,
             auccond2thres, attenuatedpvalksthres, outgrouppvalksthres,
             saveobjectpath, reload, showtime, showmemory)
