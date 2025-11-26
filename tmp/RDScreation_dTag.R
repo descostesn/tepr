@@ -45,7 +45,8 @@ saveRDS(resecdflist, file = "/Users/S238924/Documents/Other/PhD/PhD_papers/resec
 
 
 ########################
-## tepr and teprmulti
+## Testing tepr and teprmulti
+########################
 
 ## Read input tables for WT 
 expdf <- read.csv("expdf_dTag_corrected.csv", header = T, stringsAsFactors = FALSE)
@@ -55,19 +56,27 @@ transdf <- read.delim("dtag.tsv", header = FALSE)
 ## Calculate Average Expression and Filter Transcript Data
 expthres <- 0.1
 
+###
+# Tepr on both conditions separately
+###
+
 ## Keep first
 expdfone <- expdf %>% filter(condition=="wtctrl" | condition=="wtHS")
 transdfone <- transdf %>% select(-(V10:V33))
-
 resone <- tepr(expdfone, alldf=transdfone, expthres, controlcondname = "wtctrl", stresscondname = "wtHS")
 
 ## Keep second
 expdftwo <- expdf %>% filter(condition=="depletedctrl" | condition=="depletedHS")
 transdftwo <- transdf %>% select(-(V34:V57))
-
 restwo <- tepr(expdftwo, alldf=transdftwo, expthres, controlcondname = "depletedctrl", stresscondname = "depletedHS")
 
-## teprmulti
+###
+# teprmulti on all conditions
+###
+
+## teprmulti (error occurs here)
 resmulti <- teprmulti(expdf, alldf=transdf, expthres)
 
 ## Debug
+
+alldf=transdf; nbcpu = 1; rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1; meancond1thres = 0.5; meancond2thres = 0.5; auccond1threshigher = -10; auccond1threslower = 15; auccond2thres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE; showtime = FALSE; showmemory = FALSE; verbose = TRUE
