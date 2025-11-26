@@ -53,7 +53,7 @@ reslist <- lapply(condvec, function(cond, transtable) {
 #' transdf <- read.delim(transpath, header = FALSE)
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -192,7 +192,7 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
             resallexprs <- averageandfilterexprs(currentexpdf, alldfcond,
                 expthres, showtime, verbose)
-            resecdflist <- genesECDF(resallexprs, currentexpdf, nbcpu, rounding,
+            resecdflist <- genesECDF(resallexprs, nbcpu, rounding,
                 showtime, verbose)
             resmeandiff <- meandifference(resecdflist[[1]], currentexpdf,
                 resecdflist[[2]], showtime, verbose)
