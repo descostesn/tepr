@@ -42,6 +42,9 @@ saveRDS(resecdflist, file = "/Users/S238924/Documents/Other/PhD/PhD_papers/resec
 ################################################# debug
 #tepr
 alldf=transdf;rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1; meancondonethres = 0.5; meancondtwothres = 0.5; auccondonethreshigher = -10; auccondonethreslower = 15; auccondtwothres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE; showtime = FALSE; showmemory = FALSE; verbose = TRUE
+# save resallexprs[[1]]
+saveRDS(resallexprs[[1]], file="tworesallexprs1.rds")
+saveRDS(resallexprs[[2]], file="tworesallexprs2.rds")
 
 
 ########################
@@ -52,9 +55,8 @@ alldf=transdf;rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; si
 expdf <- read.csv("expdf_dTag_corrected.csv", header = T, stringsAsFactors = FALSE)
 expdf$path=gsub("/Users/S238924/Documents/Other/PhD/PhD_papers/dTAG/","",expdf$path)
 transdf <- read.delim("dtag.tsv", header = FALSE)
-
-## Calculate Average Expression and Filter Transcript Data
 expthres <- 0.1
+
 
 ###
 # Tepr on both conditions separately
@@ -87,11 +89,16 @@ alldf=transdf; nbcpu = 1; rounding = 10; dontcompare = NULL; replaceval = NA; pv
 dontcompare <- c("depletedctrl_vs_wtctrl", "depletedctrl_vs_wtHS", "depletedHS_vs_wtctrl", "depletedHS_vs_wtHS")
 currentcol <- matcond[ ,1]
 # tepr
-expdf=expdftwo; alldf=transdftwo; rounding = 10; dontcompare = NULL; replaceval = NA; pval = 0.1; significant = FALSE; windsizethres = 50; countnathres = 20; pvaltheorythres = 0.1; meancondonethres = 0.5; meancondtwothres = 0.5; auccondonethreshigher = -10; auccondonethreslower = 15; auccondtwothres = 15; attenuatedpvalksthres = 2; outgrouppvalksthres = 0.2; saveobjectpath = NA; reload = FALSE; showtime = FALSE; showmemory = FALSE; verbose = TRUE
+expdf = expdftwocond; alldf = alldftwocond; expthres = expthres; nbcpu = nbcpu; rounding = rounding; controlcondname = condonename; stresscondname = condtwoname; replaceval = replaceval; pval = pval; significant = significant; windsizethres = windsizethres; countnathres = countnathres; meanctrlthres = meancondonethres; meanstressthres = meancondtwothres; pvaltheorythres = pvaltheorythres; aucctrlthreshigher = auccondonethreshigher; aucctrlthreslower = auccondonethreslower; aucstressthres = auccondtwothres; attenuatedpvalksthres = attenuatedpvalksthres; outgrouppvalksthres = outgrouppvalksthres; showtime = showtime; verbose = verbose
+# compare with manual two conditions
+tworesallexprs1 <- readRDS("tworesallexprs1.rds")
+tworesallexprs2 <- readRDS("tworesallexprs2.rds")
 
+#TRUE
+identical(resallexprs[[1]], tworesallexprs1)
 
-
-
+!!# FALSE
+!! identical(resallexprs[[2]], tworesallexprs2)
 
 
 
