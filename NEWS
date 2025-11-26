@@ -1,3 +1,7 @@
+v1.1.13:
+- Remove unused variable in genesECDF.
+- Rename variables in teprmulti.
+
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
 - Change the test formula for the direction and strand columns in the checkexptab function that was triggered unexpectedly when an incorrect exptab was provided.
