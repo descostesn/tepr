@@ -242,12 +242,12 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
         expnamevec <- unlist(strsplit(compname, "_vs_"))
         name1 <- expnamevec[1]
         name2 <- expnamevec[2]
-        idx2cond <- which(expdf$condition == name1 | expdf$condition == name2)
-        expdf2cond <- expdf[idx2cond, ]
+        idxtwocond <- which(expdf$condition == name1 | expdf$condition == name2)
+        expdftwocond <- expdf[idxtwocond, ]
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
-        .multiplotecdf(ecdfgenevec, complist, expdf2cond, colvec, outfoldcomp,
+        .multiplotecdf(ecdfgenevec, complist, expdftwocond, colvec, outfoldcomp,
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
