@@ -191,7 +191,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 
-.restepr <- function(saveobjectpath, compname, reload, expdf2cond, alldf2cond,
+.restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldf2cond,
     expthres, nbcpu, rounding, cond1name, cond2name, replaceval,
     pval, significant, windsizethres, countnathres, meancond1thres,
     meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
@@ -202,7 +202,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     if (!reload || !file.exists(filepathname)) {
 
-        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+        restepr <- tepr(expdf = expdftwocond, alldf = alldf2cond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
             controlcondname = cond1name, stresscondname = cond2name,
             replaceval = replaceval, pval = pval, significant = significant,
@@ -254,11 +254,11 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## Limiting expdf on the two defined conditions
         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
             return(which(expdf$condition == condname))}, expdf))
-        expdf2cond <- expdf[idxexp, ]
+        expdftwocond <- expdf[idxexp, ]
 
         ## Building vectors with the column names specific to the two conditions
-        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
+        namecols <- paste0(expdftwocond$condition, "_rep", expdftwocond$replicate,
+            ".", expdftwocond$strand)
         idxcol2conds <- unlist(lapply(namecols,
             function(x, alldf) grep(x, colnames(alldf)), alldf))
 
@@ -268,7 +268,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
 
         ## Calling tepr on the defined conditions
-        restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
+        restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
             alldf2cond, expthres, nbcpu, rounding, cond1name, cond2name,
             replaceval, pval, significant, windsizethres, countnathres,
             meancond1thres, meancond2thres, pvaltheorythres,
