@@ -28,7 +28,7 @@ reslist <- lapply(condvec, function(cond, transtable) {
 #'
 #' @param transdflist A list of data frames where each data frame contains
 #'    transcript data with ECDF values for each condition.
- #' @param expdf A data frame containing experiment data that should have
+#' @param expdf A data frame containing experiment data that should have
 #'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation. The parallelization is performed on the elements of
