@@ -14,7 +14,7 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ## Count NA values per transcript and condition
 rescountna <- countna(resallexprs, expdf)
 ## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf)
+resecdflist <- genesECDF(resallexprs)
 
 nbwindows <- resecdflist[[2]]
 resecdf <- resecdflist[[1]]
@@ -36,7 +36,7 @@ resallexprs <- averageandfilterexprs(expdf, transdf, expthres)
 ## Count NA values per transcript and condition
 rescountna <- countna(resallexprs, expdf)
 ## Compute ECDF for Genes Based on Expression Data
-resecdflist <- genesECDF(resallexprs, expdf)
+resecdflist <- genesECDF(resallexprs)
 
 nbwindows <- resecdflist[[2]]
 resecdf <- resecdflist[[1]]
