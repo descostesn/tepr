@@ -187,7 +187,7 @@
 #' ## Computing intermediate steps
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,
