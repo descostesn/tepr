@@ -192,7 +192,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 .restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldftwocond,
-    expthres, nbcpu, rounding, cond1name, cond2name, replaceval,
+    expthres, nbcpu, rounding, condonename, condtwoname, replaceval,
     pval, significant, windsizethres, countnathres, meancond1thres,
     meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
     auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
@@ -204,7 +204,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
         restepr <- tepr(expdf = expdftwocond, alldf = alldftwocond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
-            controlcondname = cond1name, stresscondname = cond2name,
+            controlcondname = condonename, stresscondname = condtwoname,
             replaceval = replaceval, pval = pval, significant = significant,
             windsizethres = windsizethres, countnathres = countnathres,
             meanctrlthres = meancond1thres, meanstressthres = meancond2thres,
@@ -246,9 +246,9 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
         reload, showtime, showmemory) {
 
-        cond1name <- currentcol[1]
-        cond2name <- currentcol[2]
-        compname <- paste(cond1name, cond2name, sep = "_vs_")
+        condonename <- currentcol[1]
+        condtwoname <- currentcol[2]
+        compname <- paste(condonename, condtwoname, sep = "_vs_")
         if (verbose) message("\n\n Comparison of ", compname)
 
         ## Limiting expdf on the two defined conditions
@@ -269,7 +269,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
         ## Calling tepr on the defined conditions
         restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
-            alldftwocond, expthres, nbcpu, rounding, cond1name, cond2name,
+            alldftwocond, expthres, nbcpu, rounding, condonename, condtwoname,
             replaceval, pval, significant, windsizethres, countnathres,
             meancond1thres, meancond2thres, pvaltheorythres,
             auccond1threshigher, auccond1threslower, auccond2thres,
