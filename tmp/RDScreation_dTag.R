@@ -59,6 +59,10 @@ expthres <- 0.1
 expdfone <- expdf %>% filter(condition=="wtctrl" | condition=="wtHS")
 transdfone <- transdf %>% select(-(V10:V33))
 
+resone <- tepr(expdfone, alldf=transdfone, expthres, controlcondname = "wtctrl", stresscondname = "wtHS")
+
 ## Keep second
 expdftwo <- expdf %>% filter(condition=="depletedctrl" | condition=="depletedHS")
 transdftwo <- transdf %>% select(-(V34:V57))
+
+restwo <- tepr(expdftwo, alldf=transdftwo, expthres, controlcondname = "depletedctrl", stresscondname = "depletedHS")
