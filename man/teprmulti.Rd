@@ -59,6 +59,10 @@ value in the first condition of each comparison. Default is 0.5.}
 \item{meancondtwothres}{A numeric threshold for the minimum mean transcription
 value in the second condition of each comparison. Default is 0.5.}
 
+\item{auccondonethreshigher}{A numeric threshold for the lower bound of the
+first condition AUC value in the outgroup classification.
+Default is -10.}
+
 \item{auccondonethreslower}{A numeric threshold for the upper bound of the
 first condition AUC value in the outgroup classification.
 Default is 15.}
@@ -90,10 +94,6 @@ printed during the execution. Defaults to \code{FALSE}.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages.
 Defaults to \code{TRUE}.}
-
-\item{auccondonethreshigherA}{numeric threshold for the lower bound of the
-first condition AUC value in the outgroup classification.
-Default is -10.}
 }
 \value{
 A list of lists. Each inner list corresponds to a pairwise comparison
