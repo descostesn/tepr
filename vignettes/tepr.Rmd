@@ -2,7 +2,10 @@
 title: "Transcription Elongation Profiling"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
-output: rmarkdown::html_vignette
+output:
+    rmarkdown::html_vignette:
+        toc: true
+        toc_depth: 3
 vignette: >
     %\VignetteIndexEntry{Transcription Elongation Profiling}
     %\VignetteEngine{knitr::rmarkdown}
