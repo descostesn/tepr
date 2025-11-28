@@ -81,7 +81,7 @@ saveRDS(transdftwo, file="transdftwo.RDS")
 
 ## teprmulti (error occurs here)
 dontcompare <- c("depletedctrl_vs_wtctrl", "depletedctrl_vs_wtHS", "depletedHS_vs_wtctrl", "depletedHS_vs_wtHS")
-resmulti <- teprmulti(expdf, alldf=transdf, expthres, dontcompare = dontcompare)
+resmulti <- teprmulti(expdf, alldf=transdf, expthres, dontcompare = dontcompare, nbcpu = 5)
 
 ######################################################################## Debug
 # teprmulti
