@@ -171,10 +171,10 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
         ## plotting
         g <-  ggplot2::ggplot() +
             ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
-            y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
+            y = !!sym(meanvalctrl)), color = "#00AFBB", linewidth = 1.5) +
             ggplot2::geom_line(data = df,
                 aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
-                color = "#FC4E07", size = 1.5) +
+                color = "#FC4E07", linewidth = 1.5) +
             ggplot2::theme_bw() + ggplot2::ylim(0,7) +
             ggplot2::labs(x = "TSS to TTS", title = titleplot,
                 subtitle = length(transvec), y = "Transcription density") +
