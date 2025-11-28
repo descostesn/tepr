@@ -353,7 +353,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'          value in the first condition of each comparison. Default is 0.5.
 #' @param meancondtwothres A numeric threshold for the minimum mean transcription
 #'          value in the second condition of each comparison. Default is 0.5.
-#' @param auccondonethreshigherA numeric threshold for the lower bound of the
+#' @param auccondonethreshigher A numeric threshold for the lower bound of the
 #'          first condition AUC value in the outgroup classification.
 #'          Default is -10.
 #' @param auccondonethreslower A numeric threshold for the upper bound of the
