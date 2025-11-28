@@ -6,9 +6,10 @@ v1.1.13:
 - Add installation section to vignette with GitHub install instructions.
 - Standardize all stop() error messages with consistent '[tepr] Error:' prefix.
 - Standardize all warning() messages with consistent '[tepr] Warning:' prefix.
-- Fix incorrect warning text in plothistoknee and plotmetagenes.
+- Fix incorrect warning text in plothistoknee and plotmetagenes (previously
+  said 'auc' when displaying histograms and metagenes).
 - Refactor the error messages in the tests for consistancy and clarity.
-- Replace deprecated parameter in ggplot2.
+- Replace deprecated 'size' with 'linewidth' in geom_line (ggplot2 3.4.0+).
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
