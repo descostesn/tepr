@@ -3,6 +3,7 @@ v1.1.13:
 - Remove digit in variables.
 - Fix bug due to row and col names in teprmulti.
 - Add table of contents to vignette.
+- Add installation section to vignette with GitHub install instructions.
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
