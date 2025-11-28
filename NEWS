@@ -5,6 +5,7 @@ v1.1.13:
 - Add table of contents to vignette.
 - Add installation section to vignette with GitHub install instructions.
 - Standardize all stop() error messages with consistent '[tepr] Error:' prefix.
+- Refactor the error messages in the tests for consistancy and clarity.
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
