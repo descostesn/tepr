@@ -21,6 +21,27 @@ tepr (Transcription Elongation Profile) is an R package designed for analyzing d
 
 For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
 
+
+# Installation
+
+The tepr package is available on CRAN.
+
+```{r install, eval = FALSE, purl = FALSE}
+install.packages("tepr", dependencies = TRUE)
+```
+
+However, the CRAN version may not always contain the latest features and bug fixes. To install the most up-to-date version directly from GitHub, use:
+ 
+```{r install, eval = FALSE, purl = FALSE}
+# Install devtools if not already installed
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+
+# Install tepr from GitHub
+devtools::install_github("retrogenomics/tepr")
+```
+
+
 # Quick Start
 
 The following example demonstrates a complete run of the package. Preprocessing is performed on chromosome 13, and postprocessing is limited to the first 100 transcripts. The system.file command retrieves file paths from the package's "extdata" directory.
