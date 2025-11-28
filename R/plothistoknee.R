@@ -121,7 +121,7 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             gtypelabs + ggplot2::theme_classic()
 
        if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            warning("[tepr] Warning: Plot displayed only, not saved to file.")
             print(g)
        } else {
             outfile <- paste0("histo_", plottype, ".", formatname)

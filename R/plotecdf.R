@@ -67,7 +67,7 @@
             linetype = "dashed", color = "darkgrey")
 
     if (plot) {
-        warning("You chose to plot the ecdf, the figure is not saved.")
+        warning("[tepr] Warning: Plot displayed only, not saved to file.")
         print(g2)
     } else {
         if (verbose) message("\t\t Saving figure to ", file.path(outfold,

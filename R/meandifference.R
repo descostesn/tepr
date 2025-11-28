@@ -64,8 +64,8 @@
               message("\t Calculating average and difference between ",
                 "replicates for columns '", idxname, "' of ", currentcond)
               if (isTRUE(all.equal(length(idxvalvec), 1)))
-                warning("Only one replicate, copy scores to mean columns",
-                  immediate. = TRUE)
+                warning("[tepr] Warning: Only one replicate. ",
+                  "Copying scores to mean columns.", immediate. = TRUE)
             }
 
             ## Calculating the column of mean scores for currentcond

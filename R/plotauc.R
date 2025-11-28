@@ -32,7 +32,7 @@
             ggplot2::theme(legend.position = legendpos)
 
         if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            warning("[tepr] Warning: Plot displayed only, not saved to file.")
             print(g)
         } else {
             if (verbose) message("\t\t Saving plot to ", file.path(outfold,
