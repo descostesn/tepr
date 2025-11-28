@@ -152,25 +152,25 @@ preprocessing <- function(exptabpath, gencodepath, windsize, maptrackpath,
     
     if (!isTRUE(all.equal(typeof(chromtab), "S4"))) {
         if (is.na(genomename) && is.na(chromtab))
-            stop("\n\t Either the genome name or chromtab should be ",
-                "provided.\n")
+            stop("\n[tepr] Error: Missing genome information.\n",
+                "  Provide 'genomename' or 'chromtab'.\n")
     }
 
     if (reload && file.exists(file.path(saveobjectpath, "finaltable.rds")))
-        stop("\n\t The final table already exists, set reload = FALSE to ",
-            "create it again.\n")
+        stop("\n[tepr] Error: Final table already exists.\n",
+            "  Set reload=FALSE to recreate it.\n")
 
     if (!is.na(chromtab) && !forcechrom) {
         if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
-            stop("\n Chromtab should be a Seqinfo object. Use ",
-                "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
+            stop("\n[tepr] Error: Invalid chromtab type.\n",
+                "  Must be Seqinfo object from SeqinfoForUCSCGenome().\n")
         
         allchromvec <- GenomeInfoDb::seqnames(chromtab)
         idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
         if (!isTRUE(all.equal(length(idx), 0)))
-            stop("\n Non-canonical chromosomes found in chromtab. If you are ",
-                "sure you want to proceed set forcechrom = TRUE.\n\n",
-                paste(allchromvec[idx], collapse = " "))
+            stop("\n[tepr] Error: Non-canonical chromosomes in chromtab.\n",
+                "  Set forcechrom=TRUE to proceed anyway.\n",
+                "  Found: ", paste(allchromvec[idx], collapse = " "), "\n")
     }
 
     if (showtime) start_time_preprocessing <- Sys.time()

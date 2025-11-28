@@ -2,7 +2,10 @@
 title: "Transcription Elongation Profiling"
 author: "Victor Billon, Nicolas Descostes, and Gael Cristofari"
 package: tepr
-output: rmarkdown::html_vignette
+output:
+    rmarkdown::html_vignette:
+        toc: true
+        toc_depth: 3
 vignette: >
     %\VignetteIndexEntry{Transcription Elongation Profiling}
     %\VignetteEngine{knitr::rmarkdown}
@@ -17,6 +20,27 @@ tepr (Transcription Elongation Profile) is an R package designed for analyzing d
 # Getting Help
 
 For any questions or bug reports, please open an [issue](https://github.com/retrogenomics/tepr/issues) on GitHub.
+
+
+# Installation
+
+The tepr package is available on CRAN.
+
+```{r install, eval = FALSE, purl = FALSE}
+install.packages("tepr", dependencies = TRUE)
+```
+
+However, the CRAN version may not always contain the latest features and bug fixes. To install the most up-to-date version directly from GitHub, use:
+ 
+```{r installhub, eval = FALSE, purl = FALSE}
+# Install devtools if not already installed
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+
+# Install tepr from GitHub
+devtools::install_github("retrogenomics/tepr")
+```
+
 
 # Quick Start
 
@@ -327,7 +351,7 @@ print(rescountna)
 The `?genesECDF` function calculates the empirical cumulative distribution function (ECDF) for expressed genes across their transcripts. An ECDF is a **probability distribution** that estimates the Cumulative Distribution Function; here, we use the `?ecdf` function from R. It generates an ECDF for each transcript, which are then used to assess differences in signal using a Kolmogorov-Smirnov test. The ECDF helps answer the question: How likely is it that we would observe a distribution of signals like this if the signals were drawn from a uniform probability distribution? In other words, this statistic helps identify specific loci where the transcription signal deviates significantly from a uniform density.  In the following steps, the ECDF is used to compute the difference from the cumulative distribution (see `?meananddifference`), which is subsequently used to calculate the area under the curve (AUC, see `?allauc`) and the inflection point or knee (see `?kneeid`).
 
 ```{r ecdf}
-resecdflist <- genesECDF(resallexprs, expdf, verbose = FALSE)
+resecdflist <- genesECDF(resallexprs, verbose = FALSE)
 ```
 
 The `?genesECDF` function returns a list. The first element is the main table with added ECDF columns, prefixed with `Fx`.

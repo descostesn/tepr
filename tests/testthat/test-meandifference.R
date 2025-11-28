@@ -9,7 +9,7 @@ transdf <- read.delim(transpath, header = FALSE)
 avfilt <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
 countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+ecdf <- genesECDF(avfilt, verbose = FALSE)
 resecdf <- ecdf[[1]]
 nbwindows <- ecdf[[2]]
 
@@ -27,10 +27,7 @@ test_that("Errors are thrown when calling meandifference", {
 
     expdftest <- expdf
     expdftest$condition[which(expdf$condition == "ctrl")] <- "toto"
-    expm <- paste0("\n\t Problem in function meandifference, condition not",
-        " found in column names. If you are sure to have used the same ",
-        "experiment table in averageandfilterexprs and genesECDF, contact the ",
-        "developer.\n")
+    expm <- "Condition not found"
     expect_error(meandifference(resecdf, expdftest, nbwindows, verbose = FALSE),
         regexp = expm)
     
@@ -39,8 +36,7 @@ test_that("Errors are thrown when calling meandifference", {
     colvecfx <- colnames(resecdftest)[idxfx]
     newcolvec <- gsub("Fx", "fx", colvecfx)
     colnames(resecdftest)[idxfx] <- newcolvec
-    expm <- paste0("\n\t Problem in function meandifference, column Fx or val",
-        " not found in column names. Contact the developer.\n")
+    expm <- "Missing columns in meandifference"
     expect_error(meandifference(resecdftest, expdf, nbwindows, verbose = FALSE),
         regexp = expm)
 })

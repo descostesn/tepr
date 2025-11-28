@@ -67,7 +67,7 @@
             linetype = "dashed", color = "darkgrey")
 
     if (plot) {
-        warning("You chose to plot the ecdf, the figure is not saved.")
+        warning("[tepr] Warning: Plot displayed only, not saved to file.")
         print(g2)
     } else {
         if (verbose) message("\t\t Saving figure to ", file.path(outfold,
@@ -81,9 +81,10 @@
 
     idxmiddle <- which(df$coord == middlewind)
     if (isTRUE(all.equal(length(idxmiddle), 0)))
-        stop("\n\t The window ", middlewind, " was not found. Did you define a",
-        " number of windows equal to ", middlewind*2, "? If not, adjust the ",
-        "parameter 'middlewind' to the half of the number of windows.\n")
+        stop("\n[tepr] Error: Window not found.\n",
+            "  Window ", middlewind, " not in data.\n",
+            "  Set 'middlewind' to half of nbwindows (e.g., ", middlewind * 2,
+            " windows -> middlewind=", middlewind, ").\n")
     dfmid <- df[idxmiddle, ]
     windsizefact <- (dfmid$coor2 - dfmid$coor1) / 1000
     return(windsizefact)
@@ -158,7 +159,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'        showtime = FALSE, verbose = FALSE)
 #' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -192,8 +193,8 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
 
         nbrep <- length(expdf$replicate) / 2
         if (!isTRUE(all.equal(length(colvec), nbrep)))
-            stop("\n\t The vector of colours colvec should have ", nbrep,
-                " values.\n")
+            stop("\n[tepr] Error: Wrong number of colors.\n",
+                "  'colvec' needs ", nbrep, " values.\n")
 
         if (verbose) message("\n Plotting ecdf for gene ", genename)
 
@@ -205,11 +206,13 @@ plotecdf <- function(dfmeandiff, unigroupdf, expdf, genename,  # nolint
             "interest")
         idxgene <- which(dfmeandiff$gene == genename)
         if (isTRUE(all.equal(length(idxgene), 0)))
-            stop("\n\t The gene ", genename, " was not found.\n")
+            stop("\n[tepr] Error: Gene not found.\n",
+                "  '", genename, "' not in dfmeandiff.\n")
         df <- dfmeandiff[idxgene, ]
         idxinfo <- which(unigroupdf$gene == genename)
         if (isTRUE(all.equal(length(idxinfo), 0)))
-            stop("\n\t The gene ", genename, " was not found in unigroupdf.\n")
+            stop("\n[tepr] Error: Gene not found.\n",
+                "  '", genename, "' not in unigroupdf.\n")
         geneinfo <- unigroupdf[idxinfo, ]
 
         if (verbose) message("\t Gathering statistics about each condition")

@@ -27,27 +27,20 @@ allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling blacklisthighmap", {
 
-    expm <- "\n\t Either the genome name or chromtab should be provided.\n"
+    expm <- "Missing genome information"
     expect_error(blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
     nbcputrans = 1, allwindowsbed, windsize), regexp = expm)
 
-    expm <- paste0("\n Chromtab should be a Seqinfo object. Use ",
-        "rtracklayer::SeqinfoForUCSCGenome\\(genomename\\).\n")
+    expm <- "Invalid chromtab type"
     expect_error(blacklisthighmap(maptrackpath, blacklistpath, exptabpath,
     nbcputrans = 1, allwindowsbed, windsize, chromtab = 2), regexp = expm)
 
-    expm <- paste0("\n Non-canonical chromosomes found in chromtab. If you",
-                    " are sure you want to proceed set forcechrom = TRUE.\n\n")
+    expm <- "Non-canonical chromosomes in chromtab"
     expect_error(blacklisthighmap(maptrackpath, blacklistpath,
         exptabpath, nbcputrans = 1, allwindowsbed, windsize,
         chromtab = chromtabtest, verbose = FALSE), regexp = expm)
     
-    expm <- paste0("\n\t The genome toto was not found with the function",
-        " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
-        " if the genome is available on UCSC. The connection to UCSC can ",
-        "also have some hickup. You can callagain the function using the ",
-        "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome\\(",
-        "genomename\\).\n")
+    expm <- "Genome not found"
     expect_error(blacklisthighmap(maptrackpath, blacklistpath,
         exptabpath, nbcputrans = 1, allwindowsbed, windsize,
         genomename = "toto", verbose = FALSE), regexp = expm)

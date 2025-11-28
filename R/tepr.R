@@ -115,8 +115,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (showtime) start_tepr <- Sys.time()
 
     if (length(unique(expdf$condition)) > 2)
-        stop("\n\t There are more than two conditions in your experiment ",
-            "table. Use teprmulti function instead.\n")
+        stop("\n[tepr] Error: Too many conditions.\n",
+            "  Found more than 2 conditions. Use teprmulti() instead.\n")
 
     ## This function calculates the average expression levels for transcripts
     ## from a provided expression data frame and filters out transcripts based
@@ -131,7 +131,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
     ## This function calculates the empirical cumulative distribution function
     ## (ECDF) for expressed genes across multiple transcripts.
-    resecdflist <- genesECDF(resallexprs, expdf, nbcpu, rounding, showtime,
+    resecdflist <- genesECDF(resallexprs, nbcpu, rounding, showtime,
         verbose)
     resecdf <- resecdflist[[1]]
     nbwindows <- resecdflist[[2]]
@@ -191,27 +191,27 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 
 
-.restepr <- function(saveobjectpath, compname, reload, expdf2cond, alldf2cond,
-    expthres, nbcpu, rounding, cond1name, cond2name, replaceval,
-    pval, significant, windsizethres, countnathres, meancond1thres,
-    meancond2thres, pvaltheorythres, auccond1threshigher, auccond1threslower,
-    auccond2thres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
+.restepr <- function(saveobjectpath, compname, reload, expdftwocond, alldftwocond,
+    expthres, nbcpu, rounding, condonename, condtwoname, replaceval,
+    pval, significant, windsizethres, countnathres, meancondonethres,
+    meancondtwothres, pvaltheorythres, auccondonethreshigher, auccondonethreslower,
+    auccondtwothres, attenuatedpvalksthres, outgrouppvalksthres, showtime,
     verbose) {
 
     filepathname <- file.path(saveobjectpath, paste0(compname, ".rds"))
 
     if (!reload || !file.exists(filepathname)) {
 
-        restepr <- tepr(expdf = expdf2cond, alldf = alldf2cond,
+        restepr <- tepr(expdf = expdftwocond, alldf = alldftwocond,
             expthres = expthres, nbcpu = nbcpu, rounding = rounding,
-            controlcondname = cond1name, stresscondname = cond2name,
+            controlcondname = condonename, stresscondname = condtwoname,
             replaceval = replaceval, pval = pval, significant = significant,
             windsizethres = windsizethres, countnathres = countnathres,
-            meanctrlthres = meancond1thres, meanstressthres = meancond2thres,
+            meanctrlthres = meancondonethres, meanstressthres = meancondtwothres,
             pvaltheorythres = pvaltheorythres,
-            aucctrlthreshigher = auccond1threshigher,
-            aucctrlthreslower = auccond1threslower,
-            aucstressthres = auccond2thres,
+            aucctrlthreshigher = auccondonethreshigher,
+            aucctrlthreslower = auccondonethreslower,
+            aucstressthres = auccondtwothres,
             attenuatedpvalksthres = attenuatedpvalksthres,
             outgrouppvalksthres = outgrouppvalksthres, showtime = showtime,
             verbose = verbose)
@@ -234,55 +234,60 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 
 .reslist <- function(filepathname, matcond, verbose, expdf, alldf, expthres,
     nbcpu, rounding, replaceval, pval, significant, windsizethres,
-    countnathres, meancond1thres, meancond2thres, pvaltheorythres,
-    auccond1threshigher, auccond1threslower, auccond2thres,
+    countnathres, meancondonethres, meancondtwothres, pvaltheorythres,
+    auccondonethreshigher, auccondonethreslower, auccondtwothres,
     attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath, reload,
     showtime, showmemory) {
 
         reslist <- apply(matcond, 2, function(currentcol, verbose, expdf, alldf,
         expthres, nbcpu, rounding, replaceval, pval, significant,
-        windsizethres, countnathres, meancond1thres, meancond2thres,
-        pvaltheorythres, auccond1threshigher, auccond1threslower, auccond2thres,
+        windsizethres, countnathres, meancondonethres, meancondtwothres,
+        pvaltheorythres, auccondonethreshigher, auccondonethreslower, auccondtwothres,
         attenuatedpvalksthres, outgrouppvalksthres, saveobjectpath,
         reload, showtime, showmemory) {
 
-        cond1name <- currentcol[1]
-        cond2name <- currentcol[2]
-        compname <- paste(cond1name, cond2name, sep = "_vs_")
+        condonename <- currentcol[1]
+        condtwoname <- currentcol[2]
+        compname <- paste(condonename, condtwoname, sep = "_vs_")
         if (verbose) message("\n\n Comparison of ", compname)
 
         ## Limiting expdf on the two defined conditions
         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
             return(which(expdf$condition == condname))}, expdf))
-        expdf2cond <- expdf[idxexp, ]
+        expdftwocond <- expdf[idxexp, ]
+        rownames(expdftwocond) <- NULL
 
         ## Building vectors with the column names specific to the two conditions
-        namecols <- paste0(expdf2cond$condition, "_rep", expdf2cond$replicate,
-            ".", expdf2cond$strand)
-        idxcol2conds <- unlist(lapply(namecols,
+        namecols <- paste0(expdftwocond$condition, "_rep", expdftwocond$replicate,
+            ".", expdftwocond$strand)
+        idxcoltwoconds <- unlist(lapply(namecols,
             function(x, alldf) grep(x, colnames(alldf)), alldf))
 
         ## The info columns are biotype, chr, coor1, coor2, transcript, gene,
         ## strand, window, id. This is reflected by seq_len(9)
         ## Limiting alldf to the two defined conditions
-        alldf2cond <- alldf[, c(seq_len(9), idxcol2conds)]
+        alldftwocond <- alldf[, c(seq_len(9), idxcoltwoconds)]
+
+        ## Reset column names so that .buildcolnames() in tepr() assigns them
+        ## correctly for the two-condition subset
+        colnames(alldftwocond) <- paste0("V", seq_len(ncol(alldftwocond)))
 
         ## Calling tepr on the defined conditions
-        restepr <- .restepr(saveobjectpath, compname, reload, expdf2cond,
-            alldf2cond, expthres, nbcpu, rounding, cond1name, cond2name,
+        restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
+            alldftwocond, expthres, nbcpu, rounding, condonename, condtwoname,
             replaceval, pval, significant, windsizethres, countnathres,
-            meancond1thres, meancond2thres, pvaltheorythres,
-            auccond1threshigher, auccond1threslower, auccond2thres,
+            meancondonethres, meancondtwothres, pvaltheorythres,
+            auccondonethreshigher, auccondonethreslower, auccondtwothres,
             attenuatedpvalksthres, outgrouppvalksthres, showtime, verbose)
 
-        rm(alldf2cond)
+        rm(alldftwocond)
         if (showmemory) print(gc()) else invisible(gc())
         return(restepr)
 
     }, verbose, expdf, alldf, expthres, nbcpu, rounding, replaceval, pval,
-        significant, windsizethres, countnathres, meancond1thres,
-        meancond2thres, pvaltheorythres, auccond1threshigher,
-        auccond1threslower, auccond2thres, attenuatedpvalksthres,
+        significant, windsizethres, countnathres, meancondonethres,
+        meancondtwothres, pvaltheorythres, auccondonethreshigher,
+        auccondonethreslower, auccondtwothres, attenuatedpvalksthres,
         outgrouppvalksthres, saveobjectpath, reload, showtime, showmemory,
         simplify = FALSE)
 
@@ -311,8 +316,8 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #' teprmulti(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
 #'  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-#'  meancond1thres = 0.5, meancond2thres = 0.5,
-#'  auccond1threshigher = -10, auccond1threslower = 15, auccond2thres = 15,
+#'  meancondonethres = 0.5, meancondtwothres = 0.5,
+#'  auccondonethreshigher = -10, auccondonethreslower = 15, auccondtwothres = 15,
 #'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
 #'  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #'  verbose = TRUE)
@@ -344,17 +349,17 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'          data points for an experiment (NA values). Default is 20.
 #' @param pvaltheorythres A numeric threshold for the minimum p-value used to
 #'          define the universe of genes. Default is 0.1.
-#' @param meancond1thres A numeric threshold for the minimum mean transcription
+#' @param meancondonethres A numeric threshold for the minimum mean transcription
 #'          value in the first condition of each comparison. Default is 0.5.
-#' @param meancond2thres A numeric threshold for the minimum mean transcription
+#' @param meancondtwothres A numeric threshold for the minimum mean transcription
 #'          value in the second condition of each comparison. Default is 0.5.
-#' @param auccond1threshigher A numeric threshold for the lower bound of the
+#' @param auccondonethreshigher A numeric threshold for the lower bound of the
 #'          first condition AUC value in the outgroup classification.
 #'          Default is -10.
-#' @param auccond1threslower A numeric threshold for the upper bound of the
+#' @param auccondonethreslower A numeric threshold for the upper bound of the
 #'          first condition AUC value in the outgroup classification.
 #'          Default is 15.
-#' @param auccond2thres A numeric threshold for the minimum second condition
+#' @param auccondtwothres A numeric threshold for the minimum second condition
 #'          AUC value used to classify attenuated genes. Default is 15.
 #' @param attenuatedpvalksthres A numeric threshold for the negative log10 of
 #'          the p-value (from KS test) for defining attenuated genes.
@@ -401,16 +406,16 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
     windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
-    meancond1thres = 0.5, meancond2thres = 0.5, auccond1threshigher = -10,
-    auccond1threslower = 15, auccond2thres = 15, attenuatedpvalksthres = 2,
+    meancondonethres = 0.5, meancondtwothres = 0.5, auccondonethreshigher = -10,
+    auccondonethreslower = 15, auccondtwothres = 15, attenuatedpvalksthres = 2,
     outgrouppvalksthres = 0.2, saveobjectpath = NA, reload = FALSE,
     showtime = FALSE, showmemory = FALSE, verbose = TRUE) {
 
     if (showtime) start_teprmulti <- Sys.time()
 
     if (!length(unique(expdf$condition)) > 2)
-        stop("\n\t There are less than two conditions in your experiment ",
-            "table. Use tepr function instead.\n")
+        stop("\n[tepr] Error: Too few conditions.\n",
+            "  Found 2 or fewer conditions. Use tepr() instead.\n")
 
     checkexptab(expdf)
 
@@ -429,9 +434,9 @@ teprmulti <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
     if (!reload || !file.exists(filepathname)) {
         reslist <- .reslist(filepathname, matcond, verbose, expdf, alldf,
             expthres, nbcpu, rounding, replaceval, pval, significant,
-            windsizethres, countnathres, meancond1thres, meancond2thres,
-            pvaltheorythres, auccond1threshigher, auccond1threslower,
-            auccond2thres, attenuatedpvalksthres, outgrouppvalksthres,
+            windsizethres, countnathres, meancondonethres, meancondtwothres,
+            pvaltheorythres, auccondonethreshigher, auccondonethreslower,
+            auccondtwothres, attenuatedpvalksthres, outgrouppvalksthres,
             saveobjectpath, reload, showtime, showmemory)
     } else {
         if (verbose) message("\t\t\t Loading ", filepathname)

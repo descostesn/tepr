@@ -28,8 +28,8 @@ reslist <- lapply(condvec, function(cond, transtable) {
 #'
 #' @param transdflist A list of data frames where each data frame contains
 #'    transcript data with ECDF values for each condition.
- #' @param expdf A data frame containing experiment data that should have
-#'              columns named 'condition', 'replicate', 'strand', and 'path'.
+#' @param expdf A data frame containing experiment data that should have
+#'   columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'  parallel computation. The parallelization is performed on the elements of
 #'  transdflist. Defaults to 1.
@@ -53,7 +53,7 @@ reslist <- lapply(condvec, function(cond, transtable) {
 #' transdf <- read.delim(transpath, header = FALSE)
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -192,7 +192,7 @@ kneeallconds <- function(alldf, expdf, expthres, nbcpu = 1, rounding = 10,
 
             resallexprs <- averageandfilterexprs(currentexpdf, alldfcond,
                 expthres, showtime, verbose)
-            resecdflist <- genesECDF(resallexprs, currentexpdf, nbcpu, rounding,
+            resecdflist <- genesECDF(resallexprs, nbcpu, rounding,
                 showtime, verbose)
             resmeandiff <- meandifference(resecdflist[[1]], currentexpdf,
                 resecdflist[[2]], showtime, verbose)

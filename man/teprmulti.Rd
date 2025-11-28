@@ -7,8 +7,8 @@
 teprmulti(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
- meancond1thres = 0.5, meancond2thres = 0.5,
- auccond1threshigher = -10, auccond1threslower = 15, auccond2thres = 15,
+ meancondonethres = 0.5, meancondtwothres = 0.5,
+ auccondonethreshigher = -10, auccondonethreslower = 15, auccondtwothres = 15,
  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
  verbose = TRUE)
@@ -53,21 +53,21 @@ data points for an experiment (NA values). Default is 20.}
 \item{pvaltheorythres}{A numeric threshold for the minimum p-value used to
 define the universe of genes. Default is 0.1.}
 
-\item{meancond1thres}{A numeric threshold for the minimum mean transcription
+\item{meancondonethres}{A numeric threshold for the minimum mean transcription
 value in the first condition of each comparison. Default is 0.5.}
 
-\item{meancond2thres}{A numeric threshold for the minimum mean transcription
+\item{meancondtwothres}{A numeric threshold for the minimum mean transcription
 value in the second condition of each comparison. Default is 0.5.}
 
-\item{auccond1threshigher}{A numeric threshold for the lower bound of the
+\item{auccondonethreshigher}{A numeric threshold for the lower bound of the
 first condition AUC value in the outgroup classification.
 Default is -10.}
 
-\item{auccond1threslower}{A numeric threshold for the upper bound of the
+\item{auccondonethreslower}{A numeric threshold for the upper bound of the
 first condition AUC value in the outgroup classification.
 Default is 15.}
 
-\item{auccond2thres}{A numeric threshold for the minimum second condition
+\item{auccondtwothres}{A numeric threshold for the minimum second condition
 AUC value used to classify attenuated genes. Default is 15.}
 
 \item{attenuatedpvalksthres}{A numeric threshold for the negative log10 of

@@ -13,7 +13,7 @@ countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 ## ---- Comparing to expected object ---- ##
 expectedobj <- readRDS(system.file("extdata", "genesecdf.rds",
     package="tepr"))
-ecdftest <- genesECDF(avfilttest, expdf, verbose = FALSE)
+ecdftest <- genesECDF(avfilttest, verbose = FALSE)
 test_that("genesECDF works properly", {
     expect_equal(ecdftest, expectedobj)
 })
@@ -23,9 +23,6 @@ test_that("Errors are thrown when calling genesECDF", {
 
     avfilt <- avfilttest
     avfilt[[1]]$strand[which(avfilt[[1]]$strand == '+')] <- "toto"
-    expm <- paste0("\n\t In .computeecdf or countna, strand is neither plus or",
-            " minus in the table returned by the function ",
-            "averageandfilterexprs. This should not happen. Contact the ",
-            "developer.\n")
-    expect_error(genesECDF(avfilt, expdf, verbose = FALSE), regexp = expm)
+    expm <- "Invalid strand value"
+    expect_error(genesECDF(avfilt, verbose = FALSE), regexp = expm)
 })

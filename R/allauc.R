@@ -13,9 +13,9 @@
 .checkempty <- function(idx, namestr) {
 
     if (isTRUE(all.equal(length(idx), 0)))
-        stop("\n\t Your condition ", namestr, " was not found in the ",
-            "experiment table expdf. Change the parameter controlcondname or",
-            " stresscondname.\n")
+        stop("\n[tepr] Error: Condition not found.\n",
+            "  '", namestr, "' not in expdf.\n",
+            "  Adjust 'controlcondname' or 'stresscondname' parameter.\n")
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,
@@ -30,14 +30,14 @@
         .checkempty(idxctrl, controlcondname)
         idxstress <- grep(stresscondname, condvec)
         .checkempty(idxstress, stresscondname)
-        name1 <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
-        name2 <- paste0("mean_Fx_", condvec[idxstress])  # nolint
+        nameone <- paste0("mean_Fx_", condvec[idxctrl])  # nolint
+        nametwo <- paste0("mean_Fx_", condvec[idxstress])  # nolint
         diffname <- paste0("Diff_meanFx_", condvec[idxstress], "_",  # nolint
           condvec[idxctrl])
 
         ## Perform a kolmogorov-smirnoff test between the two columns
-        resks <- suppressWarnings(stats::ks.test(transtab[, name1],
-          transtab[, name2]))
+        resks <- suppressWarnings(stats::ks.test(transtab[, nameone],
+          transtab[, nametwo]))
 
         ## Calculate the area under the curve of the difference of means
         ## -> delta AUC
@@ -187,7 +187,7 @@
 #' ## Computing intermediate steps
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' meandiff <- meandifference(resecdf, expdf, nbwindows,

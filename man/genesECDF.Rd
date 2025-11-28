@@ -4,16 +4,13 @@
 \alias{genesECDF}
 \title{Compute ECDF for Genes Based on Expression Data}
 \usage{
-genesECDF(allexprsdfs, expdf, nbcpu = 1, rounding = 10,
+genesECDF(allexprsdfs, nbcpu = 1, rounding = 10,
 showtime = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{allexprsdfs}{A list of data frames where the first element is the main
 expression data frame and the second element contains the names of the
 expressed transcripts (see 'averageandfilterexprs').}
-
-\item{expdf}{A data frame containing experiment data that should have
-columns named 'condition', 'replicate', 'strand', and 'path'.}
 
 \item{nbcpu}{An integer specifying the number of CPU cores to use for
 parallel computation. Default is \code{1}.}
@@ -68,7 +65,7 @@ avfilttest <- averageandfilterexprs(expdf, transdf, expthres,
 countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 
 ## Testing genesECDF 
-resecdf <- genesECDF(avfilttest, expdf, verbose = FALSE)
+resecdf <- genesECDF(avfilttest, verbose = FALSE)
 
 }
 \seealso{

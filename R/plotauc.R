@@ -32,7 +32,7 @@
             ggplot2::theme(legend.position = legendpos)
 
         if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            warning("[tepr] Warning: Plot displayed only, not saved to file.")
             print(g)
         } else {
             if (verbose) message("\t\t Saving plot to ", file.path(outfold,
@@ -47,19 +47,21 @@
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))
-            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
-                ".\n")
+            stop("\n[tepr] Error: Wrong number of conditions.\n",
+                "  plotauc requires exactly 2 conditions (found: ", nbcond,
+                ").\n")
 
         if (!isTRUE(all.equal(plottype, "pval")) &&
             !isTRUE(all.equal(plottype, "groups")))
-                stop("\n\t plottype should be equal to 'pval' or 'groups'.\n")
+                stop("\n[tepr] Error: Invalid plottype.\n",
+                    "  Use 'pval' or 'groups'.\n")
 
         colnamevec <- c(auc_ctrlname, auc_stressname, pvalkstestcolname)
         .colnamecheck(colnamevec, tab)
 
         if (isTRUE(all.equal(plottype, "groups")) && !is.na(genevec[1]))
-            stop("\n\t The vector of genes is not necessary for plotting ",
-                "groups.\n")
+            stop("\n[tepr] Error: Unnecessary parameter.\n",
+                "  'genevec' is not used for plottype='groups'.\n")
 }
 
 #' Plot AUC Comparison Between Conditions
@@ -148,7 +150,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'        showtime = FALSE, verbose = FALSE)
 #' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' resmeandiff <- meandifference(resecdf, expdf, nbwindows,

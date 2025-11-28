@@ -29,8 +29,8 @@
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
-        stop("\n\t plottype should be one of: 'attenuation', 'outgroup', ",
-            "'universe', or 'all'.\n")
+        stop("\n[tepr] Error: Invalid plottype.\n",
+            "  Use 'attenuation', 'outgroup', 'universe', or 'all'.\n")
 }
 
 #' Plot Metagenes for Gene Groups
@@ -99,7 +99,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
 #' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -132,8 +132,9 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))
-            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
-                ".\n")
+            stop("\n[tepr] Error: Wrong number of conditions.\n",
+                "  plotmetagenes requires 2 conditions (found: ", nbcond,
+                ").\n")
 
         .checkmetagenes(plottype)
         colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
@@ -158,8 +159,8 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
         }
 
         if (isTRUE(all.equal(length(idx), 0)))
-            stop("\n\t No transcripts were found for the criteria ", plottype,
-                ".\n")
+            stop("\n[tepr] Error: No transcripts found.\n",
+                "  No transcripts match criteria '", plottype, "'.\n")
 
         transvec <- unigroupdf[idx, "transcript"]
         df <- .normalizeandsummarize(transvec, dfmeandiff, unigroupdf, daucname,
@@ -170,17 +171,17 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
         ## plotting
         g <-  ggplot2::ggplot() +
             ggplot2::geom_line(data = df, ggplot2::aes(x = .data$coord / 2,
-            y = !!sym(meanvalctrl)), color = "#00AFBB", size = 1.5) +
+            y = !!sym(meanvalctrl)), color = "#00AFBB", linewidth = 1.5) +
             ggplot2::geom_line(data = df,
                 aes(x = .data$coord / 2, y = !!sym(meanvalstress)),
-                color = "#FC4E07", size = 1.5) +
+                color = "#FC4E07", linewidth = 1.5) +
             ggplot2::theme_bw() + ggplot2::ylim(0,7) +
             ggplot2::labs(x = "TSS to TTS", title = titleplot,
                 subtitle = length(transvec), y = "Transcription density") +
             ggplot2::theme(legend.position = "none", legend.box = "vertical")
 
         if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            warning("[tepr] Warning: Plot displayed only, not saved to file.")
             print(g)
         } else {
             outfile <- paste0("metagene_", plottype)

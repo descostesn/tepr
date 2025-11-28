@@ -1,6 +1,6 @@
 Package: tepr
 Title: Transcription Elongation Profiling
-Version: 1.1.12
+Version: 1.1.13
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),
     person("Victor", "Billon", email = "victor.billon@etu.univ-cotedazur.fr", role = "aut"),

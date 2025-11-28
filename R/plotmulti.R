@@ -16,21 +16,21 @@
                 pval, formatname, verbose)
 }
 
-.multiplotauc <- function(name1, name2, complist, genaucvec, aucaxisminx,
+.multiplotauc <- function(nameone, nametwo, complist, genaucvec, aucaxisminx,
     aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
     auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose) {
 
         ## Generate the plot of auc by groups
         if (verbose) message("\t ## plot auc by groups")
-        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", name2, "_",
-            name1)
-        labelx <- paste0("AUC in ", name1)
-        labely <- paste0("AUC in ", name2)
-        aucfilename <- paste0("AUCcompare_groups_", name1, "_",
-            name2)
+        pvalks <- paste0("adjFDR_p_dAUC_Diff_meanFx_", nametwo, "_",
+            nameone)
+        labelx <- paste0("AUC in ", nameone)
+        labely <- paste0("AUC in ", nametwo)
+        aucfilename <- paste0("AUCcompare_groups_", nameone, "_",
+            nametwo)
         plotauc(tab = complist[[2]],
-            auc_ctrlname = paste0("AUC_", name1),
-            auc_stressname = paste0("AUC_", name2),
+            auc_ctrlname = paste0("AUC_", nameone),
+            auc_stressname = paste0("AUC_", nametwo),
             pvalkstestcolname = pvalks, labelx = labelx,
             labely = labely, axismin_x = aucaxisminx,
             axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
@@ -45,10 +45,10 @@
         if (!is.na(genaucvec[1])) {
             if (verbose) message("\t ## plot auc by pval for the ",
                 "given genes")
-            aucfilename <- paste0("AUCcompare_pval_", name2, "_", name1)
+            aucfilename <- paste0("AUCcompare_pval_", nametwo, "_", nameone)
             plotauc(tab = complist[[2]], genevec = genaucvec,
-                auc_ctrlname = paste0("AUC_", name1),
-                auc_stressname = paste0("AUC_", name2),
+                auc_ctrlname = paste0("AUC_", nameone),
+                auc_stressname = paste0("AUC_", nametwo),
                 pvalkstestcolname = pvalks, labelx = labelx,
                 labely = labely, axismin_x = aucaxisminx,
                 axismax_x = aucaxismaxx, axismin_y = aucaxisminy,
@@ -61,12 +61,12 @@
         }
 }
 
-.multiplotmetagenes <- function(complist, name1, name2, formatname,
+.multiplotmetagenes <- function(complist, nameone, nametwo, formatname,
     outfoldcomp, verbose) {
 
-        daucname <- paste0("dAUC_Diff_meanFx_", name2, "_", name1)
-        aucctrlname <- paste0("AUC_", name1)
-        aucstressname <- paste0("AUC_", name2)
+        daucname <- paste0("dAUC_Diff_meanFx_", nametwo, "_", nameone)
+        aucctrlname <- paste0("AUC_", nameone)
+        aucstressname <- paste0("AUC_", nametwo)
 
         ## Plot metagene by attenuation
         if (verbose) message("\t ## Plot metagene by attenuation")
@@ -102,9 +102,9 @@
 }
 
 .multiplothistoknee <- function(complist, histkneexlim, binwidthvalhistknee,
-            outfoldcomp, formatname, uniname, groupname, name2, verbose) {
+            outfoldcomp, formatname, uniname, groupname, nametwo, verbose) {
 
-                kneename <- paste0("knee_AUC_", name2)
+                kneename <- paste0("knee_AUC_", nametwo)
 
                 ## plothistoknee by percent
                 if (verbose) message("\t ## plothistoknee by percent")
@@ -228,8 +228,8 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
     verbose = TRUE) {
 
     if (!length(unique(expdf$condition)) > 2)
-        stop("\n\t There are less than two conditions in your experiment ",
-            "table. The input list must be the result of teprmulti.\n")
+        stop("\n[tepr] Error: Too few conditions.\n",
+            "  plotmulti requires teprmulti output (>2 conditions).\n")
 
     invisible(mapply(function(complist, compname, expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,
@@ -240,28 +240,28 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
         if (verbose) message("\n Generating plots for ", compname)
         outfoldcomp <- file.path(outfold, compname)
         expnamevec <- unlist(strsplit(compname, "_vs_"))
-        name1 <- expnamevec[1]
-        name2 <- expnamevec[2]
-        idx2cond <- which(expdf$condition == name1 | expdf$condition == name2)
-        expdf2cond <- expdf[idx2cond, ]
+        nameone <- expnamevec[1]
+        nametwo <- expnamevec[2]
+        idxtwocond <- which(expdf$condition == nameone | expdf$condition == nametwo)
+        expdftwocond <- expdf[idxtwocond, ]
 
         ## Generating the plot of the ecdf empirical distribution and
         ## nsc-rna-seq signal
-        .multiplotecdf(ecdfgenevec, complist, expdf2cond, colvec, outfoldcomp,
+        .multiplotecdf(ecdfgenevec, complist, expdftwocond, colvec, outfoldcomp,
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
-        .multiplotauc(name1, name2, complist, genaucvec, aucaxisminx,
+        .multiplotauc(nameone, nametwo, complist, genaucvec, aucaxisminx,
             aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
             auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose)
 
         ## Plot metagene by attenuation, outgroup, universe, and all
-        .multiplotmetagenes(complist, name1, name2, formatname, outfoldcomp,
+        .multiplotmetagenes(complist, nameone, nametwo, formatname, outfoldcomp,
             verbose)
 
         ## plothistoknee by percent and kb
         .multiplothistoknee(complist, histkneexlim, binwidthvalhistknee,
-            outfoldcomp, formatname, uniname, groupname, name2, verbose)
+            outfoldcomp, formatname, uniname, groupname, nametwo, verbose)
 
     }, resteprmulti, names(resteprmulti), MoreArgs = list(expdf, ecdfgenevec,
         genaucvec, colvec, digits, middlewind, pval, formatname, aucaxisminx,

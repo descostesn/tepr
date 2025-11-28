@@ -57,7 +57,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
 #' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' resmeandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -89,7 +89,8 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
 
         if (!isTRUE(all.equal(plottype, "percent")) &&
             !isTRUE(all.equal(plottype, "kb")))
-                stop("\n\t plottype should be 'percent' or 'kb'.\n")
+                stop("\n[tepr] Error: Invalid plottype.\n",
+                    "  Use 'percent' or 'kb'.\n")
 
         if (!file.exists(outfold))
             dir.create(outfold, recursive = TRUE)
@@ -120,7 +121,7 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
             gtypelabs + ggplot2::theme_classic()
 
        if (plot) {
-            warning("You chose to plot the auc, the figure is not saved.") # nolint
+            warning("[tepr] Warning: Plot displayed only, not saved to file.")
             print(g)
        } else {
             outfile <- paste0("histo_", plottype, ".", formatname)

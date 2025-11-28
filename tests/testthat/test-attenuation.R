@@ -9,7 +9,7 @@ transdf <- read.delim(transpath, header = FALSE)
 avfilt <- averageandfilterexprs(expdf, transdf, expthres,
         showtime = FALSE, verbose = FALSE)
 rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+ecdf <- genesECDF(avfilt, verbose = FALSE)
 resecdf <- ecdf[[1]]
 nbwindows <- ecdf[[2]]
 resmeandiff <- meandifference(resecdf, expdf, nbwindows,
@@ -32,15 +32,13 @@ test_that("Errors are thrown when calling attenuation", {
 
     kneetest <- resknee
     kneetest[, "knee_AUC_ctrl"] <- 0
-    expm <- paste0("\n\t Problem in retrieving idxup, this should not happen. ",
-            "Contact the developer.\n")
+    expm <- "Internal error retrieving idxup"
     expect_error(attenuation(resauc, kneetest, rescountna, bytranslistmean,
         expdf, resmeandiff, verbose = FALSE), regexp = expm)
     
     kneetest <- resknee
     kneetest[, "knee_AUC_ctrl"] <- 400
-    expm <- paste0("\n\t Problem in retrieving idxdown, this should not ",
-            "happen. Contact the developer.\n")
+    expm <- "Internal error retrieving idxdown"
     expect_error(attenuation(resauc, kneetest, rescountna, bytranslistmean,
         expdf, resmeandiff, verbose = FALSE), regexp = expm)
 })

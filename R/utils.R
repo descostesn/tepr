@@ -1,7 +1,8 @@
 .checkunique <- function(x, xname) {
         if (!isTRUE(all.equal(length(x), 1)))
-            stop("\n\t The element ", xname, # nolint
-                " should be unique, contact the developer.\n") # nolint
+            stop("\n[tepr] Error: Non-unique value detected.\n",
+                "  Element '", xname, "' should be unique.\n",
+                "  Contact the developer.\n")
 }
 
 .extractstr <- function(transtable) {
@@ -13,10 +14,9 @@
     } else if (isTRUE(all.equal(str, "-"))) {
         str <- "minus"
     } else {
-        stop("\n\t In .computeecdf or countna, strand is neither plus or",
-            " minus in the table returned by the function ",
-            "averageandfilterexprs. This should not happen. Contact the ",
-            "developer.\n")
+        stop("\n[tepr] Error: Invalid strand value.\n",
+            "  Strand must be '+' or '-' in averageandfilterexprs output.\n",
+            "  Contact the developer.\n")
     }
     return(str)
 }
@@ -25,8 +25,8 @@
             invisible(sapply(colnamevec, function(currentcol, tab) {
             idx <- grep(currentcol, colnames(tab))
             if (isTRUE(all.equal(length(idx), 0)))
-                stop("\n\t The column ", currentcol, " does not exist in the ",
-                    "provided table.\n")
+                stop("\n[tepr] Error: Missing column.\n",
+                    "  Column '", currentcol, "' not found in table.\n")
         }, tab))
 }
 
@@ -50,10 +50,9 @@
     ## Building strand col
     if (isTRUE(all.equal(length(grep("forward", dirvec)), 0)) ||
         isTRUE(all.equal(length(grep("reverse", dirvec)), 0)))
-        stop("\n\n The table built with the preprocessing functions does not ",
-            "contain the keywords 'forward' or 'reverse' in the experiment ",
-            "columns. Go back to your experiment table and make sure these ",
-            "keywords are present in the direction column.\n\n")
+        stop("\n[tepr] Error: Missing direction keywords.\n",
+            "  'forward' or 'reverse' not found in experiment columns.\n",
+            "  Check the 'direction' column of your experiment table.\n")
     strandvec <- gsub("reverse", "minus", gsub("forward", "plus", dirvec))
 
     ## Building the first four columns of the experiment data.frame
@@ -64,14 +63,13 @@
     ## provided
     rownames(expdftheory) <- rownames(expdf) <- NULL
     if (!isTRUE(all.equal(expdftheory, expdf[, seq_len(4)])))
-        stop("\n\nThe table of values (alldf) and the table of experiment ",
-            "information (expdf) do not correspond. The first four columns ",
-            "of expdf should be:\n\n -- condition:",
-            paste(expdftheory[,1], collapse = " "),
-            "\n\n -- replicate: ", paste(expdftheory[, 2], collapse = " "),
-            "\n\n -- direction: ", paste(expdftheory[, 3], collapse = " "),
-            "\n\n -- strand: ", paste(expdftheory[, 4], collapse = " "),
-            "\n\n Also make sure that the bedgraph paths are correct.\n\n")
+        stop("\n[tepr] Error: Experiment table mismatch.\n",
+            "  'alldf' and 'expdf' do not correspond.\n",
+            "  Expected: condition=", paste(expdftheory[, 1], collapse = " "),
+            "\n  replicate=", paste(expdftheory[, 2], collapse = " "),
+            "\n  direction=", paste(expdftheory[, 3], collapse = " "),
+            "\n  strand=", paste(expdftheory[, 4], collapse = " "),
+            "\n  Also verify bedgraph paths are correct.\n")
 }
 
 .buildcolnames <- function(expdf, alldf) {
@@ -108,7 +106,8 @@
     if (!is.null(dontcompare)) {
 
         if (!is.vector(dontcompare))
-            stop("\n The variable dontcompare should be a vector.\n")
+            stop("\n[tepr] Error: Invalid 'dontcompare' type.\n",
+                "  'dontcompare' must be a vector.\n")
 
         ## Building all comparisons from matcond
         compvec <- apply(matcond, 2, function(x) paste0(x[1], "_vs_", x[2]))
@@ -119,13 +118,12 @@
 
         if (isTRUE(all.equal(length(idx), 0)) ||
             !isTRUE(all.equal(length(idxna), 0)))
-            stop("\n Problem with the values contained in the dontcompare ",
-                "vector. Make sure that your vector contains one of these:\n",
-                paste(compvec, collapse = " - "))
+            stop("\n[tepr] Error: Invalid 'dontcompare' value.\n",
+                "  Valid comparisons: ", paste(compvec, collapse = ", "), "\n")
 
         if (isTRUE(all.equal(length(dontcompare), ncol(matcond))))
-            stop("\n All comparisons are removed, the function cannot be ",
-                "executed\n")
+            stop("\n[tepr] Error: No comparisons remaining.\n",
+                "  All comparisons excluded. Adjust 'dontcompare'.\n")
 
         matcond <- matcond[, -idx]
 
@@ -187,27 +185,28 @@ checkexptab <- function(exptab) {
 
     colnamevec <- c("condition", "replicate", "direction", "strand", "path")
     if (!isTRUE(all.equal(sort(colnames(exptab)), sort(colnamevec))))
-        stop("\n\t The experiment table should have the columns: ",
-            "'condition', 'replicate', 'direction', 'strand', 'path'.\n")
+        stop("\n[tepr] Error: Missing columns in experiment table.\n",
+            "  Required: 'condition', 'replicate', 'direction', 'strand', ",
+            "'path'.\n")
 
     directionvec <- unique(exptab$direction)
     if (!isTRUE(all.equal(length(directionvec), 2)) ||
         !(isTRUE(all.equal(length(grep("forward", directionvec)), 1)) &&
         isTRUE(all.equal(length(grep("reverse", directionvec)), 1))))
-        stop("\n\t Only two values are allowed for the column direction of the",
-            " experiment table, 'forward' and 'reverse'.\n")
+        stop("\n[tepr] Error: Invalid 'direction' values.\n",
+            "  Only 'forward' and 'reverse' are allowed.\n")
 
     strandvec <- unique(exptab$strand)
     if (!isTRUE(all.equal(length(strandvec), 2)) ||
         !(isTRUE(all.equal(length(grep("plus", strandvec)), 1)) &&
         isTRUE(all.equal(length(grep("minus", strandvec)), 1))))
-        stop("\n\t The strand column of the experiment table should only ",
-            "contain 'plus' and 'minus'.\n")
+        stop("\n[tepr] Error: Invalid 'strand' values.\n",
+            "  Only 'plus' and 'minus' are allowed.\n")
 
     idxchar <- grep("_|-", exptab$condition)
     if (!isTRUE(all.equal(length(idxchar), 0)))
-        stop("\n\t The condition names should not contain any special ",
-            "characters such as '_' or '-'.\n")
+        stop("\n[tepr] Error: Invalid condition names.\n",
+            "  Condition names must not contain '_' or '-'.\n")
 }
 
 

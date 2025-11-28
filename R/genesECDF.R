@@ -13,7 +13,7 @@
   return(transtable)
 }
 
-.computeecdf <- function(transtable, expdf, rounding, nbrows) { # nolint
+.computeecdf <- function(transtable, rounding, nbrows) { # nolint
 
         ## Declaration to tackle CMD check
         variable <- NULL
@@ -68,14 +68,12 @@
 #' function operates in parallel for speed optimization.
 #'
 #' @usage
-#' genesECDF(allexprsdfs, expdf, nbcpu = 1, rounding = 10,
+#' genesECDF(allexprsdfs, nbcpu = 1, rounding = 10,
 #' showtime = FALSE, verbose = TRUE)
 #'
 #' @param allexprsdfs A list of data frames where the first element is the main
 #'    expression data frame and the second element contains the names of the
 #'    expressed transcripts (see 'averageandfilterexprs').
-#' @param expdf A data frame containing experiment data that should have
-#'              columns named 'condition', 'replicate', 'strand', and 'path'.
 #' @param nbcpu An integer specifying the number of CPU cores to use for
 #'    parallel computation. Default is \code{1}.
 #' @param rounding An integer specifying the rounding factor for computing ECDF.
@@ -118,7 +116,7 @@
 #' countnatest <- countna(avfilttest, expdf, nbcpu = 1, verbose = FALSE)
 #'
 #' ## Testing genesECDF 
-#' resecdf <- genesECDF(avfilttest, expdf, verbose = FALSE)
+#' resecdf <- genesECDF(avfilttest, verbose = FALSE)
 #'
 #' @importFrom parallel mclapply
 #' @importFrom dplyr bind_rows
@@ -133,7 +131,7 @@
 #'
 #' @export
 
-genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
+genesECDF <- function(allexprsdfs, nbcpu = 1, rounding = 10, # nolint
   showtime = FALSE, verbose = TRUE) {
 
     if (showtime) start_time <- Sys.time()
@@ -149,7 +147,8 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
     idxnoexpr <- which(is.na(idx))
     if (isTRUE(all.equal(length(idxnoexpr), 0))) {
       if (verbose)
-        warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+        warning("[tepr] Warning: All transcripts are expressed.",
+          immediate. = TRUE)
     } else {
       maintable <- maintable[-idxnoexpr, ]
     }
@@ -163,12 +162,12 @@ genesECDF <- function(allexprsdfs, expdf, nbcpu = 1, rounding = 10, # nolint
 
     ## Computing ecdf on each transcript
     if (verbose) message("\t Computing ecdf on each transcript")
-    ecdflist <- parallel::mclapply(transdflist, function(transtable, expdf,
+    ecdflist <- parallel::mclapply(transdflist, function(transtable,
         rounding, nbrows, maincolnamevec) {
 
-        res <- .computeecdf(transtable, expdf, rounding, nbrows)
+        res <- .computeecdf(transtable, rounding, nbrows)
         return(res)
-    }, expdf, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
+    }, rounding, nbrows, maincolnamevec, mc.cores = nbcpu)
 
     concatdf <- dplyr::bind_rows(ecdflist)
 

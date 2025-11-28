@@ -1,10 +1,9 @@
 .condcolidx <- function(currentcond, df) {
     idxcond <- grep(currentcond, colnames(df))
     if (isTRUE(all.equal(length(idxcond), 0)))
-        stop("\n\t Problem in function meandifference, condition not found in ",
-                "column names. If you are sure to have used the same ",
-                "experiment table in averageandfilterexprs and ",
-                "genesECDF, contact the developer.\n")
+        stop("\n[tepr] Error: Condition not found.\n",
+            "  Condition '", currentcond, "' missing in column names.\n",
+            "  Ensure same expdf used in all functions. Contact developer.\n")
     return(idxcond)
 }
 
@@ -13,8 +12,8 @@
     idxcondval <- grep("value_", colnames(df[idxcond]))
     if (isTRUE(all.equal(length(idxcondfx), 0)) ||
         isTRUE(all.equal(length(idxcondval), 0)))
-        stop("\n\t Problem in function meandifference, column Fx or val not ",
-            "found in column names. Contact the developer.\n")
+        stop("\n[tepr] Error: Missing columns in meandifference.\n",
+            "  'Fx' or 'value_' columns not found. Contact developer.\n")
     idxcondlist <- list(value = idxcond[idxcondval],
             Fx = idxcond[idxcondfx])
     return(idxcondlist)
@@ -65,8 +64,8 @@
               message("\t Calculating average and difference between ",
                 "replicates for columns '", idxname, "' of ", currentcond)
               if (isTRUE(all.equal(length(idxvalvec), 1)))
-                warning("Only one replicate, copy scores to mean columns",
-                  immediate. = TRUE)
+                warning("[tepr] Warning: Only one replicate. ",
+                  "Copying scores to mean columns.", immediate. = TRUE)
             }
 
             ## Calculating the column of mean scores for currentcond
@@ -136,7 +135,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'         showtime = FALSE, verbose = FALSE)
 #' countna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #'
@@ -186,11 +185,10 @@ meandifference <- function(resultsecdf, expdf, nbwindows, showtime = FALSE,
 
       res <- cbind(resmean, matdiff)
       if (!isTRUE(all.equal(nrow(resultsecdf), nrow(res))))
-          stop("\n\t The results of mean and diff should have the same number ",
-              "of rows than resultsecdf. This should not happen. If you are sure ",
-              "that your experiment data.frame has only two conditions, contact the ",
-              "developer. Otherwise use the teprmulti function. You can verify your ",
-              "conditions running showallcomp(expdf).\n")
+          stop("\n[tepr] Error: Row count mismatch.\n",
+              "  Mean/diff results differ from ecdf results.\n",
+              "  If expdf has 2 conditions, contact developer.\n",
+              "  Otherwise use teprmulti(). Check with showallcomp(expdf).\n")
     } else {
       if (verbose) message("\t There is only one condition. Skip Computing all",
         " differences on mean columns.")

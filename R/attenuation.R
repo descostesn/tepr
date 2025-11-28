@@ -25,15 +25,15 @@
 
       idxup <- which(trans$coord <= trans[, kneecolname])
       if (isTRUE(all.equal(length(idxup), 0)))
-        stop("\n\t Problem in retrieving idxup, this should not happen. ",
-            "Contact the developer.\n")
+        stop("\n[tepr] Error: Internal error retrieving idxup.\n",
+            "  Contact the developer.\n")
       upmean <- mean(trans[idxup, meancolname])
 
       idxdown <- which(trans$coord >= trans[, kneecolname] &
                           trans$coord <= max(trans$coord))
       if (isTRUE(all.equal(length(idxdown), 0)))
-        stop("\n\t Problem in retrieving idxdown, this should not happen. ",
-            "Contact the developer.\n")
+        stop("\n[tepr] Error: Internal error retrieving idxdown.\n",
+            "  Contact the developer.\n")
       downmean <- mean(trans[idxdown, meancolname])
 
       ## Calculating attenuation
@@ -142,7 +142,7 @@
 #' avfilt <- averageandfilterexprs(expdf, transdf, expthres,
 #'        showtime = FALSE, verbose = FALSE)
 #' rescountna <- countna(avfilt, expdf, nbcpu = 1, verbose = FALSE)
-#' ecdf <- genesECDF(avfilt, expdf, verbose = FALSE)
+#' ecdf <- genesECDF(avfilt, verbose = FALSE)
 #' resecdf <- ecdf[[1]]
 #' nbwindows <- ecdf[[2]]
 #' resmeandiff <- meandifference(resecdf, expdf, nbwindows,

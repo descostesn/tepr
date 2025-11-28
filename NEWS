@@ -1,3 +1,16 @@
+v1.1.13:
+- Remove unused variable in genesECDF.
+- Remove digit in variables.
+- Fix bug due to row and col names in teprmulti.
+- Add table of contents to vignette.
+- Add installation section to vignette with GitHub install instructions.
+- Standardize all stop() error messages with consistent '[tepr] Error:' prefix.
+- Standardize all warning() messages with consistent '[tepr] Warning:' prefix.
+- Fix incorrect warning text in plothistoknee and plotmetagenes (previously
+  said 'auc' when displaying histograms and metagenes).
+- Refactor the error messages in the tests for consistency and clarity.
+- Replace deprecated 'size' with 'linewidth' in geom_line (ggplot2 3.4.0+).
+
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
 - Change the test formula for the direction and strand columns in the checkexptab function that was triggered unexpectedly when an incorrect exptab was provided.
