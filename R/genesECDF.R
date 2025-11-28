@@ -147,7 +147,8 @@ genesECDF <- function(allexprsdfs, nbcpu = 1, rounding = 10, # nolint
     idxnoexpr <- which(is.na(idx))
     if (isTRUE(all.equal(length(idxnoexpr), 0))) {
       if (verbose)
-        warning("All the transcripts are expressed", immediate. = TRUE) # nolint
+        warning("[tepr] Warning: All transcripts are expressed.",
+          immediate. = TRUE)
     } else {
       maintable <- maintable[-idxnoexpr, ]
     }
