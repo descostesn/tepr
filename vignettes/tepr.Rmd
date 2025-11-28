@@ -32,7 +32,7 @@ install.packages("tepr", dependencies = TRUE)
 
 However, the CRAN version may not always contain the latest features and bug fixes. To install the most up-to-date version directly from GitHub, use:
  
-```{r install, eval = FALSE, purl = FALSE}
+```{r installhub, eval = FALSE, purl = FALSE}
 # Install devtools if not already installed
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
