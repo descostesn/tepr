@@ -8,7 +8,7 @@ v1.1.13:
 - Standardize all warning() messages with consistent '[tepr] Warning:' prefix.
 - Fix incorrect warning text in plothistoknee and plotmetagenes (previously
   said 'auc' when displaying histograms and metagenes).
-- Refactor the error messages in the tests for consistancy and clarity.
+- Refactor the error messages in the tests for consistency and clarity.
 - Replace deprecated 'size' with 'linewidth' in geom_line (ggplot2 3.4.0+).
 
 v1.1.12:
