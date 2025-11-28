@@ -1,7 +1,7 @@
 v1.1.13:
 - Remove unused variable in genesECDF.
 - Remove digit in variables.
-- Fix bug due to row names in teprmulti.
+- Fix bug due to row and col names in teprmulti.
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
