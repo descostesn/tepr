@@ -317,7 +317,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
 #'  dontcompare = NULL, replaceval = NA, pval = 0.1, significant = FALSE,
 #'  windsizethres = 50, countnathres = 20, pvaltheorythres = 0.1,
 #'  meancondonethres = 0.5, meancondtwothres = 0.5,
-#'  auccondonethreshigher= -10, auccondonethreslower = 15, auccondtwothres = 15,
+#'  auccondonethreshigher = -10, auccondonethreslower = 15, auccondtwothres = 15,
 #'  attenuatedpvalksthres = 2, outgrouppvalksthres = 0.2,
 #'  saveobjectpath = NA, reload = FALSE, showtime = FALSE, showmemory = FALSE,
 #'  verbose = TRUE)
