@@ -268,6 +268,10 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         ## Limiting alldf to the two defined conditions
         alldftwocond <- alldf[, c(seq_len(9), idxcoltwoconds)]
 
+        ## Reset column names so that .buildcolnames() in tepr() assigns them
+        ## correctly for the two-condition subset
+        colnames(alldftwocond) <- paste0("V", seq_len(ncol(alldftwocond)))
+
         ## Calling tepr on the defined conditions
         restepr <- .restepr(saveobjectpath, compname, reload, expdftwocond,
             alldftwocond, expthres, nbcpu, rounding, condonename, condtwoname,
