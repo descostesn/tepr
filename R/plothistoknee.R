@@ -89,7 +89,8 @@ plothistoknee <- function(unigroupdf, plottype = "percent", xlimvec = NA, # noli
 
         if (!isTRUE(all.equal(plottype, "percent")) &&
             !isTRUE(all.equal(plottype, "kb")))
-                stop("\n\t plottype should be 'percent' or 'kb'.\n")
+                stop("\n[tepr] Error: Invalid plottype.\n",
+                    "  Use 'percent' or 'kb'.\n")
 
         if (!file.exists(outfold))
             dir.create(outfold, recursive = TRUE)

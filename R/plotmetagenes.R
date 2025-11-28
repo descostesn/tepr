@@ -29,8 +29,8 @@
         !isTRUE(all.equal(plottype, "outgroup")) &&
         !isTRUE(all.equal(plottype, "universe")) &&
         !isTRUE(all.equal(plottype, "all")))
-        stop("\n\t plottype should be one of: 'attenuation', 'outgroup', ",
-            "'universe', or 'all'.\n")
+        stop("\n[tepr] Error: Invalid plottype.\n",
+            "  Use 'attenuation', 'outgroup', 'universe', or 'all'.\n")
 }
 
 #' Plot Metagenes for Gene Groups
@@ -132,8 +132,9 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
 
         nbcond <- length(unique(expdf$condition))
         if (!isTRUE(all.equal(nbcond, 2)))
-            stop("\n\t plotauc needs two conditions, expdf contains ", nbcond,
-                ".\n")
+            stop("\n[tepr] Error: Wrong number of conditions.\n",
+                "  plotmetagenes requires 2 conditions (found: ", nbcond,
+                ").\n")
 
         .checkmetagenes(plottype)
         colnamevec <- c(daucname, auc_ctrlname, auc_stressname)
@@ -158,8 +159,8 @@ plotmetagenes <- function(unigroupdf, dfmeandiff, expdf, plottype = "attenuation
         }
 
         if (isTRUE(all.equal(length(idx), 0)))
-            stop("\n\t No transcripts were found for the criteria ", plottype,
-                ".\n")
+            stop("\n[tepr] Error: No transcripts found.\n",
+                "  No transcripts match criteria '", plottype, "'.\n")
 
         transvec <- unigroupdf[idx, "transcript"]
         df <- .normalizeandsummarize(transvec, dfmeandiff, unigroupdf, daucname,

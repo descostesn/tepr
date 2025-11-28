@@ -13,9 +13,9 @@
 .checkempty <- function(idx, namestr) {
 
     if (isTRUE(all.equal(length(idx), 0)))
-        stop("\n\t Your condition ", namestr, " was not found in the ",
-            "experiment table expdf. Change the parameter controlcondname or",
-            " stresscondname.\n")
+        stop("\n[tepr] Error: Condition not found.\n",
+            "  '", namestr, "' not in expdf.\n",
+            "  Adjust 'controlcondname' or 'stresscondname' parameter.\n")
 }
 
 .dauc_allconditions <- function(bytranslist, expdf, nbwindows, nbcpu = 1,

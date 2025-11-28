@@ -146,9 +146,9 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
         expnamevec <- sapply(strsplit(basename(filevec), "-"), "[", 1)
 
         if (!isTRUE(all.equal(length(unique(table(expnamevec))), 1)))
-            stop("\n\t Experiments have a different number of files. This ",
-                "should not happen if you used blacklisthighmap with the same",
-                "experiment table. Contact the developer.\n")
+            stop("\n[tepr] Error: Unequal file counts per experiment.\n",
+                "  Ensure same experiment table used in blacklisthighmap.\n",
+                "  Contact the developer.\n")
 
         explist <- split(filevec, factor(expnamevec))
 
@@ -161,8 +161,8 @@ createtablescores <- function(tmpfold, exptabpath, showmemory = FALSE,
         idxvec <- match(orderedexpvec, names(mergedfilelist))
         idxna <- which(is.na(idxvec))
         if (!isTRUE(all.equal(length(idxna), 0)))
-            stop("\n\t The merged file names do not correspond to the exptab.",
-                " This should not happen. Contact the developer.\n")
+            stop("\n[tepr] Error: File names do not match experiment table.\n",
+                "  Contact the developer.\n")
 
         ## Reading each merged file and combining it to the final table
         finaltab <- .fulljoinfun(mergedfilelist, idxvec, showmemory, verbose)

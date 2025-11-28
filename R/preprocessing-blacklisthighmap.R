@@ -10,8 +10,8 @@
         windowend <- unique(allframedf$end.window)
         if (!isTRUE(all.equal(length(windowstart), 1)) ||
             !isTRUE(all.equal(length(windowend), 1)))
-            stop("\n\t The size of the window is not unique for the frame rows",
-                " selected, this should not happen, contact the developper.\n")
+            stop("\n[tepr] Error: Non-unique window size.\n",
+                "  Contact the developer.\n")
 
         ## Retrieve the nb of overlapping nt for each score
         overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
@@ -41,8 +41,8 @@
                 sep = "-")
             idxblack <- as.vector(na.omit(unique(match(strtransvec, strblack))))
             if (isTRUE(all.equal(length(idxblack), 0)))
-                stop("\n\t Problem in setting scores overlapping black list to",
-                    " NA. This should not happen. Contact the developer.\n")
+                stop("\n[tepr] Error: Blacklist overlap processing failed.\n",
+                    "  Contact the developer.\n")
             currenttrans[idxblack, idxscore] <- NA
         }
 
@@ -170,9 +170,9 @@
 
                 if (!isTRUE(all.equal(unique(sapply(bytranslist, nrow)),
                     windsize)))
-                    stop("\n\t All elements of the list should contain ",
-                        windsize, " rows. This should not happen. Contact the",
-                        " developer.\n")
+                    stop("\n[tepr] Error: Row count mismatch in transcript list.\n",
+                        "  Expected ", windsize, " rows per element.\n",
+                        "  Contact the developer.\n")
 
                 ## Formatting columns and adding rowid column
                 res <- .rowidandcols(bytranslist, currentcond, currentrep,
@@ -384,13 +384,14 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
 
         if (!isTRUE(all.equal(typeof(chromtab), "S4"))) {
             if (is.na(genomename) && is.na(chromtab))
-                stop("\n\t Either the genome name or chromtab should be ",
-                    "provided.\n")
+                stop("\n[tepr] Error: Missing genome information.\n",
+                    "  Provide 'genomename' or 'chromtab'.\n")
 
             if (!is.na(chromtab) && !forcechrom) {
                 if (!isTRUE(all.equal(is(chromtab), "Seqinfo")))
-                    stop("\n Chromtab should be a Seqinfo object. Use ",
-                        "rtracklayer::SeqinfoForUCSCGenome(genomename).\n")
+                    stop("\n[tepr] Error: Invalid chromtab type.\n",
+                        "  Must be Seqinfo object from ",
+                        "SeqinfoForUCSCGenome().\n")
             }
 
             ## Retrieving chromosome lengths
@@ -400,9 +401,8 @@ blacklisthighmap <- function(maptrackpath, blacklistpath, exptabpath,
             allchromvec <- GenomeInfoDb::seqnames(chromtab)
             idx <- grep("_|chrM", allchromvec, perl = TRUE, invert = FALSE)
             if (!isTRUE(all.equal(length(idx), 0)))
-                stop("\n Non-canonical chromosomes found in chromtab. If ",
-                    "you are sure you want to proceed set forcechrom = ",
-                    "TRUE.\n\n")
+                stop("\n[tepr] Error: Non-canonical chromosomes in chromtab.\n",
+                    "  Set forcechrom=TRUE to proceed anyway.\n")
         }
 
         ## Reading the information about experiments

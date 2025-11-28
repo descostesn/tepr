@@ -47,16 +47,17 @@
         ## Remove duplicated frames and replace scores by wmean
         currenttrans <- currenttrans[-dupidx, ]
         if (!isTRUE(all.equal(nrow(currenttrans), windsize)))
-            stop("\n\t The number of frames should be equal to ",
-                "windsize: ", windsize, " for transcript ",
-                unique(currenttrans$transcript.window), ".\n")
+            stop("\n[tepr] Error: Frame count mismatch.\n",
+                "  Expected ", windsize, " frames for transcript '",
+                unique(currenttrans$transcript.window), "'.\n",
+                "  Contact the developer.\n")
         idxscorereplace <- match(dupframenbvec,
             currenttrans$window.window)
 
         if (!isTRUE(all.equal(dupframenbvec,
             currenttrans$window.window[idxscorereplace])))
-                stop("\n\t Problem in replacing scores by wmean, ",
-                    "contact the developer.\n")
+                stop("\n[tepr] Error: Weighted mean replacement failed.\n",
+                    "  Contact the developer.\n")
             currenttrans[idxscorereplace, "score"] <- wmeanvec
     }
     return(currenttrans)
@@ -82,9 +83,9 @@
 
             idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
             if (!isTRUE(all.equal(length(idxvec), 2)))
-                stop("\n\t Columns 'name' and 'width' were not found in the ",
-                    "maptrack file. This should not happen. Contact the ",
-                    "developer.\n")
+                stop("\n[tepr] Error: Missing maptrack columns.\n",
+                    "  'name' and 'width' columns not found.\n",
+                    "  Contact the developer.\n")
             maptrackbedchrom <- maptrackbedchrom[, -idxvec]
             colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
                 "mapscore")
@@ -155,12 +156,10 @@ retrievechrom <- function(genomename, verbose, filterchrom = TRUE) {
     if (verbose) message("Retrieving chromosome lengths")
     chromtab <- rtracklayer::SeqinfoForUCSCGenome(genomename)
     if (is.null(chromtab))
-        stop("\n\t The genome ", genomename, " was not found with the function",
-        " rtracklayer::SeqinfoForUCSCGenome. Check the spelling or verify",
-        " if the genome is available on UCSC. The connection to UCSC can ",
-        "also have some hickup. You can callagain the function using the ",
-        "chromtab parameter: chromtab <- rtracklayer::SeqinfoForUCSCGenome(",
-        "genomename).\n")
+        stop("\n[tepr] Error: Genome not found.\n",
+            "  '", genomename, "' not found via SeqinfoForUCSCGenome.\n",
+            "  Check spelling or UCSC availability.\n",
+            "  Alternatively, provide 'chromtab' directly.\n")
     if (filterchrom) {
         idxkeep <- GenomeInfoDb::seqnames(chromtab)[grep("_|chrM",
         GenomeInfoDb::seqnames(chromtab), perl = TRUE, invert = TRUE)]

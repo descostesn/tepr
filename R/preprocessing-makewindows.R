@@ -26,7 +26,8 @@
         startvec <- cumsumvec[-length(cumsumvec)]
         endvec <- cumsumvec[-1]
         if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
-            stop("\n\t Problem in the calculation of windows.\n")
+            stop("\n[tepr] Error: Window calculation error.\n",
+                "  Contact the developer.\n")
 
         ## Build the result data.frame containing the coordinates of each
         ## frame alongside window and coord numbers
@@ -59,8 +60,8 @@
     nbwindcheck <- unique(sapply(windflist, nrow))
     if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
         !isTRUE(all.equal(nbwindcheck, nbwindows)))
-        stop("\n\t Problem in the nb of windows per transcript retrieved.",
-            " This should not happen. Contact the developer.")
+        stop("\n[tepr] Error: Incorrect window count per transcript.\n",
+            "  Contact the developer.\n")
     windf <- do.call("rbind", windflist)
 
     return(windf)
