@@ -5,6 +5,8 @@ v1.1.13:
 - Add table of contents to vignette.
 - Add installation section to vignette with GitHub install instructions.
 - Standardize all stop() error messages with consistent '[tepr] Error:' prefix.
+- Standardize all warning() messages with consistent '[tepr] Warning:' prefix.
+- Fix incorrect warning text in plothistoknee and plotmetagenes.
 - Refactor the error messages in the tests for consistancy and clarity.
 
 v1.1.12:
