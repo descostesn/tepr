@@ -255,6 +255,7 @@ tepr <- function(expdf, alldf, expthres, nbcpu = 1, rounding = 10,
         idxexp <- as.vector(sapply(currentcol, function(condname, expdf) {
             return(which(expdf$condition == condname))}, expdf))
         expdftwocond <- expdf[idxexp, ]
+        rownames(expdftwocond) <- NULL
 
         ## Building vectors with the column names specific to the two conditions
         namecols <- paste0(expdftwocond$condition, "_rep", expdftwocond$replicate,
