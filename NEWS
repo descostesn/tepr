@@ -8,6 +8,7 @@ v1.1.13:
 - Standardize all warning() messages with consistent '[tepr] Warning:' prefix.
 - Fix incorrect warning text in plothistoknee and plotmetagenes.
 - Refactor the error messages in the tests for consistancy and clarity.
+- Replace deprecated parameter in ggplot2.
 
 v1.1.12:
 - An error message is now appearing if the user provide a wrong experiment table.
