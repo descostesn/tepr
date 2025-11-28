@@ -29,26 +29,23 @@ test_that("preprocessing works properly", {
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling preprocessing", {
 
-    expm <- "\n\t Either the genome name or chromtab should be provided.\n"
+    expm <- "Missing genome information"
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename = NA), regexp = expm)
 
     rdsfile <- file.path(tempdir(), "finaltable.rds")
     saveRDS(1, file = rdsfile)
-    expm <- paste0("\n\t The final table already exists, set reload = FALSE to",
-            " create it again.\n")
+    expm <- "Final table already exists"
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename = "hg38", reload = TRUE), regexp = expm)
     file.remove(rdsfile)
 
-    expm <- paste0("\n Chromtab should be a Seqinfo object. Use ",
-        "rtracklayer::SeqinfoForUCSCGenome\\(genomename\\).\n")
+    expm <- "Invalid chromtab type"
     expect_error(preprocessing(exptabpath, gencodepath, windsize, maptrackpath,
     blacklistpath, genomename = "hg38", chromtab = 2), regexp = expm)
     
     chromtabtest <- rtracklayer::SeqinfoForUCSCGenome(genomename)
-    expm <- paste0("\n Non-canonical chromosomes found in chromtab. If you",
-                    " are sure you want to proceed set forcechrom = TRUE.\n\n")
+    expm <- "Non-canonical chromosomes in chromtab"
     expect_error(suppressWarnings(preprocessing(exptabpath, gencodepath,
         windsize, maptrackpath, blacklistpath, genomename = "hg38",
         chromtab = chromtabtest)), regexp = expm)    

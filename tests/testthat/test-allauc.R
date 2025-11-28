@@ -26,9 +26,7 @@ test_that("allauc works properly", {
 ## ----- Checking errors ----- ##
 test_that("Errors are thrown when calling allauc", {
 
-    expm <- paste0("\n\t Your condition ctrltest was not found in the ",
-            "experiment table expdf. Change the parameter controlcondname or",
-            " stresscondname.\n")
+    expm <- "Condition not found"
     expect_error(allauc(bytranslistmean, expdf, nbwindows,
         controlcondname = "ctrltest", verbose = FALSE), regexp = expm)
 })

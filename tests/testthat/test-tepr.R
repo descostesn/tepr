@@ -22,18 +22,11 @@ test_that("Errors are thrown when calling tepr and teprmulti", {
     expdftest <- rbind(expdf, data.frame(condition = "test", replicate = 1,
         direction = "forward", strand = "plus",
         path = "HS_rep1_chr13.reverse.bg"))
-    expm <- paste0("\n\t There are more than two conditions in your experiment",
-            " table. Use teprmulti function instead.\n")
+    expm <- "Too many conditions"
     expect_error(tepr(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
 
-    expm <- paste0("\n\nThe table of values \\(alldf\\) and the table of ",
-        "experiment information \\(expdf\\) do not correspond. The first four",
-        " columns of expdf should be:\n\n \\-\\- condition:ctrl ctrl ctrl ctrl",
-        " HS HS HS HS\n\n \\-\\- replicate: 1 1 2 2 1 1 2 2\n\n \\-\\- ",
-        "direction: forward reverse forward reverse forward reverse forward ",
-        "reverse\n\n \\-\\- strand: plus minus plus minus plus minus plus",
-        " minus\n\n Also make sure that the bedgraph paths are correct.\n\n")
+    expm <- "Experiment table mismatch"
     expect_error(teprmulti(expdftest, transdf, expthres, verbose = FALSE),
         regexp = expm)
 })
