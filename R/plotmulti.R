@@ -16,21 +16,10 @@
                 pval, formatname, verbose)
 }
 
-
-!!!!!!
-genevec = NA, # nolint
-    auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
-    pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
-    labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
-    axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
-    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = tempdir(),
-    outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
-    universename = "Universe", groupname = "Group", verbose = TRUE
-!!!!!!!
-
-.multiplotauc <- function(nameone, nametwo, complist, expdftwocond, genaucvec, aucaxisminx,
-    aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
-    auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose) {
+.multiplotauc <- function(nameone, nametwo, complist, expdftwocond, genaucvec,
+    aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
+    aucsubtitle, auclegendpos, formatname, outfoldcomp, uniname, groupname,
+    verbose) {
 
         ## Generate the plot of auc by groups
         if (verbose) message("\t ## plot auc by groups")
