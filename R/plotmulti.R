@@ -16,7 +16,19 @@
                 pval, formatname, verbose)
 }
 
-.multiplotauc <- function(nameone, nametwo, complist, genaucvec, aucaxisminx,
+
+!!!!!!
+genevec = NA, # nolint
+    auc_ctrlname = "AUC_ctrl", auc_stressname = "AUC_HS",
+    pvalkstestcolname = "adjFDR_p_dAUC_Diff_meanFx_HS_ctrl",
+    labelx = "AUC in Control", labely = "AUC in Stress", axismin_x = -10,
+    axismax_x = 100, axismin_y = -10, axismax_y = 100, maintitle = "",
+    subtitle = "", legendpos = "bottom", formatname = "pdf", outfold = tempdir(),
+    outfile = "AUCcompare_pval", plottype = "pval", plot = FALSE,
+    universename = "Universe", groupname = "Group", verbose = TRUE
+!!!!!!!
+
+.multiplotauc <- function(nameone, nametwo, complist, expdftwocond, genaucvec, aucaxisminx,
     aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
     auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose) {
 
@@ -29,6 +41,7 @@
         aucfilename <- paste0("AUCcompare_groups_", nameone, "_",
             nametwo)
         plotauc(tab = complist[[2]],
+            expdf = expdftwocond,
             auc_ctrlname = paste0("AUC_", nameone),
             auc_stressname = paste0("AUC_", nametwo),
             pvalkstestcolname = pvalks, labelx = labelx,
@@ -46,7 +59,9 @@
             if (verbose) message("\t ## plot auc by pval for the ",
                 "given genes")
             aucfilename <- paste0("AUCcompare_pval_", nametwo, "_", nameone)
-            plotauc(tab = complist[[2]], genevec = genaucvec,
+            plotauc(tab = complist[[2]],
+                expdf = expdftwocond,
+                genevec = genaucvec,
                 auc_ctrlname = paste0("AUC_", nameone),
                 auc_stressname = paste0("AUC_", nametwo),
                 pvalkstestcolname = pvalks, labelx = labelx,
@@ -251,9 +266,10 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
-        .multiplotauc(nameone, nametwo, complist, genaucvec, aucaxisminx,
-            aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
-            auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose)
+        .multiplotauc(nameone, nametwo, complist, expdftwocond, genaucvec,
+            aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
+            aucsubtitle, auclegendpos, formatname, outfoldcomp, uniname,
+            groupname, verbose)
 
         ## Plot metagene by attenuation, outgroup, universe, and all
         .multiplotmetagenes(complist, nameone, nametwo, formatname, outfoldcomp,
