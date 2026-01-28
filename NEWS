@@ -1,3 +1,6 @@
+v1.1.14:
+- Fix: Add missing expdf argument to plotmulti internal functions.
+
 v1.1.13:
 - Remove unused variable in genesECDF.
 - Remove digit in variables.

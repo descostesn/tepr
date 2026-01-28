@@ -16,9 +16,10 @@
                 pval, formatname, verbose)
 }
 
-.multiplotauc <- function(nameone, nametwo, complist, genaucvec, aucaxisminx,
-    aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
-    auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose) {
+.multiplotauc <- function(nameone, nametwo, complist, expdftwocond, genaucvec,
+    aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
+    aucsubtitle, auclegendpos, formatname, outfoldcomp, uniname, groupname,
+    verbose) {
 
         ## Generate the plot of auc by groups
         if (verbose) message("\t ## plot auc by groups")
@@ -29,6 +30,7 @@
         aucfilename <- paste0("AUCcompare_groups_", nameone, "_",
             nametwo)
         plotauc(tab = complist[[2]],
+            expdf = expdftwocond,
             auc_ctrlname = paste0("AUC_", nameone),
             auc_stressname = paste0("AUC_", nametwo),
             pvalkstestcolname = pvalks, labelx = labelx,
@@ -46,7 +48,9 @@
             if (verbose) message("\t ## plot auc by pval for the ",
                 "given genes")
             aucfilename <- paste0("AUCcompare_pval_", nametwo, "_", nameone)
-            plotauc(tab = complist[[2]], genevec = genaucvec,
+            plotauc(tab = complist[[2]],
+                expdf = expdftwocond,
+                genevec = genaucvec,
                 auc_ctrlname = paste0("AUC_", nameone),
                 auc_stressname = paste0("AUC_", nametwo),
                 pvalkstestcolname = pvalks, labelx = labelx,
@@ -61,8 +65,8 @@
         }
 }
 
-.multiplotmetagenes <- function(complist, nameone, nametwo, formatname,
-    outfoldcomp, verbose) {
+.multiplotmetagenes <- function(complist, expdftwocond, nameone, nametwo,
+    formatname, outfoldcomp, verbose) {
 
         daucname <- paste0("dAUC_Diff_meanFx_", nametwo, "_", nameone)
         aucctrlname <- paste0("AUC_", nameone)
@@ -71,7 +75,7 @@
         ## Plot metagene by attenuation
         if (verbose) message("\t ## Plot metagene by attenuation")
         plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
-            plottype = "attenuation", daucname = daucname,
+            expdf = expdftwocond, plottype = "attenuation", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
@@ -79,7 +83,7 @@
         ## Plot metagene by outgroup
         if (verbose) message("\t ## Plot metagene by outgroup")
         plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
-            plottype = "outgroup", daucname = daucname,
+            expdf = expdftwocond, plottype = "outgroup", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
@@ -87,7 +91,7 @@
         ## Plot metagene by universe
         if (verbose) message("\t ## Plot metagene by universe")
         plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
-            plottype = "universe", daucname = daucname,
+            expdf = expdftwocond, plottype = "universe", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
@@ -95,7 +99,7 @@
         ## Plot metagene by all
         if (verbose) message("\t ## Plot metagene for all transcripts")
         plotmetagenes(unigroupdf = complist[[2]], dfmeandiff = complist[[1]],
-            plottype = "all", daucname = daucname,
+            expdf = expdftwocond, plottype = "all", daucname = daucname,
             auc_ctrlname = aucctrlname, auc_stressname = aucstressname,
             plot = FALSE, formatname = formatname, outfold = outfoldcomp,
             verbose = verbose)
@@ -251,13 +255,14 @@ plotmulti <- function(resteprmulti, expdf, ecdfgenevec, outfold = tempdir(),
             digits, middlewind, pval, formatname, verbose)
 
         ## Generate the plot of auc by groups and pval
-        .multiplotauc(nameone, nametwo, complist, genaucvec, aucaxisminx,
-            aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle, aucsubtitle,
-            auclegendpos, formatname, outfoldcomp, uniname, groupname, verbose)
+        .multiplotauc(nameone, nametwo, complist, expdftwocond, genaucvec,
+            aucaxisminx, aucaxismaxx, aucaxisminy, aucaxismaxy, aucmaintitle,
+            aucsubtitle, auclegendpos, formatname, outfoldcomp, uniname,
+            groupname, verbose)
 
         ## Plot metagene by attenuation, outgroup, universe, and all
-        .multiplotmetagenes(complist, nameone, nametwo, formatname, outfoldcomp,
-            verbose)
+        .multiplotmetagenes(complist, expdftwocond, nameone, nametwo,
+            formatname, outfoldcomp, verbose)
 
         ## plothistoknee by percent and kb
         .multiplothistoknee(complist, histkneexlim, binwidthvalhistknee,
