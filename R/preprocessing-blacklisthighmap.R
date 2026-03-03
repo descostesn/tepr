@@ -14,11 +14,9 @@
                 "  Contact the developer.\n")
 
         ## Retrieve the nb of overlapping nt for each score
-        overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
-            nt <- seq(from = x["start"], to = x["end"], by = 1)
-            overnt <- length(which(nt >= windowstart & nt <= windowend))
-            return(overnt)
-        }, windowstart, windowend)
+        endselect <- pmin(allframedf$end, windowend)
+        startselect <- pmax(allframedf$start, windowstart)
+        overntvec <- pmax(endselect - startselect + 1, 0)
 
         ## Computing weighted mean
         allscores <- as.data.frame(allframedf[, "score"])[[1]]
