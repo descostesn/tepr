@@ -3,6 +3,7 @@ v1.1.15:
 - Update documentation for saveobjectpath parameter in preprocessing function.
 - Optimize window computation in .computewindflist and .divideannoinwindows functions and update documentation.
 - Optimize utilization of the maptrack to reduce time of processing.
+- Improve .retrievebgval skipping conversion to data.frame.
 
 v1.1.14:
 - Fix: Add missing expdf argument to plotmulti internal functions.
