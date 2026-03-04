@@ -6,10 +6,16 @@
         chromlength))
     valgr <- rtracklayer::import.bedGraph(currentpath, which = whichchrom)
     if (verbose) message("\t\t\t Converting to tibble")
-    valdf <- as.data.frame(valgr)
-    colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
-    valtib <- tibble::as_tibble(valdf)
-    rm(valdf)
+
+    ## Extract directly from GRanges slots (avoids full as.data.frame overhead)
+    ## Only keep columns needed by valr::bed_intersect: chrom, start, end, score
+    valtib <- tibble::tibble(
+        chrom = as.character(GenomicRanges::seqnames(valgr)),
+        start = GenomicRanges::start(valgr),
+        end = GenomicRanges::end(valgr),
+        score = valgr$score)
+
+    rm(valgr)
     if (showmemory) print(gc()) else invisible(gc())
     return(valtib)
 }
