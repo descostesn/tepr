@@ -1,6 +1,7 @@
 v1.1.15:
 - Optimize overlap calculation in .wmeanvec for tibble type.
 - Update documentation for saveobjectpath parameter in preprocessing function.
+- Optimize window computation in .computewindflist and .divideannoinwindows functions.
 
 v1.1.14:
 - Fix: Add missing expdf argument to plotmulti internal functions.
