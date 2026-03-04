@@ -76,7 +76,8 @@
 #' @param tmpfold Character. Path to a temporary folder for intermediate files.
 #'  Default is \code{file.path(tempdir(), "tmptepr")}.
 #' @param saveobjectpath Character. Path to save intermediate objects. Default
-#'  is \code{tempdir()}.
+#'  is \code{tempdir()}. If set to \code{NA}, intermediate objects will not be
+#' saved.
 #' @param savefinaltable Logical. Whether to save the final table to disk.
 #'  Default is \code{TRUE}.
 #' @param reload Logical. Whether to reload intermediate objects if available.
