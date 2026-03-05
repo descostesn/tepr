@@ -38,7 +38,8 @@ Default is \code{anno.tsv}.}
 Default is \code{file.path(tempdir(), "tmptepr")}.}
 
 \item{saveobjectpath}{Character. Path to save intermediate objects. Default
-is \code{tempdir()}.}
+ is \code{tempdir()}. If set to \code{NA}, intermediate objects will not be
+saved.}
 
 \item{savefinaltable}{Logical. Whether to save the final table to disk.
 Default is \code{TRUE}.}
