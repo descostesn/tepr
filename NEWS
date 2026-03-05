@@ -1,9 +1,9 @@
 v1.1.15:
-- Optimize overlap calculation in .wmeanvec for tibble type.
-- Update documentation for saveobjectpath parameter in preprocessing function.
-- Optimize window computation in .computewindflist and .divideannoinwindows functions and update documentation.
-- Optimize utilization of the maptrack to reduce time of processing.
+- Replace row-wise apply() overlap counting in .wmeanvec() with vectorized overlap-length computation.
+- Vectorize transcript-to-window splitting in makewindows() internals (remove cluster-based parallel approach).
+- Reduce repeated maptrack reads by optionally loading the full track once and filtering per chromosome.
 - Improve .retrievebgval skipping conversion to data.frame.
+- Update docs/version/NEWS accordingly.
 
 v1.1.14:
 - Fix: Add missing expdf argument to plotmulti internal functions.
