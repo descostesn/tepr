@@ -23,7 +23,7 @@
 .formatcurrenttranscols <- function(currenttrans, currentname) {
 
     ## Remove columns corresponding to bedgraph
-    idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"),
+    idxcolbg <- match(c("start", "end", ".overlap"),
         colnames(currenttrans))
     currenttrans <- currenttrans[, -idxcolbg]
 
