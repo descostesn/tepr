@@ -126,7 +126,7 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     saveobjectpath = NA, showtime = FALSE) {
 
         if (showtime) start_time <- Sys.time()
-        
+
         ## Making windows for all annotations
         if (verbose) message("Making windows for all annotations")
 
