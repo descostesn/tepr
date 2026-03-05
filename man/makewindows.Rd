@@ -38,10 +38,10 @@ smaller than windsize and splits each transcript into "windsize" windows.
 }
 \details{
 The function filters out annotations with intervals smaller than the
- specified number of windows (`windsize`). It uses parallel processing to
-enhance performance when splitting transcripts into fixed-size windows. The
-result includes metadata for each window, such as its chromosome, start and
-end coordinates, associated gene, and the window number.
+ specified number of windows (`windsize`). It uses vectorized operations to
+efficiently split transcripts into fixed-size windows. The result includes
+metadata for each window, such as its chromosome, start and end coordinates,
+associated gene, and the window number.
 
 Intermediate functions, such as `.computewindflist` and
 `.divideannoinwindows`, handle computation and validation of windows. Gene

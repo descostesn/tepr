@@ -1,68 +1,47 @@
-.computewindflist <- function(nbcputrans, expbed, nbwindows) {
+.computewindflist <- function(expbed, nbwindows) {
 
-    cl <- parallel::makeCluster(nbcputrans)
-    windflist <- parallel::parLapply(cl, seq_len(nrow(expbed)),
-    function(i, expbed, nbwindows) {
+    n <- nrow(expbed)
 
-        ## Retrieve the necessary gene information
-        currentanno <- expbed[i, ]
-        currentstart <- currentanno$start
-        currentend <- currentanno$end
-        currentstrand <- currentanno$strand
+    ## Compute window sizes for all genes at once (vectorized)
+    lgene <- expbed$end - expbed$start
+    windowsize <- round(lgene / nbwindows)
+    missingbp <- lgene %% nbwindows
 
-        ## Compute the vector with the size of each window
-        lgene <- currentend - currentstart
-        windowsize <- round(lgene / nbwindows)
-        missingbp <- lgene %% nbwindows
-        windsizevec <- rep(windowsize, nbwindows)
+    ## Create index vectors: each gene gets nbwindows rows
+    gene_idx <- rep(seq_len(n), each = nbwindows)
+    window_num <- rep(seq_len(nbwindows), times = n)
 
-        ## Add the missing nb of bp (that is ignore by tile) in the last
-        ## element of windsizevec
-        if (!isTRUE(all.equal(missingbp, 0)))
-            windsizevec[nbwindows] <- windsizevec[nbwindows] + missingbp
+    ## Vectorized coordinate computation
+    ws <- windowsize[gene_idx]
+    st <- expbed$start[gene_idx]
 
-        ## Building the start and end vectors using the cummulative sum
-        cumsumvec <- cumsum(c(currentstart, windsizevec))
-        startvec <- cumsumvec[-length(cumsumvec)]
-        endvec <- cumsumvec[-1]
-        if (!isTRUE(all.equal(endvec - startvec, windsizevec)))
-            stop("\n[tepr] Error: Window calculation error.\n",
-                "  Contact the developer.\n")
+    coor1 <- st + (window_num - 1L) * ws
+    coor2 <- st + window_num * ws
 
-        ## Build the result data.frame containing the coordinates of each
-        ## frame alongside window and coord numbers
-        res <- data.frame(biotype = currentanno$biotype,
-            chr = currentanno$chrom, coor1 = startvec,
-            coor2 = endvec,  transcript = currentanno$ensembl,
-            gene = currentanno$symbol, strand = currentstrand,
-            window = seq_len(nbwindows))
+    ## Add remainder bp to the last window of each gene
+    is_last <- window_num == nbwindows
+    coor2[is_last] <- coor2[is_last] + missingbp[gene_idx[is_last]]
 
-        return(res)
-    }, expbed, nbwindows)
+    ## Build the result data.frame in one shot
+    windf <- data.frame(biotype = expbed$biotype[gene_idx],
+        chr = expbed$chrom[gene_idx], coor1 = coor1,
+        coor2 = coor2, transcript = expbed$ensembl[gene_idx],
+        gene = expbed$symbol[gene_idx], strand = expbed$strand[gene_idx],
+        window = window_num, stringsAsFactors = FALSE)
 
-    parallel::stopCluster(cl)
-
-    return(windflist)
+    return(windf)
 }
 
 
-.divideannoinwindows <- function(expbed, nbwindows, nbcputrans) {
+.divideannoinwindows <- function(expbed, nbwindows) {
 
-    ## Retrieve the necessary gene information
-    ## Compute the vector with the size of each window
-    ## Building the start and end vectors using the cummulative sum
-    ## Inverting start, end, and window vectors if strand is negative
-    ## Build the result data.frame containing the coordinates of each
-    ## frame alongside window and coord numbers
+    windf <- .computewindflist(expbed, nbwindows)
 
-    windflist <- .computewindflist(nbcputrans, expbed, nbwindows)
-
-    nbwindcheck <- unique(sapply(windflist, nrow))
-    if (!isTRUE(all.equal(length(nbwindcheck), 1)) ||
-        !isTRUE(all.equal(nbwindcheck, nbwindows)))
+    ## Validate: total rows should be nrow(expbed) * nbwindows
+    expected_rows <- nrow(expbed) * nbwindows
+    if (!isTRUE(all.equal(nrow(windf), expected_rows)))
         stop("\n[tepr] Error: Incorrect window count per transcript.\n",
             "  Contact the developer.\n")
-    windf <- do.call("rbind", windflist)
 
     return(windf)
 }
@@ -81,7 +60,7 @@
     ## Splitting each transcript into "nbwindows" windows
     if (verbose) message("\t Splitting ", nrow(expbed), " transcript into ",
         nbwindows, " windows data.frame")
-    winddf <- .divideannoinwindows(expbed, nbwindows, nbcputrans)
+    winddf <- .divideannoinwindows(expbed, nbwindows)
 
     return(winddf)
 }
@@ -117,10 +96,10 @@
 #'
 #' @details
 #' The function filters out annotations with intervals smaller than the
-#'  specified number of windows (`windsize`). It uses parallel processing to
-#' enhance performance when splitting transcripts into fixed-size windows. The
-#' result includes metadata for each window, such as its chromosome, start and
-#' end coordinates, associated gene, and the window number.
+#'  specified number of windows (`windsize`). It uses vectorized operations to
+#' efficiently split transcripts into fixed-size windows. The result includes
+#' metadata for each window, such as its chromosome, start and end coordinates,
+#' associated gene, and the window number.
 #'
 #' Intermediate functions, such as `.computewindflist` and
 #' `.divideannoinwindows`, handle computation and validation of windows. Gene
@@ -138,8 +117,6 @@
 #' ## Calling makewindows
 #' allwindowsbed <- makewindows(allannobed, windsize, verbose = FALSE)}
 #'
-#' @importFrom parallel makeCluster parLapply stopCluster
-#'
 #' @seealso
 #' [retrieveanno]
 #'
@@ -149,8 +126,11 @@ makewindows <- function(allannobed, windsize, nbcputrans = 1, verbose = TRUE,
     saveobjectpath = NA, showtime = FALSE) {
 
         if (showtime) start_time <- Sys.time()
+
         ## Making windows for all annotations
         if (verbose) message("Making windows for all annotations")
+
+        # Filtering out annotations with "PAR_Y" in the ensembl name
         idxpar <- grep("PAR_Y", allannobed$ensembl)
         if (!isTRUE(all.equal(length(idxpar), 0)))
             allannobed <- allannobed[-idxpar, ]

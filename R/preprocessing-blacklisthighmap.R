@@ -14,11 +14,9 @@
                 "  Contact the developer.\n")
 
         ## Retrieve the nb of overlapping nt for each score
-        overntvec <- apply(allframedf, 1, function(x, windowstart, windowend) {
-            nt <- seq(from = x["start"], to = x["end"], by = 1)
-            overnt <- length(which(nt >= windowstart & nt <= windowend))
-            return(overnt)
-        }, windowstart, windowend)
+        endselect <- pmin(allframedf$end, windowend)
+        startselect <- pmax(allframedf$start, windowstart)
+        overntvec <- pmax(endselect - startselect + 1, 0)
 
         ## Computing weighted mean
         allscores <- as.data.frame(allframedf[, "score"])[[1]]
@@ -207,20 +205,32 @@
             expnamevec <- paste0(exptab$condition, exptab$replicate,
                 exptab$direction)
 
+            ## Read the full mappability track once (instead of per chromosome)
+            needfullread <- TRUE
+            if (reload && !is.na(saveobjectpath)) {
+                chromnames <- GenomeInfoDb::seqnames(chromtab)
+                cachefiles <- file.path(saveobjectpath,
+                    paste0("maptrackbed-", chromnames, ".rds"))
+                needfullread <- !all(file.exists(cachefiles))
+            }
+            fullmaptracktib <- if (needfullread) {
+                .readfullmaptrack(maptrackpath, showtime, showmemory, verbose)
+            } else NULL
+
             ## Loading process on a specific chromosom
             invisible(lapply(GenomeInfoDb::seqnames(chromtab),
-                function(currentchrom, chromtab, maptrackpath, showtime,
+                function(currentchrom, chromtab, showtime,
                 showmemory, saveobjectpath, reload, verbose, exptab,
                 blacklisttib, nbcputrans, allwindtib, expnamevec, windsize,
-                tmpfold) {
+                tmpfold, fullmaptracktib) {
 
                     if (showtime) start_bglistwmean <- Sys.time()
 
                     if (verbose) message("\n\t # --- Processing ", currentchrom)
-                    ## Reading the maptrack on a specific chromosomes
+                    ## Filtering the maptrack on the current chromosome
                     chromlength <- .retrievechromlength(chromtab, currentchrom)
-                    maptracktib <- .retrievemaptrack(maptrackpath, showtime,
-                        showmemory, currentchrom, chromlength, saveobjectpath,
+                    maptracktib <- .retrievemaptrack(fullmaptracktib, showtime,
+                        showmemory, currentchrom, saveobjectpath,
                         reload, verbose)
 
                     ## Filtering allwindtib on the current chromosome
@@ -250,9 +260,10 @@
                             " found on ", currentchrom, ". Skipping.")
                     }
 
-                }, chromtab, maptrackpath, showtime, showmemory, saveobjectpath,
+                }, chromtab, showtime, showmemory, saveobjectpath,
                     reload, verbose, exptab, blacklisttib, nbcputrans,
-                    allwindtib, expnamevec, windsize, tmpfold))
+                    allwindtib, expnamevec, windsize, tmpfold,
+                    fullmaptracktib))
 }
 
 

@@ -6,10 +6,16 @@
         chromlength))
     valgr <- rtracklayer::import.bedGraph(currentpath, which = whichchrom)
     if (verbose) message("\t\t\t Converting to tibble")
-    valdf <- as.data.frame(valgr)
-    colnames(valdf) <- c("chrom", "start", "end", "width", "strand", "score")
-    valtib <- tibble::as_tibble(valdf)
-    rm(valdf)
+
+    ## Extract directly from GRanges slots (avoids full as.data.frame overhead)
+    ## Only keep columns needed by valr::bed_intersect: chrom, start, end, score
+    valtib <- tibble::tibble(
+        chrom = as.character(GenomicRanges::seqnames(valgr)),
+        start = GenomicRanges::start(valgr),
+        end = GenomicRanges::end(valgr),
+        score = valgr$score)
+
+    rm(valgr)
     if (showmemory) print(gc()) else invisible(gc())
     return(valtib)
 }
@@ -17,7 +23,7 @@
 .formatcurrenttranscols <- function(currenttrans, currentname) {
 
     ## Remove columns corresponding to bedgraph
-    idxcolbg <- match(c("start", "end", "width", "strand", ".overlap"),
+    idxcolbg <- match(c("start", "end", ".overlap"),
         colnames(currenttrans))
     currenttrans <- currenttrans[, -idxcolbg]
 
@@ -63,46 +69,56 @@
     return(currenttrans)
 }
 
-.retrievemaptrack <- function(maptrackpath, showtime, showmemory, currentchrom,
-    chromlength, saveobjectpath, reload, verbose) {
+.readfullmaptrack <- function(maptrackpath, showtime, showmemory, verbose) {
+
+        if (showtime) start_time <- Sys.time()
+        if (verbose) message("\t Reading the full mappability track file")
+
+        suppressWarnings(maptrackgr <- rtracklayer::import(
+            rtracklayer::BEDFile(maptrackpath)))
+
+        ## Extract directly from GRanges slots (avoids as.data.frame overhead)
+        maptracktib <- tibble::tibble(
+            chrom = as.character(GenomicRanges::seqnames(maptrackgr)),
+            start = GenomicRanges::start(maptrackgr),
+            end = GenomicRanges::end(maptrackgr),
+            id = as.character(GenomicRanges::strand(maptrackgr)),
+            mapscore = maptrackgr$score)
+
+        rm(maptrackgr)
+        if (showmemory) print(gc()) else invisible(gc())
+
+        if (showtime) {
+            end_time <- Sys.time()
+            message("\t ## Read full maptrack in: ",
+                format(end_time - start_time, digits = 2))
+        }
+
+        return(maptracktib)
+}
+
+.retrievemaptrack <- function(fullmaptracktib, showtime, showmemory,
+    currentchrom, saveobjectpath, reload, verbose) {
 
         if (showtime) start_time_maptrackreading <- Sys.time()
         filename <- paste0("maptrackbed-", currentchrom, ".rds")
         maptrackbedobjfile <- file.path(saveobjectpath, filename)
 
-        if (!reload || !file.exists(maptrackbedobjfile)) {
-            if (verbose) message("\t\t Reading the mappability track on the",
-                " specified chromosome")
-            ## Reading file on chrom and converting to data.frame
-            maptrackbedfile <- rtracklayer::BEDFile(maptrackpath)
-            whichchrom <- GenomicRanges::GRanges(
-                paste0(currentchrom, ":1-", chromlength))
-            suppressWarnings(maptrackbedchrom <- rtracklayer::import(
-                maptrackbedfile, which = whichchrom))
-            maptrackbedchrom <- as.data.frame(maptrackbedchrom)
-
-            idxvec <- match(c("name", "width"), colnames(maptrackbedchrom))
-            if (!isTRUE(all.equal(length(idxvec), 2)))
-                stop("\n[tepr] Error: Missing maptrack columns.\n",
-                    "  'name' and 'width' columns not found.\n",
-                    "  Contact the developer.\n")
-            maptrackbedchrom <- maptrackbedchrom[, -idxvec]
-            colnames(maptrackbedchrom) <- c("chrom", "start", "end", "id",
-                "mapscore")
-            maptracktib <- tibble::as_tibble(maptrackbedchrom)
-
-            rm(filename, maptrackbedfile, whichchrom, maptrackbedchrom)
-            if (showmemory) print(gc()) else invisible(gc())
+        if (reload && file.exists(maptrackbedobjfile)) {
+            if (verbose) message("\t\t Loading mappability track from ",
+                    "existing rds object")
+            maptracktib <- readRDS(maptrackbedobjfile)
+        } else {
+            if (verbose) message("\t\t Filtering mappability track for ",
+                currentchrom)
+            maptracktib <- fullmaptracktib[
+                fullmaptracktib$chrom == currentchrom, ]
 
             if (!is.na(saveobjectpath)) {
                 if (verbose) message("\t\t Saving mappability track to ",
                     maptrackbedobjfile)
                 saveRDS(maptracktib, maptrackbedobjfile)
             }
-        } else {
-            if (verbose) message("\t\t Loading mappability track from ",
-                    "existing rds object")
-            maptracktib <- readRDS(maptrackbedobjfile)
         }
 
         if (showtime) {
