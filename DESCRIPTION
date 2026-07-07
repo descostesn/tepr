@@ -1,6 +1,6 @@
 Package: tepr
 Title: Transcription Elongation Profiling
-Version: 1.1.16
+Version: 1.1.17
 Authors@R: c(
     person("Nicolas", "Descostes", email = "nicolas.descostes@gmail.com", role = "cre"),
     person("Victor", "Billon", email = "victor.billon@etu.univ-cotedazur.fr", role = "aut"),
@@ -21,9 +21,6 @@ Description:
     each condition) and for studying elongation of the same gene in different
     conditions or comparing it to a perfect theoretical uniform elongation. 
 Depends: R (>= 4.4)
-Additional_repositories:
-    https://bioconductor.org/packages/3.22/bioc,
-    https://bioconductor.org/packages/3.23/bioc
 License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.3.2

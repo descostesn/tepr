@@ -1,3 +1,9 @@
+v1.1.17:
+- Remove Additional_repositories from DESCRIPTION.
+
+v1.1.16:
+- Set min_overlap = 0L in bed_intersect() calls for valr 0.10.0 compatibility
+
 v1.1.15:
 - Replace row-wise apply() overlap counting in .wmeanvec() with vectorized overlap-length computation.
 - Vectorize transcript-to-window splitting in makewindows() internals (remove cluster-based parallel approach).
